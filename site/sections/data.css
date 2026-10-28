@@ -1,6 +1,7 @@
 /* ==========================================================================
    SECTION: data — Home, block 2
-   The four figures as concrete blocks against a white wall. The heading
+   The four figures as 3D concrete blocks on white, seen from above and
+   to the right. The heading
    stays pinned on the left while each block comes down turning a full
    circle on its vertical axis and settles on the stack (stack.js): the
    first figure is the base, the last one tops the stack. Text is printed
@@ -58,7 +59,8 @@
   color: var(--color-text);
 }
 
-.data__inner > .stack { grid-column: 7 / span 6; grid-row: 1; }
+/* The ends lean out to the right: pull the stack in so they stay inside the page margin */
+.data__inner > .stack { grid-column: 7 / span 6; grid-row: 1; margin-right: calc(var(--depth) * var(--lean)); }
 
 .data__note {
   grid-column: 7 / span 6;
@@ -74,55 +76,60 @@
 }
 
 /* ---------- Stack (component: drop-stack) ----------
-   Each block is a concrete box: the face with the text, plus a back and
-   two ends that stack.js adds and shows only while the block turns.
-   --cols: columns the stack spans, so the text sits on the page grid. */
+   Each block is a concrete box: the face with the text, a top and a right
+   end (always drawn), plus a back and a left end for the turn. stack.js
+   adds the sides. The stack is drawn in an axonometric view, seen from
+   above and to the right, as in the deck's concrete renders: the view
+   only shifts what lies behind the faces, so the faces themselves stay
+   exactly flat and the text crisp.
+   --cols: columns the stack spans, so the text sits on the page grid.
+   --lean: how far the depth shifts up and to the right, per px of depth. */
 .stack {
   --cols: 6;
   --joint: 8px;
-  --depth: 56px;
+  --depth: 60px;
+  --lean: 0.5;
   --block-h: min(132px, 14.5svh); /* shorter screens get lower blocks, so the stack fits under the header */
   display: flex;
   flex-direction: column-reverse; /* first figure at the bottom */
   gap: var(--joint);
+  transform-style: preserve-3d;
+  transform: matrix3d(1, 0, 0, 0, 0, 1, 0, 0, calc(var(--lean) * -1), var(--lean), 1, 0, 0, 0, 0, 1);
 }
 
-.stack__block { position: relative; }
+.stack__block {
+  position: relative;
+  transform-style: preserve-3d;
+}
 
-/* The joint under a block: a dark recess, shown once the block sits on the one below */
-.stack__block::after {
+/* The base stands on the floor with a soft contact shadow */
+.stack__block:first-child::after {
   content: "";
   position: absolute;
   top: 100%;
-  left: 5px;
-  right: 5px;
-  height: var(--joint);
-  background: linear-gradient(rgba(38, 38, 38, 0.92), rgba(74, 74, 74, 0.86));
-  opacity: 0;
-}
-/* The base has no joint: it stands on the floor with a soft contact shadow */
-.stack__block:first-child::after {
   left: -1%;
-  right: -2%;
+  right: -3%;
   height: 22px;
-  background: radial-gradient(50% 100% at 50% 0%, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0) 70%);
+  background: radial-gradient(50% 100% at 50% 0%, rgba(0, 0, 0, 0.22), rgba(0, 0, 0, 0) 70%);
+  opacity: 0;
+  transition: opacity var(--dur-base) var(--ease-out);
 }
-.stack__block.is-landed::after { opacity: 1; }
+.stack__block:first-child.is-landed::after { opacity: 1; }
 
 /* The box turns around its own centre, half its depth behind the face */
 .stack__body {
   position: relative;
+  transform-style: preserve-3d;
   transform-origin: 50% 50% calc(var(--depth) / -2);
 }
-.stack__block.is-turning .stack__body { transform-style: preserve-3d; }
 
-/* Cast concrete, lit softly from the upper left; each block shows a different patch */
+/* Cast concrete; each block shows a different patch */
 .stack__face,
 .stack__side {
-  border-radius: 3px;
+  border-radius: 2px;
   background-color: #bdbdbd;
   background-image:
-    linear-gradient(172deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0) 38%, rgba(0, 0, 0, 0.05)),
+    linear-gradient(172deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0) 38%, rgba(0, 0, 0, 0.04)),
     url("../assets/concrete-cast.jpg");
   background-size: auto, 960px;
   background-position: 0 0, calc(var(--i, 0) * -331px) calc(var(--i, 0) * -197px);
@@ -137,40 +144,65 @@
   column-gap: var(--grid-gap);
   align-items: center;
   min-height: var(--block-h);
+  /* crisp arrises: light catches the top edge, the bottom edge turns away */
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.5),
-    inset 1px 0 0 rgba(255, 255, 255, 0.22),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.14),
-    inset -1px 0 0 rgba(0, 0, 0, 0.08),
-    /* shadow on the white wall behind */
-    12px 18px 30px -18px rgba(0, 0, 0, 0.32),
-    0 2px 4px -2px rgba(0, 0, 0, 0.12);
+    inset 0 1px 0 rgba(255, 255, 255, 0.55),
+    inset 1px 0 0 rgba(255, 255, 255, 0.2),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.16),
+    inset -1px 0 0 rgba(0, 0, 0, 0.1);
 }
 
-/* Back and ends: only drawn while the block turns */
+/* Light from the upper left: the top is brightest, the right end in shade */
 .stack__side {
-  display: none;
   position: absolute;
   top: 0;
   bottom: 0;
 }
-.stack__block.is-turning .stack__side { display: block; }
+.stack__side--top {
+  top: auto;
+  bottom: 100%;
+  left: 0;
+  right: 0;
+  height: var(--depth);
+  transform-origin: 50% 100%;
+  transform: rotateX(90deg);
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.2)),
+    url("../assets/concrete-cast.jpg");
+}
+/* Once a block sits on it, the top only shows in the joint, deep in shadow */
+.stack__side--top::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(rgba(20, 20, 20, 0.62), rgba(20, 20, 20, 0.5));
+  opacity: 0;
+  transition: opacity var(--dur-base) var(--ease-out);
+}
+.stack__block.is-covered .stack__side--top::after { opacity: 1; }
+
+.stack__side--right,
+.stack__side--left {
+  width: var(--depth);
+  background-image:
+    linear-gradient(90deg, rgba(0, 0, 0, 0.32), rgba(0, 0, 0, 0.4)),
+    url("../assets/concrete-cast.jpg");
+}
+.stack__side--right { left: 100%; transform-origin: 0 50%; transform: rotateY(90deg); }
+.stack__side--left { right: 100%; transform-origin: 100% 50%; transform: rotateY(-90deg); }
+
+/* The back and the left end never face us at rest: drawn only while the block turns */
+.stack__side--back,
+.stack__side--left { display: none; }
+.stack__block.is-turning .stack__side--back,
+.stack__block.is-turning .stack__side--left { display: block; }
 .stack__side--back {
   left: 0;
   right: 0;
   transform: translateZ(calc(var(--depth) * -1)) rotateY(180deg);
   background-position: 0 0, calc(var(--i, 0) * -331px + 400px) calc(var(--i, 0) * -197px);
 }
-.stack__side--left,
-.stack__side--right {
-  width: var(--depth);
-  /* the ends sit a little more in shade than the faces */
-  background-image:
-    linear-gradient(rgba(0, 0, 0, 0.12), rgba(0, 0, 0, 0.16)),
-    url("../assets/concrete-cast.jpg");
-}
-.stack__side--left { right: 100%; transform-origin: 100% 50%; transform: rotateY(-90deg); }
-.stack__side--right { left: 100%; transform-origin: 0 50%; transform: rotateY(90deg); }
 
 /* Flat ink on concrete: no emboss, no carving */
 .stack__figure {
@@ -198,9 +230,10 @@
 @media (max-width: 1199px) {
   .data__inner { row-gap: var(--space-6); }
   .data__head { grid-column: 1 / span 10; gap: var(--space-4); }
-  .data__inner > .stack { grid-column: 1 / -1; grid-row: 2; }
+  /* room above for the top block's top face */
+  .data__inner > .stack { grid-column: 1 / -1; grid-row: 2; margin-top: calc(var(--depth) * var(--lean)); }
   .data__note { grid-column: 1 / -1; }
-  .stack { --cols: 12; --depth: 48px; --block-h: min(116px, 11svh); }
+  .stack { --cols: 12; --depth: 52px; --block-h: min(116px, 11svh); }
   .stack__figure { --fig-size: 48px; grid-column: 1 / span 5; padding-left: 28px; }
   .stack__label { grid-column: 6 / span 7; padding-right: 24px; }
 }
@@ -211,7 +244,7 @@
   .data__head { grid-column: 1 / -1; gap: var(--space-3); }
   .data__title { margin-top: var(--space-1); }
   .data__sub { font-size: 15px; }
-  .stack { --joint: 6px; --depth: 40px; --block-h: 112px; }
+  .stack { --joint: 6px; --depth: 32px; --block-h: 112px; }
   .stack__face {
     grid-template-columns: 1fr;
     align-content: center;
@@ -226,11 +259,11 @@
 
 /* Short phones (iPhone SE and the like): everything has to fit under the header at once */
 @media (max-width: 809px) and (max-height: 760px) {
-  .data__inner { row-gap: var(--space-4); }
+  .data__inner { row-gap: var(--space-3); }
   .data__head { gap: var(--space-2); }
   .data__title { font-size: 26px; }
   .data__sub { font-size: 14px; line-height: 1.45; }
-  .stack { --block-h: 98px; }
+  .stack { --block-h: 98px; --depth: 24px; }
   .stack__face { padding: 12px 16px 14px; row-gap: 4px; }
   .stack__figure { --fig-size: 30px; }
 }

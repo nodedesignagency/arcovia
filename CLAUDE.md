@@ -38,7 +38,7 @@ cd ~/Desktop/arcovia-preview && ./preview.sh <branch>
 - `site/sections/<name>.css`: one stylesheet per section. Asset paths in these files start with `../assets/` (don't use `var(--texture-concrete)` here: its URL resolves relative to the section file and breaks).
 - `site/main.js`: small shared JS (header, menu, path picker, office clocks, wordmark fit).
 - `site/concrete.js`: WebGL concrete for the hero (carved text and marks, drifting sunlight, cursor light). Built to become a Framer code component.
-- `site/stack.js`: the data section's blocks that come down onto a stack as you scroll, each a 3D concrete box turning a full circle on its vertical axis before it settles (sticky stage with the heading pinned, lift back off on scroll up). Built to become a Framer code component.
+- `site/stack.js`: the data section's blocks that come down onto a stack as you scroll, each a 3D concrete box (drawn in an axonometric view: top and right end showing, faces flat so text stays crisp) turning a full circle on its vertical axis before it settles (sticky stage with the heading pinned, lift back off on scroll up). Built to become a Framer code component.
 - `site/assets/`: concrete texture (seamless, 90 KB), cast-concrete texture for the data blocks (`concrete-cast.jpg`, seamless, made with Magnific), traced A-mark SVG (replace with the CM.SUPPLY master when it arrives).
 - `review/`: screenshots and videos for review. Git-ignored; send them to the user, don't commit them.
 
