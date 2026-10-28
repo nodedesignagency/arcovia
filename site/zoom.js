@@ -1,17 +1,17 @@
 /* ==========================================================================
    Zoom-through: hero → statement
-   As you scroll past the hero, its text lifts away, the O of the carved
-   ARCOVIA opens into a hole through the concrete, and the view flies through
-   it into the statement behind. While the stage is still pinned, the
-   statement's words then light up one by one.
+   As you scroll past the hero, its text lifts away while the carved ARCOVIA
+   already starts to grow; an ember catches in the O and burns a hole through
+   the concrete, and the view flies through it into the statement behind.
+   The statement rises into place, then its letters darken in a diagonal
+   sweep, line after line, passing through a halftone on the way.
 
    Scroll progress p (0 → 1) over the pinned stage:
-     0.00–0.10  hero text fades and lifts
-     0.10–0.20  a spark catches in the O
-     0.13–0.32  it burns open: a ragged hole with a white-hot edge
-     0.30–0.62  zoom: the O drifts to the centre and the view flies through
-     0.46–0.68  the statement rises from below into place (depth)
-     0.68–0.96  statement words light up
+     0.00–0.12  hero text fades and lifts; the zoom starts at the same time
+     0.02–0.60  an ember catches in the O and burns outwards
+     0.00–0.60  zoom: the O drifts to the centre and the view flies through
+     0.30–0.58  the statement rises from below into place (depth)
+     0.58–0.97  statement letters darken, line after line
    The zoom and the burn are drawn by the WebGL slab itself (concrete.js
    setView), so the carving stays crisp and nothing is scaled in CSS. Every
    frame is computed from p alone, so scrolling back up simply plays it in
@@ -32,7 +32,8 @@
   var inner = statement.querySelector(".statement__inner");
   var reveal = statement.querySelector("[data-reveal]");
   var reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
-  var words = splitWords(reveal);
+  var chars = splitChars(reveal);
+  var charsMeasured = false;
   var geo = null;          // the O's counter, in hero coordinates
   var lastP = -1;
   var lastSurface = null;
@@ -42,8 +43,9 @@
   function smooth(a, b, x) { var t = clamp((x - a) / (b - a), 0, 1); return t * t * (3 - 2 * t); }
   function ramp(a, b, x) { return clamp((x - a) / (b - a), 0, 1); }
 
-  /* Wrap every word of the statement in a span, remembering which are pale */
-  function splitWords(el) {
+  /* Wrap every letter of the statement in a span (inside a span per word, so
+     words never break), remembering which belong to the pale phrase */
+  function splitChars(el) {
     var out = [];
     if (!el) return out;
     var walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
@@ -55,16 +57,64 @@
       node.data.split(/(\s+)/).forEach(function (part) {
         if (!part) return;
         if (/^\s+$/.test(part)) { frag.appendChild(document.createTextNode(part)); return; }
-        var span = document.createElement("span");
-        span.className = "w";
-        span.textContent = part;
-        frag.appendChild(span);
-        out.push({ el: span, pale: pale });
+        var word = document.createElement("span");
+        word.className = "w";
+        Array.prototype.forEach.call(part, function (ch) {
+          var span = document.createElement("span");
+          span.className = "c";
+          span.textContent = ch;
+          word.appendChild(span);
+          out.push({ el: span, pale: pale, o: 0, q: -1 });
+        });
+        frag.appendChild(word);
       });
       node.parentNode.replaceChild(frag, node);
     });
     el.classList.add("is-split");
     return out;
+  }
+
+  /* Where each letter sits: across its line (0–1) plus a lag for each line down,
+     so the sweep runs diagonally through the paragraph */
+  var LINE_LAG = 0.32, BAND = 0.42;
+  var maxOrder = 1;
+  function measureChars() {
+    if (!reveal || !chars.length) return;
+    var box = reveal.getBoundingClientRect();
+    var lh = parseFloat(getComputedStyle(reveal).lineHeight) * (box.width / (reveal.offsetWidth || box.width));
+    maxOrder = 0;
+    chars.forEach(function (c) {
+      var r = c.el.getBoundingClientRect();
+      var line = Math.round((r.top - box.top) / lh);
+      c.o = (r.left - box.left + r.width / 2) / box.width + line * LINE_LAG;
+      if (c.o > maxOrder) maxOrder = c.o;
+      c.q = -1;
+    });
+    charsMeasured = true;
+  }
+
+  /* One letter's state: pale → mid grey → halftone dots of ink getting denser → solid ink.
+     The tones mirror statement.css (--st-pale, --st-mid). */
+  var STEPS = 30;
+  function paintChar(c, v) {
+    var q = v <= 0 ? 0 : v >= 1 ? STEPS : Math.min(STEPS - 1, Math.max(1, Math.round(v * STEPS)));
+    if (q === c.q) return;
+    c.q = q;
+    var el = c.el;
+    if (q === 0) { el.className = "c"; el.style.cssText = ""; return; }
+    if (q === STEPS) { el.className = "c is-on"; el.style.cssText = ""; return; }
+    var t = q / STEPS;
+    if (t < 0.3) {
+      // Warming up: pale to mid grey
+      var k = t / 0.3, from = 228, to = c.pale ? 214 : 186;
+      var g = Math.round(from + (to - from) * k);
+      el.className = "c";
+      el.style.cssText = "color:rgb(" + g + "," + g + "," + g + ")";
+    } else {
+      // Halftone: ink dots on mid grey, growing until they merge
+      el.className = "c is-tone";
+      el.style.cssText = "--dot:" + (0.3 + 1.9 * (t - 0.3) / 0.7).toFixed(2) + "px";
+    }
   }
 
   /* Find the counter (the inside) of the O, in hero coordinates.
@@ -139,7 +189,7 @@
     hero.style.visibility = "";
     fades.forEach(function (el) { el.style.opacity = ""; el.style.transform = ""; });
     if (inner) { inner.style.transform = ""; inner.style.opacity = ""; }
-    words.forEach(function (w) { w.el.style.opacity = w.pale ? "var(--statement-pale)" : "1"; });
+    chars.forEach(function (c) { c.q = -1; paintChar(c, 1); });
     var sfc = surface();
     if (sfc) { sfc.setPaused(false); sfc.setView({ ox: 0, oy: 0, tx: 0, ty: 0, s: 1, burn: null }); }
   }
@@ -159,58 +209,55 @@
     if (!geo) geo = measure();
     if (!geo) return;
 
-    // 1. Hero text lifts away
-    var f = smooth(0, 0.1, p);
+    // 1. Hero text lifts away, while the wordmark already starts to grow (below)
+    var f = smooth(0, 0.12, p);
     fades.forEach(function (el) {
       el.style.opacity = f ? String(1 - f) : "";
       el.style.transform = f ? "translateY(" + (-28 * f).toFixed(1) + "px)" : "";
     });
 
-    // 2. A spark catches in the O, then burns it open (only once the text has gone)
-    var spark = smooth(0.1, 0.14, p) * (1 - smooth(0.16, 0.24, p));
-    var burnR = smooth(0.13, 0.32, p) * 0.95;
-    var heat = smooth(0.11, 0.16, p) * (1 - 0.85 * smooth(0.36, 0.58, p));
+    // 2. An ember catches in the O and burns outwards, past the O itself by the end
+    var BURN_END = 1.9, BURN_MIN = 0.6;   // final radius in counter units; the ragged edge's tightest point
+    var heat = smooth(0.02, 0.07, p) * (1 - 0.5 * smooth(0.48, 0.6, p));
+    var burnR = Math.pow(ramp(0.04, 0.6, p), 1.3) * BURN_END;
 
-    // 3. Fly through: the O drifts to the centre while the scale grows until the hole covers the screen
-    var hole = 0.78 * 0.95;   // the burn's smallest radius, as a share of the counter
-    var cover = Math.sqrt(Math.pow(vw / 2 / (geo.rx * hole), 2) + Math.pow(vh / 2 / (geo.ry * hole), 2)) * 1.06;
-    var z = ramp(0.3, 0.62, p);
-    var scale = Math.pow(cover, Math.pow(z, 1.8));
-    var t = smooth(0.3, 0.48, p);
+    // 3. Fly through, from the first scroll: the O drifts to the centre and the scale
+    //    grows until the burnt hole covers the whole screen
+    var halfDiag = Math.sqrt(vw * vw + vh * vh) / 2;
+    var scaleEnd = halfDiag * 1.08 / (BURN_END * BURN_MIN * Math.min(geo.rx, geo.ry));
+    var z = ramp(0, 0.6, p);
+    var scale = Math.pow(scaleEnd, Math.pow(z, 1.6));
+    var t = smooth(0, 0.42, p);
     var through = z >= 1;
     hero.classList.toggle("hero--zooming", p > 0);
     hero.style.visibility = through ? "hidden" : "";
 
     if (sfc) {
-      sfc.setPaused(p > 0.04);
+      sfc.setPaused(through);   // keeps running during the burn, so the fire flickers
       if (!through) {
         sfc.setView({
           ox: geo.cx, oy: geo.cy,
           tx: (vw / 2 - geo.cx) * t, ty: (vh / 2 - geo.cy) * t,
           s: scale,
-          burn: spark > 0 || burnR > 0 || heat > 0 ? { cx: geo.cx, cy: geo.cy, rx: geo.rx, ry: geo.ry, r: burnR, heat: heat, spark: spark } : null
+          burn: heat > 0 || burnR > 0 ? { cx: geo.cx, cy: geo.cy, rx: geo.rx, ry: geo.ry, r: burnR, heat: heat } : null
         });
       }
     } else {
       // No WebGL: nothing to burn through, so the hero simply fades away
-      hero.style.opacity = String(1 - smooth(0.2, 0.5, p));
+      hero.style.opacity = String(1 - smooth(0.1, 0.45, p));
     }
 
-    // The statement rises from below into place after half the zoom, for depth
-    var rise = smooth(0.46, 0.68, p);
+    // 4. The statement rises from below into place after half the zoom, for depth
+    var rise = smooth(0.3, 0.58, p);
     if (inner) {
       inner.style.transform = rise < 1 ? "translate3d(0," + ((1 - rise) * 42).toFixed(2) + "vh,0) scale(" + (0.94 + 0.06 * rise).toFixed(4) + ")" : "";
       inner.style.opacity = rise < 1 ? (0.25 + 0.75 * rise).toFixed(3) : "";
     }
 
-    // 4. Words light up, each over the span of three words
-    var rr = ramp(0.68, 0.96, p);
-    var n = words.length;
-    words.forEach(function (w, i) {
-      var v = clamp((rr * (n + 3) - i) / 3, 0, 1);
-      var dim = 0.12, max = w.pale ? 0.34 : 1;
-      w.el.style.opacity = (dim + (max - dim) * v).toFixed(3);
-    });
+    // 5. Letters darken in a diagonal sweep, line after line
+    if (!charsMeasured) measureChars();
+    var front = ramp(0.58, 0.97, p) * (maxOrder + BAND);
+    chars.forEach(function (c) { paintChar(c, (front - c.o) / BAND); });
   }
 
   function queue() {
@@ -228,10 +275,10 @@
   }
 
   window.addEventListener("scroll", queue, { passive: true });
-  window.addEventListener("resize", function () { geo = null; lastP = -1; queue(); });
+  window.addEventListener("resize", function () { geo = null; charsMeasured = false; lastP = -1; queue(); });
   if (reduced.addEventListener) reduced.addEventListener("change", setMode);
   // The O is measured from the real font, so wait for it
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { geo = null; lastP = -1; queue(); });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { geo = null; charsMeasured = false; lastP = -1; queue(); });
   setMode();
   // The slab loads its texture asynchronously; redraw once it's ready
   var wait = setInterval(function () { if (surface()) { clearInterval(wait); lastP = -1; queue(); } }, 100);

@@ -183,7 +183,9 @@
 
   // Live concrete
   if (window.ConcreteSurface) {
-    window.arcoviaHero = new window.ConcreteSurface(hero, { canvas: ".hero__canvas" });
+    // Review switch: ?burn=mono burns with white heat only, no fire colours
+    var mono = /[?&]burn=mono\b/.test(location.search);
+    window.arcoviaHero = new window.ConcreteSurface(hero, { canvas: ".hero__canvas", burnWarmth: mono ? 0 : 1 });
     window.arcoviaHero.init();
   }
 })();

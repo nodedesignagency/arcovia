@@ -19,8 +19,8 @@
      over ~34 s and deepens the relief where it passes; the cursor adds a
      dim point light.
    - setView() zooms the slab (scale around a point, plus a shift) and can
-     burn a hole through it: a spark, then a ragged opening with a white-hot
-     edge and a soft halo, the concrete charred just beyond. The height map is
+     burn a hole through it like paper catching fire: an ember, then a ragged
+     opening whose edge glows, charred concrete beyond and light spilling in. The height map is
      redrawn for each view, so carving stays crisp at any zoom; the hole is
      transparent, so whatever sits behind the canvas shows through (zoom.js
      uses this to burn through the O of ARCOVIA and fly into the statement).
@@ -53,7 +53,7 @@
     "uniform vec2 uShift;",      // zoom: where that point sits on screen
     "uniform float uZoom;",      // zoom: scale
     "uniform vec4 uBurn;",       // burn: centre x, y and the O's counter radii x, y (slab coordinates)
-    "uniform vec3 uBurnP;",      // burn: radius (in counter units), heat (glow), spark
+    "uniform vec3 uBurnP;",      // burn: radius (in counter units), heat (glow), warmth (0 white, 1 fire)
     "",
     "float hash(vec2 p){ p = fract(p * vec2(123.34, 456.21)); p += dot(p, p + 45.32); return fract(p.x * p.y); }",
     "float noise(vec2 p){ vec2 i = floor(p), f = fract(p); vec2 u = f*f*(3.0-2.0*f);",
@@ -129,31 +129,41 @@
     "  c *= 1.0 - 0.07 * pow(length((uv - 0.5) * vec2(1.0, 1.2)), 2.0);",
     "  c += (hash(gl_FragCoord.xy + fract(uTime) * 61.0) - 0.5) * (2.0 / 255.0);",
     "",
-    "  // The burn: a spark, then a ragged hole with a white-hot edge, a soft halo and charred concrete beyond",
-    "  float a = 1.0;",
+    "  // The burn, like paper catching fire: an ember, then a ragged hole whose edge glows,",
+    "  // charred concrete beyond it and light spilling in. Widths are in screen px, so the",
+    "  // glowing band keeps its size while the view zooms in.",
+    "  vec3 col = vec3(c);",
+    "  float a = 1.0, spill = 0.0;",
+    "  vec3 inside = vec3(1.0);",
     "  if (uBurn.z > 0.0) {",
-    "    vec2 q = (p - uBurn.xy) / uBurn.zw;",                     // 1.0 = the O's inner edge
+    "    vec2 q = (p - uBurn.xy) / uBurn.zw;",                    // 1.0 = the O's inner edge
     "    float d = length(q);",
-    "    float ang = atan(q.y, q.x);",
-    "    float n = fbm(q * 3.0 + 7.3) * 0.7 + fbm(q * 11.0 + 1.7) * 0.3;",
-    "    float k = d - uBurnP.x * (0.78 + 0.34 * n);",               // below 0: burnt through
-    "    float aa = 1.5 / (min(uBurn.z, uBurn.w) * uZoom);",
-    "    if (uBurnP.x > 0.001) a = smoothstep(-aa, aa, k);",
-    "    float heat = uBurnP.y;",
-    // Char: a blackened, uneven band just beyond the edge. It stays once burnt (not tied to heat).
-    "    float charW = 0.12 + 0.16 * fbm(q * 6.0 + 21.0);",
-    "    float charAmt = (1.0 - smoothstep(0.0, charW, k)) * step(0.0, k) * clamp(uBurnP.x * 6.0, 0.0, 1.0);",
-    "    charAmt *= 0.75 + 0.35 * fbm(q * 18.0 + 5.0);",
-    // Heat: a thin white-hot line on the edge and a short glow onto the char, while it burns
-    "    float rim = exp(-abs(k) / 0.016);",
-    "    float halo = exp(-max(k, 0.0) / 0.045) * step(0.0, k);",
-    "    float ray = pow(abs(cos(ang * 4.0 + 0.3)), 40.0) + 0.6 * pow(abs(cos(ang * 4.0 + 1.1)), 70.0);",
-    "    float spark = uBurnP.z * (exp(-d / 0.12) * 1.2 + ray * exp(-d / 0.7));",
-    "    float light = clamp(heat * (rim * 1.1 + halo * 0.65) + spark, 0.0, 1.0);",
-    "    c *= 1.0 - 0.6 * charAmt;",
-    "    c = mix(c, 1.0, light);",
+    "    float unit = min(uBurn.z, uBurn.w) * uZoom;",            // screen px per counter unit
+    "    float R = uBurnP.x, heat = uBurnP.y;",
+    "    if ((d - R * 1.3) * unit < 280.0) {",                    // skip pixels far from the fire
+    "      float ang = atan(q.y, q.x);",
+    "      vec2 drift = vec2(uTime * 0.22, -uTime * 0.31);",
+    "      float n = fbm(q * 2.3 + 3.1) * 0.6 + fbm(q * 7.5 + drift) * 0.4;",
+    "      float k = (d - R * (0.55 + 0.75 * n)) * unit;",       // px from the burning edge; < 0 is burnt through
+    "      if (R > 0.0005) a = smoothstep(-0.8, 0.8, k);",
+    "      float kk = max(k, 0.0);",
+    "      float flick = 0.78 + 0.44 * noise(vec2(ang * 5.0 + d * 4.0, uTime * 4.0));",
+    "      float core = exp(-kk / 3.5);",                          // white-hot line on the edge
+    "      float flame = exp(-kk / 14.0) * flick;",                // the burning band
+    "      float bloom = exp(-kk / 55.0) * 0.45;",                 // light thrown onto the concrete
+    "      float charW = 22.0 + 40.0 * fbm(q * 5.0 + 21.0);",
+    "      float charAmt = smoothstep(charW + 18.0, charW * 0.35, kk) * smoothstep(0.0, 0.04, R);",
+    "      charAmt *= 0.7 + 0.4 * fbm(q * 16.0 + 5.0);",
+    "      vec3 warm = mix(vec3(1.0), vec3(1.0, 0.74, 0.42), uBurnP.z);",
+    "      vec3 ember = mix(vec3(0.85), vec3(1.0, 0.5, 0.16), uBurnP.z);",
+    "      col *= 1.0 - 0.72 * charAmt;",                          // charred first, the glow over it
+    "      vec3 glow = heat * (core * vec3(1.0) + flame * warm * 0.9 + bloom * ember * 0.55);",
+    "      col = 1.0 - (1.0 - col) * (1.0 - clamp(glow, 0.0, 1.0));",
+    "      spill = heat * exp(min(k, 0.0) / 24.0) * (1.0 - a);",   // light spilling in past the edge
+    "      inside = mix(vec3(1.0), warm, 0.6);",
+    "    }",
     "  }",
-    "  gl_FragColor = vec4(vec3(c) * a, a);",
+    "  gl_FragColor = vec4(col * a + inside * spill, a + spill);",
     "}"
   ].join("\n");
 
@@ -167,7 +177,8 @@
       period: opts.period || 34,               // seconds for the sun to drift across and back
       sun: opts.sun != null ? opts.sun : 0.2,
       cursor: opts.cursor != null ? opts.cursor : 0.22,
-      staticBand: opts.staticBand != null ? opts.staticBand : 0.6
+      staticBand: opts.staticBand != null ? opts.staticBand : 0.6,
+      burnWarmth: opts.burnWarmth != null ? opts.burnWarmth : 1      // 1: fire colours, 0: white heat only
     };
     this.mouse = { x: -9999, y: -9999, tx: -9999, ty: -9999, amt: 0, tamt: 0 };
     this.view = { ox: 0, oy: 0, tx: 0, ty: 0, s: 1, burn: null };
@@ -391,15 +402,18 @@
   };
 
   /* Zoom the slab and/or burn through it.
-     view: { ox, oy, tx, ty, s, burn: { cx, cy, rx, ry, r, heat, spark } | null }
+     view: { ox, oy, tx, ty, s, burn: { cx, cy, rx, ry, r, heat } | null }
      Positions in css px in the slab's own (unzoomed) coordinates; r is the burn's
-     radius as a share of the O's counter (rx, ry), heat and spark run 0–1.
+     radius as a share of the O's counter (rx, ry), heat runs 0–1.
      Draws a frame straight away. */
   ConcreteSurface.prototype.setView = function (view) {
     this.view = view;
     this.heightDirty = true;
     this.needsFrame = true;
-    if (this.ready && !document.hidden) this.render((performance.now() - this.t0) / 1000, !this.running);
+    if (this.ready && !document.hidden) {
+      this.render((performance.now() - this.t0) / 1000, !this.running);
+      this.last = performance.now();
+    }
   };
 
   ConcreteSurface.prototype.bind = function () {
@@ -499,7 +513,7 @@
     gl.uniform1f(u.uZoom, v.s);
     var b = v.burn;
     gl.uniform4f(u.uBurn, b ? b.cx : 0, b ? b.cy : 0, b ? b.rx : 0, b ? b.ry : 0);
-    gl.uniform3f(u.uBurnP, b ? b.r : 0, b ? b.heat : 0, b ? b.spark : 0);
+    gl.uniform3f(u.uBurnP, b ? b.r : 0, b ? b.heat : 0, o.burnWarmth);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
     this.needsFrame = false;
   };
