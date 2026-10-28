@@ -29,13 +29,15 @@
 
   <a class="visually-hidden" href="#main">Skip to content</a>
 
-  <!-- ===== Header (component: site-header) ===== -->
-  <header class="site-header site-header--over-hero" data-header>
+  <!-- ===== Header (component: site-header) =====
+       A masthead: logo, what Arcovia is, then the nav. Shrinks to a thin bar on scroll. -->
+  <header class="site-header" data-header>
     <div class="site-header__inner container">
-      <a class="site-header__logo" href="index.html" aria-label="Arcovia, home">
-        <svg viewBox="0 0 554 539" aria-hidden="true"><use href="#a-mark"/></svg>
-        <span class="site-header__wordmark">ARCOVIA</span>
+      <a class="logo site-header__logo" href="index.html" aria-label="Arcovia, home">
+        <svg class="logo__mark" viewBox="0 0 554 539" aria-hidden="true"><use href="#a-mark"/></svg>
+        <span class="logo__word">ARCOVIA</span>
       </a>
+      <p class="site-header__note">Independent capital<br> markets advisory</p>
       <nav class="nav" aria-label="Main">
         <ul class="nav__list">
           <li><a class="nav__link" href="services.html">What We Do</a></li>
@@ -43,11 +45,11 @@
           <li><a class="nav__link" href="team.html">Team</a></li>
           <li><a class="nav__link" href="about.html">About</a></li>
         </ul>
-        <button class="nav__menu-btn" type="button" aria-expanded="false" aria-controls="menu" data-menu-open>
-          <span class="nav__menu-icon" aria-hidden="true"><span></span><span></span></span>
+        <a class="btn btn--primary btn--small site-header__cta" href="contact.html">Start a conversation</a>
+        <button class="menu-btn" type="button" aria-expanded="false" aria-controls="menu" data-menu-open>
+          <span class="menu-btn__icon" aria-hidden="true"><span></span><span></span></span>
           Menu
         </button>
-        <a class="btn btn--primary btn--small" href="contact.html">Start a conversation</a>
       </nav>
     </div>
   </header>
@@ -55,9 +57,9 @@
   <!-- ===== Full-screen menu (component: menu) ===== -->
   <div class="menu" id="menu" data-menu aria-hidden="true" role="dialog" aria-modal="true" aria-label="Menu">
     <div class="menu__top container">
-      <a class="site-header__logo" href="index.html" aria-label="Arcovia, home">
-        <svg viewBox="0 0 554 539" aria-hidden="true"><use href="#a-mark"/></svg>
-        <span class="site-header__wordmark">ARCOVIA</span>
+      <a class="logo" href="index.html" aria-label="Arcovia, home">
+        <svg class="logo__mark" viewBox="0 0 554 539" aria-hidden="true"><use href="#a-mark"/></svg>
+        <span class="logo__word">ARCOVIA</span>
       </a>
       <button class="menu__close" type="button" data-menu-close>Close</button>
     </div>
@@ -81,22 +83,20 @@
   <main id="main">
 
     <!-- ===== 1 · Hero (component: hero) =====
-         Version B "Carved": live concrete, charcoal tile with the A carved in,
+         Version B "Carved": live concrete framed by formwork joints and tie holes,
          one path button, ARCOVIA carved across the bottom. -->
     <section class="hero" data-hero aria-labelledby="hero-title">
       <canvas class="hero__canvas" aria-hidden="true"></canvas>
 
       <div class="hero__inner container">
-        <div class="hero__brand">
-          <a class="hero__tile" href="index.html" aria-label="Arcovia, home" data-carve="panel">
-            <svg class="hero__tile-mark" viewBox="0 0 554 539" aria-hidden="true" data-carve="mark"><use href="#a-mark"/></svg>
-          </a>
-          <p class="hero__eyebrow eyebrow" data-rise style="--rise:0">Independent Capital<br>Markets Advisory</p>
+        <div class="seam hero__seam" data-carve="seam" aria-hidden="true">
+          <span class="seam__hole seam__hole--start" data-carve="hole"></span>
+          <span class="seam__hole seam__hole--end" data-carve="hole"></span>
         </div>
 
-        <h1 class="hero__title" id="hero-title" data-rise style="--rise:1">Where Capital<br> Meets Conviction</h1>
+        <h1 class="hero__title" id="hero-title" data-rise style="--rise:0">Where Capital<br> Meets Conviction</h1>
 
-        <div class="hero__aside" data-rise style="--rise:2">
+        <div class="hero__aside" data-rise style="--rise:1">
           <p class="hero__lede">For growth-stage founders, funds and foundations raising <span class="nowrap">$5M–$500M+</span>.</p>
 
           <!-- Component: path-picker. One button; the three paths open above it. -->
@@ -126,7 +126,21 @@
           </div>
         </div>
 
-        <p class="hero__offices eyebrow" data-rise style="--rise:3">Los Angeles · San Juan</p>
+        <!-- Component: offices. The two offices with their local time, live. -->
+        <div class="hero__info" data-rise style="--rise:2">
+          <div class="seam hero__seam" data-carve="seam" aria-hidden="true">
+            <span class="seam__hole seam__hole--start" data-carve="hole"></span>
+            <span class="seam__hole seam__hole--end" data-carve="hole"></span>
+          </div>
+          <p class="office">
+            <span class="office__city">Los Angeles</span>
+            <span class="office__time" data-clock="America/Los_Angeles">Pacific Time</span>
+          </p>
+          <p class="office">
+            <span class="office__city">San Juan</span>
+            <span class="office__time" data-clock="America/Puerto_Rico">Atlantic Time</span>
+          </p>
+        </div>
       </div>
 
       <div class="hero__wordmark-wrap container" aria-hidden="true">

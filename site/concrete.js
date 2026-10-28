@@ -8,14 +8,16 @@
    - The concrete colour comes from a seamless texture plus slow procedural
      mottling, so repeats never show.
    - Anything marked data-carve inside the host is drawn into an offscreen
-     "height map" at its real on-screen position: data-carve="panel" (a
-     charcoal inlay), "mark" (the A-mark, read from the SVG sprite) and
-     "text" (the element's own text, in its own font). The shader turns
-     that height map into surface normals, so the light catches the walls
-     of every carving.
-   - A soft diagonal band of sunlight drifts across over ~34 s. Outside it
-     the carving is faint; inside it the walls light up and cast small
-     shadows. The cursor adds a dim point light.
+     "height map" at its real on-screen position and at full device
+     resolution: "text" (the element's own text, in its own font), "mark"
+     (the A-mark, read from the SVG sprite), "seam" (a formwork joint),
+     "hole" (a formwork tie hole) and "panel" (a charcoal inlay). The
+     shader turns that height map into surface normals, so the light
+     catches the walls of every carving.
+   - Every carving always shows a crisp dark rim and light rim (soft sky
+     light from the upper left). A diagonal band of sunlight drifts across
+     over ~34 s and deepens the relief where it passes; the cursor adds a
+     dim point light.
    - Pauses off-screen and in hidden tabs. With reduced motion it renders
      one still frame. Without WebGL the CSS fallback stays.
    ========================================================================== */
@@ -40,13 +42,14 @@
     "uniform sampler2D uTex;",   // concrete, seamless
     "uniform float uTexSize;",   // css px per texture tile
     "uniform sampler2D uHeight;",// r: surface height (1 surface, 0 carved), g: charcoal inlay
-    "uniform vec2 uHTexel;",
+    "uniform vec2 uHTexel;",     // one device px in height-map uv
     "",
     "float hash(vec2 p){ p = fract(p * vec2(123.34, 456.21)); p += dot(p, p + 45.32); return fract(p.x * p.y); }",
     "float noise(vec2 p){ vec2 i = floor(p), f = fract(p); vec2 u = f*f*(3.0-2.0*f);",
     "  return mix(mix(hash(i), hash(i+vec2(1.0,0.0)), u.x), mix(hash(i+vec2(0.0,1.0)), hash(i+vec2(1.0,1.0)), u.x), u.y); }",
-    "float fbm(vec2 p){ float v = 0.0, a = 0.5; for(int i = 0; i < 5; i++){ v += a*noise(p); p = p*2.03 + 17.1; a *= 0.5; } return v; }",
-    "float H(vec2 uv){ return texture2D(uHeight, uv).r; }",
+    "float fbm(vec2 p){ float v = 0.0, a = 0.5; for(int i = 0; i < 4; i++){ v += a*noise(p); p = p*2.03 + 17.1; a *= 0.5; } return v; }",
+    // Sharpen the softened height map so carved walls stay about 1.5 css px wide: crisp, never blurry
+    "float H(vec2 uv){ return smoothstep(0.2, 0.8, texture2D(uHeight, uv).r); }",
     "",
     "void main(){",
     "  vec2 res = uRes / uScale;",
@@ -60,17 +63,16 @@
     "  float tx = texture2D(uTex, tuv + vec2(tpx, 0.0)).r;",
     "  float ty = texture2D(uTex, tuv + vec2(0.0, tpx)).r;",
     "  float mott = 0.955 + 0.09 * fbm(p / 520.0 + 3.7);",
-    "  vec4 hs = texture2D(uHeight, uv);",
-    "  float hc = hs.r;",
-    "  float inlay = hs.g;",
+    "  float inlay = texture2D(uHeight, uv).g;",
+    "  float hc = H(uv);",
     "  float detail = 1.0 + (t0 / 0.765 - 1.0) * mix(0.62, 0.3, inlay);",
     "  float albedo = mix(0.865, 0.37, inlay) * detail * mix(mott, 1.0, inlay);",
     "",
-    "  // Normal from the carve height map, plus micro relief from the pores",
+    "  // Normal from the carve height map (slope per css px, so it looks the same at any pixel density)",
     "  vec2 e = uHTexel;",
-    "  float hx = H(uv + vec2(e.x, 0.0)) - H(uv - vec2(e.x, 0.0));",
-    "  float hy = H(uv + vec2(0.0, e.y)) - H(uv - vec2(0.0, e.y));",
-    "  vec3 n = normalize(vec3(-hx * 2.4, -hy * 2.4, 1.0));",
+    "  float hx = (H(uv + vec2(e.x, 0.0)) - H(uv - vec2(e.x, 0.0))) * uScale * 0.5;",
+    "  float hy = (H(uv + vec2(0.0, e.y)) - H(uv - vec2(0.0, e.y))) * uScale * 0.5;",
+    "  vec3 n = normalize(vec3(-hx * 2.2, -hy * 2.2, 1.0));",
     "  n = normalize(n + vec3(-(tx - t0), -(ty - t0), 0.0) * mix(1.6, 0.6, inlay));",
     "",
     "  // Sun: low, from the upper left",
@@ -85,12 +87,17 @@
     "  float band = smoothstep(uBand - w - soft, uBand - w + soft, b) * (1.0 - smoothstep(uBand + w - soft * 0.7, uBand + w + soft * 0.7, b));",
     "",
     "  // Short cast shadow inside carvings, on the side facing away from the sun",
-    "  vec2 ld = normalize(Ls.xy) * e;",
-    "  float occ = clamp((max(H(uv + ld * 2.5), H(uv + ld * 5.0)) - hc) * 1.5, 0.0, 1.0);",
+    "  vec2 ld = normalize(Ls.xy) * e * uScale;",
+    "  float occ = clamp((max(H(uv + ld * 1.2), H(uv + ld * 2.4)) - hc) * 1.4, 0.0, 1.0);",
     "",
-    "  // Sky light from above, slightly darker in the floor of a carving",
-    "  float amb = 0.86 + mix(0.14, 0.3, inlay) * dot(n, normalize(vec3(-0.2, -0.45, 1.0)));",
-    "  float ao = mix(0.9, 1.0, hc);",
+    "  // Sky light from the upper left: always draws a dark rim and a light rim on every carving",
+    "  vec3 La = normalize(vec3(-0.45, -0.6, 0.66));",
+    "  float amb = 0.86 + 0.36 * (dot(n, La) - La.z);",
+    "  float ao = mix(0.92, 1.0, hc);",
+    "  // ...and a soft inner shadow under the upper-left wall, so carvings read as recessed, not outlined",
+    "  vec2 la = normalize(La.xy) * e * uScale;",
+    "  float occA = clamp((max(H(uv + la * 2.0), H(uv + la * 4.5)) - hc) * 1.2, 0.0, 1.0);",
+    "  ao *= 1.0 - occA * 0.09;",
     "",
     "  float light = amb * ao * 0.9;",
     "  light += uSun * band * sunN * (1.0 - occ * 0.85);",
@@ -103,8 +110,8 @@
     "  light += uCursor * fall * max(dot(n, Lc), 0.0) / Lc.z;",
     "  float edgeC = max(dot(n, Lc) - Lc.z, 0.0) * fall;",
     "",
-    "  // Edges facing the sun catch a little light of their own, so carving reads on charcoal too",
-    "  float edge = max(dot(n, Ls) - Ls.z, 0.0) * (0.3 + band) * (1.0 - occ);",
+    "  // Edges facing the sun catch a little extra light",
+    "  float edge = max(dot(n, Ls) - Ls.z, 0.0) * (0.25 + band) * (1.0 - occ);",
     "",
     "  float c = albedo * light + (uSun * edge + uCursor * edgeC * 2.2) * mix(0.35, 0.7, inlay);",
     "  c *= 1.0 - 0.07 * pow(length((uv - 0.5) * vec2(1.0, 1.2)), 2.0);",
@@ -225,8 +232,8 @@
     var gl = this.gl, rect = this.host.getBoundingClientRect();
     var w = Math.max(1, rect.width), h = Math.max(1, rect.height);
     var coarse = window.matchMedia("(pointer: coarse)").matches;
-    var dpr = Math.min(window.devicePixelRatio || 1, coarse ? 1.5 : 1.75);
-    var maxPx = 2.6e6;
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    var maxPx = coarse ? 3.6e6 : 7.2e6;
     if (w * h * dpr * dpr > maxPx) dpr = Math.sqrt(maxPx / (w * h));
     this.dpr = dpr;
     this.w = w;
@@ -235,9 +242,8 @@
     this.canvas.height = Math.round(h * dpr);
     gl.viewport(0, 0, this.canvas.width, this.canvas.height);
 
-    // Height map at roughly 1 texel per css px, capped for large screens
-    var s = Math.max(0.6, Math.min(1, 1500 / Math.max(w, h)));
-    this.drawHeight(w, h, s);
+    // Height map at full device resolution, so carved edges are as sharp as the type around them
+    this.drawHeight(w, h, dpr);
     this.needsFrame = true;
   };
 
@@ -257,7 +263,7 @@
     var origin = this.host.getBoundingClientRect();
     var panels = [];
     var els = this.host.querySelectorAll("[data-carve]");
-    var order = { panel: 0, mark: 1, text: 2 };
+    var order = { panel: 0, seam: 1, hole: 2, mark: 3, text: 4 };
     Array.prototype.slice.call(els).sort(function (a, b) {
       return order[a.getAttribute("data-carve")] - order[b.getAttribute("data-carve")];
     }).forEach(function (el) {
@@ -270,6 +276,17 @@
         ctx.strokeStyle = "rgb(120,0,0)";
         ctx.lineWidth = 1.5;
         ctx.strokeRect(x - 0.75, y - 0.75, r.width + 1.5, r.height + 1.5);
+      } else if (kind === "seam") {
+        // Formwork joint: a fine, shallow groove along the element's long side
+        ctx.fillStyle = "rgb(70,0,0)";
+        if (r.width >= r.height) ctx.fillRect(x, y + r.height / 2 - 0.6, r.width, 1.2);
+        else ctx.fillRect(x + r.width / 2 - 0.6, y, 1.2, r.height);
+      } else if (kind === "hole") {
+        // Formwork tie hole: a small round recess, the same circle as the top of the A
+        ctx.fillStyle = "rgb(0,0,0)";
+        ctx.beginPath();
+        ctx.arc(x + r.width / 2, y + r.height / 2, r.width / 2, 0, Math.PI * 2);
+        ctx.fill();
       } else if (kind === "mark") {
         var paths = markPaths(el);
         if (!paths.length) return;
@@ -288,7 +305,7 @@
 
     // Soften every edge into a sloped wall (the bevel)
     var hctx = hc.getContext("2d");
-    var blur = 1.6 * s;
+    var blur = 0.9 * s;
     if (typeof hctx.filter === "string") {
       hctx.filter = "blur(" + blur.toFixed(2) + "px)";
       hctx.drawImage(sharp, 0, 0);

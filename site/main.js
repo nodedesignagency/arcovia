@@ -91,6 +91,22 @@
     set(false);
   });
 
+  /* ---------- Office clocks: local time in each office, e.g. "7:02 AM PDT" ---------- */
+  var clocks = document.querySelectorAll("[data-clock]");
+  if (clocks.length && window.Intl) {
+    var tickClocks = function () {
+      var now = new Date();
+      clocks.forEach(function (el) {
+        try {
+          el.textContent = new Intl.DateTimeFormat("en-US", { hour: "numeric", minute: "2-digit", timeZone: el.getAttribute("data-clock"), timeZoneName: "short" }).format(now);
+        } catch (e) { /* unknown zone: keep the fallback text */ }
+      });
+    };
+    tickClocks();
+    // Line the updates up with the turn of the minute
+    setTimeout(function () { tickClocks(); setInterval(tickClocks, 60000); }, 60000 - (Date.now() % 60000) + 50);
+  }
+
   /* ---------- Hero ---------- */
   var hero = document.querySelector("[data-hero]");
   if (!hero) return;
