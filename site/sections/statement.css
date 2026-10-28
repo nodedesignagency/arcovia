@@ -1,0 +1,36 @@
+/* ==========================================================================
+   SECTION: statement — Home, block 2
+   One statement on who Arcovia is, straight after the hero, on concrete.
+   Scaffold only: layout on the 12-column grid, copy and design to come.
+   Uses shared tokens and components from styles.css.
+   ========================================================================== */
+
+.statement {
+  position: relative;
+  padding-block: var(--space-11);
+}
+
+.statement__inner {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--grid-gap);
+}
+
+.statement__title {
+  grid-column: 1 / span 10;
+  font-size: var(--fs-h2);
+  font-weight: var(--weight-medium);
+  line-height: var(--lh-h2);
+  letter-spacing: var(--ls-h2);
+  color: var(--color-ink);
+  text-wrap: balance;
+}
+
+@media (max-width: 1199px) {
+  .statement { padding-block: var(--space-10); }
+  .statement__title { grid-column: 1 / -1; }
+}
+
+@media (max-width: 809px) {
+  .statement { padding-block: var(--space-9); }
+}
