@@ -1,15 +1,24 @@
 /* ==========================================================================
    SECTION: data — Home, block 2
    The four figures as 3D concrete blocks on white, seen from above and
-   to the right, in one centred column under the heading. The whole stage
-   stays pinned while each block comes down turning a full circle on its
-   vertical axis and settles on the stack (stack.js): the first figure is
-   the base, the last one tops the stack. Text is printed flat on the
-   concrete, never carved.
+   to the right, everything centred on one axis under the heading. The
+   whole stage stays pinned while each block comes down turning a full
+   circle on its vertical axis and settles on the stack (stack.js): the
+   first figure is the base, the last one tops the stack. Text is printed
+   flat on the concrete, never carved.
    Uses shared tokens and the chip from styles.css.
    ========================================================================== */
 
+/* --depth: how deep each block is. --lean: how far that depth shifts up
+   and to the right, per px (the axonometric view). --lean-x is the
+   resulting overhang of the right ends: heading and footnote are pulled in
+   by as much, so everything centres on the blocks' front faces. */
 .data {
+  --joint: 8px;
+  --depth: 60px;
+  --lean: 0.5;
+  --lean-x: calc(var(--depth) * var(--lean));
+  --block-h: min(120px, 12.5svh); /* shorter screens get lower blocks, so everything fits under the header */
   position: relative;
   background: var(--color-white);
 }
@@ -37,12 +46,16 @@
 /* One centred column: the heading at the top, then the stack, then the footnote */
 .data__head,
 .data__inner > .stack,
-.data__note { grid-column: 4 / span 6; }
+.data__note {
+  grid-column: 4 / span 6;
+  margin-right: var(--lean-x);
+}
 
 .data__head {
   display: grid;
-  justify-items: start;
+  justify-items: center;
   gap: min(var(--space-4), 1.6svh);
+  text-align: center;
 }
 .data__title {
   margin-top: var(--space-1);
@@ -55,20 +68,18 @@
 }
 .data__sub {
   max-width: 32em;
-  text-wrap: pretty;
+  text-wrap: balance;
   font-size: min(var(--fs-lede), 2.5svh);
   line-height: var(--lh-lede);
   color: var(--color-text);
 }
 
-/* Room above for the top block's top face; the ends lean out to the right,
-   so the stack is pulled in by as much to keep the whole box in the column */
-.data__inner > .stack {
-  margin-top: calc(var(--depth) * var(--lean));
-  margin-right: calc(var(--depth) * var(--lean));
-}
+/* Room above for the top block's top face */
+.data__inner > .stack { margin-top: var(--lean-x); }
 
 .data__note {
+  text-align: center;
+  text-wrap: balance;
   font-size: 13px;
   line-height: 1.5;
   color: var(--color-text-muted);
@@ -86,15 +97,8 @@
    adds the sides. The stack is drawn in an axonometric view, seen from
    above and to the right, as in the deck's concrete renders: the view
    only shifts what lies behind the faces, so the faces themselves stay
-   exactly flat and the text crisp.
-   --cols: columns the stack spans, so the text sits on the page grid.
-   --lean: how far the depth shifts up and to the right, per px of depth. */
+   exactly flat and the text crisp. */
 .stack {
-  --cols: 6;
-  --joint: 8px;
-  --depth: 60px;
-  --lean: 0.5;
-  --block-h: min(120px, 12.5svh); /* shorter screens get lower blocks, so everything fits under the header */
   display: flex;
   flex-direction: column-reverse; /* first figure at the bottom */
   gap: var(--joint);
@@ -142,13 +146,16 @@
   backface-visibility: hidden;
 }
 
+/* The figure over its line, centred on the face */
 .stack__face {
   position: relative;
   display: grid;
-  grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
-  column-gap: var(--grid-gap);
-  align-items: center;
+  justify-items: center;
+  align-content: center;
+  row-gap: min(8px, 0.9svh);
   min-height: var(--block-h);
+  padding: min(12px, 1.4svh) 28px;
+  text-align: center;
   /* crisp arrises: light catches the top edge, the bottom edge turns away */
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.55),
@@ -211,9 +218,7 @@
 
 /* Flat ink on concrete: no emboss, no carving */
 .stack__figure {
-  grid-column: 1 / span 3;
-  padding-left: 36px;
-  font-size: var(--fig-size, min(60px, 6.6svh));
+  font-size: var(--fig-size, min(56px, 6svh));
   font-weight: var(--weight-medium);
   line-height: 1;
   letter-spacing: -0.03em;
@@ -222,61 +227,42 @@
   color: var(--color-ink);
 }
 .stack__label {
-  grid-column: 4 / span 3;
-  padding-right: 28px;
-  max-width: 21em;
-  text-wrap: pretty;
+  text-wrap: balance;
   font-size: var(--label-size, min(17px, 2.2svh));
   line-height: 1.4;
   color: var(--color-ink);
 }
 
-/* ---------- Smaller desktops: a wider column, so the lines keep to two rows ---------- */
-@media (min-width: 1200px) and (max-width: 1439px) {
+/* ---------- Tablet ---------- */
+@media (max-width: 1199px) {
+  .data { --depth: 52px; --block-h: min(116px, 11svh); }
   .data__head,
   .data__inner > .stack,
-  .data__note { grid-column: 3 / span 8; }
-  .stack { --cols: 8; }
-  .stack__figure { grid-column: 1 / span 4; }
-  .stack__label { grid-column: 5 / span 4; }
+  .data__note { grid-column: 2 / span 10; }
+  .stack__figure { --fig-size: min(48px, 5.4svh); }
 }
 
-/* ---------- Tablet: full width ---------- */
-@media (max-width: 1199px) {
-  .data__head { grid-column: 1 / span 10; }
+/* ---------- Phone ---------- */
+@media (max-width: 809px) {
+  .data { --joint: 6px; --depth: 32px; --block-h: 112px; }
+  .data__inner { row-gap: var(--space-5); }
+  .data__head,
   .data__inner > .stack,
   .data__note { grid-column: 1 / -1; }
-  .stack { --cols: 12; --depth: 52px; --block-h: min(116px, 11svh); }
-  .stack__figure { --fig-size: 48px; grid-column: 1 / span 5; padding-left: 28px; }
-  .stack__label { grid-column: 6 / span 7; padding-right: 24px; }
-}
-
-/* ---------- Phone: figure over its line ---------- */
-@media (max-width: 809px) {
-  .data__inner { row-gap: var(--space-5); }
-  .data__head { grid-column: 1 / -1; gap: var(--space-3); }
-  .data__title { margin-top: var(--space-1); }
+  .data__head { gap: var(--space-3); }
   .data__sub { font-size: 15px; }
-  .stack { --joint: 6px; --depth: 32px; --block-h: 112px; }
-  .stack__face {
-    grid-template-columns: 1fr;
-    align-content: center;
-    row-gap: 6px;
-    padding: 16px 18px 18px;
-  }
-  .stack__figure,
-  .stack__label { grid-column: 1; padding: 0; }
+  .stack__face { row-gap: 6px; padding: 16px 18px 18px; }
   .stack__figure { --fig-size: 34px; }
   .stack__label { --label-size: 14px; line-height: 1.35; }
 }
 
 /* Short phones (iPhone SE and the like): everything has to fit under the header at once */
 @media (max-width: 809px) and (max-height: 760px) {
+  .data { --depth: 24px; --block-h: 98px; }
   .data__inner { row-gap: var(--space-3); }
   .data__head { gap: var(--space-2); }
   .data__title { font-size: 26px; }
   .data__sub { font-size: 14px; line-height: 1.45; }
-  .stack { --block-h: 98px; --depth: 24px; }
   .stack__face { padding: 12px 16px 14px; row-gap: 4px; }
   .stack__figure { --fig-size: 30px; }
 }
