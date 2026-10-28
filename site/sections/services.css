@@ -60,7 +60,7 @@
 
 /* The six blocks sit together as one slab: they butt up against each other,
    with only a dark recessed joint between them (as between the data
-   blocks), rounded on the outside corners only, one shadow on the white.
+   blocks), square corners, one shadow on the white.
    The slab rises in as one piece. */
 .services__grid {
   --joint: 8px;
@@ -69,7 +69,6 @@
   grid-auto-rows: 1fr;
   gap: var(--joint);
   overflow: hidden;
-  border-radius: var(--radius-l);
   background: linear-gradient(#484848, #585858); /* shows only in the joints: the same shade as the data stack's */
   box-shadow: 0 2px 4px -2px rgba(0, 0, 0, 0.16), 0 24px 48px -24px rgba(0, 0, 0, 0.42);
 }
