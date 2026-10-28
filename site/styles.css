@@ -688,6 +688,29 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 .seam__hole--start { left: 0; transform: translate(-50%, -50%); }
 .seam__hole--end { right: 0; transform: translate(50%, -50%); }
 
+/* ---------- Reveal on scroll (main.js): fades up once, one after another by --i ---------- */
+@media (prefers-reduced-motion: no-preference) {
+  .can-reveal [data-reveal] {
+    opacity: 0;
+    transform: translateY(18px);
+    transition: opacity 700ms var(--ease-out), transform 700ms var(--ease-out);
+    transition-delay: calc(var(--i, 0) * 90ms);
+  }
+  .can-reveal [data-reveal].is-revealed { opacity: 1; transform: none; }
+}
+
+/* ---------- Draft only: version labels between options under review ---------- */
+.review-tag {
+  position: relative;
+  z-index: 1;
+  padding: 12px var(--gutter);
+  background: var(--color-ink);
+  color: var(--color-on-dark);
+  font-size: 12px;
+  font-weight: var(--weight-medium);
+  letter-spacing: 0.04em;
+}
+
 /* ---------- Reduced motion ---------- */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {

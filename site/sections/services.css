@@ -1,0 +1,194 @@
+/* ==========================================================================
+   SECTION: services — Home, block 3 (what we do)
+   The headline and the six services from the brief, one line each.
+   Two versions while exploring:
+   .services--cards (A): six white cards on concrete, as in the deck, each
+     with its number in an inset well; they rise in one after another.
+   .services--index (B): an editorial list on a charcoal panel; on desktop,
+     hovering a row dims the others.
+   Items rise in with the shared reveal (data-reveal, main.js).
+   Uses shared tokens and the chip from styles.css.
+   ========================================================================== */
+
+.services { padding-block: var(--space-11); }
+
+/* ---------- Section head: chip and headline on the left, link on the right ---------- */
+.services__head {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--grid-gap);
+  row-gap: var(--space-5);
+  align-items: end;
+  margin-bottom: var(--space-8);
+}
+.services__head .chip { grid-column: 1 / -1; }
+.services__title {
+  grid-column: 1 / span 8;
+  max-width: 15em;
+  text-wrap: balance;
+  font-size: var(--fs-h2);
+  font-weight: var(--weight-medium);
+  line-height: var(--lh-h2);
+  letter-spacing: var(--ls-h2);
+  color: var(--color-ink);
+}
+.services__more {
+  grid-column: 9 / -1;
+  justify-self: end;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding-bottom: 6px;
+  font-size: var(--fs-nav);
+  font-weight: var(--weight-medium);
+  color: var(--color-ink);
+  white-space: nowrap;
+}
+.services__arrow {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  transition: transform var(--dur-base) var(--ease-out);
+}
+@media (hover: hover) {
+  .services__more:hover .services__arrow { transform: translateX(4px); }
+}
+
+/* ---------- Version A: white cards on concrete ---------- */
+.services__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--grid-gap);
+}
+.services__item { display: flex; }
+
+/* Component: service-card */
+.service-card {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 300px;
+  padding: 28px 30px 32px;
+  border-radius: var(--radius-l);
+  background: var(--color-white);
+  box-shadow: var(--shadow-card);
+  transition: transform var(--dur-slow) var(--ease-out), box-shadow var(--dur-slow) var(--ease-out);
+}
+@media (hover: hover) {
+  .service-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-pop); }
+}
+
+/* The number in an inset well, as in the deck's cards */
+.service-card__num {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--color-well);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1), inset 0 0 0 1px rgba(0, 0, 0, 0.03);
+  font-size: 13px;
+  font-weight: var(--weight-semibold);
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-muted);
+}
+.service-card__title {
+  margin-top: auto;
+  padding-top: var(--space-8);
+  text-wrap: balance;
+  font-size: var(--fs-h3);
+  font-weight: var(--weight-medium);
+  line-height: var(--lh-h3);
+  letter-spacing: var(--ls-h3);
+  color: var(--color-ink);
+}
+.service-card__text {
+  margin-top: var(--space-3);
+  text-wrap: pretty;
+  font-size: 16px;
+  line-height: 1.55;
+  color: var(--color-text);
+}
+
+/* ---------- Version B: an index on a charcoal panel ---------- */
+.services__panel {
+  padding: var(--space-9) var(--space-8) var(--space-8);
+  border-radius: 28px;
+  background: var(--color-charcoal);
+  color: var(--color-on-dark);
+}
+.services--index .chip,
+.services--index .services__title,
+.services--index .services__more { color: var(--color-on-dark); }
+
+.services__rows { border-bottom: 1px solid rgba(244, 244, 243, 0.16); }
+
+/* Component: service-row */
+.service-row {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--grid-gap);
+  align-items: baseline;
+  padding-block: 30px;
+  border-top: 1px solid rgba(244, 244, 243, 0.16);
+  transition: opacity var(--dur-slow) var(--ease-out);
+}
+.service-row__num {
+  grid-column: 1;
+  font-size: 13px;
+  font-weight: var(--weight-semibold);
+  font-variant-numeric: tabular-nums;
+  color: rgba(244, 244, 243, 0.76); /* 4.6:1 on charcoal */
+}
+.service-row__title {
+  grid-column: 2 / span 5;
+  text-wrap: balance;
+  font-size: clamp(24px, 2.2vw, 32px);
+  font-weight: var(--weight-medium);
+  line-height: 1.15;
+  letter-spacing: -0.015em;
+  color: var(--color-on-dark);
+}
+.service-row__text {
+  grid-column: 7 / span 5;
+  max-width: 30em;
+  text-wrap: pretty;
+  font-size: 17px;
+  line-height: 1.55;
+  color: rgba(244, 244, 243, 0.86); /* 5.3:1 on charcoal */
+}
+/* Hovering a row dims the others, so one service is read at a time */
+@media (hover: hover) {
+  .services__rows:hover .service-row { opacity: 0.4; }
+  .services__rows .service-row:hover { opacity: 1; }
+}
+
+/* ---------- Tablet ---------- */
+@media (max-width: 1199px) {
+  .services { padding-block: var(--space-10); }
+  .services__title { grid-column: 1 / span 8; }
+  .services__more { grid-column: 9 / -1; }
+  .services__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .service-card { min-height: 260px; }
+  .services__panel { padding: var(--space-8) var(--space-6) var(--space-7); }
+  .service-row__title { grid-column: 2 / span 11; }
+  .service-row__text { grid-column: 2 / span 10; margin-top: var(--space-3); }
+}
+
+/* ---------- Phone ---------- */
+@media (max-width: 809px) {
+  .services { padding-block: var(--space-9); }
+  .services__head { margin-bottom: var(--space-7); row-gap: var(--space-4); }
+  .services__title,
+  .services__more { grid-column: 1 / -1; }
+  .services__more { justify-self: start; }
+  .services__grid { grid-template-columns: 1fr; gap: var(--space-3); }
+  .service-card { min-height: 0; padding: 22px 22px 26px; }
+  .service-card__title { padding-top: var(--space-6); }
+  .services__panel { padding: var(--space-7) 22px var(--space-5); border-radius: var(--radius-l); }
+  .service-row { padding-block: 22px; }
+  .service-row__num { grid-column: 1 / -1; margin-bottom: var(--space-2); }
+  .service-row__title,
+  .service-row__text { grid-column: 1 / -1; }
+  .service-row__text { font-size: 16px; }
+}

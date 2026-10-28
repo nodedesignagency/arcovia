@@ -125,6 +125,20 @@
     setTimeout(function () { tickClocks(); setInterval(tickClocks, 60000); }, 60000 - (Date.now() % 60000) + 50);
   }
 
+  /* ---------- Reveal on scroll: [data-reveal] fades up once, in order of --i ---------- */
+  var reveals = document.querySelectorAll("[data-reveal]");
+  if (reveals.length && "IntersectionObserver" in window) {
+    root.classList.add("can-reveal");
+    var revealer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        e.target.classList.add("is-revealed");
+        revealer.unobserve(e.target);
+      });
+    }, { rootMargin: "0px 0px -10% 0px" });
+    reveals.forEach(function (el) { revealer.observe(el); });
+  }
+
   /* ---------- Hero ---------- */
   var hero = document.querySelector("[data-hero]");
   if (!hero) return;
