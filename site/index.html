@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Arcovia · Independent Capital Markets Advisory</title>
+  <meta name="description" content="Where capital meets conviction. Independent capital markets advisory for growth-stage founders, funds and foundations raising $5M–$500M+.">
+  <meta name="robots" content="noindex, nofollow"><!-- Draft: keep staging out of search -->
+  <meta name="theme-color" content="#d3d3d3">
+  <link rel="icon" href="assets/a-mark.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap">
+  <link rel="preload" href="assets/concrete.jpg" as="image">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- A-mark sprite: one source for header, hero, menu and footer -->
+  <svg class="sprite" aria-hidden="true" focusable="false">
+    <symbol id="a-mark" viewBox="0 0 554 539">
+      <path d="M200 77a77 77 0 1 0 154 0a77 77 0 1 0-154 0Z"/>
+      <path d="M215.63 142.83A90 90 0 0 0 265.8 166.3L72 539H0Z"/>
+      <path d="M288.2 166.3A90 90 0 0 0 338.37 142.83L554 539H482Z"/>
+    </symbol>
+    <symbol id="icon-chevron" viewBox="0 0 16 16"><path d="M3.5 10l4.5-4.5 4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="icon-arrow" viewBox="0 0 16 16"><path d="M2.5 8h11M9 3.5 13.5 8 9 12.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  </svg>
+
+  <a class="visually-hidden" href="#main">Skip to content</a>
+
+  <!-- ===== Header (component: site-header) ===== -->
+  <header class="site-header site-header--over-hero" data-header>
+    <div class="site-header__inner container">
+      <a class="site-header__logo" href="index.html" aria-label="Arcovia, home">
+        <svg viewBox="0 0 554 539" aria-hidden="true"><use href="#a-mark"/></svg>
+        <span class="site-header__wordmark">ARCOVIA</span>
+      </a>
+      <nav class="nav" aria-label="Main">
+        <ul class="nav__list">
+          <li><a class="nav__link" href="services.html">What We Do</a></li>
+          <li><a class="nav__link" href="track-record.html">Track Record</a></li>
+          <li><a class="nav__link" href="team.html">Team</a></li>
+          <li><a class="nav__link" href="about.html">About</a></li>
+        </ul>
+        <button class="nav__menu-btn" type="button" aria-expanded="false" aria-controls="menu" data-menu-open>
+          <span class="nav__menu-icon" aria-hidden="true"><span></span><span></span></span>
+          Menu
+        </button>
+        <a class="btn btn--primary btn--small" href="contact.html">Start a conversation</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ===== Full-screen menu (component: menu) ===== -->
+  <div class="menu" id="menu" data-menu aria-hidden="true" role="dialog" aria-modal="true" aria-label="Menu">
+    <div class="menu__top container">
+      <a class="site-header__logo" href="index.html" aria-label="Arcovia, home">
+        <svg viewBox="0 0 554 539" aria-hidden="true"><use href="#a-mark"/></svg>
+        <span class="site-header__wordmark">ARCOVIA</span>
+      </a>
+      <button class="menu__close" type="button" data-menu-close>Close</button>
+    </div>
+    <div class="menu__body container">
+      <ol class="menu__list">
+        <li class="menu__item" style="--i:0"><a class="menu__link" href="services.html"><span class="menu__index">1.</span>What We Do</a></li>
+        <li class="menu__item" style="--i:1"><a class="menu__link" href="track-record.html"><span class="menu__index">2.</span>Track Record</a></li>
+        <li class="menu__item" style="--i:2"><a class="menu__link" href="team.html"><span class="menu__index">3.</span>Team</a></li>
+        <li class="menu__item" style="--i:3"><a class="menu__link" href="about.html"><span class="menu__index">4.</span>About</a></li>
+        <li class="menu__item" style="--i:4"><a class="menu__link" href="contact.html"><span class="menu__index">5.</span>Contact</a></li>
+      </ol>
+      <div class="menu__foot">
+        <p><strong>Los Angeles</strong>2029 Century Park East, CA 90067</p>
+        <p><strong>San Juan</strong>450 Ave. 200, Puerto Rico 00901</p>
+        <p><a href="#" data-todo="LinkedIn company page URL [TO CONFIRM]">LinkedIn</a></p>
+        <a class="btn btn--primary" href="contact.html">Start a conversation</a>
+      </div>
+    </div>
+  </div>
+
+  <main id="main">
+
+    <!-- ===== 1 · Hero (component: hero) =====
+         Version B "Carved": live concrete, charcoal tile with the A carved in,
+         one path button, ARCOVIA carved across the bottom. -->
+    <section class="hero" data-hero aria-labelledby="hero-title">
+      <canvas class="hero__canvas" aria-hidden="true"></canvas>
+
+      <div class="hero__inner container">
+        <div class="hero__brand">
+          <a class="hero__tile" href="index.html" aria-label="Arcovia, home" data-carve="panel">
+            <svg class="hero__tile-mark" viewBox="0 0 554 539" aria-hidden="true" data-carve="mark"><use href="#a-mark"/></svg>
+          </a>
+          <p class="hero__eyebrow eyebrow" data-rise style="--rise:0">Independent Capital<br>Markets Advisory</p>
+        </div>
+
+        <h1 class="hero__title" id="hero-title" data-rise style="--rise:1">Where Capital<br> Meets Conviction</h1>
+
+        <div class="hero__aside" data-rise style="--rise:2">
+          <p class="hero__lede">For growth-stage founders, funds and foundations raising <span class="nowrap">$5M–$500M+</span>.</p>
+
+          <!-- Component: path-picker. One button; the three paths open above it. -->
+          <div class="path-picker" data-path-picker>
+            <div class="path-picker__panel" id="path-options" role="group" aria-labelledby="path-title" aria-hidden="true">
+              <p class="path-picker__title" id="path-title">Who are you?</p>
+              <a class="path-picker__option" href="services.html#founders">
+                <span class="path-picker__label">I’m raising capital</span>
+                <span class="path-picker__meta">Growth-stage founders and funds raising <span class="nowrap">$5M–$500M+</span></span>
+                <svg class="path-picker__arrow" aria-hidden="true"><use href="#icon-arrow"/></svg>
+              </a>
+              <a class="path-picker__option" href="services.html#investors">
+                <span class="path-picker__label">I’m an investor</span>
+                <span class="path-picker__meta">Family offices, VCs, funds and LPs</span>
+                <svg class="path-picker__arrow" aria-hidden="true"><use href="#icon-arrow"/></svg>
+              </a>
+              <a class="path-picker__option" href="services.html#institutions">
+                <span class="path-picker__label">I represent an institution</span>
+                <span class="path-picker__meta">Institutions and sovereign capital</span>
+                <svg class="path-picker__arrow" aria-hidden="true"><use href="#icon-arrow"/></svg>
+              </a>
+            </div>
+            <button class="btn btn--primary path-picker__trigger" type="button" aria-expanded="false" aria-controls="path-options">
+              Choose your path
+              <svg class="btn__icon" aria-hidden="true"><use href="#icon-chevron"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <p class="hero__offices eyebrow" data-rise style="--rise:3">Los Angeles · San Juan</p>
+      </div>
+
+      <div class="hero__wordmark-wrap container" aria-hidden="true">
+        <span class="hero__wordmark" data-carve="text">ARCOVIA</span>
+      </div>
+    </section>
+
+    <!-- Draft placeholder: next section goes here -->
+    <section class="section-next" aria-label="Next section, in progress">
+      <p>02 · Statement — next section, in progress</p>
+    </section>
+
+  </main>
+
+  <script src="concrete.js"></script>
+  <script src="main.js"></script>
+</body>
+</html>
