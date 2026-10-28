@@ -138,6 +138,37 @@
   color: var(--color-ink);
 }
 
+/* ---------- Version C: Version A with the numbers embossed ----------
+   The number is raised out of the concrete in the upper part of its block.
+   Its face stays the block's own concrete: the glyph is a neutral grey
+   blended with `overlay`, which leaves the concrete under it unchanged, so
+   only the lit edge (top left), the shaded edge (bottom right) and a soft
+   cast shadow show. Static CSS, so it reads the same crisp way at all times. */
+.services--embossed .service-card { isolation: isolate; }
+.services--embossed .service-card__num {
+  display: block;
+  width: auto;
+  height: auto;
+  margin: -6px 0 0 -3px;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+  font-size: 104px;
+  font-weight: var(--weight-semibold);
+  line-height: 1;
+  letter-spacing: -0.035em;
+  font-variant-numeric: lining-nums proportional-nums; /* Montserrat's tabular 1 has a foot serif */
+  color: #8a8a8a; /* a touch above neutral: the raised face catches a little more light */
+  mix-blend-mode: overlay;
+  text-shadow:
+    -1px -1px 0 rgba(255, 255, 255, 0.9),
+    1px 1px 0 rgba(0, 0, 0, 0.55),
+    2px 3px 3px rgba(0, 0, 0, 0.45),
+    4px 8px 14px rgba(0, 0, 0, 0.25);
+  user-select: none;
+}
+.services--embossed .service-card__title { padding-top: var(--space-6); }
+
 /* ---------- Version B: an index on a charcoal panel ---------- */
 .services__panel {
   padding: var(--space-9) var(--space-8) var(--space-8);
@@ -219,4 +250,6 @@
   .service-row__title,
   .service-row__text { grid-column: 1 / -1; }
   .service-row__text { font-size: 16px; }
+  .services--embossed .service-card__num { font-size: 72px; margin-top: -2px; }
+  .services--embossed .service-card__title { padding-top: var(--space-5); }
 }
