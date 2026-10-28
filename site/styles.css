@@ -64,6 +64,17 @@
   /* Elevation: white cards floating on concrete, as in the deck */
   --shadow-card: 0 0 0 1px rgba(255, 255, 255, 0.7) inset, 0 1px 2px rgba(0, 0, 0, 0.06), 0 10px 30px -8px rgba(0, 0, 0, 0.14);
   --shadow-pop: 0 1px 2px rgba(0, 0, 0, 0.08), 0 18px 48px -12px rgba(0, 0, 0, 0.28);
+  /* Primary button, values from the Framer reference */
+  --btn-dark: #292929;
+  --shadow-btn:
+    0 0 0 1px rgba(41, 41, 41, 0.05),
+    0 4px 4px 0 rgba(41, 41, 41, 0.02),
+    inset 0 1px 0 1px rgba(255, 255, 255, 0.16),
+    inset 0 -2px 0 1px #292929;
+  --shadow-btn-pressed:
+    0 0 0 1px rgba(41, 41, 41, 0.05),
+    inset 0 1px 0 1px rgba(255, 255, 255, 0.1),
+    inset 0 -1px 0 1px #292929;
 
   /* Motion: calm and quick */
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
@@ -167,32 +178,23 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   color: var(--color-text-muted);
 }
 
-/* ---------- Chip: a short label set in square brackets ---------- */
+/* ---------- Chip: a short label between square brackets, set as plain text ---------- */
 .chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 12px;
-  height: 26px;
+  display: inline-block;
   max-width: 100%;
   white-space: nowrap;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: var(--weight-medium);
-  letter-spacing: 0.12em;
-  line-height: 1;
+  letter-spacing: 0.14em;
+  line-height: 1.4;
   text-transform: uppercase;
   color: var(--color-text);
 }
-.chip::before,
-.chip::after {
-  content: "";
-  align-self: stretch;
-  width: 6px;
-  border: 1.25px solid currentColor;
-}
-.chip::before { border-right: 0; }
-.chip::after { border-left: 0; }
+/* Brackets are decoration only: the "/ ''" keeps screen readers from announcing them */
+.chip::before { content: "[\00a0"; content: "[\00a0" / ""; }
+.chip::after { content: "\00a0]"; content: "\00a0]" / ""; }
 @media (max-width: 809px) {
-  .chip { gap: 10px; font-size: 11px; letter-spacing: 0.08em; }
+  .chip { font-size: 11px; letter-spacing: 0.08em; }
 }
 
 /* ---------- Buttons ---------- */
@@ -201,9 +203,9 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: var(--space-3);
+  gap: 10px;
   height: var(--btn-h);
-  padding: 0 22px;
+  padding: 0 24px;
   border-radius: var(--radius-pill);
   font-size: var(--fs-nav);
   font-weight: var(--weight-medium);
@@ -217,13 +219,21 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 .btn:active { transform: scale(0.98); }
 .btn--small { --btn-h: 40px; padding: 0 18px; font-size: 14px; }
 
-.btn--primary { background: var(--color-charcoal); color: var(--color-on-dark); }
+/* Primary: from the Framer reference. A dark pill lit from above: soft grey
+   sheen over #292929, a fine outer ring, a whisper of drop shadow, a white
+   highlight along the top edge and a darker rim along the bottom. */
+.btn--primary {
+  color: var(--color-on-dark);
+  background: linear-gradient(180deg, rgba(207, 207, 207, 0.16) 0%, rgba(207, 207, 207, 0.11) 100%), var(--btn-dark);
+  box-shadow: var(--shadow-btn);
+}
 .btn--quiet { background: var(--color-white); color: var(--color-ink); box-shadow: var(--shadow-card); }
 
 @media (hover: hover) {
-  .btn--primary:hover { background: var(--color-charcoal-deep); }
+  .btn--primary:hover { background: linear-gradient(180deg, rgba(207, 207, 207, 0.22) 0%, rgba(207, 207, 207, 0.15) 100%), var(--btn-dark); }
   .btn--quiet:hover { background: var(--color-well); }
 }
+.btn--primary:active { box-shadow: var(--shadow-btn-pressed); }
 
 .btn__icon {
   width: 14px;
@@ -302,7 +312,7 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 .masthead-labels__la { grid-column: 1 / span 2; }
 .masthead-labels__sj { grid-column: 3 / span 2; }
 .masthead-labels__site { grid-column: 8 / span 3; }
-.masthead-labels__work { grid-column: 11 / span 2; }
+.masthead-labels__contact { grid-column: 11 / span 2; }
 
 .office__city,
 .masthead-label {
@@ -396,7 +406,7 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   grid-template-columns: subgrid;
 }
 .nav__list--site { grid-column: 1 / span 3; }
-.nav__list--work { grid-column: 4 / span 2; }
+.nav__list--contact { grid-column: 4 / span 2; }
 
 .nav__list {
   position: relative;
@@ -486,7 +496,7 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 /* Tablet and phone (to refine later): clocks over a simple bar with the logo and "Menu +" */
 @media (max-width: 1199px) {
   .masthead-labels__site,
-  .masthead-labels__work,
+  .masthead-labels__contact,
   .masthead-note,
   .masthead-rule,
   .nav__list { display: none; }

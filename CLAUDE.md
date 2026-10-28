@@ -47,7 +47,7 @@ Use the same class names everywhere. Reusable parts (nav, footer, buttons, secti
 
 Six pages plus legal: Home (with the world map), About, What We Do (Founders, Investors and Institutions are sections on this page, not separate pages), Track Record (simple static table, no filters), Team (grid plus one profile template), Contact (one form with a "Who are you?" dropdown: Founder, Investor, Institution, Press, Other; it will post to GoHighLevel, so keep field names clean). Plus Privacy and Terms.
 
-Out of scope: Gatherings, Journal, Press. Never link to them.
+Out of scope: Gatherings, Journal, Press. Never link to them. The brief lists 12 pages; ignore that, V1 is only the six above plus legal. Navigation links only to these pages (Home is the logo); Founders, Investors and Institutions are anchors on What We Do, never nav items.
 
 Map: 8 points (Los Angeles, San Francisco, New York, San Juan, São Paulo, London, Paris, Abu Dhabi). Hover shows the city label. Arcs drawn out from Los Angeles. No filters.
 
@@ -58,7 +58,8 @@ Map: 8 points (Los Angeles, San Francisco, New York, San Juan, São Paulo, Londo
 - Colours: monochrome only (concrete `#d3d3d3`, charcoal `#565656`, white cards). Body text must reach 4.5:1 contrast on concrete.
 - Type: Montserrat stands in for Gotham (the client may license Gotham later).
 - Breakpoints match Framer: desktop ≥1200, tablet 810–1199, phone ≤809.
-- Things the user likes: the folding masthead header, built like defiant.vc (labels row with office clocks, big A-mark, wordmark, one line, two columns of link rows; folds into a thin bar with "Menu +" on scroll), the carved formwork seam with a round tie hole at each end (v2 look: carved into the concrete, not a flat CSS line), the bracketed chip (`.chip`), the carved ARCOVIA wordmark, the one-button path picker.
+- Things the user likes: the folding masthead header, built like defiant.vc (labels row with office clocks, big A-mark, wordmark, one line, two columns of link rows; folds into a thin bar with "Menu +" on scroll), the carved formwork seam with a round tie hole at each end (v2 look: carved into the concrete, not a flat CSS line), the chip as plain text in square brackets, `[ INDEPENDENT CAPITAL MARKETS ADVISORY ]` (`.chip`; drawn bracket shapes looked bad), the carved ARCOVIA wordmark, the one-button path picker.
+- Primary button (`.btn--primary`) uses the depth from the user's Framer reference: #292929 with a soft grey top sheen, a 1px 5% ring, a 4px 2% drop shadow, a white 16% inner top highlight and a dark inner bottom rim (tokens `--btn-dark`, `--shadow-btn`).
 - Things the user has rejected: free-floating spaced-capitals eyebrow labels (they read as AI-generated), the charcoal logo tile, anything that only looks sharp under the cursor light (carving must look crisp at all times), a CTA button in the nav, seams/lines under the header.
 - While exploring, the user reviews desktop (1440 and 1728 at 2x) first; tablet and phone get refined once a desktop direction is approved.
 
