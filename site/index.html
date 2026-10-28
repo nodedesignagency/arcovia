@@ -15,6 +15,7 @@
   <link rel="stylesheet" href="styles.css">
   <!-- One stylesheet per section, so a section can be approved and moved to main on its own -->
   <link rel="stylesheet" href="sections/hero.css">
+  <link rel="stylesheet" href="sections/data.css">
 </head>
 <body>
 
@@ -168,9 +169,93 @@
     </section>
     <!-- SECTION:hero END -->
 
+    <!-- Draft only: version label for review, not part of any section -->
+    <p class="review-tag">Data · Version A, “Column”</p>
+
+    <!-- SECTION:data-a START · styles: sections/data.css · scripts: stack.js
+         Version A "Column": the four figures as concrete blocks in one column
+         on a white wall, one block sticking out. Each block drops onto the
+         stack as you scroll; the first figure is the base. -->
+    <section class="data data--column" data-stack aria-label="Arcovia in numbers">
+      <div class="data__stage">
+        <div class="data__inner container">
+          <ul class="stack">
+            <li class="stack__block" style="--i:0">
+              <div class="stack__face">
+                <p class="stack__figure">24</p>
+                <p class="stack__label">transactions closed by the Arcovia team</p>
+              </div>
+            </li>
+            <li class="stack__block stack__block--out" style="--i:1">
+              <div class="stack__face">
+                <p class="stack__figure">$330M+</p>
+                <p class="stack__label">capital raised</p>
+              </div>
+            </li>
+            <li class="stack__block" style="--i:2">
+              <div class="stack__face">
+                <p class="stack__figure">3,000+</p>
+                <p class="stack__label">institutional relationships across 50+ countries</p>
+              </div>
+            </li>
+            <li class="stack__block" style="--i:3">
+              <div class="stack__face">
+                <p class="stack__figure">$68B+</p>
+                <p class="stack__label">combined transaction experience of our senior advisors</p>
+              </div>
+            </li>
+          </ul>
+          <p class="data__note">Advisor figures include experience at prior firms. See <a href="#" data-todo="Disclosures page or section [TO CONFIRM]">Disclosures</a>.</p>
+        </div>
+      </div>
+    </section>
+    <!-- SECTION:data-a END -->
+
+    <!-- Draft only: version label for review, not part of any section -->
+    <p class="review-tag">Data · Version B, “Wall”</p>
+
+    <!-- SECTION:data-b START · styles: sections/data.css · scripts: stack.js
+         Version B "Wall": the same blocks as full-width courses, staggered
+         like reused wall elements, with larger figures. Same drop. -->
+    <section class="data data--wall" data-stack aria-label="Arcovia in numbers">
+      <div class="data__stage">
+        <div class="data__inner container">
+          <ul class="stack">
+            <li class="stack__block" style="--i:0">
+              <div class="stack__face">
+                <p class="stack__figure">24</p>
+                <p class="stack__label">transactions closed by the Arcovia team</p>
+              </div>
+            </li>
+            <li class="stack__block" style="--i:1">
+              <div class="stack__face">
+                <p class="stack__figure">$330M+</p>
+                <p class="stack__label">capital raised</p>
+              </div>
+            </li>
+            <li class="stack__block" style="--i:2">
+              <div class="stack__face">
+                <p class="stack__figure">3,000+</p>
+                <p class="stack__label">institutional relationships across 50+ countries</p>
+              </div>
+            </li>
+            <li class="stack__block" style="--i:3">
+              <div class="stack__face">
+                <p class="stack__figure">$68B+</p>
+                <p class="stack__label">combined transaction experience of our senior advisors</p>
+              </div>
+            </li>
+          </ul>
+          <p class="data__note">Advisor figures include experience at prior firms. See <a href="#" data-todo="Disclosures page or section [TO CONFIRM]">Disclosures</a>.</p>
+        </div>
+      </div>
+    </section>
+    <!-- SECTION:data-b END -->
+
   </main>
 
   <script src="concrete.js"></script>
   <script src="main.js"></script>
+  <script src="stack.js"></script>
 </body>
 </html>

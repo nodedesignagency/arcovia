@@ -1,0 +1,195 @@
+/* ==========================================================================
+   SECTION: data — Home, block 2
+   The four figures as concrete blocks against a white wall. Each block
+   drops onto the stack as you scroll (stack.js): the first figure is the
+   base, the last one tops the stack. Text is printed flat on the concrete,
+   never carved. Two versions while exploring:
+   .data--column (A): one column of blocks, one sticking out to the right.
+   .data--wall (B): full-width courses, staggered like reused wall elements.
+   Uses shared tokens from styles.css.
+   ========================================================================== */
+
+.data {
+  position: relative;
+  background: var(--color-white);
+}
+
+/* The stage stays put while the blocks drop; stack.js makes the section taller */
+.data__stage {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100svh;
+  overflow: clip;
+  display: flex;
+  align-items: center;
+  padding-top: var(--mh-compact);
+}
+
+.data__inner {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--grid-gap);
+  row-gap: var(--space-7);
+}
+
+.data__note {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--color-text-muted);
+}
+.data__note a {
+  color: var(--color-ink);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+/* ---------- Stack (component: drop-stack) ----------
+   --cols: columns the stack spans on the page grid. Each block sets
+   --start and --span in those columns; its face keeps the text on the
+   stack's grid, so figures line up however far a block sticks out. */
+.stack {
+  --cols: 12;
+  --joint: 8px;
+  --block-h: min(132px, 14.5svh); /* shorter screens get lower blocks, so the stack fits under the header */
+  --colw: calc((100cqw - (var(--cols) - 1) * var(--grid-gap)) / var(--cols));
+  container-type: inline-size;
+  display: flex;
+  flex-direction: column-reverse; /* first figure at the bottom */
+  gap: var(--joint);
+}
+
+.stack__block {
+  --start: 0;
+  --span: var(--cols);
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: calc(var(--span) * var(--colw) + (var(--span) - 1) * var(--grid-gap));
+  min-height: var(--block-h);
+  margin-left: calc(var(--start) * (var(--colw) + var(--grid-gap)));
+  border-radius: 3px;
+  /* Cast concrete, lit softly from the upper left; each block shows a different patch */
+  background-color: #bdbdbd;
+  background-image:
+    linear-gradient(172deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0) 38%, rgba(0, 0, 0, 0.05)),
+    url("../assets/concrete-cast.jpg");
+  background-size: auto, 960px;
+  background-position: 0 0, calc(var(--i, 0) * -331px) calc(var(--i, 0) * -197px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.5),
+    inset 1px 0 0 rgba(255, 255, 255, 0.22),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.14),
+    inset -1px 0 0 rgba(0, 0, 0, 0.08),
+    /* shadow on the white wall behind */
+    12px 18px 30px -18px rgba(0, 0, 0, 0.32),
+    0 2px 4px -2px rgba(0, 0, 0, 0.12);
+}
+
+/* The joint under a block: a dark recess, shown once the block sits on the
+   one below. stack.js sets --joint-l / --joint-r to the overlap of the two. */
+.stack__block::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: var(--joint-l, 5px);
+  right: var(--joint-r, 5px);
+  height: var(--joint);
+  background: linear-gradient(rgba(38, 38, 38, 0.92), rgba(74, 74, 74, 0.86));
+  opacity: 0;
+}
+/* The base has no joint: it stands on the floor with a soft contact shadow */
+.stack__block:first-child::after {
+  left: -1%;
+  right: -2%;
+  height: 22px;
+  background: radial-gradient(50% 100% at 50% 0%, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0) 70%);
+}
+.stack__block.is-landed::after { opacity: 1; }
+
+.stack__face {
+  display: grid;
+  grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
+  column-gap: var(--grid-gap);
+  align-items: center;
+  flex: none;
+  width: 100cqw;
+  margin-left: calc(var(--start) * (var(--colw) + var(--grid-gap)) * -1);
+}
+
+/* Flat ink on concrete: no emboss, no carving */
+.stack__figure {
+  font-size: var(--fig-size, 60px);
+  font-weight: var(--weight-medium);
+  line-height: 1;
+  letter-spacing: -0.03em;
+  font-variant-numeric: lining-nums;
+  white-space: nowrap;
+  color: var(--color-ink);
+}
+.stack__label {
+  max-width: 21em;
+  text-wrap: pretty;
+  font-size: var(--label-size, 17px);
+  line-height: 1.4;
+  color: var(--color-ink);
+}
+
+/* ---------- Version A: Column ---------- */
+.data--column .data__inner > .stack { grid-column: 4 / span 7; --cols: 7; }
+.data--column .data__note { grid-column: 4 / span 6; }
+.data--column .stack__block { --span: 6; }
+.data--column .stack__block--out { --span: 7; }
+.data--column .stack__figure { grid-column: 1 / span 3; padding-left: 36px; }
+.data--column .stack__label { grid-column: 4 / span 3; padding-right: 28px; }
+
+/* ---------- Version B: Wall ---------- */
+.data--wall .stack { --block-h: min(150px, 16svh); }
+.data--wall .data__inner > .stack { grid-column: 1 / -1; }
+.data--wall .data__note { grid-column: 3 / span 8; }
+.data--wall .stack__figure { --fig-size: min(88px, 9.5svh); grid-column: 3 / span 4; }
+.data--wall .stack__label { --label-size: 19px; grid-column: 7 / span 4; }
+.data--wall .stack__block:nth-child(1) { --start: 0; --span: 11; }
+.data--wall .stack__block:nth-child(2) { --start: 1; --span: 11; }
+.data--wall .stack__block:nth-child(3) { --start: 0; --span: 12; }
+.data--wall .stack__block:nth-child(4) { --start: 1; --span: 10; }
+
+/* ---------- Tablet ---------- */
+@media (max-width: 1199px) {
+  .stack { --block-h: min(116px, 12.5svh); }
+  .data--column .data__inner > .stack { grid-column: 2 / span 11; --cols: 11; }
+  .data--column .data__note { grid-column: 2 / span 10; }
+  .data--column .stack__block { --span: 10; }
+  .data--column .stack__block--out { --span: 11; }
+  .data--column .stack__figure { --fig-size: 48px; grid-column: 1 / span 4; padding-left: 28px; }
+  .data--column .stack__label { grid-column: 5 / span 6; padding-right: 24px; }
+
+  .data--wall .stack { --block-h: min(124px, 13.5svh); }
+  .data--wall .stack__figure { --fig-size: 56px; }
+  .data--wall .stack__label { --label-size: 16px; }
+}
+
+/* ---------- Phone: figure over its line, text sits on its own block ---------- */
+@media (max-width: 809px) {
+  .data .stack { --joint: 6px; --block-h: 132px; }
+  .data .data__inner > .stack { grid-column: 1 / -1; --cols: 12; }
+  .data .data__note { grid-column: 1 / -1; }
+  .data--column .stack__block,
+  .data--wall .stack__block { --start: 0; --span: 11; }
+  .data--column .stack__block--out { --span: 12; }
+  .data--wall .stack__block:nth-child(even) { --start: 1; }
+  .stack__face {
+    display: grid;
+    grid-template-columns: 1fr;
+    row-gap: 10px;
+    flex: 1;
+    width: auto;
+    margin-left: 0;
+    padding: 20px 22px 22px;
+  }
+  .data .stack__figure,
+  .data .stack__label { grid-column: 1; padding: 0; }
+  .data .stack__figure { --fig-size: 38px; }
+  .data .stack__label { --label-size: 15px; }
+}
