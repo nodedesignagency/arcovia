@@ -4,7 +4,7 @@
    drops onto the stack as you scroll (stack.js): the first figure is the
    base, the last one tops the stack. Text is printed flat on the concrete,
    never carved. Two versions while exploring:
-   .data--column (A): one column of blocks, one sticking out to the right.
+   .data--column (A): one centred column of blocks, all the same size.
    .data--wall (B): full-width courses, staggered like reused wall elements.
    Uses shared tokens from styles.css.
    ========================================================================== */
@@ -137,10 +137,8 @@
 }
 
 /* ---------- Version A: Column ---------- */
-.data--column .data__inner > .stack { grid-column: 4 / span 7; --cols: 7; }
+.data--column .data__inner > .stack { grid-column: 4 / span 6; --cols: 6; }
 .data--column .data__note { grid-column: 4 / span 6; }
-.data--column .stack__block { --span: 6; }
-.data--column .stack__block--out { --span: 7; }
 .data--column .stack__figure { grid-column: 1 / span 3; padding-left: 36px; }
 .data--column .stack__label { grid-column: 4 / span 3; padding-right: 28px; }
 
@@ -158,10 +156,8 @@
 /* ---------- Tablet ---------- */
 @media (max-width: 1199px) {
   .stack { --block-h: min(116px, 12.5svh); }
-  .data--column .data__inner > .stack { grid-column: 2 / span 11; --cols: 11; }
+  .data--column .data__inner > .stack { grid-column: 2 / span 10; --cols: 10; }
   .data--column .data__note { grid-column: 2 / span 10; }
-  .data--column .stack__block { --span: 10; }
-  .data--column .stack__block--out { --span: 11; }
   .data--column .stack__figure { --fig-size: 48px; grid-column: 1 / span 4; padding-left: 28px; }
   .data--column .stack__label { grid-column: 5 / span 6; padding-right: 24px; }
 
@@ -175,9 +171,8 @@
   .data .stack { --joint: 6px; --block-h: 132px; }
   .data .data__inner > .stack { grid-column: 1 / -1; --cols: 12; }
   .data .data__note { grid-column: 1 / -1; }
-  .data--column .stack__block,
+  .data--column .stack__block { --start: 0; --span: 12; }
   .data--wall .stack__block { --start: 0; --span: 11; }
-  .data--column .stack__block--out { --span: 12; }
   .data--wall .stack__block:nth-child(even) { --start: 1; }
   .stack__face {
     display: grid;
