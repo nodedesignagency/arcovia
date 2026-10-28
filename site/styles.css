@@ -13,9 +13,11 @@
   --color-concrete-shade: #c2c2c2;
   --color-charcoal: #565656;
   --color-charcoal-deep: #3e3e3e;
-  --color-ink: #2b2b2b;            /* headlines */
-  --color-text: #3d3d3d;           /* body, 6:1+ on concrete */
-  --color-text-muted: #4d4d4d;     /* small text, 4.6:1+ on concrete shade */
+  /* Text: a deep ink so type doesn't sink into the concrete.
+     The softer set we had before is kept below as data-ink="soft" (or ?ink=soft). */
+  --color-ink: #151515;            /* headlines, nav */
+  --color-text: #222222;           /* body */
+  --color-text-muted: #3a3a3a;     /* small text and labels */
   --color-white: #ffffff;          /* cards */
   --color-well: #f2f2f2;           /* inset number wells inside cards */
   --color-line: rgba(43, 43, 43, 0.14);
@@ -111,6 +113,14 @@
     --gutter: 20px;
     --grid-gap: 12px;
   }
+}
+
+/* Previous, softer text colours (closer to the deck). Switch back with
+   <html data-ink="soft"> or by opening the page with ?ink=soft */
+:root[data-ink="soft"] {
+  --color-ink: #2b2b2b;
+  --color-text: #3d3d3d;
+  --color-text-muted: #4d4d4d;
 }
 
 /* ---------- Base ---------- */
@@ -258,24 +268,29 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   margin-right: -0.22em;
 }
 
-/* ---------- Header: a masthead that folds into a thin bar ----------
-   After defiant.vc. Five columns on the 12-column grid:
-   1-2 mark · 3-4 wordmark · 5-7 one line · 8-10 site map · 11-12 work with us.
-   Expanded at the top of the page; .is-compact (once scrolled) folds it:
-   the labels row collapses, both link columns stack into "Menu +", the mark
-   shrinks and the wordmark slides in beside it. No CTA button, no seams. */
+/* ---------- Header: a masthead that folds, hides and comes back ----------
+   After defiant.vc. Columns on the 12-column grid:
+   labels row: 1-2 Los Angeles · 3-4 San Juan · 5-7 clock · 8+ "Site map"
+   main row:   1-2 mark · 3-4 wordmark · 5-7 one line · 8-12 site map rows
+   States (set in main.js):
+   - top of page: expanded
+   - .is-compact: rows stack into "Menu +", mark shrinks, wordmark slides in
+   - .is-hidden: the whole header slides up out of view (scrolling down)
+   - .is-on-dark: light type over dark sections
+   No background in any state. */
 :root {
   --mh-labels: 44px;      /* labels row, including its hairline */
   --mh-row: 34px;         /* one link row */
+  --mh-rows: 5;
   --mh-pad: 16px;         /* space above the first row */
-  --mh-main: calc(var(--mh-pad) + var(--mh-row) * 4);
+  --mh-main: calc(var(--mh-pad) + var(--mh-row) * var(--mh-rows));
   --mh-compact: 62px;
   --mh-mark: 96px;        /* big A-mark width */
   --mh-mark-small: 22px;
   --header-h: calc(var(--mh-labels) + var(--mh-main));
   --mh-ease: cubic-bezier(0.65, 0, 0.2, 1);
   --mh-dur: 560ms;
-  --mh-line: rgba(43, 43, 43, 0.16);
+  --mh-line: rgba(21, 21, 21, 0.16);
 }
 @media (max-width: 1199px) { :root { --mh-main: 64px; --mh-mark: 30px; } }
 
@@ -283,23 +298,41 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   position: fixed;
   inset: 0 0 auto 0;
   z-index: 50;
-  transition: background-color var(--mh-dur) var(--mh-ease);
+  pointer-events: none;   /* only its links and button catch the pointer */
+  transition: transform var(--mh-dur) var(--mh-ease);
 }
-.site-header.is-compact {
-  background-color: rgba(211, 211, 211, 0.84);
-  -webkit-backdrop-filter: blur(16px) saturate(1.1);
-  backdrop-filter: blur(16px) saturate(1.1);
-}
+.site-header a,
+.site-header button,
+.masthead-city { pointer-events: auto; }
+.site-header.is-hidden { transform: translateY(-100%); }
 
-/* Labels row: office clocks and column names over a full-width hairline */
-.masthead-top {
-  display: grid;
-  grid-template-rows: 1fr;
-  transition: grid-template-rows var(--mh-dur) var(--mh-ease), opacity calc(var(--mh-dur) * 0.5) var(--mh-ease);
+/* No background colour. Mid-page, a clear blur (no tint) sits behind the bar
+   and fades out at its bottom edge, so text scrolling underneath softens
+   instead of colliding with the header. Delete this rule for no blur at all. */
+.site-header::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 -24px;
+  z-index: -1;
+  -webkit-backdrop-filter: blur(22px);
+  backdrop-filter: blur(22px);
+  -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 40px), transparent);
+  mask-image: linear-gradient(to bottom, #000 calc(100% - 40px), transparent);
+  opacity: 0;
+  transition: opacity var(--dur-slow) var(--ease-out);
 }
-.masthead-top__clip { min-height: 0; overflow: hidden; }
-.is-compact .masthead-top { grid-template-rows: 0fr; opacity: 0; }
+.site-header.is-compact::before { opacity: 1; }
 
+/* Over dark sections the type turns light */
+.site-header.is-on-dark {
+  --color-ink: var(--color-on-dark);
+  --color-text-muted: var(--color-on-dark-muted);
+  --mh-line: rgba(244, 244, 243, 0.22);
+}
+.site-header .masthead-labels,
+.site-header .masthead-main { transition: color var(--dur-slow) var(--ease-out); }
+
+/* Labels row: offices, one clock, column name, over a full-width hairline */
 .masthead-labels {
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
@@ -308,28 +341,47 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   height: var(--mh-labels);
   padding-bottom: 11px;
   border-bottom: 1px solid var(--mh-line);
+  transition: border-color var(--dur-slow) var(--ease-out);
 }
-.masthead-labels__la { grid-column: 1 / span 2; }
-.masthead-labels__sj { grid-column: 3 / span 2; }
+.masthead-city--la { grid-column: 1 / span 2; }
+.masthead-city--sj { grid-column: 3 / span 2; }
+.masthead-clock { grid-column: 5 / span 3; }
 .masthead-labels__site { grid-column: 8 / span 3; }
-.masthead-labels__contact { grid-column: 11 / span 2; }
 
-.office__city,
+.masthead-city,
 .masthead-label {
   font-size: 11px;
   font-weight: var(--weight-medium);
   letter-spacing: 0.06em;
+  line-height: 16px;
   text-transform: uppercase;
   color: var(--color-text-muted);
+  white-space: nowrap;
+  transition: color var(--dur-base) var(--ease-out);
 }
-.office { display: flex; align-items: baseline; gap: 10px; white-space: nowrap; }
-.office__time {
+.masthead-city { cursor: default; }
+
+/* The clock shows Los Angeles; hovering San Juan swaps to its time */
+.masthead-clock {
+  display: grid;
   font-size: 12px;
   font-weight: var(--weight-semibold);
+  line-height: 16px;
   color: var(--color-ink);
   font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }
-.office__tz { font-weight: var(--weight-medium); color: var(--color-text-muted); }
+.masthead-clock__time {
+  grid-area: 1 / 1;
+  transition: opacity var(--dur-base) var(--ease-out), transform var(--dur-base) var(--ease-out);
+}
+.masthead-clock .office__tz { display: none; }
+.masthead-clock__time--sj { opacity: 0; transform: translateY(5px); }
+.masthead-city--la { color: var(--color-ink); }
+.masthead-labels:has(.masthead-city--sj:hover) .masthead-city--la { color: var(--color-text-muted); }
+.masthead-labels:has(.masthead-city--sj:hover) .masthead-city--sj { color: var(--color-ink); }
+.masthead-labels:has(.masthead-city--sj:hover) .masthead-clock__time--la { opacity: 0; transform: translateY(-5px); }
+.masthead-labels:has(.masthead-city--sj:hover) .masthead-clock__time--sj { opacity: 1; transform: none; }
 
 /* Main row */
 .masthead-main {
@@ -350,7 +402,7 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   display: block;
   width: var(--mh-mark);
   color: var(--color-ink);
-  transition: width var(--mh-dur) var(--mh-ease), margin var(--mh-dur) var(--mh-ease);
+  transition: width var(--mh-dur) var(--mh-ease), margin var(--mh-dur) var(--mh-ease), color var(--dur-slow) var(--ease-out);
 }
 .masthead-mark svg { width: 100%; height: auto; fill: currentColor; }
 /* Small mark centred on the row: half the row minus half the mark's height */
@@ -368,7 +420,7 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   letter-spacing: 0.2em;
   color: var(--color-ink);
   transform-origin: left center;
-  transition: transform var(--mh-dur) var(--mh-ease);
+  transition: transform var(--mh-dur) var(--mh-ease), color var(--dur-slow) var(--ease-out);
 }
 /* --word-shift is measured in main.js: from column 3 to just right of the small mark */
 .is-compact .masthead-word { transform: translateX(var(--word-shift, 0px)) scale(0.88); }
@@ -377,48 +429,44 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   grid-column: 5 / span 3;
   grid-row: 1;
   padding-top: 7px;
-  text-wrap: pretty;
   font-size: var(--fs-small);
   line-height: 1.45;
   color: var(--color-text-muted);
+  text-wrap: pretty;
   transition: opacity calc(var(--mh-dur) * 0.5) var(--mh-ease), transform var(--mh-dur) var(--mh-ease);
 }
 .is-compact .masthead-note { opacity: 0; transform: translateY(-6px); pointer-events: none; }
 
-/* Hairline under the rows, from the wordmark column to the edge (not under the mark) */
+/* Hairline under the rows, from the wordmark column to the edge (not under the mark).
+   It stays in the compact bar, under "Menu +", as in the reference. */
 .masthead-rule {
   position: absolute;
   left: calc((100% - 11 * var(--grid-gap)) / 12 * 2 + 2 * var(--grid-gap));
   right: 0;
-  top: calc(var(--mh-pad) + var(--mh-row) * 4);
+  top: calc(var(--mh-pad) + var(--mh-row) * var(--mh-rows));
   height: 1px;
   background: var(--mh-line);
-  transition: top var(--mh-dur) var(--mh-ease), opacity calc(var(--mh-dur) * 0.4) var(--mh-ease);
+  transition: top var(--mh-dur) var(--mh-ease), background-color var(--dur-slow) var(--ease-out);
 }
-.is-compact .masthead-rule { top: calc((var(--mh-compact) - var(--mh-row)) / 2 + var(--mh-row)); opacity: 0; }
+.is-compact .masthead-rule { top: calc((var(--mh-compact) - var(--mh-row)) / 2 + var(--mh-row)); }
 
-/* Two link columns, lined up on the page grid */
+/* Site map: one column of rows */
 .nav {
   grid-column: 8 / -1;
   grid-row: 1;
   position: relative;
-  display: grid;
-  grid-template-columns: subgrid;
 }
-.nav__list--site { grid-column: 1 / span 3; }
-.nav__list--contact { grid-column: 4 / span 2; }
-
 .nav__list {
   position: relative;
-  height: calc(var(--mh-row) * 4);
+  height: calc(var(--mh-row) * var(--mh-rows));
   transition: height var(--mh-dur) var(--mh-ease);
 }
 .nav__item {
   height: var(--mh-row);
   display: flex;
   align-items: center;
-  transition: transform var(--mh-dur) var(--mh-ease), opacity calc(var(--mh-dur) * 0.55) var(--mh-ease);
-  transition-delay: calc((3 - var(--i)) * 25ms);
+  transition: transform var(--mh-dur) var(--mh-ease), opacity calc(var(--mh-dur) * 0.55) var(--mh-ease), border-color var(--dur-slow) var(--ease-out);
+  transition-delay: calc((4 - var(--i)) * 22ms);
 }
 .nav__item + .nav__item { border-top: 1px solid var(--mh-line); }
 
@@ -428,7 +476,7 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   transform: translateY(calc(var(--i) * var(--mh-row) * -1));
   opacity: 0;
   pointer-events: none;
-  transition-delay: calc(var(--i) * 25ms);
+  transition-delay: calc(var(--i) * 22ms);
 }
 
 .nav__link {
@@ -437,6 +485,7 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   font-size: var(--fs-nav);
   font-weight: var(--weight-medium);
   color: var(--color-ink);
+  transition: color var(--dur-slow) var(--ease-out);
 }
 /* A short dash draws in before the active or hovered link */
 .nav__link::before {
@@ -461,6 +510,7 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   font-size: var(--fs-nav);
   font-weight: var(--weight-medium);
   color: var(--color-ink);
+  transition: color var(--dur-slow) var(--ease-out);
 }
 .menu-btn__plus { position: relative; width: 11px; height: 11px; transition: transform var(--dur-slow) var(--ease-out); }
 .menu-btn__plus::before,
@@ -484,35 +534,35 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
     left: 0;
     opacity: 0;
     visibility: hidden;
-    transition: opacity var(--dur-base) var(--ease-out), visibility 0s linear var(--dur-base);
+    transition: opacity var(--dur-base) var(--ease-out), visibility 0s linear var(--dur-base), color var(--dur-slow) var(--ease-out);
   }
   .is-compact .nav .menu-btn {
     opacity: 1;
     visibility: visible;
-    transition: opacity var(--dur-slow) var(--ease-out) calc(var(--mh-dur) * 0.55), visibility 0s;
+    transition: opacity var(--dur-slow) var(--ease-out) calc(var(--mh-dur) * 0.55), visibility 0s, color var(--dur-slow) var(--ease-out);
   }
 }
 
-/* Tablet and phone (to refine later): clocks over a simple bar with the logo and "Menu +" */
+/* Tablet and phone (to refine once desktop is approved): labels row over a simple bar */
 @media (max-width: 1199px) {
   .masthead-labels__site,
-  .masthead-labels__contact,
   .masthead-note,
   .masthead-rule,
   .nav__list { display: none; }
-  .masthead-labels__la { grid-column: 1 / span 5; }
-  .masthead-labels__sj { grid-column: 6 / span 5; }
+  .masthead-city--la { grid-column: 1 / span 3; }
+  .masthead-city--sj { grid-column: 4 / span 3; }
+  .masthead-clock { grid-column: 7 / span 3; }
   .masthead-main { display: flex; align-items: center; gap: 12px; padding-top: 0; }
   .is-compact .masthead-main { padding-top: 0; }
   .is-compact .masthead-mark { margin-top: 0; }
   .masthead-word { font-size: 15px; }
   .is-compact .masthead-word { transform: none; }
-  .nav { margin-left: auto; display: block; }
+  .nav { margin-left: auto; }
 }
 @media (max-width: 809px) {
-  .masthead-labels__la { grid-column: 1 / span 6; }
-  .masthead-labels__sj { grid-column: 7 / span 6; }
-  .office__tz { display: none; }
+  .masthead-city--la { grid-column: 1 / span 4; }
+  .masthead-city--sj { grid-column: 5 / span 4; }
+  .masthead-clock { grid-column: 9 / span 4; justify-self: end; }
 }
 
 /* ---------- Full-screen menu (deck "Contents" slide) ---------- */

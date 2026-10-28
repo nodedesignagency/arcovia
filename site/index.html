@@ -32,29 +32,24 @@
   <a class="visually-hidden" href="#main">Skip to content</a>
 
   <!-- ===== Header (component: site-header) =====
-       Masthead after defiant.vc: a labels row (office clocks, column names)
-       over the big A-mark, the wordmark, one line on what we do, and two
-       columns of links as rows. Links are the V1 pages only (Home is the
-       logo); Founders, Investors and Institutions live on What We Do. On scroll it folds into a thin bar: the
-       rows stack into "Menu +", the mark shrinks and the wordmark slides
-       in beside it. Desktop first; tablet and phone get a simple bar. -->
+       Masthead after defiant.vc. At the top of the page: a labels row (the
+       two offices and one clock), the big A-mark, the wordmark, one line on
+       what we do, and the site map as rows. Scrolling down folds it into a
+       small bar and slides it away; scrolling up brings the small bar back
+       with the labels row; the top of the page opens it again. No
+       background: it sits straight on the page. Links are the V1 pages only
+       (Home is the logo). -->
   <header class="site-header" data-header>
     <div class="site-header__inner container">
-      <div class="masthead-top">
-        <div class="masthead-top__clip">
-          <div class="masthead-labels">
-            <p class="office masthead-labels__la">
-              <span class="office__city">Los Angeles</span>
-              <span class="office__time" data-clock="America/Los_Angeles">Pacific Time</span>
-            </p>
-            <p class="office masthead-labels__sj">
-              <span class="office__city">San Juan</span>
-              <span class="office__time" data-clock="America/Puerto_Rico">Atlantic Time</span>
-            </p>
-            <p class="masthead-label masthead-labels__site" aria-hidden="true">Site map</p>
-            <p class="masthead-label masthead-labels__contact" aria-hidden="true">Contact</p>
-          </div>
-        </div>
+      <div class="masthead-labels">
+        <span class="masthead-city masthead-city--la">Los Angeles</span>
+        <span class="masthead-city masthead-city--sj">San Juan</span>
+        <!-- One clock: Los Angeles time; hover San Juan to see its time -->
+        <p class="masthead-clock">
+          <span class="masthead-clock__time masthead-clock__time--la"><span class="visually-hidden">Los Angeles </span><span data-clock="America/Los_Angeles">Pacific Time</span></span>
+          <span class="masthead-clock__time masthead-clock__time--sj"><span class="visually-hidden">San Juan </span><span data-clock="America/Puerto_Rico">Atlantic Time</span></span>
+        </p>
+        <p class="masthead-label masthead-labels__site" aria-hidden="true">Site map</p>
       </div>
 
       <div class="masthead-main">
@@ -65,15 +60,12 @@
         <!-- [COPY NEEDED] Draft line, to confirm with Lilla -->
         <p class="masthead-note">We build investor conviction, then run the process that turns it into capital.</p>
         <nav class="nav" aria-label="Main">
-          <ul class="nav__list nav__list--site">
+          <ul class="nav__list">
             <li class="nav__item" style="--i:0"><a class="nav__link" href="services.html">What We Do</a></li>
             <li class="nav__item" style="--i:1"><a class="nav__link" href="track-record.html">Track Record</a></li>
             <li class="nav__item" style="--i:2"><a class="nav__link" href="team.html">Team</a></li>
             <li class="nav__item" style="--i:3"><a class="nav__link" href="about.html">About</a></li>
-          </ul>
-          <ul class="nav__list nav__list--contact">
-            <li class="nav__item" style="--i:0"><a class="nav__link" href="contact.html">Start a conversation</a></li>
-            <li class="nav__item" style="--i:1"><a class="nav__link" href="#" data-todo="LinkedIn company page URL [TO CONFIRM]">LinkedIn</a></li>
+            <li class="nav__item" style="--i:4"><a class="nav__link" href="contact.html">Contact</a></li>
           </ul>
           <button class="menu-btn" type="button" aria-expanded="false" aria-controls="menu" data-menu-open>
             Menu
@@ -168,7 +160,7 @@
     <!-- SECTION:hero END -->
 
     <!-- Draft placeholder: next section goes here -->
-    <section class="section-next" aria-label="Next section, in progress">
+    <section class="section-next" data-header-theme="dark" aria-label="Next section, in progress">
       <p>02 · Statement — next section, in progress</p>
     </section>
 
