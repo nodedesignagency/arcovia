@@ -67,12 +67,16 @@
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   grid-auto-rows: 1fr;
-  gap: var(--joint);
+  gap: calc(var(--joint) + 1px);
   overflow: hidden;
   background: linear-gradient(#484848, #585858); /* shows only in the joints: the same shade as the data stack's */
   box-shadow: 0 2px 4px -2px rgba(0, 0, 0, 0.16), 0 24px 48px -24px rgba(0, 0, 0, 0.42);
 }
-.services__item { display: flex; }
+/* Each block reaches 1px further right and down than its cell (the gap is
+   1px wider to match). Browsers can round the last block a pixel short of
+   the slab's edge, which would show the joint colour as a thin dark line;
+   this way the outer blocks always cover the edge and the slab clips them. */
+.services__item { display: flex; margin: 0 -1px -1px 0; }
 
 /* Component: service-card. Cast concrete, like the data blocks; each block
    shows a different patch (--i), lit softly from above */
