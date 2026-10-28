@@ -32,49 +32,57 @@
   <a class="visually-hidden" href="#main">Skip to content</a>
 
   <!-- ===== Header (component: site-header) =====
-       A masthead at the top of the page: office clocks, the logo, the nav as
-       stacked rows. On scroll it folds into a thin bar: the rows stack into
-       "Menu +", the mark shrinks and the clocks slide away. -->
+       Masthead after defiant.vc: a labels row (office clocks, column names)
+       over the big A-mark, the wordmark, one line on what we do, and two
+       columns of links as rows. On scroll it folds into a thin bar: the
+       rows stack into "Menu +", the mark shrinks and the wordmark slides
+       in beside it. Desktop first; tablet and phone get a simple bar. -->
   <header class="site-header" data-header>
     <div class="site-header__inner container">
       <div class="masthead-top">
         <div class="masthead-top__clip">
           <div class="masthead-labels">
-            <p class="office">
+            <p class="office masthead-labels__la">
               <span class="office__city">Los Angeles</span>
               <span class="office__time" data-clock="America/Los_Angeles">Pacific Time</span>
             </p>
-            <p class="office">
+            <p class="office masthead-labels__sj">
               <span class="office__city">San Juan</span>
               <span class="office__time" data-clock="America/Puerto_Rico">Atlantic Time</span>
             </p>
-            <p class="masthead-labels__nav" aria-hidden="true">Site map</p>
+            <p class="masthead-label masthead-labels__site" aria-hidden="true">Site map</p>
+            <p class="masthead-label masthead-labels__work" aria-hidden="true">Work with us</p>
           </div>
-          <div class="seam" aria-hidden="true"><span class="seam__hole seam__hole--start"></span><span class="seam__hole seam__hole--end"></span></div>
         </div>
       </div>
 
       <div class="masthead-main">
-        <a class="logo site-header__logo" href="index.html" aria-label="Arcovia, home">
-          <svg class="logo__mark" viewBox="0 0 554 539" aria-hidden="true"><use href="#a-mark"/></svg>
-          <span class="logo__word">ARCOVIA</span>
+        <a class="masthead-mark" href="index.html" aria-label="Arcovia, home">
+          <svg viewBox="0 0 554 539" aria-hidden="true"><use href="#a-mark"/></svg>
         </a>
+        <a class="masthead-word" href="index.html" tabindex="-1" aria-hidden="true">ARCOVIA</a>
+        <!-- [COPY NEEDED] Draft line, to confirm with Lilla -->
+        <p class="masthead-note">We build investor conviction, then run the process that turns it into capital.</p>
         <nav class="nav" aria-label="Main">
-          <ul class="nav__list">
+          <ul class="nav__list nav__list--site">
             <li class="nav__item" style="--i:0"><a class="nav__link" href="services.html">What We Do</a></li>
             <li class="nav__item" style="--i:1"><a class="nav__link" href="track-record.html">Track Record</a></li>
             <li class="nav__item" style="--i:2"><a class="nav__link" href="team.html">Team</a></li>
             <li class="nav__item" style="--i:3"><a class="nav__link" href="about.html">About</a></li>
+          </ul>
+          <ul class="nav__list nav__list--work">
+            <li class="nav__item" style="--i:0"><a class="nav__link" href="services.html#founders">Founders</a></li>
+            <li class="nav__item" style="--i:1"><a class="nav__link" href="services.html#investors">Investors</a></li>
+            <li class="nav__item" style="--i:2"><a class="nav__link" href="services.html#institutions">Institutions</a></li>
+            <li class="nav__item" style="--i:3"><a class="nav__link" href="contact.html">Start a conversation</a></li>
           </ul>
           <button class="menu-btn" type="button" aria-expanded="false" aria-controls="menu" data-menu-open>
             Menu
             <span class="menu-btn__plus" aria-hidden="true"></span>
           </button>
         </nav>
-        <a class="btn btn--primary btn--small site-header__cta" href="contact.html">Start a conversation</a>
+        <span class="masthead-rule" aria-hidden="true"></span>
       </div>
-
-      <div class="seam" aria-hidden="true"><span class="seam__hole seam__hole--start"></span><span class="seam__hole seam__hole--end"></span></div>
     </div>
   </header>
 
@@ -148,7 +156,10 @@
           </div>
         </div>
 
-        <div class="seam hero__seam" aria-hidden="true"><span class="seam__hole seam__hole--start"></span><span class="seam__hole seam__hole--end"></span></div>
+        <div class="seam hero__seam" data-carve="seam" aria-hidden="true">
+          <span class="seam__hole seam__hole--start" data-carve="hole"></span>
+          <span class="seam__hole seam__hole--end" data-carve="hole"></span>
+        </div>
       </div>
 
       <div class="hero__wordmark-wrap container" aria-hidden="true">

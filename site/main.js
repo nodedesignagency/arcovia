@@ -17,6 +17,20 @@
       if (!ticking) { ticking = true; requestAnimationFrame(update); }
     }, { passive: true });
     update();
+
+    // How far the wordmark travels to sit beside the small mark when the masthead folds
+    var measure = function () {
+      var grid = header.querySelector(".masthead-main");
+      if (!grid || window.innerWidth < 1200) { header.style.removeProperty("--word-shift"); return; }
+      var cs = getComputedStyle(grid);
+      var cols = cs.gridTemplateColumns.split(" ").map(parseFloat);
+      var gap = parseFloat(cs.columnGap) || 0;
+      var col3 = cols[0] + cols[1] + gap * 2;
+      var small = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--mh-mark-small")) || 22;
+      header.style.setProperty("--word-shift", (small + 12 - col3) + "px");
+    };
+    measure();
+    window.addEventListener("resize", measure);
   }
 
   /* ---------- Full-screen menu ---------- */

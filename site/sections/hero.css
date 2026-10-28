@@ -77,8 +77,10 @@
 }
 
 /* Giant carved wordmark, cut by the bottom edge */
-/* Formwork seam above the carved wordmark */
+/* Formwork seam above the carved wordmark, carved into the concrete when WebGL runs */
 .hero__inner > .hero__seam { grid-column: 1 / -1; grid-row: 2; }
+.hero--gl .hero__seam { background: transparent; box-shadow: none; }
+.hero--gl .hero__seam .seam__hole { opacity: 0; }
 
 .hero__wordmark-wrap {
   position: absolute;
