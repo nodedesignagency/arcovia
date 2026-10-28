@@ -169,39 +169,50 @@
     </section>
     <!-- SECTION:hero END -->
 
-    <!-- Draft only: version label for review, not part of any section -->
-    <p class="review-tag">Data · Version A, “Column”</p>
-
-    <!-- SECTION:data-a START · styles: sections/data.css · scripts: stack.js
-         Version A "Column": the four figures as concrete blocks in one column
-         on a white wall, all the same size. Each block drops onto the
-         stack as you scroll; the first figure is the base. -->
-    <section class="data data--column" data-stack aria-label="Arcovia in numbers">
+    <!-- SECTION:data START · styles: sections/data.css · scripts: stack.js
+         Home, block 2: the four figures as concrete blocks on a white wall.
+         The heading stays pinned while each block comes down turning a full
+         circle and settles on the stack; the first figure is the base. -->
+    <section class="data" data-stack aria-labelledby="data-title">
       <div class="data__stage">
         <div class="data__inner container">
+          <!-- [COPY NEEDED] Draft chip, heading and subheading, to confirm with Lilla -->
+          <div class="data__head">
+            <p class="chip">Track record</p>
+            <h2 class="data__title" id="data-title">A record to build on</h2>
+            <p class="data__sub">What the Arcovia team and our senior advisors bring to every mandate.</p>
+          </div>
           <ul class="stack">
             <li class="stack__block" style="--i:0">
-              <div class="stack__face">
-                <p class="stack__figure">24</p>
-                <p class="stack__label">transactions closed by the Arcovia team</p>
+              <div class="stack__body">
+                <div class="stack__face">
+                  <p class="stack__figure">24</p>
+                  <p class="stack__label">transactions closed by the Arcovia team</p>
+                </div>
               </div>
             </li>
             <li class="stack__block" style="--i:1">
-              <div class="stack__face">
-                <p class="stack__figure">$330M+</p>
-                <p class="stack__label">capital raised</p>
+              <div class="stack__body">
+                <div class="stack__face">
+                  <p class="stack__figure">$330M+</p>
+                  <p class="stack__label">capital raised</p>
+                </div>
               </div>
             </li>
             <li class="stack__block" style="--i:2">
-              <div class="stack__face">
-                <p class="stack__figure">3,000+</p>
-                <p class="stack__label">institutional relationships across 50+ countries</p>
+              <div class="stack__body">
+                <div class="stack__face">
+                  <p class="stack__figure">3,000+</p>
+                  <p class="stack__label">institutional relationships across 50+ countries</p>
+                </div>
               </div>
             </li>
             <li class="stack__block" style="--i:3">
-              <div class="stack__face">
-                <p class="stack__figure">$68B+</p>
-                <p class="stack__label">combined transaction experience of our senior advisors</p>
+              <div class="stack__body">
+                <div class="stack__face">
+                  <p class="stack__figure">$68B+</p>
+                  <p class="stack__label">combined transaction experience of our senior advisors</p>
+                </div>
               </div>
             </li>
           </ul>
@@ -209,48 +220,7 @@
         </div>
       </div>
     </section>
-    <!-- SECTION:data-a END -->
-
-    <!-- Draft only: version label for review, not part of any section -->
-    <p class="review-tag">Data · Version B, “Wall”</p>
-
-    <!-- SECTION:data-b START · styles: sections/data.css · scripts: stack.js
-         Version B "Wall": the same blocks as full-width courses, staggered
-         like reused wall elements, with larger figures. Same drop. -->
-    <section class="data data--wall" data-stack aria-label="Arcovia in numbers">
-      <div class="data__stage">
-        <div class="data__inner container">
-          <ul class="stack">
-            <li class="stack__block" style="--i:0">
-              <div class="stack__face">
-                <p class="stack__figure">24</p>
-                <p class="stack__label">transactions closed by the Arcovia team</p>
-              </div>
-            </li>
-            <li class="stack__block" style="--i:1">
-              <div class="stack__face">
-                <p class="stack__figure">$330M+</p>
-                <p class="stack__label">capital raised</p>
-              </div>
-            </li>
-            <li class="stack__block" style="--i:2">
-              <div class="stack__face">
-                <p class="stack__figure">3,000+</p>
-                <p class="stack__label">institutional relationships across 50+ countries</p>
-              </div>
-            </li>
-            <li class="stack__block" style="--i:3">
-              <div class="stack__face">
-                <p class="stack__figure">$68B+</p>
-                <p class="stack__label">combined transaction experience of our senior advisors</p>
-              </div>
-            </li>
-          </ul>
-          <p class="data__note">Advisor figures include experience at prior firms. See <a href="#" data-todo="Disclosures page or section [TO CONFIRM]">Disclosures</a>.</p>
-        </div>
-      </div>
-    </section>
-    <!-- SECTION:data-b END -->
+    <!-- SECTION:data END -->
 
   </main>
 
