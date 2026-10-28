@@ -10,7 +10,7 @@
   if (header) {
     var ticking = false;
     var update = function () {
-      header.classList.toggle("is-scrolled", window.scrollY > 24);
+      header.classList.toggle("is-compact", window.scrollY > 24);
       ticking = false;
     };
     window.addEventListener("scroll", function () {
@@ -98,7 +98,11 @@
       var now = new Date();
       clocks.forEach(function (el) {
         try {
-          el.textContent = new Intl.DateTimeFormat("en-US", { hour: "numeric", minute: "2-digit", timeZone: el.getAttribute("data-clock"), timeZoneName: "short" }).format(now);
+          // "7:02 AM" plus the zone ("PDT") in its own span, so phones can drop it
+          var parts = new Intl.DateTimeFormat("en-US", { hour: "numeric", minute: "2-digit", timeZone: el.getAttribute("data-clock"), timeZoneName: "short" }).formatToParts(now);
+          var time = "", zone = "";
+          parts.forEach(function (p) { if (p.type === "timeZoneName") zone = p.value; else time += p.value; });
+          el.innerHTML = time.trim() + ' <span class="office__tz">' + zone + "</span>";
         } catch (e) { /* unknown zone: keep the fallback text */ }
       });
     };

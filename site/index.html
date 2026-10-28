@@ -32,27 +32,49 @@
   <a class="visually-hidden" href="#main">Skip to content</a>
 
   <!-- ===== Header (component: site-header) =====
-       A masthead: logo, what Arcovia is, then the nav. Shrinks to a thin bar on scroll. -->
+       A masthead at the top of the page: office clocks, the logo, the nav as
+       stacked rows. On scroll it folds into a thin bar: the rows stack into
+       "Menu +", the mark shrinks and the clocks slide away. -->
   <header class="site-header" data-header>
     <div class="site-header__inner container">
-      <a class="logo site-header__logo" href="index.html" aria-label="Arcovia, home">
-        <svg class="logo__mark" viewBox="0 0 554 539" aria-hidden="true"><use href="#a-mark"/></svg>
-        <span class="logo__word">ARCOVIA</span>
-      </a>
-      <p class="site-header__note">Independent capital<br> markets advisory</p>
-      <nav class="nav" aria-label="Main">
-        <ul class="nav__list">
-          <li><a class="nav__link" href="services.html">What We Do</a></li>
-          <li><a class="nav__link" href="track-record.html">Track Record</a></li>
-          <li><a class="nav__link" href="team.html">Team</a></li>
-          <li><a class="nav__link" href="about.html">About</a></li>
-        </ul>
+      <div class="masthead-top">
+        <div class="masthead-top__clip">
+          <div class="masthead-labels">
+            <p class="office">
+              <span class="office__city">Los Angeles</span>
+              <span class="office__time" data-clock="America/Los_Angeles">Pacific Time</span>
+            </p>
+            <p class="office">
+              <span class="office__city">San Juan</span>
+              <span class="office__time" data-clock="America/Puerto_Rico">Atlantic Time</span>
+            </p>
+            <p class="masthead-labels__nav" aria-hidden="true">Site map</p>
+          </div>
+          <div class="seam" aria-hidden="true"><span class="seam__hole seam__hole--start"></span><span class="seam__hole seam__hole--end"></span></div>
+        </div>
+      </div>
+
+      <div class="masthead-main">
+        <a class="logo site-header__logo" href="index.html" aria-label="Arcovia, home">
+          <svg class="logo__mark" viewBox="0 0 554 539" aria-hidden="true"><use href="#a-mark"/></svg>
+          <span class="logo__word">ARCOVIA</span>
+        </a>
+        <nav class="nav" aria-label="Main">
+          <ul class="nav__list">
+            <li class="nav__item" style="--i:0"><a class="nav__link" href="services.html">What We Do</a></li>
+            <li class="nav__item" style="--i:1"><a class="nav__link" href="track-record.html">Track Record</a></li>
+            <li class="nav__item" style="--i:2"><a class="nav__link" href="team.html">Team</a></li>
+            <li class="nav__item" style="--i:3"><a class="nav__link" href="about.html">About</a></li>
+          </ul>
+          <button class="menu-btn" type="button" aria-expanded="false" aria-controls="menu" data-menu-open>
+            Menu
+            <span class="menu-btn__plus" aria-hidden="true"></span>
+          </button>
+        </nav>
         <a class="btn btn--primary btn--small site-header__cta" href="contact.html">Start a conversation</a>
-        <button class="menu-btn" type="button" aria-expanded="false" aria-controls="menu" data-menu-open>
-          <span class="menu-btn__icon" aria-hidden="true"><span></span><span></span></span>
-          Menu
-        </button>
-      </nav>
+      </div>
+
+      <div class="seam" aria-hidden="true"><span class="seam__hole seam__hole--start"></span><span class="seam__hole seam__hole--end"></span></div>
     </div>
   </header>
 
@@ -91,12 +113,10 @@
       <canvas class="hero__canvas" aria-hidden="true"></canvas>
 
       <div class="hero__inner container">
-        <div class="seam hero__seam" data-carve="seam" aria-hidden="true">
-          <span class="seam__hole seam__hole--start" data-carve="hole"></span>
-          <span class="seam__hole seam__hole--end" data-carve="hole"></span>
+        <div class="hero__heading" data-rise style="--rise:0">
+          <p class="chip">Independent capital markets advisory</p>
+          <h1 class="hero__title" id="hero-title">Where Capital<br> Meets Conviction</h1>
         </div>
-
-        <h1 class="hero__title" id="hero-title" data-rise style="--rise:0">Where Capital<br> Meets Conviction</h1>
 
         <div class="hero__aside" data-rise style="--rise:1">
           <p class="hero__lede">For growth-stage founders, funds and foundations raising <span class="nowrap">$5M–$500M+</span>.</p>
@@ -128,21 +148,7 @@
           </div>
         </div>
 
-        <!-- Component: offices. The two offices with their local time, live. -->
-        <div class="hero__info" data-rise style="--rise:2">
-          <div class="seam hero__seam" data-carve="seam" aria-hidden="true">
-            <span class="seam__hole seam__hole--start" data-carve="hole"></span>
-            <span class="seam__hole seam__hole--end" data-carve="hole"></span>
-          </div>
-          <p class="office">
-            <span class="office__city">Los Angeles</span>
-            <span class="office__time" data-clock="America/Los_Angeles">Pacific Time</span>
-          </p>
-          <p class="office">
-            <span class="office__city">San Juan</span>
-            <span class="office__time" data-clock="America/Puerto_Rico">Atlantic Time</span>
-          </p>
-        </div>
+        <div class="seam hero__seam" aria-hidden="true"><span class="seam__hole seam__hole--start"></span><span class="seam__hole seam__hole--end"></span></div>
       </div>
 
       <div class="hero__wordmark-wrap container" aria-hidden="true">

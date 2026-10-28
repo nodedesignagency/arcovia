@@ -58,7 +58,8 @@ Map: 8 points (Los Angeles, San Francisco, New York, San Juan, São Paulo, Londo
 - Colours: monochrome only (concrete `#d3d3d3`, charcoal `#565656`, white cards). Body text must reach 4.5:1 contrast on concrete.
 - Type: Montserrat stands in for Gotham (the client may license Gotham later).
 - Breakpoints match Framer: desktop ≥1200, tablet 810–1199, phone ≤809.
-- Things the user has rejected: spaced-capitals eyebrow labels (they read as AI-generated), the charcoal logo tile, anything that only looks sharp under the cursor light. Carving must look crisp at all times.
+- Things the user likes: the folding masthead header (inspired by defiant.vc: clocks row, logo, nav as stacked rows that fold into "Menu +" on scroll), formwork seams with a round tie hole at each end, the bracketed chip (`.chip`), the carved ARCOVIA wordmark, the one-button path picker.
+- Things the user has rejected: free-floating spaced-capitals eyebrow labels (they read as AI-generated), the charcoal logo tile, anything that only looks sharp under the cursor light. Carving must look crisp at all times.
 
 ## Copy
 

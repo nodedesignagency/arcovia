@@ -54,7 +54,6 @@
   --container-max: 1520px;
   --gutter: 40px;
   --grid-gap: 24px;
-  --header-h: 96px;
 
   /* Radius */
   --radius-s: 8px;
@@ -86,7 +85,6 @@
     --fs-body: 16px;
     --gutter: 32px;
     --grid-gap: 20px;
-    --header-h: 88px;
   }
 }
 
@@ -101,7 +99,6 @@
     --fs-caps: 11px;
     --gutter: 20px;
     --grid-gap: 12px;
-    --header-h: 104px;
   }
 }
 
@@ -170,6 +167,34 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   color: var(--color-text-muted);
 }
 
+/* ---------- Chip: a short label set in square brackets ---------- */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  height: 26px;
+  max-width: 100%;
+  white-space: nowrap;
+  font-size: 12px;
+  font-weight: var(--weight-medium);
+  letter-spacing: 0.12em;
+  line-height: 1;
+  text-transform: uppercase;
+  color: var(--color-text);
+}
+.chip::before,
+.chip::after {
+  content: "";
+  align-self: stretch;
+  width: 6px;
+  border: 1.25px solid currentColor;
+}
+.chip::before { border-right: 0; }
+.chip::after { border-left: 0; }
+@media (max-width: 809px) {
+  .chip { gap: 10px; font-size: 11px; letter-spacing: 0.08em; }
+}
+
 /* ---------- Buttons ---------- */
 .btn {
   --btn-h: 48px;
@@ -223,102 +248,208 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   margin-right: -0.22em;
 }
 
-/* ---------- Header: a masthead that shrinks to a thin bar ---------- */
+/* ---------- Header: a masthead that folds into a thin bar ----------
+   Expanded (top of page): clocks row, seam, logo + nav rows + CTA, seam.
+   Compact (.is-compact, once scrolled): the clocks row collapses, the nav
+   rows stack up into "Menu +", the mark shrinks. Heights come from the
+   tokens below so the hero can sit exactly under the expanded masthead. */
+:root {
+  --mh-labels: 46px;      /* clocks row, above the first seam */
+  --mh-row: 30px;         /* one nav row */
+  --mh-main: 156px;       /* logo + four nav rows + padding */
+  --mh-compact: 60px;     /* the thin bar */
+  --header-h: calc(var(--mh-labels) + var(--mh-main) + 2px);
+  --mh-ease: cubic-bezier(0.65, 0, 0.2, 1);
+  --mh-dur: 520ms;
+}
+@media (max-width: 1199px) { :root { --mh-main: 76px; } }
+@media (max-width: 809px) { :root { --mh-labels: 42px; --mh-main: 64px; --mh-compact: 56px; } }
+
 .site-header {
   position: fixed;
   inset: 0 0 auto 0;
   z-index: 50;
-  transition: background-color var(--dur-base) var(--ease-out), box-shadow var(--dur-base) var(--ease-out);
+  transition: background-color var(--mh-dur) var(--mh-ease);
 }
-
-.site-header__inner {
-  display: grid;
-  grid-template-columns: repeat(12, minmax(0, 1fr));
-  column-gap: var(--grid-gap);
-  align-items: center;
-  height: var(--header-h);
-  transition: height var(--dur-base) var(--ease-out);
-}
-
-.site-header__logo { grid-column: 1 / span 2; white-space: nowrap; }
-
-/* What Arcovia is, set like a byline beside the logo */
-.site-header__note {
-  grid-column: 3 / span 3;
-  font-size: var(--fs-small);
-  line-height: 1.4;
-  color: var(--color-text-muted);
-  transition: opacity var(--dur-base) var(--ease-out), visibility 0s linear var(--dur-base);
-}
-
-.site-header.is-scrolled {
+.site-header.is-compact {
   background-color: rgba(211, 211, 211, 0.84);
   -webkit-backdrop-filter: blur(16px) saturate(1.1);
   backdrop-filter: blur(16px) saturate(1.1);
-  box-shadow: 0 1px 0 var(--color-line);
 }
-.site-header.is-scrolled .site-header__inner { height: 64px; }
-.site-header.is-scrolled .site-header__note { opacity: 0; visibility: hidden; }
 
-.nav {
-  grid-column: 6 / -1;
-  justify-self: end;
+/* Clocks row: collapses to nothing in the compact bar */
+.masthead-top {
+  display: grid;
+  grid-template-rows: 1fr;
+  transition: grid-template-rows var(--mh-dur) var(--mh-ease), opacity calc(var(--mh-dur) * 0.6) var(--mh-ease);
+}
+.masthead-top__clip { min-height: 0; overflow: hidden; }
+.is-compact .masthead-top { grid-template-rows: 0fr; opacity: 0; }
+
+.masthead-labels {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--grid-gap);
+  align-items: end;
+  height: calc(var(--mh-labels) - 1px);
+  padding-bottom: 12px;
+}
+.masthead-labels .office:nth-child(1) { grid-column: 1 / span 2; }
+.masthead-labels .office:nth-child(2) { grid-column: 3 / span 2; }
+.masthead-labels__nav { grid-column: 9 / span 2; }
+
+/* Small column labels, set like table headers */
+.office__city,
+.masthead-labels__nav {
+  font-size: 11px;
+  font-weight: var(--weight-medium);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+.office { display: flex; align-items: baseline; gap: 10px; white-space: nowrap; }
+.office__tz { font-weight: var(--weight-medium); color: var(--color-text-muted); }
+.office__time {
+  font-size: 12px;
+  font-weight: var(--weight-semibold);
+  color: var(--color-ink);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Logo, nav rows and CTA */
+.masthead-main {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--grid-gap);
+  align-items: start;
+  height: var(--mh-main);
+  padding-top: 16px;
+  transition: height var(--mh-dur) var(--mh-ease), padding var(--mh-dur) var(--mh-ease);
+}
+.is-compact .masthead-main { height: var(--mh-compact); padding-top: calc((var(--mh-compact) - var(--mh-row)) / 2); }
+
+.site-header__logo { grid-column: 1 / span 4; align-self: start; transition: margin var(--mh-dur) var(--mh-ease); }
+.site-header__logo .logo__mark { width: 44px; transition: width var(--mh-dur) var(--mh-ease); }
+/* Small mark, centred on the Menu row: row centre (15px) minus half the logo (11px) */
+.is-compact .site-header__logo { margin-top: 4px; }
+.is-compact .site-header__logo .logo__mark { width: 22px; }
+
+.nav { grid-column: 9 / span 2; position: relative; }
+
+.nav__list {
+  position: relative;
+  height: calc(var(--mh-row) * 4);
+  transition: height var(--mh-dur) var(--mh-ease);
+}
+.nav__item {
+  height: var(--mh-row);
   display: flex;
   align-items: center;
-  gap: var(--space-6);
+  border-top: 1px solid var(--color-line);
+  transition: transform var(--mh-dur) var(--mh-ease), opacity calc(var(--mh-dur) * 0.6) var(--mh-ease);
+  transition-delay: calc((3 - var(--i)) * 25ms);
 }
+.nav__item:first-child { border-top-color: transparent; }
 
-.nav__list { display: flex; align-items: center; gap: 30px; }
+/* Folding: every row slides up onto the first one and fades */
+.is-compact .nav__list { height: var(--mh-row); }
+.is-compact .nav__item {
+  transform: translateY(calc(var(--i) * var(--mh-row) * -1));
+  opacity: 0;
+  pointer-events: none;
+  transition-delay: calc(var(--i) * 25ms);
+}
 
 .nav__link {
-  position: relative;
+  display: inline-flex;
+  align-items: center;
   font-size: var(--fs-nav);
   font-weight: var(--weight-medium);
   color: var(--color-ink);
-  padding-block: 6px;
-}
-.nav__link::after {
-  content: "";
-  position: absolute;
-  left: 0; right: 0; bottom: 0;
-  height: 1px;
-  background: currentColor;
-  transform: scaleX(0);
-  transform-origin: left;
   transition: transform var(--dur-base) var(--ease-out);
 }
-.nav__link[aria-current="page"]::after { transform: scaleX(1); }
+/* A short dash draws in before the active or hovered link */
+.nav__link::before {
+  content: "";
+  width: 0;
+  height: 1px;
+  margin-right: 0;
+  background: currentColor;
+  transition: width var(--dur-base) var(--ease-out), margin var(--dur-base) var(--ease-out);
+}
+.nav__link[aria-current="page"]::before { width: 12px; margin-right: 8px; }
 @media (hover: hover) {
-  .nav__link:hover::after { transform: scaleX(1); }
+  .nav__link:hover::before { width: 12px; margin-right: 8px; }
 }
 
+/* "Menu +": appears where the rows fold into */
 .menu-btn {
-  display: none;
+  display: inline-flex;
   align-items: center;
   gap: 10px;
-  height: 40px;
+  height: var(--mh-row);
   font-size: var(--fs-nav);
   font-weight: var(--weight-medium);
   color: var(--color-ink);
 }
-.menu-btn__icon { display: grid; gap: 5px; width: 18px; }
-.menu-btn__icon span { display: block; height: 1.5px; background: currentColor; border-radius: 1px; }
+.menu-btn__plus { position: relative; width: 11px; height: 11px; transition: transform var(--dur-slow) var(--ease-out); }
+.menu-btn__plus::before,
+.menu-btn__plus::after {
+  content: "";
+  position: absolute;
+  inset: 5px 0 auto;
+  height: 1.5px;
+  background: currentColor;
+  border-radius: 1px;
+  transition: transform var(--dur-base) var(--ease-out);
+}
+.menu-btn__plus::after { transform: rotate(90deg); }
+@media (hover: hover) {
+  .menu-btn:hover .menu-btn__plus { transform: rotate(90deg); }
+}
+
+/* On desktop the button only exists in the compact bar */
+@media (min-width: 1200px) {
+  .nav .menu-btn {
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity var(--dur-base) var(--ease-out), visibility 0s linear var(--dur-base);
+  }
+  .is-compact .nav .menu-btn {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity var(--dur-slow) var(--ease-out) calc(var(--mh-dur) * 0.55), visibility 0s;
+  }
+}
+
+.site-header__cta { grid-column: 11 / span 2; justify-self: end; margin-top: -5px; transition: margin var(--mh-dur) var(--mh-ease); }
+.is-compact .site-header__cta { margin-top: -5px; }
 
 @media (max-width: 1199px) {
-  .site-header__note { grid-column: 4 / span 4; }
-  .nav { grid-column: 8 / -1; gap: var(--space-5); }
+  .masthead-labels__nav { display: none; }
+  .masthead-main { align-items: center; padding-top: 0; }
+  .is-compact .masthead-main { padding-top: 0; }
+  .site-header__logo { align-self: center; }
+  .site-header__logo .logo__mark { width: 32px; }
+  .nav { grid-column: 11 / span 2; justify-self: end; grid-row: 1; }
   .nav__list { display: none; }
-  .menu-btn { display: inline-flex; }
+  .site-header__cta { grid-column: 7 / span 4; grid-row: 1; justify-self: end; margin-top: 0; }
+  .is-compact .site-header__cta { margin-top: 0; }
+  .is-compact .site-header__logo { margin-top: 0; }
+  .masthead-labels .office:nth-child(1) { grid-column: 1 / span 4; }
+  .masthead-labels .office:nth-child(2) { grid-column: 5 / span 4; }
 }
 
 @media (max-width: 809px) {
-  /* Logo with the byline under it, menu on the right */
-  .site-header__inner { grid-template-rows: auto auto; align-content: center; row-gap: 6px; }
-  .site-header__logo { grid-column: 1 / span 8; grid-row: 1; }
-  .site-header__note { grid-column: 1 / span 8; grid-row: 2; font-size: 13px; line-height: 1.35; }
-  .nav { grid-column: 9 / -1; grid-row: 1 / span 2; }
+  .masthead-labels .office:nth-child(1) { grid-column: 1 / span 6; }
+  .masthead-labels .office:nth-child(2) { grid-column: 7 / span 6; }
+  .site-header__logo .logo__mark { width: 28px; }
+  .office__tz { display: none; }
   .site-header__cta { display: none; }
-  .site-header.is-scrolled .site-header__note { display: none; }
+  .nav { grid-column: 8 / span 5; justify-self: end; }
 }
 
 /* ---------- Full-screen menu (deck "Contents" slide) ---------- */
