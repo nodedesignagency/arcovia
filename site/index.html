@@ -122,38 +122,41 @@
           <canvas class="hero__canvas" aria-hidden="true"></canvas>
 
           <div class="hero__inner container">
-            <div class="hero__heading" data-rise data-zoom-fade style="--rise:0">
-              <p class="chip">Independent capital markets advisory</p>
-              <h1 class="hero__title" id="hero-title">Where Capital<br> Meets Conviction</h1>
-            </div>
+            <!-- Heading and path picker share a row, aligned at the bottom: the button sits on the headline's baseline -->
+            <div class="hero__content">
+              <div class="hero__heading" data-rise data-zoom-fade style="--rise:0">
+                <p class="chip">Independent capital markets advisory</p>
+                <h1 class="hero__title" id="hero-title">Where Capital<br> Meets Conviction</h1>
+              </div>
 
-            <div class="hero__aside" data-rise data-zoom-fade style="--rise:1">
-              <p class="hero__lede">For growth-stage founders, funds and foundations raising <span class="nowrap">$5M–$500M+</span>.</p>
+              <div class="hero__aside" data-rise data-zoom-fade style="--rise:1">
+                <p class="hero__lede">For growth-stage founders, funds and foundations raising <span class="nowrap">$5M–$500M+</span>.</p>
 
-              <!-- Component: path-picker. One button; the three paths open above it. -->
-              <div class="path-picker" data-path-picker>
-                <div class="path-picker__panel" id="path-options" role="group" aria-labelledby="path-title" aria-hidden="true">
-                  <p class="path-picker__title" id="path-title">Who are you?</p>
-                  <a class="path-picker__option" href="services.html#founders">
-                    <span class="path-picker__label">I’m raising capital</span>
-                    <span class="path-picker__meta">Growth-stage founders and funds raising <span class="nowrap">$5M–$500M+</span></span>
-                    <svg class="path-picker__arrow" aria-hidden="true"><use href="#icon-arrow"/></svg>
-                  </a>
-                  <a class="path-picker__option" href="services.html#investors">
-                    <span class="path-picker__label">I’m an investor</span>
-                    <span class="path-picker__meta">Family offices, VCs, funds and LPs</span>
-                    <svg class="path-picker__arrow" aria-hidden="true"><use href="#icon-arrow"/></svg>
-                  </a>
-                  <a class="path-picker__option" href="services.html#institutions">
-                    <span class="path-picker__label">I represent an institution</span>
-                    <span class="path-picker__meta">Institutions and sovereign capital</span>
-                    <svg class="path-picker__arrow" aria-hidden="true"><use href="#icon-arrow"/></svg>
-                  </a>
+                <!-- Component: path-picker. One button; the three paths open above it. -->
+                <div class="path-picker" data-path-picker>
+                  <div class="path-picker__panel" id="path-options" role="group" aria-labelledby="path-title" aria-hidden="true">
+                    <p class="path-picker__title" id="path-title">Who are you?</p>
+                    <a class="path-picker__option" href="services.html#founders">
+                      <span class="path-picker__label">I’m raising capital</span>
+                      <span class="path-picker__meta">Growth-stage founders and funds raising <span class="nowrap">$5M–$500M+</span></span>
+                      <svg class="path-picker__arrow" aria-hidden="true"><use href="#icon-arrow"/></svg>
+                    </a>
+                    <a class="path-picker__option" href="services.html#investors">
+                      <span class="path-picker__label">I’m an investor</span>
+                      <span class="path-picker__meta">Family offices, VCs, funds and LPs</span>
+                      <svg class="path-picker__arrow" aria-hidden="true"><use href="#icon-arrow"/></svg>
+                    </a>
+                    <a class="path-picker__option" href="services.html#institutions">
+                      <span class="path-picker__label">I represent an institution</span>
+                      <span class="path-picker__meta">Institutions and sovereign capital</span>
+                      <svg class="path-picker__arrow" aria-hidden="true"><use href="#icon-arrow"/></svg>
+                    </a>
+                  </div>
+                  <button class="btn btn--primary path-picker__trigger" type="button" aria-expanded="false" aria-controls="path-options">
+                    Choose your path
+                    <svg class="btn__icon" aria-hidden="true"><use href="#icon-chevron"/></svg>
+                  </button>
                 </div>
-                <button class="btn btn--primary path-picker__trigger" type="button" aria-expanded="false" aria-controls="path-options">
-                  Choose your path
-                  <svg class="btn__icon" aria-hidden="true"><use href="#icon-chevron"/></svg>
-                </button>
               </div>
             </div>
 
