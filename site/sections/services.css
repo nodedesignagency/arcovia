@@ -138,36 +138,55 @@
   color: var(--color-ink);
 }
 
-/* ---------- Version C: Version A with the numbers embossed ----------
-   The number is raised out of the concrete in the upper part of its block.
-   Its face stays the block's own concrete: the glyph is a neutral grey
-   blended with `overlay`, which leaves the concrete under it unchanged, so
-   only the lit edge (top left), the shaded edge (bottom right) and a soft
-   cast shadow show. Static CSS, so it reads the same crisp way at all times. */
-.services--embossed .service-card { isolation: isolate; }
-.services--embossed .service-card__num {
+/* ---------- Version C: Version A with big debossed numbers ----------
+   Each number is large, tucked into the top-left corner of its block (the
+   top edge cuts it slightly) and pressed into the concrete. Two layers of
+   the same glyph, each blended with `overlay`, where neutral grey (#808080)
+   leaves the concrete unchanged:
+   1. the number itself: a dark fill clipped to the glyph, covered by a
+      slightly dark copy shifted down and right, so the recess sits a
+      little in shade and its top and left walls stay in deep shadow;
+   2. ::after, the same number: a light fill covered by a neutral copy
+      shifted up and left, so only the bottom and right walls catch light.
+   The face is the block's own concrete, a touch darker. Static CSS, so it reads the
+   same crisp way at all times. */
+.services--debossed .services__grid { counter-reset: service; }
+.services--debossed .services__item { counter-increment: service; }
+.services--debossed .service-card { isolation: isolate; overflow: hidden; }
+.services--debossed .service-card__num {
+  --num-size: 168px;
+  position: relative;
   display: block;
   width: auto;
   height: auto;
-  margin: -6px 0 0 -3px;
+  margin: calc(-28px - 0.13em) 0 0 -0.05em;
   border-radius: 0;
-  background: none;
   box-shadow: none;
-  font-size: 104px;
+  font-size: var(--num-size);
   font-weight: var(--weight-semibold);
   line-height: 1;
-  letter-spacing: -0.035em;
+  letter-spacing: -0.04em;
   font-variant-numeric: lining-nums proportional-nums; /* Montserrat's tabular 1 has a foot serif */
-  color: #8a8a8a; /* a touch above neutral: the raised face catches a little more light */
+  color: transparent;
+  background: #222;
+  -webkit-background-clip: text;
+  background-clip: text;
+  text-shadow: 4px 6px 5px #6e6e6e; /* a little under neutral: the recess sits in shade */
   mix-blend-mode: overlay;
-  text-shadow:
-    -1px -1px 0 rgba(255, 255, 255, 0.9),
-    1px 1px 0 rgba(0, 0, 0, 0.55),
-    2px 3px 3px rgba(0, 0, 0, 0.45),
-    4px 8px 14px rgba(0, 0, 0, 0.25);
   user-select: none;
 }
-.services--embossed .service-card__title { padding-top: var(--space-6); }
+.services--debossed .service-card__num::after {
+  content: counter(service, decimal-leading-zero);
+  position: absolute;
+  inset: 0;
+  color: transparent;
+  background: #bdbdbd;
+  -webkit-background-clip: text;
+  background-clip: text;
+  text-shadow: -1px -1.5px 1px #808080;
+  mix-blend-mode: overlay;
+}
+.services--debossed .service-card__title { padding-top: var(--space-5); }
 
 /* ---------- Version B: an index on a charcoal panel ---------- */
 .services__panel {
@@ -250,6 +269,5 @@
   .service-row__title,
   .service-row__text { grid-column: 1 / -1; }
   .service-row__text { font-size: 16px; }
-  .services--embossed .service-card__num { font-size: 72px; margin-top: -2px; }
-  .services--embossed .service-card__title { padding-top: var(--space-5); }
+  .services--debossed .service-card__num { --num-size: 120px; margin-top: calc(-22px - 0.13em); }
 }
