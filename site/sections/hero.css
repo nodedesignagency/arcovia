@@ -154,4 +154,8 @@
   inset: 0;
   min-height: 0;
 }
-.zoom--on .hero { z-index: 2; will-change: transform; }
+.zoom--on .hero { z-index: 2; }
+/* The hero's own grid fills the stage (its min-height would otherwise collapse) */
+.zoom--on .hero__inner { min-height: 100%; }
+/* While zooming, the hole in the slab must show the statement, not the fallback background */
+.hero--zooming { background: none; }

@@ -11,7 +11,11 @@
      0.06–0.30  the O drifts to the centre of the screen
      0.06–0.50  zoom: scale grows until the hole covers the screen
      0.52–0.94  statement words light up
-   With reduced motion (or no JS) nothing pins: hero and statement stack.
+   The zoom and the hole are drawn by the WebGL slab itself (concrete.js
+   setView), so the carving stays crisp and nothing is scaled in CSS. Every
+   frame is computed from p alone, so scrolling back up simply plays it in
+   reverse. Without WebGL the hero just fades. With reduced motion (or no
+   JS) nothing pins: hero and statement stack.
    ========================================================================== */
 (function () {
   "use strict";
@@ -30,6 +34,7 @@
   var words = splitWords(reveal);
   var geo = null;          // the O's counter, in hero coordinates
   var lastP = -1;
+  var lastSurface = null;
   var queued = false;
 
   function clamp(x, a, b) { return x < a ? a : x > b ? b : x; }
@@ -65,11 +70,9 @@
      The glyph is drawn in a canvas to find its inner edges, then placed where
      the browser laid out the O in the wordmark. */
   function measure() {
-    var saved = hero.style.transform;
-    hero.style.transform = "none";
     var text = mark.firstChild;
     var i = text && text.nodeType === 3 ? text.data.indexOf("O") : -1;
-    if (i < 0) { hero.style.transform = saved; return null; }
+    if (i < 0) return null;
 
     var cs = getComputedStyle(mark);
     var size = parseFloat(cs.fontSize);
@@ -115,7 +118,6 @@
     var asc = (m.fontBoundingBoxAscent || base * 0.968) * k;
     var desc = (m.fontBoundingBoxDescent || base * 0.251) * k;
     var baseline = r.top - h.top + (r.height - (asc + desc)) / 2 + asc;
-    hero.style.transform = saved;
 
     return {
       cx: r.left - h.left + ((inL + inR) / 2 - x0) * k,
@@ -125,16 +127,20 @@
     };
   }
 
+  function surface() {
+    var sfc = window.arcoviaHero;
+    return sfc && sfc.ready ? sfc : null;
+  }
+
   function reset() {
-    hero.style.transform = "";
-    hero.style.transformOrigin = "";
-    hero.style.webkitMaskImage = hero.style.maskImage = "";
+    hero.classList.remove("hero--zooming");
+    hero.style.opacity = "";
     hero.style.visibility = "";
     fades.forEach(function (el) { el.style.opacity = ""; el.style.transform = ""; });
     if (inner) inner.style.transform = "";
     words.forEach(function (w) { w.el.style.opacity = w.pale ? "var(--statement-pale)" : "1"; });
-    statement.setAttribute("data-header-theme", "dark");
-    if (window.arcoviaHero && window.arcoviaHero.setPaused) window.arcoviaHero.setPaused(false);
+    var sfc = surface();
+    if (sfc) { sfc.setPaused(false); sfc.setView({ ox: 0, oy: 0, tx: 0, ty: 0, s: 1, hole: null }); }
   }
 
   function update() {
@@ -145,58 +151,54 @@
     var rect = zoom.getBoundingClientRect();
     var travel = rect.height - vh;
     var p = travel > 0 ? clamp(-rect.top / travel, 0, 1) : 0;
-    if (p === lastP) return;
+    var sfc = surface();
+    if (p === lastP && sfc === lastSurface) return;
     lastP = p;
+    lastSurface = sfc;
     if (!geo) geo = measure();
     if (!geo) return;
 
     // 1. Hero text lifts away
     var f = smooth(0, 0.1, p);
     fades.forEach(function (el) {
-      el.style.opacity = String(1 - f);
+      el.style.opacity = f ? String(1 - f) : "";
       el.style.transform = f ? "translateY(" + (-28 * f).toFixed(1) + "px)" : "";
     });
 
-    // 2. The O's counter opens into a hole (just inside the carved rim)
+    // 2–3. The O opens into a hole and the view flies through it
     var open = smooth(0.03, 0.14, p) * 0.94;
-    if (open > 0.001) {
-      var mask = "radial-gradient(ellipse " + (geo.rx * open).toFixed(2) + "px " + (geo.ry * open).toFixed(2) + "px at " +
-        geo.cx.toFixed(2) + "px " + geo.cy.toFixed(2) + "px, transparent 98.5%, #000 100%)";
-      hero.style.webkitMaskImage = hero.style.maskImage = mask;
-    } else {
-      hero.style.webkitMaskImage = hero.style.maskImage = "";
-    }
-
-    // 3. Fly through: the O moves to the centre while the scale grows until the hole covers the screen
-    var cover = Math.sqrt(Math.pow(vw / 2 / (geo.rx * 0.94), 2) + Math.pow(vh / 2 / (geo.ry * 0.94), 2)) * 1.06;
+    var cover = Math.sqrt(Math.pow(vw / 2 / (geo.rx * 0.94), 2) + Math.pow(vh / 2 / (geo.ry * 0.94), 2)) * 1.08;
     var z = ramp(0.06, 0.5, p);
     var scale = Math.pow(cover, Math.pow(z, 1.8));
     var t = smooth(0.06, 0.3, p);
-    var tx = (vw / 2 - geo.cx) * t;
-    var ty = (vh / 2 - geo.cy) * t;
-    // Never let an edge of the slab come into view: it may only drift as far as it has grown
-    var hw = hero.offsetWidth, hh = hero.offsetHeight;
-    tx = clamp(tx, (vw - geo.cx - (hw - geo.cx) * scale), geo.cx * (scale - 1));
-    ty = clamp(ty, (vh - geo.cy - (hh - geo.cy) * scale), geo.cy * (scale - 1));
-    hero.style.transformOrigin = geo.cx.toFixed(2) + "px " + geo.cy.toFixed(2) + "px";
-    hero.style.transform = p > 0 ? "translate3d(" + tx.toFixed(2) + "px," + ty.toFixed(2) + "px,0) scale(" + scale.toFixed(4) + ")" : "";
     var through = z >= 1;
+    hero.classList.toggle("hero--zooming", p > 0);
     hero.style.visibility = through ? "hidden" : "";
-    if (window.arcoviaHero && window.arcoviaHero.setPaused) window.arcoviaHero.setPaused(p > 0.04);
 
-    // The statement room drifts forward a little as you enter it
-    if (inner) inner.style.transform = z < 1 ? "scale(" + (1 + 0.12 * (1 - smooth(0.06, 0.5, p))).toFixed(4) + ")" : "";
+    if (sfc) {
+      sfc.setPaused(p > 0.04);
+      if (!through) {
+        sfc.setView({
+          ox: geo.cx, oy: geo.cy,
+          tx: (vw / 2 - geo.cx) * t, ty: (vh / 2 - geo.cy) * t,
+          s: scale,
+          hole: open > 0.001 ? { cx: geo.cx, cy: geo.cy, rx: geo.rx * open, ry: geo.ry * open } : null
+        });
+      }
+    } else {
+      // No WebGL: no hole to fly through, so the hero simply fades away
+      hero.style.opacity = String(1 - smooth(0.06, 0.4, p));
+    }
 
-    // Header type turns light once you're in the dark room
-    if (smooth(0.06, 0.5, p) > 0.85) statement.setAttribute("data-header-theme", "dark");
-    else statement.removeAttribute("data-header-theme");
+    // The statement drifts forward a little as you enter it
+    if (inner) inner.style.transform = z < 1 ? "scale(" + (1 + 0.06 * (1 - smooth(0.06, 0.5, p))).toFixed(4) + ")" : "";
 
     // 4. Words light up, each over the span of three words
     var rr = ramp(0.52, 0.94, p);
     var n = words.length;
     words.forEach(function (w, i) {
       var v = clamp((rr * (n + 3) - i) / 3, 0, 1);
-      var dim = 0.16, max = w.pale ? 0.42 : 1;
+      var dim = 0.12, max = w.pale ? 0.34 : 1;
       w.el.style.opacity = (dim + (max - dim) * v).toFixed(3);
     });
   }
@@ -221,4 +223,7 @@
   // The O is measured from the real font, so wait for it
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { geo = null; lastP = -1; queue(); });
   setMode();
+  // The slab loads its texture asynchronously; redraw once it's ready
+  var wait = setInterval(function () { if (surface()) { clearInterval(wait); lastP = -1; queue(); } }, 100);
+  setTimeout(function () { clearInterval(wait); }, 15000);
 })();

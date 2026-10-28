@@ -18,6 +18,11 @@
      light from the upper left). A diagonal band of sunlight drifts across
      over ~34 s and deepens the relief where it passes; the cursor adds a
      dim point light.
+   - setView() zooms the slab (scale around a point, plus a shift) and can cut
+     an elliptical hole through it. The height map is redrawn for each view,
+     so carving stays crisp at any zoom; the hole is transparent, so whatever
+     sits behind the canvas shows through (zoom.js uses this to fly through
+     the O of ARCOVIA).
    - Pauses off-screen and in hidden tabs. With reduced motion it renders
      one still frame. Without WebGL the CSS fallback stays.
    ========================================================================== */
@@ -43,6 +48,10 @@
     "uniform float uTexSize;",   // css px per texture tile
     "uniform sampler2D uHeight;",// r: surface height (1 surface, 0 carved), g: charcoal inlay
     "uniform vec2 uHTexel;",     // one device px in height-map uv
+    "uniform vec2 uOrigin;",     // zoom: the point that scales (css px, slab coordinates)
+    "uniform vec2 uShift;",      // zoom: where that point sits on screen
+    "uniform float uZoom;",      // zoom: scale
+    "uniform vec4 uHole;",       // hole through the slab: centre x, y and radii x, y (slab coordinates)
     "",
     "float hash(vec2 p){ p = fract(p * vec2(123.34, 456.21)); p += dot(p, p + 45.32); return fract(p.x * p.y); }",
     "float noise(vec2 p){ vec2 i = floor(p), f = fract(p); vec2 u = f*f*(3.0-2.0*f);",
@@ -53,8 +62,9 @@
     "",
     "void main(){",
     "  vec2 res = uRes / uScale;",
-    "  vec2 p = vec2(gl_FragCoord.x, uRes.y - gl_FragCoord.y) / uScale;", // css px, y down
-    "  vec2 uv = p / res;",
+    "  vec2 sp = vec2(gl_FragCoord.x, uRes.y - gl_FragCoord.y) / uScale;", // screen, css px, y down
+    "  vec2 uv = sp / res;",                                              // height map is drawn per view, in screen space
+    "  vec2 p = uOrigin + (sp - uShift) / uZoom;",                         // the same point on the slab
     "",
     "  // Concrete: seamless texture for pores and grain, fbm for large soft mottling",
     "  vec2 tuv = p / uTexSize;",
@@ -103,7 +113,7 @@
     "  light += uSun * band * sunN * (1.0 - occ * 0.85);",
     "",
     "  // Cursor: a dim, soft point light hovering above the surface",
-    "  vec3 lc = vec3(uMouse - p, 150.0);",
+    "  vec3 lc = vec3(uMouse - sp, 150.0);",
     "  float d = length(lc.xy);",
     "  vec3 Lc = normalize(lc);",
     "  float fall = exp(-d * d / (2.0 * 240.0 * 240.0)) * uMouseAmt;",
@@ -116,7 +126,15 @@
     "  float c = albedo * light + (uSun * edge + uCursor * edgeC * 2.2) * mix(0.35, 0.7, inlay);",
     "  c *= 1.0 - 0.07 * pow(length((uv - 0.5) * vec2(1.0, 1.2)), 2.0);",
     "  c += (hash(gl_FragCoord.xy + fract(uTime) * 61.0) - 0.5) * (2.0 / 255.0);",
-    "  gl_FragColor = vec4(vec3(c), 1.0);",
+    "",
+    "  // The hole: fully transparent inside the ellipse, with a one-pixel soft edge",
+    "  float a = 1.0;",
+    "  if (uHole.z > 0.0) {",
+    "    float d = length((p - uHole.xy) / uHole.zw);",
+    "    float aa = 1.2 / (min(uHole.z, uHole.w) * uZoom);",
+    "    a = smoothstep(1.0 - aa, 1.0 + aa, d);",
+    "  }",
+    "  gl_FragColor = vec4(vec3(c) * a, a);",
     "}"
   ].join("\n");
 
@@ -133,6 +151,8 @@
       staticBand: opts.staticBand != null ? opts.staticBand : 0.6
     };
     this.mouse = { x: -9999, y: -9999, tx: -9999, ty: -9999, amt: 0, tamt: 0 };
+    this.view = { ox: 0, oy: 0, tx: 0, ty: 0, s: 1, hole: null };
+    this.carves = [];
     this.visible = true;
     this.running = false;
     this.t0 = performance.now();
@@ -141,7 +161,7 @@
   }
 
   ConcreteSurface.prototype.init = function () {
-    var gl = this.canvas.getContext("webgl", { antialias: false, alpha: false, depth: false, stencil: false, powerPreference: "low-power", preserveDrawingBuffer: false });
+    var gl = this.canvas.getContext("webgl", { antialias: false, alpha: true, premultipliedAlpha: true, depth: false, stencil: false, powerPreference: "low-power", preserveDrawingBuffer: false });
     if (!gl) return Promise.resolve(false);
     this.gl = gl;
 
@@ -158,11 +178,12 @@
     gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
 
     this.u = {};
-    ["uRes", "uScale", "uTime", "uBand", "uMouse", "uMouseAmt", "uSun", "uCursor", "uTex", "uTexSize", "uHeight", "uHTexel"].forEach(function (n) {
+    ["uRes", "uScale", "uTime", "uBand", "uMouse", "uMouseAmt", "uSun", "uCursor", "uTex", "uTexSize", "uHeight", "uHTexel", "uOrigin", "uShift", "uZoom", "uHole"].forEach(function (n) {
       this.u[n] = gl.getUniformLocation(prog, n);
     }, this);
 
     this.heightCanvas = document.createElement("canvas");
+    this.sharpCanvas = document.createElement("canvas");
     this.heightTex = gl.createTexture();
     gl.activeTexture(gl.TEXTURE1);
     gl.bindTexture(gl.TEXTURE_2D, this.heightTex);
@@ -228,16 +249,8 @@
     });
   };
 
-  /* Size the canvas and redraw the height map from the live layout */
+  /* Size the canvas, collect the carvings from the live layout, paint the height map */
   ConcreteSurface.prototype.layout = function () {
-    // Measure the untransformed layout, even mid zoom-through (zoom.js scales the host)
-    var saved = this.host.style.transform;
-    this.host.style.transform = "none";
-    this.layoutNow();
-    this.host.style.transform = saved;
-  };
-
-  ConcreteSurface.prototype.layoutNow = function () {
     var gl = this.gl, rect = this.host.getBoundingClientRect();
     var w = Math.max(1, rect.width), h = Math.max(1, rect.height);
     var coarse = window.matchMedia("(pointer: coarse)").matches;
@@ -250,93 +263,121 @@
     this.canvas.width = Math.round(w * dpr);
     this.canvas.height = Math.round(h * dpr);
     gl.viewport(0, 0, this.canvas.width, this.canvas.height);
-
-    // Height map at full device resolution, so carved edges are as sharp as the type around them
-    this.drawHeight(w, h, dpr);
+    this.carves = this.collect();
+    this.heightDirty = true;
     this.needsFrame = true;
   };
 
-  ConcreteSurface.prototype.drawHeight = function (w, h, s) {
-    var gl = this.gl, hc = this.heightCanvas;
-    hc.width = Math.round(w * s);
-    hc.height = Math.round(h * s);
-
-    var sharp = document.createElement("canvas");
-    sharp.width = hc.width;
-    sharp.height = hc.height;
-    var ctx = sharp.getContext("2d");
-    ctx.scale(s, s);
-    ctx.fillStyle = "rgb(255,0,0)";
-    ctx.fillRect(0, 0, w, h);
-
+  /* Read every [data-carve] element into drawing instructions, in slab coordinates */
+  ConcreteSurface.prototype.collect = function () {
     var origin = this.host.getBoundingClientRect();
-    var panels = [];
-    var els = this.host.querySelectorAll("[data-carve]");
+    var out = [];
     var order = { panel: 0, seam: 1, hole: 2, mark: 3, text: 4 };
-    Array.prototype.slice.call(els).sort(function (a, b) {
+    Array.prototype.slice.call(this.host.querySelectorAll("[data-carve]")).sort(function (a, b) {
       return order[a.getAttribute("data-carve")] - order[b.getAttribute("data-carve")];
     }).forEach(function (el) {
       var r = el.getBoundingClientRect();
       var x = r.left - origin.left, y = r.top - origin.top;
       var kind = el.getAttribute("data-carve");
-      if (kind === "panel") {
+      if (kind === "mark") {
+        var paths = markPaths(el);
+        var vb = (el.getAttribute("viewBox") || "0 0 554 539").split(/[\s,]+/).map(Number);
+        var k = Math.min(r.width / vb[2], r.height / vb[3]);
+        out.push({ kind: kind, paths: paths, x: x + (r.width - vb[2] * k) / 2, y: y + (r.height - vb[3] * k) / 2, k: k });
+      } else if (kind === "text") {
+        out.push(textGlyphs(el, origin));
+      } else {
+        out.push({ kind: kind, x: x, y: y, w: r.width, h: r.height });
+      }
+    });
+    return out;
+  };
+
+  /* Paint the height map for the current view: red = surface height, green = charcoal inlay */
+  ConcreteSurface.prototype.paintHeight = function () {
+    var gl = this.gl, hc = this.heightCanvas, sc = this.sharpCanvas, d = this.dpr, v = this.view;
+    var W = this.canvas.width, H = this.canvas.height;
+    if (hc.width !== W || hc.height !== H) { hc.width = sc.width = W; hc.height = sc.height = H; }
+
+    var ctx = sc.getContext("2d");
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.fillStyle = "rgb(255,0,0)";
+    ctx.fillRect(0, 0, W, H);
+    // screen = shift + (slab - origin) * scale
+    ctx.setTransform(d * v.s, 0, 0, d * v.s, d * (v.ox + v.tx - v.ox * v.s), d * (v.oy + v.ty - v.oy * v.s));
+
+    var panels = [];
+    this.carves.forEach(function (c) {
+      if (c.kind === "panel") {
         // Charcoal inlay, flush with the surface, with a fine groove around it
-        panels.push([x, y, r.width, r.height]);
+        panels.push(c);
         ctx.strokeStyle = "rgb(120,0,0)";
         ctx.lineWidth = 1.5;
-        ctx.strokeRect(x - 0.75, y - 0.75, r.width + 1.5, r.height + 1.5);
-      } else if (kind === "seam") {
+        ctx.strokeRect(c.x - 0.75, c.y - 0.75, c.w + 1.5, c.h + 1.5);
+      } else if (c.kind === "seam") {
         // Formwork joint: a fine, shallow groove along the element's long side
         ctx.fillStyle = "rgb(70,0,0)";
-        if (r.width >= r.height) ctx.fillRect(x, y + r.height / 2 - 0.6, r.width, 1.2);
-        else ctx.fillRect(x + r.width / 2 - 0.6, y, 1.2, r.height);
-      } else if (kind === "hole") {
+        if (c.w >= c.h) ctx.fillRect(c.x, c.y + c.h / 2 - 0.6, c.w, 1.2);
+        else ctx.fillRect(c.x + c.w / 2 - 0.6, c.y, 1.2, c.h);
+      } else if (c.kind === "hole") {
         // Formwork tie hole: a small round recess, the same circle as the top of the A
         ctx.fillStyle = "rgb(0,0,0)";
         ctx.beginPath();
-        ctx.arc(x + r.width / 2, y + r.height / 2, r.width / 2, 0, Math.PI * 2);
+        ctx.arc(c.x + c.w / 2, c.y + c.h / 2, c.w / 2, 0, Math.PI * 2);
         ctx.fill();
-      } else if (kind === "mark") {
-        var paths = markPaths(el);
-        if (!paths.length) return;
-        var vb = (el.getAttribute("viewBox") || "0 0 554 539").split(/[\s,]+/).map(Number);
-        var k = Math.min(r.width / vb[2], r.height / vb[3]);
+      } else if (c.kind === "mark") {
         ctx.save();
-        ctx.translate(x + (r.width - vb[2] * k) / 2, y + (r.height - vb[3] * k) / 2);
-        ctx.scale(k, k);
+        ctx.translate(c.x, c.y);
+        ctx.scale(c.k, c.k);
         ctx.fillStyle = "rgb(0,0,0)";
-        paths.forEach(function (p) { ctx.fill(p); });
+        c.paths.forEach(function (p) { ctx.fill(p); });
         ctx.restore();
-      } else if (kind === "text") {
-        drawText(ctx, el, origin);
+      } else if (c.kind === "text") {
+        ctx.font = c.font;
+        ctx.fillStyle = "rgb(0,0,0)";
+        ctx.textBaseline = "alphabetic";
+        c.glyphs.forEach(function (g) { ctx.fillText(g.ch, g.x, g.y); });
       }
     });
 
-    // Soften every edge into a sloped wall (the bevel)
+    // Soften every edge into a sloped wall (the bevel). The wall widens a little as you zoom in.
     var hctx = hc.getContext("2d");
-    var blur = 0.9 * s;
+    var blur = 0.9 * d * Math.min(v.s, 2.2);
+    hctx.setTransform(1, 0, 0, 1, 0, 0);
     if (typeof hctx.filter === "string") {
       hctx.filter = "blur(" + blur.toFixed(2) + "px)";
-      hctx.drawImage(sharp, 0, 0);
+      hctx.drawImage(sc, 0, 0);
       hctx.filter = "none";
     } else {
       hctx.globalAlpha = 1 / 9;
-      for (var dx = -1; dx <= 1; dx++) for (var dy = -1; dy <= 1; dy++) hctx.drawImage(sharp, dx * blur, dy * blur);
+      for (var dx = -1; dx <= 1; dx++) for (var dy = -1; dy <= 1; dy++) hctx.drawImage(sc, dx * blur, dy * blur);
       hctx.globalAlpha = 1;
     }
 
     // Inlay mask goes in the green channel unblurred, so panel edges stay crisp
-    hctx.save();
-    hctx.globalCompositeOperation = "lighter";
-    hctx.fillStyle = "rgb(0,255,0)";
-    hctx.scale(s, s);
-    panels.forEach(function (r) { hctx.fillRect(r[0], r[1], r[2], r[3]); });
-    hctx.restore();
+    if (panels.length) {
+      hctx.save();
+      hctx.globalCompositeOperation = "lighter";
+      hctx.fillStyle = "rgb(0,255,0)";
+      hctx.setTransform(d * v.s, 0, 0, d * v.s, d * (v.ox + v.tx - v.ox * v.s), d * (v.oy + v.ty - v.oy * v.s));
+      panels.forEach(function (c) { hctx.fillRect(c.x, c.y, c.w, c.h); });
+      hctx.restore();
+    }
 
     gl.activeTexture(gl.TEXTURE1);
     gl.bindTexture(gl.TEXTURE_2D, this.heightTex);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, hc);
-    this.hTexel = [1 / hc.width, 1 / hc.height];
+    this.hTexel = [1 / W, 1 / H];
+    this.heightDirty = false;
+  };
+
+  /* Zoom the slab and/or cut a hole through it. view: { ox, oy, tx, ty, s, hole: { cx, cy, rx, ry } | null },
+     all in css px in the slab's own (unzoomed) coordinates. Draws a frame straight away. */
+  ConcreteSurface.prototype.setView = function (view) {
+    this.view = view;
+    this.heightDirty = true;
+    this.needsFrame = true;
+    if (this.ready && !document.hidden) this.render((performance.now() - this.t0) / 1000, !this.running);
   };
 
   ConcreteSurface.prototype.bind = function () {
@@ -416,7 +457,8 @@
   };
 
   ConcreteSurface.prototype.render = function (t, still) {
-    var gl = this.gl, u = this.u, o = this.opts;
+    var gl = this.gl, u = this.u, o = this.opts, v = this.view;
+    if (this.heightDirty) this.paintHeight();
     var band = still && this.reduced.matches ? o.staticBand : 0.55 + 0.45 * Math.sin((t / o.period) * Math.PI * 2 + 0.2);
     gl.uniform2f(u.uRes, this.canvas.width, this.canvas.height);
     gl.uniform1f(u.uScale, this.dpr);
@@ -430,6 +472,11 @@
     gl.uniform1f(u.uTexSize, o.textureSize);
     gl.uniform1i(u.uHeight, 1);
     gl.uniform2f(u.uHTexel, this.hTexel[0], this.hTexel[1]);
+    gl.uniform2f(u.uOrigin, v.ox, v.oy);
+    gl.uniform2f(u.uShift, v.ox + v.tx, v.oy + v.ty);
+    gl.uniform1f(u.uZoom, v.s);
+    if (v.hole) gl.uniform4f(u.uHole, v.hole.cx, v.hole.cy, v.hole.rx, v.hole.ry);
+    else gl.uniform4f(u.uHole, 0, 0, 0, 0);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
     this.needsFrame = false;
   };
@@ -447,16 +494,16 @@
     return Array.prototype.map.call(src.querySelectorAll("path"), function (p) { return new Path2D(p.getAttribute("d")); });
   }
 
-  // Draw an element's text exactly where the browser laid it out, glyph by glyph
-  function drawText(ctx, el, origin) {
+  // Where the browser laid out each glyph of an element's text, so the carving matches it exactly
+  function textGlyphs(el, origin) {
+    var out = { kind: "text", font: "", glyphs: [] };
     var node = el.firstChild;
-    if (!node || node.nodeType !== 3) return;
+    if (!node || node.nodeType !== 3) return out;
     var cs = getComputedStyle(el);
     var size = parseFloat(cs.fontSize);
-    ctx.save();
-    ctx.font = cs.fontWeight + " " + size + "px " + cs.fontFamily;
-    ctx.fillStyle = "rgb(0,0,0)";
-    ctx.textBaseline = "alphabetic";
+    out.font = cs.fontWeight + " " + size + "px " + cs.fontFamily;
+    var ctx = document.createElement("canvas").getContext("2d");
+    ctx.font = out.font;
     var m = ctx.measureText(node.data);
     var asc = m.fontBoundingBoxAscent || size * 0.968;
     var desc = m.fontBoundingBoxDescent || size * 0.251;
@@ -466,10 +513,9 @@
       range.setEnd(node, i + 1);
       var r = range.getBoundingClientRect();
       // A glyph's client rect is the font's content area, so the baseline sits one ascent down
-      var baseline = r.top - origin.top + (r.height - (asc + desc)) / 2 + asc;
-      ctx.fillText(node.data[i], r.left - origin.left, baseline);
+      out.glyphs.push({ ch: node.data[i], x: r.left - origin.left, y: r.top - origin.top + (r.height - (asc + desc)) / 2 + asc });
     }
-    ctx.restore();
+    return out;
   }
 
   function loadScript(src) {
