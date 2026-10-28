@@ -1,19 +1,16 @@
 /* ==========================================================================
    SECTION: statement — Home, block 2
    A pure white room, seen through the hole burnt in the O of ARCOVIA
-   (zoom.js), holding the brief's statement in large type. As you scroll its
-   letters darken in a diagonal sweep, line after line, passing through a
-   halftone on the way (after a reference the user sent).
-   "Spreadsheets validate data," ends paler on purpose.
+   (zoom.js), holding the brief's statement set like an editorial page:
+   large regular type with a deep first-line indent. As you scroll the text
+   writes itself in, letter by letter, with a soft fading front.
+   "Spreadsheets validate data," stays grey on purpose.
    Uses shared tokens from styles.css.
    ========================================================================== */
 
 .statement {
-  --st-pale: #e4e4e4;        /* letters not yet reached */
-  --st-mid: #bababa;         /* the grey a letter passes through */
   --st-ink: var(--color-ink);
-  --st-soft: #9e9e9e;        /* "Spreadsheets validate data," once lit */
-  --st-soft-mid: #d6d6d6;
+  --st-soft: #9e9e9e;        /* "Spreadsheets validate data," */
   position: relative;
   display: grid;
   align-items: center;
@@ -25,51 +22,35 @@
   overflow: hidden;
 }
 
-/* Lines up with the hero headline on the page grid */
+/* On the page grid, lined up with the hero headline */
 .statement__inner {
   width: 100%;
   max-width: calc(var(--container-max) - 2 * var(--gutter));
   margin-inline: auto;
   transform-origin: 30% 50%;
+  /* one column of the 12-column grid, plus its gap */
+  --col: calc((100% - 11 * var(--grid-gap)) / 12 + var(--grid-gap));
 }
 
 .statement__text {
-  max-width: 22em;
-  font-size: 52px;
-  font-weight: var(--weight-semibold);
-  line-height: 1.1;
-  letter-spacing: -0.022em;
+  max-width: calc(var(--col) * 10 - var(--grid-gap));
+  font-size: 56px;
+  font-weight: var(--weight-book);
+  line-height: 1.12;
+  letter-spacing: -0.025em;
+  /* The editorial indent: the first line starts three columns in */
+  text-indent: calc(var(--col) * 3);
 }
 
 .statement .w { white-space: nowrap; }
-
-/* Without zoom.js the text simply reads, with the pale phrase paler */
 .statement__pale { color: var(--st-soft); }
 
-/* With zoom.js every letter starts pale and is set as you scroll */
-.statement [data-reveal].is-split .c { color: var(--st-pale); }
-.statement [data-reveal].is-split .c.is-on { color: var(--st-ink); }
-.statement [data-reveal].is-split .statement__pale .c.is-on { color: var(--st-soft); }
-
-/* Halftone: ink dots on mid grey, their radius (--dot) set by zoom.js; at about 2.1px they merge */
-.statement [data-reveal].is-split .c.is-tone {
-  --dot-ink: var(--st-ink);
-  --dot-bg: var(--st-mid);
-  color: var(--st-ink);
-  -webkit-text-fill-color: transparent;
-  background-image: radial-gradient(circle var(--dot, 1px) at 50% 50%, var(--dot-ink) 75%, var(--dot-bg) 100%);
-  background-size: 3px 3px;
-  -webkit-background-clip: text;
-  background-clip: text;
-}
-.statement [data-reveal].is-split .statement__pale .c.is-tone {
-  --dot-ink: var(--st-soft);
-  --dot-bg: var(--st-soft-mid);
-}
+/* With zoom.js each letter starts invisible; its opacity is set as you scroll */
+.statement [data-reveal].is-split .c { opacity: 0; }
 
 @media (max-width: 1199px) {
-  .statement__text { font-size: 40px; }
+  .statement__text { font-size: 44px; max-width: none; }
 }
 @media (max-width: 809px) {
-  .statement__text { font-size: 28px; line-height: 1.16; }
+  .statement__text { font-size: 30px; line-height: 1.16; text-indent: calc(var(--col) * 2); }
 }

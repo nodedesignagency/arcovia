@@ -3,15 +3,15 @@
    As you scroll past the hero, its text lifts away while the carved ARCOVIA
    already starts to grow; an ember catches in the O and burns a hole through
    the concrete, and the view flies through it into the statement behind.
-   The statement rises into place, then its letters darken in a diagonal
-   sweep, line after line, passing through a halftone on the way.
+   The statement rises into place while its text writes itself in, letter
+   by letter, with a soft fading front (after a reference the user sent).
 
    Scroll progress p (0 → 1) over the pinned stage:
      0.00–0.12  hero text fades and lifts; the zoom starts at the same time
      0.02–0.60  an ember catches in the O and burns outwards
      0.00–0.60  zoom: the O drifts to the centre and the view flies through
      0.30–0.58  the statement rises from below into place (depth)
-     0.58–0.97  statement letters darken, line after line
+     0.36–0.96  its text writes itself in, letter by letter
    The zoom and the burn are drawn by the WebGL slab itself (concrete.js
    setView), so the carving stays crisp and nothing is scaled in CSS. Every
    frame is computed from p alone, so scrolling back up simply plays it in
@@ -33,7 +33,6 @@
   var reveal = statement.querySelector("[data-reveal]");
   var reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
   var chars = splitChars(reveal);
-  var charsMeasured = false;
   var geo = null;          // the O's counter, in hero coordinates
   var lastP = -1;
   var lastSurface = null;
@@ -64,7 +63,7 @@
           span.className = "c";
           span.textContent = ch;
           word.appendChild(span);
-          out.push({ el: span, pale: pale, o: 0, q: -1 });
+          out.push({ el: span, pale: pale, q: -1 });
         });
         frag.appendChild(word);
       });
@@ -74,47 +73,14 @@
     return out;
   }
 
-  /* Where each letter sits: across its line (0–1) plus a lag for each line down,
-     so the sweep runs diagonally through the paragraph */
-  var LINE_LAG = 0.32, BAND = 0.42;
-  var maxOrder = 1;
-  function measureChars() {
-    if (!reveal || !chars.length) return;
-    var box = reveal.getBoundingClientRect();
-    var lh = parseFloat(getComputedStyle(reveal).lineHeight) * (box.width / (reveal.offsetWidth || box.width));
-    maxOrder = 0;
-    chars.forEach(function (c) {
-      var r = c.el.getBoundingClientRect();
-      var line = Math.round((r.top - box.top) / lh);
-      c.o = (r.left - box.left + r.width / 2) / box.width + line * LINE_LAG;
-      if (c.o > maxOrder) maxOrder = c.o;
-      c.q = -1;
-    });
-    charsMeasured = true;
-  }
-
-  /* One letter's state: pale → mid grey → halftone dots of ink getting denser → solid ink.
-     The tones mirror statement.css (--st-pale, --st-mid). */
-  var STEPS = 30;
+  /* One letter's state: invisible → fading in → solid. The front is soft, a few
+     words wide, so the text seems to write itself rather than switch on. */
+  var FRONT = 28, STEPS = 24;   // letters in the fading front; opacity steps
   function paintChar(c, v) {
     var q = v <= 0 ? 0 : v >= 1 ? STEPS : Math.min(STEPS - 1, Math.max(1, Math.round(v * STEPS)));
     if (q === c.q) return;
     c.q = q;
-    var el = c.el;
-    if (q === 0) { el.className = "c"; el.style.cssText = ""; return; }
-    if (q === STEPS) { el.className = "c is-on"; el.style.cssText = ""; return; }
-    var t = q / STEPS;
-    if (t < 0.3) {
-      // Warming up: pale to mid grey
-      var k = t / 0.3, from = 228, to = c.pale ? 214 : 186;
-      var g = Math.round(from + (to - from) * k);
-      el.className = "c";
-      el.style.cssText = "color:rgb(" + g + "," + g + "," + g + ")";
-    } else {
-      // Halftone: ink dots on mid grey, growing until they merge
-      el.className = "c is-tone";
-      el.style.cssText = "--dot:" + (0.3 + 1.9 * (t - 0.3) / 0.7).toFixed(2) + "px";
-    }
+    c.el.style.opacity = q === STEPS ? "1" : (Math.pow(q / STEPS, 1.4)).toFixed(3);
   }
 
   /* Find the counter (the inside) of the O, in hero coordinates.
@@ -254,10 +220,9 @@
       inner.style.opacity = rise < 1 ? (0.25 + 0.75 * rise).toFixed(3) : "";
     }
 
-    // 5. Letters darken in a diagonal sweep, line after line
-    if (!charsMeasured) measureChars();
-    var front = ramp(0.58, 0.97, p) * (maxOrder + BAND);
-    chars.forEach(function (c) { paintChar(c, (front - c.o) / BAND); });
+    // 5. The text writes itself in, letter by letter, as the room arrives
+    var front = ramp(0.36, 0.96, p) * (chars.length + FRONT);
+    chars.forEach(function (c, i) { paintChar(c, (front - i) / FRONT); });
   }
 
   function queue() {
@@ -275,10 +240,10 @@
   }
 
   window.addEventListener("scroll", queue, { passive: true });
-  window.addEventListener("resize", function () { geo = null; charsMeasured = false; lastP = -1; queue(); });
+  window.addEventListener("resize", function () { geo = null; lastP = -1; queue(); });
   if (reduced.addEventListener) reduced.addEventListener("change", setMode);
   // The O is measured from the real font, so wait for it
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { geo = null; charsMeasured = false; lastP = -1; queue(); });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { geo = null; lastP = -1; queue(); });
   setMode();
   // The slab loads its texture asynchronously; redraw once it's ready
   var wait = setInterval(function () { if (surface()) { clearInterval(wait); lastP = -1; queue(); } }, 100);

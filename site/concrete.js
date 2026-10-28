@@ -147,20 +147,26 @@
     "      float k = (d - R * (0.55 + 0.75 * n)) * unit;",       // px from the burning edge; < 0 is burnt through
     "      if (R > 0.0005) a = smoothstep(-0.8, 0.8, k);",
     "      float kk = max(k, 0.0);",
-    "      float flick = 0.78 + 0.44 * noise(vec2(ang * 5.0 + d * 4.0, uTime * 4.0));",
-    "      float core = exp(-kk / 3.5);",                          // white-hot line on the edge
-    "      float flame = exp(-kk / 14.0) * flick;",                // the burning band
-    "      float bloom = exp(-kk / 55.0) * 0.45;",                 // light thrown onto the concrete
-    "      float charW = 22.0 + 40.0 * fbm(q * 5.0 + 21.0);",
-    "      float charAmt = smoothstep(charW + 18.0, charW * 0.35, kk) * smoothstep(0.0, 0.04, R);",
-    "      charAmt *= 0.7 + 0.4 * fbm(q * 16.0 + 5.0);",
-    "      vec3 warm = mix(vec3(1.0), vec3(1.0, 0.74, 0.42), uBurnP.z);",
-    "      vec3 ember = mix(vec3(0.85), vec3(1.0, 0.5, 0.16), uBurnP.z);",
-    "      col *= 1.0 - 0.72 * charAmt;",                          // charred first, the glow over it
-    "      vec3 glow = heat * (core * vec3(1.0) + flame * warm * 0.9 + bloom * ember * 0.55);",
-    "      col = 1.0 - (1.0 - col) * (1.0 - clamp(glow, 0.0, 1.0));",
-    "      spill = heat * exp(min(k, 0.0) / 24.0) * (1.0 - a);",   // light spilling in past the edge
-    "      inside = mix(vec3(1.0), warm, 0.6);",
+    "      float flick = 0.85 + 0.3 * noise(vec2(ang * 5.0 + d * 4.0, uTime * 4.0));",
+    // Glow after the reference: a clean, luminous band, white at the edge, light gold through
+    // the band, golden at the fringe. Always brighter than the concrete, so it reads as light.
+    "      float core = exp(-kk / 7.0);",                          // white-hot edge
+    "      float flame = exp(-kk / 22.0) * flick;",                // the glowing band
+    "      float bloom = exp(-kk / 46.0);",                        // soft light thrown onto the concrete
+    // Only a faint scorch, well beyond the glow
+    "      float charAmt = smoothstep(150.0, 70.0, kk) * smoothstep(30.0, 60.0, kk) * smoothstep(0.0, 0.04, R);",
+    "      charAmt *= 0.5 + 0.6 * fbm(q * 9.0 + 5.0);",
+    "      vec3 gold = mix(vec3(1.0), vec3(1.0, 0.93, 0.72), uBurnP.z);",
+    "      vec3 amber = mix(vec3(1.0), vec3(1.0, 0.78, 0.34), uBurnP.z);",
+    "      col *= 1.0 - 0.1 * charAmt;",
+    "      float glowAmt = clamp(heat * (core + flame * 0.95 + bloom * 0.5), 0.0, 1.0);",
+    "      vec3 tint = mix(amber, gold, clamp(core * 1.2 + flame * 0.5, 0.0, 1.0));",
+    "      tint = mix(tint, vec3(1.0), clamp(core * 1.1, 0.0, 1.0));",
+    // Light never darkens: red and green only rise; blue may drop, which gives the gold its colour
+    "      col = mix(col, vec3(max(tint.r, col.r), max(tint.g, col.g), tint.b), glowAmt);",
+    // Inside the hole: hot light spilling in past the edge, fading to clear
+    "      spill = heat * 0.9 * exp(min(k, 0.0) / 30.0) * (1.0 - a);",
+    "      inside = mix(vec3(1.0), gold, 0.5);",
     "    }",
     "  }",
     "  gl_FragColor = vec4(col * a + inside * spill, a + spill);",
