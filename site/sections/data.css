@@ -111,7 +111,8 @@
   transform-style: preserve-3d;
 }
 
-/* The base stands on the floor with a soft contact shadow */
+/* The base stands on the floor with a soft contact shadow, fading in as it
+   lands (--land, set by stack.js; 1 without JS) */
 .stack__block:first-child::after {
   content: "";
   position: absolute;
@@ -119,11 +120,9 @@
   left: -1%;
   right: -3%;
   height: 22px;
-  background: radial-gradient(50% 100% at 50% 0%, rgba(0, 0, 0, 0.22), rgba(0, 0, 0, 0) 70%);
-  opacity: 0;
-  transition: opacity var(--dur-base) var(--ease-out);
+  background: radial-gradient(50% 100% at 50% 0%, rgba(0, 0, 0, 0.18), rgba(0, 0, 0, 0) 70%);
+  opacity: var(--land, 1);
 }
-.stack__block:first-child.is-landed::after { opacity: 1; }
 
 /* The box turns around its own centre, half its depth behind the face */
 .stack__body {
@@ -182,23 +181,24 @@
     linear-gradient(rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.2)),
     url("../assets/concrete-cast.jpg");
 }
-/* Once a block sits on it, the top only shows in the joint, deep in shadow */
+/* Once a block sits on it, the top only shows in the joint, in shadow.
+   --cover goes from 0 to 1 as the block above settles (set by stack.js;
+   without JS every top but the highest is covered) */
 .stack__side--top::after {
   content: "";
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  background: linear-gradient(rgba(20, 20, 20, 0.62), rgba(20, 20, 20, 0.5));
-  opacity: 0;
-  transition: opacity var(--dur-base) var(--ease-out);
+  background: linear-gradient(rgba(20, 20, 20, 0.52), rgba(20, 20, 20, 0.42));
+  opacity: var(--cover, 1);
 }
-.stack__block.is-covered .stack__side--top::after { opacity: 1; }
+.stack__block:last-child .stack__side--top::after { opacity: var(--cover, 0); }
 
 .stack__side--right,
 .stack__side--left {
   width: var(--depth);
   background-image:
-    linear-gradient(90deg, rgba(0, 0, 0, 0.32), rgba(0, 0, 0, 0.4)),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.33)),
     url("../assets/concrete-cast.jpg");
 }
 .stack__side--right { left: 100%; transform-origin: 0 50%; transform: rotateY(90deg); }

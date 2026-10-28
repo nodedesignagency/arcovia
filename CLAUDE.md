@@ -38,7 +38,7 @@ cd ~/Desktop/arcovia-preview && ./preview.sh <branch>
 - `site/sections/<name>.css`: one stylesheet per section. Asset paths in these files start with `../assets/` (don't use `var(--texture-concrete)` here: its URL resolves relative to the section file and breaks).
 - `site/main.js`: small shared JS (header, menu, path picker, office clocks, wordmark fit, reveal on scroll for anything marked `data-reveal`).
 - `site/concrete.js`: WebGL concrete for the hero (carved text and marks, drifting sunlight, cursor light). Built to become a Framer code component.
-- `site/stack.js`: the data section's blocks that come down onto a stack as you scroll, each a 3D concrete box (drawn in an axonometric view: top and right end showing, faces flat so text stays crisp) turning a full circle on its vertical axis before it settles (sticky stage with the heading pinned, lift back off on scroll up). Built to become a Framer code component.
+- `site/stack.js`: the data section's blocks that come down onto a stack as you scroll, each a 3D concrete box (drawn in an axonometric view: top and right end showing, faces flat so text stays crisp) turning a full circle on its vertical axis before it settles (sticky stage with the heading pinned). The motion is scroll-linked with light smoothing, no timers or bounce: each block owns one stretch of scroll, so blocks always come and go one at a time. Built to become a Framer code component.
 - `site/assets/`: concrete texture (seamless, 90 KB), cast-concrete texture for the data blocks (`concrete-cast.jpg`, seamless, made with Magnific), traced A-mark SVG (replace with the CM.SUPPLY master when it arrives).
 - `review/`: screenshots and videos for review. Git-ignored; send them to the user, don't commit them.
 
@@ -59,7 +59,7 @@ Map: 8 points (Los Angeles, San Francisco, New York, San Juan, São Paulo, Londo
 - Colours: monochrome only (concrete `#d3d3d3`, charcoal `#565656`, white cards). Body text must reach 4.5:1 contrast on concrete.
 - Type: Montserrat stands in for Gotham (the client may license Gotham later).
 - Breakpoints match Framer: desktop ≥1200, tablet 810–1199, phone ≤809.
-- Things the user likes: the folding masthead header, built like defiant.vc (labels row with office clocks, big A-mark, wordmark, one line, two columns of link rows; folds into a thin bar with "Menu +" on scroll), the carved formwork seam with a round tie hole at each end (v2 look: carved into the concrete, not a flat CSS line), the bracketed chip (`.chip`), the carved ARCOVIA wordmark, the one-button path picker.
+- Things the user likes: the folding masthead header, built like defiant.vc (labels row with office clocks, big A-mark, wordmark, one line, two columns of link rows; folds into a thin bar with "Menu +" on scroll), the carved formwork seam with a round tie hole at each end (v2 look: carved into the concrete, not a flat CSS line), the bracketed chip (`.chip`, set in plain text brackets: `[ LABEL ]`), the carved ARCOVIA wordmark, the one-button path picker.
 - Things the user has rejected: free-floating spaced-capitals eyebrow labels (they read as AI-generated), the charcoal logo tile, anything that only looks sharp under the cursor light (carving must look crisp at all times), a CTA button in the nav, seams/lines under the header.
 - While exploring, the user reviews desktop (1440 and 1728 at 2x) first; tablet and phone get refined once a desktop direction is approved.
 

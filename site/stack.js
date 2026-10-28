@@ -1,40 +1,38 @@
 /* ==========================================================================
    DropStack — concrete blocks that come down onto a stack as you scroll.
    Built as one self-contained class so it can become a Framer code
-   component later (props: blocks, step length, turn, perspective).
+   component later (props: blocks, scroll per block, smoothing, perspective).
 
    How it works
    - The section becomes a tall scroll track around a sticky stage. Each
-     block has its own scroll point: passing it brings the block down,
-     scrolling back up lifts it off again, top block first.
-   - A block falls in from above the stage while it turns one full circle
-     on its vertical axis, then settles on the stack. Each block is a real
-     box: its top, ends and back are added here (CSS draws the stack in an
-     axonometric view). Perspective flattens out over the last stretch of
-     the turn, so the face ends exactly flat and the text crisp.
-   - A block with another landed on it darkens its top, which then only
-     shows in the joint.
-   - Motion runs on time, not on scroll position, so every block moves the
-     same way however fast you scroll. The next block starts once the one
-     below is well on its way.
+     block owns one stretch of that track, one after another: across its
+     stretch it comes down from above the stage, turning one full circle on
+     its vertical axis, and settles on the stack. Scrolling back plays the
+     same stretch in reverse, so blocks always leave one at a time, top
+     block first.
+   - Everything follows the scroll position itself (no timers, no bounce),
+     eased by a light exponential smoothing so wheel and trackpad steps
+     glide instead of jumping.
+   - Each block is a real box: its top, ends and back are added here (CSS
+     draws the stack in an axonometric view). While it turns, the block
+     drops that slant and turns in plain perspective; over the last stretch
+     it eases back into the slanted view and the perspective flattens out,
+     so the face lands exactly flat and the text crisp.
+   - The joint under a block darkens as the block above settles on it, and
+     the base's contact shadow fades in as it lands.
    - The first block in the markup is the base; CSS stacks them upwards.
    - Without JS, or with reduced motion, the stack is simply built.
    ========================================================================== */
 (function () {
   "use strict";
 
-  var EASE_FALL = "cubic-bezier(0.5, 0, 0.2, 1)";  // gathers speed, then eases onto the stack
-  var EASE_TURN = "cubic-bezier(0.4, 0.1, 0.2, 1)"; // the turn slows as the block settles
-  var EASE_LIFT = "cubic-bezier(0.5, 0, 0.75, 0)";
-  var PERSPECTIVE = 1200;                            // css px
-  var OVERLAP = 0.6;                                 // the next block starts 60% into this one's fall
+  var PERSPECTIVE = 1200; // css px
+  var SMOOTHING = 0.14;   // seconds: how long the motion takes to catch up with the scroll
 
-  function currentY(el) {
-    var t = getComputedStyle(el).transform;
-    if (!t || t === "none") return 0;
-    var v = t.slice(t.indexOf("(") + 1, -1).split(",").map(parseFloat);
-    return v.length === 6 ? v[5] : v[13];
-  }
+  function clamp01(x) { return x < 0 ? 0 : x > 1 ? 1 : x; }
+  function smoothstep(a, b, x) { var t = clamp01((x - a) / (b - a)); return t * t * (3 - 2 * t); }
+  // Starts from rest, gathers speed gently and slows into place: no sudden starts or stops
+  function settle(t) { return (1 - Math.cos(Math.PI * t)) / 2; }
 
   function DropStack(section) {
     this.section = section;
@@ -42,12 +40,10 @@
     this.stack = section.querySelector(".stack");
     this.blocks = Array.prototype.slice.call(section.querySelectorAll(".stack__block"));
     this.bodies = this.blocks.map(function (el) { return el.querySelector(".stack__body"); });
-    this.state = this.blocks.map(function () { return "up"; });
-    this.anims = [];
-    this.turns = [];
-    this.readyAt = [];
     this.rise = [];
-    this.marks = [];
+    this.progress = 0;  // shown, in blocks: 2.5 = two blocks down, the third halfway
+    this.target = 0;    // where the scroll says it should be
+    this.running = false;
   }
 
   DropStack.prototype.init = function () {
@@ -63,24 +59,17 @@
       });
     });
 
-    this.measure();
-
     if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      this.section.style.height = "";
-      this.blocks.forEach(function (el, i) { self.place(i, "landed"); });
+      this.progress = this.blocks.length;
+      this.render();
       return;
     }
 
-    // Blocks already passed (a reload halfway down the page) start in place
-    var target = this.target();
-    this.blocks.forEach(function (el, i) { self.place(i, i < target ? "landed" : "up"); });
+    this.measure();
+    this.progress = this.target = this.read(); // a reload halfway down the page starts in place
+    this.render();
 
-    var queued = false;
-    window.addEventListener("scroll", function () {
-      if (queued) return;
-      queued = true;
-      requestAnimationFrame(function () { queued = false; self.sync(); });
-    }, { passive: true });
+    window.addEventListener("scroll", function () { self.kick(); }, { passive: true });
 
     var width = window.innerWidth;
     window.addEventListener("resize", function () {
@@ -93,160 +82,99 @@
   };
 
   DropStack.prototype.relayout = function () {
-    var self = this;
     this.measure();
-    this.blocks.forEach(function (el, i) { if (self.state[i] === "up") el.style.transform = "translateY(" + -self.rise[i] + "px)"; });
-    this.sync();
+    this.progress = this.target = this.read();
+    this.render();
   };
 
-  // How far each block falls, and the scroll point that brings it down
+  // How far each block falls, and where the scroll track starts and how long it is
   DropStack.prototype.measure = function () {
     var vh = window.innerHeight;
     var rise = this.rise;
+    var self = this;
+
+    // Measure the resting places with every block in place
+    this.blocks.forEach(function (el, i) { el.style.transform = ""; self.bodies[i].style.transform = ""; });
     var stageTop = this.stage.getBoundingClientRect().top;
-
-    // Resting bottoms relative to the stage, with each block's current drop taken out
-    var bottoms = this.blocks.map(function (el, i) {
-      var bottom = el.getBoundingClientRect().bottom - currentY(el) - stageTop;
-      rise[i] = bottom + 48; // starts just above the stage
-      return bottom;
+    this.blocks.forEach(function (el, i) {
+      rise[i] = el.getBoundingClientRect().bottom - stageTop + 48; // starts just above the stage
     });
 
-    // The base comes down as soon as its resting place is well inside the window
-    var start = Math.min(0, bottoms[0] - vh * 0.9);
-    var step = Math.max(200, vh * 0.32);
-    this.marks = this.blocks.map(function (el, i) { return start + i * step; });
-    var track = Math.max(0, this.marks[this.marks.length - 1] + vh * 0.55);
-    this.section.style.height = (this.stage.offsetHeight + track) + "px";
-  };
-
-  // How many blocks should be on the stack at this scroll position
-  DropStack.prototype.target = function () {
-    var scrolled = -this.section.getBoundingClientRect().top;
-    var n = 0;
-    while (n < this.marks.length && scrolled >= this.marks[n]) n++;
-    return n;
-  };
-
-  // Put a block straight into a state, without motion
-  DropStack.prototype.place = function (i, state) {
-    var el = this.blocks[i];
-    if (this.anims[i]) this.anims[i].cancel();
-    if (this.turns[i]) this.turns[i].cancel();
-    el.classList.remove("is-turning");
-    this.state[i] = state;
-    el.style.transform = state === "landed" ? "translateY(0px)" : "translateY(" + -this.rise[i] + "px)";
-    el.classList.toggle("is-landed", state === "landed");
-    this.cover();
-  };
-
-  // A block is covered once the one above it has landed
-  DropStack.prototype.cover = function () {
-    var state = this.state;
-    this.blocks.forEach(function (el, i) { el.classList.toggle("is-covered", state[i + 1] === "landed"); });
-  };
-
-  DropStack.prototype.move = function (i, to, duration, easing, done) {
-    var el = this.blocks[i];
-    var from = currentY(el);
-    if (this.anims[i]) this.anims[i].cancel();
-    el.style.transform = "translateY(" + to + "px)";
-    if (!el.animate) { done(); return; }
-    var a = el.animate([{ transform: "translateY(" + from + "px)" }, { transform: "translateY(" + to + "px)" }], { duration: duration, easing: easing });
-    a.onfinish = done;
-    this.anims[i] = a;
-  };
-
-  // One full turn on the vertical axis, around the middle of the box.
-  // The stack is drawn slanted (axonometric); a turning box swept through that
-  // slant reads as a beam swinging diagonally, so the turning block cancels the
-  // slant and turns in plain perspective, then eases back into the slanted view
-  // as it settles. The small translate keeps the box centred while it does.
-  DropStack.prototype.turn = function (i, duration) {
-    var el = this.blocks[i];
-    var body = this.bodies[i];
-    if (!body.animate) return;
-    if (this.turns[i]) this.turns[i].cancel();
-    el.classList.add("is-turning");
     var cs = getComputedStyle(this.stack);
-    var lean = parseFloat(cs.getPropertyValue("--lean")) || 0;
-    var shift = lean * (parseFloat(cs.getPropertyValue("--depth")) || 0) / 2;
-    var unslant = "translate(" + -shift + "px, " + shift + "px) matrix3d(1,0,0,0, 0,1,0,0, " + lean + "," + -lean + ",1,0, 0,0,0,1) ";
-    var slant = "translate(0px, 0px) matrix3d(1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1) ";
-    var p = "perspective(" + PERSPECTIVE + "px) ";
-    var a = body.animate([
-      { transform: unslant + p + "rotateY(0deg)" },
-      { transform: unslant + p + "rotateY(306deg)", offset: 0.85 },
-      { transform: slant + "perspective(60000px) rotateY(360deg)" }
-    ], { duration: duration, easing: EASE_TURN });
-    a.onfinish = function () { el.classList.remove("is-turning"); };
-    this.turns[i] = a;
+    this.lean = parseFloat(cs.getPropertyValue("--lean")) || 0;
+    this.depth = parseFloat(cs.getPropertyValue("--depth")) || 0;
+
+    // The base starts down while the section is still coming up the screen;
+    // each block then gets the same stretch of scroll, and the built stack holds a while
+    this.start = -vh * 0.25;
+    this.step = Math.max(240, vh * 0.42);
+    var hold = vh * 0.45;
+    var track = Math.max(0, this.start + this.blocks.length * this.step + hold);
+    this.section.style.height = (this.stage.offsetHeight + track) + "px";
+    this.top = this.section.getBoundingClientRect().top + window.scrollY;
   };
 
-  DropStack.prototype.drop = function (i) {
+  // Where the scroll is, in blocks
+  DropStack.prototype.read = function () {
+    var p = (window.scrollY - this.top - this.start) / this.step;
+    return Math.max(0, Math.min(this.blocks.length, p));
+  };
+
+  // Catch up with the scroll, frame by frame, until there
+  DropStack.prototype.kick = function () {
+    this.target = this.read();
+    if (this.running) return;
+    this.running = true;
     var self = this;
-    var el = this.blocks[i];
-    var duration = Math.min(1100, 650 + Math.abs(currentY(el)) * 0.4);
-    this.state[i] = "falling";
-    this.readyAt[i] = duration * OVERLAP;
-    this.turn(i, duration + 120);
-    this.move(i, 0, duration, EASE_FALL, function () {
-      self.state[i] = "landed";
-      el.classList.add("is-landed");
-      self.cover();
-      self.thud();
-      self.sync();
-    });
+    var last = performance.now();
+    var frame = function (now) {
+      var dt = Math.min(0.1, (now - last) / 1000);
+      last = now;
+      self.progress += (self.target - self.progress) * (1 - Math.exp(-dt / SMOOTHING));
+      if (Math.abs(self.target - self.progress) < 0.0005) self.progress = self.target;
+      self.render();
+      if (self.progress !== self.target) requestAnimationFrame(frame);
+      else self.running = false;
+    };
+    requestAnimationFrame(frame);
   };
 
-  DropStack.prototype.lift = function (i) {
-    var self = this;
-    this.state[i] = "lifting";
-    this.blocks[i].classList.remove("is-landed");
-    this.cover();
-    var dist = Math.abs(-this.rise[i] - currentY(this.blocks[i]));
-    this.move(i, -this.rise[i], 260 + dist * 0.3, EASE_LIFT, function () {
-      self.state[i] = "up";
-      self.sync();
-    });
-  };
+  DropStack.prototype.render = function () {
+    var n = this.blocks.length;
+    for (var i = 0; i < n; i++) {
+      var t = clamp01(this.progress - i);
+      var el = this.blocks[i];
+      var body = this.bodies[i];
 
-  // The stack gives a little under the weight of a landing block
-  // (on `translate`, so the stack's own transform, the 3D view, stays)
-  DropStack.prototype.thud = function () {
-    if (!this.stack.animate) return;
-    this.stack.animate(
-      [{ translate: "0 0" }, { translate: "0 1.5px", offset: 0.25 }, { translate: "0 0" }],
-      { duration: 320, easing: "ease-out" }
-    );
-  };
+      // The joint under this block darkens as the block above settles on it;
+      // the base's contact shadow fades in as it lands
+      var above = i + 1 < n ? clamp01(this.progress - i - 1) : 0;
+      el.style.setProperty("--cover", smoothstep(0.82, 1, above).toFixed(3));
+      if (i === 0) el.style.setProperty("--land", smoothstep(0.75, 1, t).toFixed(3));
 
-  DropStack.prototype.sync = function () {
-    var self = this;
-    var target = this.target();
-    var i;
-    // Lift anything above the target, top block first
-    for (i = this.blocks.length - 1; i >= target; i--) {
-      if (this.state[i] === "falling" || this.state[i] === "landed") this.lift(i);
+      el.classList.toggle("is-turning", t > 0 && t < 1);
+      if (t >= 1) { el.style.transform = ""; body.style.transform = ""; continue; }
+
+      el.style.transform = "translate3d(0, " + (-this.rise[i] * (1 - settle(t))).toFixed(2) + "px, 0)";
+      body.style.transform = this.turnAt(t);
     }
-    // Bring down the next block once the one below has landed or is well on its way
-    // (read from the fall itself, so it holds whatever speed the animation runs at)
-    for (i = 0; i < target; i++) {
-      if (this.state[i] === "landed") continue;
-      if (this.state[i] === "falling") {
-        var fall = this.anims[i];
-        if (fall && fall.currentTime < this.readyAt[i]) {
-          if (!this.waiting) {
-            this.waiting = true;
-            requestAnimationFrame(function () { self.waiting = false; self.sync(); });
-          }
-          return;
-        }
-        continue;
-      }
-      this.drop(i);
-      return;
-    }
+  };
+
+  // The box at t (0 above the stage, 1 settled): one full turn on its vertical
+  // axis around the middle of the box, done by 85%. While it turns it cancels
+  // the stack's slant (a turning box swept through the slant reads as a beam
+  // swinging diagonally); from 70% it eases back into the slant and the
+  // perspective flattens out, so it lands exactly flat.
+  DropStack.prototype.turnAt = function (t) {
+    var angle = 360 * smoothstep(0.05, 0.85, t);
+    var s = smoothstep(0.7, 1, t);
+    var u = 1 - s;
+    var lean = this.lean * u;
+    var shift = this.lean * this.depth / 2 * u;
+    var d = PERSPECTIVE / Math.max(0.001, u * u);
+    return "translate(" + (-shift).toFixed(2) + "px, " + shift.toFixed(2) + "px) " +
+      "matrix3d(1,0,0,0, 0,1,0,0, " + lean.toFixed(4) + "," + (-lean).toFixed(4) + ",1,0, 0,0,0,1) " +
+      "perspective(" + d.toFixed(0) + "px) rotateY(" + angle.toFixed(2) + "deg)";
   };
 
   window.DropStack = DropStack;

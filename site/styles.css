@@ -167,32 +167,27 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   color: var(--color-text-muted);
 }
 
-/* ---------- Chip: a short label set in square brackets ---------- */
+/* ---------- Chip: a short label in plain text brackets, [ LIKE THIS ] ---------- */
 .chip {
+  --chip-ls: 0.12em;
   display: inline-flex;
   align-items: center;
-  gap: 12px;
+  gap: 0.7em;
   height: 26px;
   max-width: 100%;
   white-space: nowrap;
   font-size: 12px;
   font-weight: var(--weight-medium);
-  letter-spacing: 0.12em;
+  letter-spacing: var(--chip-ls);
   line-height: 1;
   text-transform: uppercase;
   color: var(--color-text);
 }
-.chip::before,
-.chip::after {
-  content: "";
-  align-self: stretch;
-  width: 6px;
-  border: 1.25px solid currentColor;
-}
-.chip::before { border-right: 0; }
-.chip::after { border-left: 0; }
+.chip::before { content: "["; letter-spacing: 0; }
+/* pulled in by the label's trailing letter-spacing, so both brackets sit the same distance away */
+.chip::after { content: "]"; letter-spacing: 0; margin-left: calc(var(--chip-ls) * -1); }
 @media (max-width: 809px) {
-  .chip { gap: 10px; font-size: 11px; letter-spacing: 0.08em; }
+  .chip { --chip-ls: 0.08em; font-size: 11px; }
 }
 
 /* ---------- Buttons ---------- */
