@@ -10,9 +10,8 @@
    ========================================================================== */
 
 /* --depth: how deep each block is. --lean: how far that depth shifts up
-   and to the right, per px (the axonometric view). --lean-x is the
-   resulting overhang of the right ends: heading and footnote are pulled in
-   by as much, so everything centres on the blocks' front faces. */
+   and to the side, per px (the axonometric view). --lean-x is the
+   resulting overhang of the ends and the rise of the top block's top. */
 .data {
   --joint: 8px;
   --depth: 60px;
@@ -43,13 +42,12 @@
   row-gap: clamp(16px, 3.2svh, 40px);
 }
 
-/* One centred column: the heading at the top, then the stack, then the footnote */
+/* One centred column: the heading at the top, then the stack, then the footnote.
+   The blocks lean alternately left and right, so the stack overhangs both
+   sides evenly and stays centred on the page. */
 .data__head,
 .data__inner > .stack,
-.data__note {
-  grid-column: 4 / span 6;
-  margin-right: var(--lean-x);
-}
+.data__note { grid-column: 4 / span 6; }
 
 .data__head {
   display: grid;
@@ -92,31 +90,36 @@
 }
 
 /* ---------- Stack (component: drop-stack) ----------
-   Each block is a concrete box: the face with the text, a top and a right
-   end (always drawn), plus a back and a left end for the turn. stack.js
-   adds the sides. The stack is drawn in an axonometric view, seen from
-   above and to the right, as in the deck's concrete renders: the view
-   only shifts what lies behind the faces, so the faces themselves stay
-   exactly flat and the text crisp. */
+   Each block is a concrete box: the face with the text, a top and the end
+   it leans towards (always drawn), plus a back and the other end for the
+   turn. stack.js adds the sides. Each block is drawn in an axonometric
+   view, like the deck's concrete renders, leaning alternately right and
+   left (--dir) so the stack zig-zags: the view only shifts what lies
+   behind the faces, so the faces themselves stay exactly flat and the
+   text crisp. The blocks move on `translate` (stack.js), which leaves
+   `transform` to the lean. */
 .stack {
   display: flex;
   flex-direction: column-reverse; /* first figure at the bottom */
   gap: var(--joint);
   transform-style: preserve-3d;
-  transform: matrix3d(1, 0, 0, 0, 0, 1, 0, 0, calc(var(--lean) * -1), var(--lean), 1, 0, 0, 0, 0, 1);
 }
 
 .stack__block {
+  --dir: 1; /* 1 leans right, -1 leans left */
   position: relative;
   transform-style: preserve-3d;
+  transform: matrix3d(1, 0, 0, 0, 0, 1, 0, 0, calc(var(--lean) * var(--dir) * -1), var(--lean), 1, 0, 0, 0, 0, 1);
 }
+/* Counting from the top: the 2nd (3,000+) and 4th (24) lean left */
+.stack__block:nth-child(odd) { --dir: -1; }
 
 /* The base stands on the floor with a soft contact shadow */
 .stack__block:first-child::after {
   content: "";
   position: absolute;
   top: 100%;
-  left: -1%;
+  left: -3%;
   right: -3%;
   height: 22px;
   background: radial-gradient(50% 100% at 50% 0%, rgba(0, 0, 0, 0.22), rgba(0, 0, 0, 0) 70%);
@@ -164,7 +167,7 @@
     inset -1px 0 0 rgba(0, 0, 0, 0.1);
 }
 
-/* Light from the upper left: the top is brightest, the right end in shade */
+/* Light from above: the top is brightest, the ends in shade */
 .stack__side {
   position: absolute;
   top: 0;
@@ -202,13 +205,21 @@
     url("../assets/concrete-cast.jpg");
 }
 .stack__side--right { left: 100%; transform-origin: 0 50%; transform: rotateY(90deg); }
-.stack__side--left { right: 100%; transform-origin: 100% 50%; transform: rotateY(-90deg); }
+.stack__side--left {
+  right: 100%;
+  transform-origin: 100% 50%;
+  transform: rotateY(-90deg);
+  background-image:
+    linear-gradient(270deg, rgba(0, 0, 0, 0.32), rgba(0, 0, 0, 0.4)),
+    url("../assets/concrete-cast.jpg");
+}
 
-/* The back and the left end never face us at rest: drawn only while the block turns */
+/* The back and the far end never face us at rest: drawn only while the block turns */
 .stack__side--back,
-.stack__side--left { display: none; }
-.stack__block.is-turning .stack__side--back,
-.stack__block.is-turning .stack__side--left { display: block; }
+.stack__side--left,
+.stack__block:nth-child(odd) .stack__side--right { display: none; }
+.stack__block:nth-child(odd) .stack__side--left,
+.stack__block.is-turning .stack__side { display: block; }
 .stack__side--back {
   left: 0;
   right: 0;
