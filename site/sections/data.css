@@ -1,11 +1,11 @@
 /* ==========================================================================
    SECTION: data — Home, block 2
    The four figures as 3D concrete blocks on white, seen from above and
-   to the right. The heading
-   stays pinned on the left while each block comes down turning a full
-   circle on its vertical axis and settles on the stack (stack.js): the
-   first figure is the base, the last one tops the stack. Text is printed
-   flat on the concrete, never carved.
+   to the right, in one centred column under the heading. The whole stage
+   stays pinned while each block comes down turning a full circle on its
+   vertical axis and settles on the stack (stack.js): the first figure is
+   the base, the last one tops the stack. Text is printed flat on the
+   concrete, never carved.
    Uses shared tokens and the chip from styles.css.
    ========================================================================== */
 
@@ -26,25 +26,27 @@
   padding-top: var(--mh-compact);
 }
 
+/* Spacing follows the window height, so heading, stack and footnote fit on one screen */
 .data__inner {
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
   column-gap: var(--grid-gap);
-  row-gap: var(--space-7);
+  row-gap: clamp(16px, 3.2svh, 40px);
 }
 
-/* Heading on the left, top-aligned with the finished stack */
+/* One centred column: the heading at the top, then the stack, then the footnote */
+.data__head,
+.data__inner > .stack,
+.data__note { grid-column: 4 / span 6; }
+
 .data__head {
-  grid-column: 1 / span 5;
-  grid-row: 1;
-  align-self: start;
   display: grid;
   justify-items: start;
-  gap: var(--space-5);
+  gap: min(var(--space-4), 1.6svh);
 }
 .data__title {
-  margin-top: var(--space-2);
-  font-size: var(--fs-h2);
+  margin-top: var(--space-1);
+  font-size: min(var(--fs-h2), 5.4svh);
   font-weight: var(--weight-medium);
   line-height: var(--lh-h2);
   letter-spacing: var(--ls-h2);
@@ -52,18 +54,21 @@
   text-wrap: balance;
 }
 .data__sub {
-  max-width: 24em;
+  max-width: 32em;
   text-wrap: pretty;
-  font-size: var(--fs-lede);
+  font-size: min(var(--fs-lede), 2.5svh);
   line-height: var(--lh-lede);
   color: var(--color-text);
 }
 
-/* The ends lean out to the right: pull the stack in so they stay inside the page margin */
-.data__inner > .stack { grid-column: 7 / span 6; grid-row: 1; margin-right: calc(var(--depth) * var(--lean)); }
+/* Room above for the top block's top face; the ends lean out to the right,
+   so the stack is pulled in by as much to keep the whole box in the column */
+.data__inner > .stack {
+  margin-top: calc(var(--depth) * var(--lean));
+  margin-right: calc(var(--depth) * var(--lean));
+}
 
 .data__note {
-  grid-column: 7 / span 6;
   font-size: 13px;
   line-height: 1.5;
   color: var(--color-text-muted);
@@ -89,7 +94,7 @@
   --joint: 8px;
   --depth: 60px;
   --lean: 0.5;
-  --block-h: min(132px, 14.5svh); /* shorter screens get lower blocks, so the stack fits under the header */
+  --block-h: min(120px, 12.5svh); /* shorter screens get lower blocks, so everything fits under the header */
   display: flex;
   flex-direction: column-reverse; /* first figure at the bottom */
   gap: var(--joint);
@@ -208,7 +213,7 @@
 .stack__figure {
   grid-column: 1 / span 3;
   padding-left: 36px;
-  font-size: var(--fig-size, 60px);
+  font-size: var(--fig-size, min(60px, 6.6svh));
   font-weight: var(--weight-medium);
   line-height: 1;
   letter-spacing: -0.03em;
@@ -221,17 +226,25 @@
   padding-right: 28px;
   max-width: 21em;
   text-wrap: pretty;
-  font-size: var(--label-size, 17px);
+  font-size: var(--label-size, min(17px, 2.2svh));
   line-height: 1.4;
   color: var(--color-ink);
 }
 
-/* ---------- Tablet: heading over the stack ---------- */
+/* ---------- Smaller desktops: a wider column, so the lines keep to two rows ---------- */
+@media (min-width: 1200px) and (max-width: 1439px) {
+  .data__head,
+  .data__inner > .stack,
+  .data__note { grid-column: 3 / span 8; }
+  .stack { --cols: 8; }
+  .stack__figure { grid-column: 1 / span 4; }
+  .stack__label { grid-column: 5 / span 4; }
+}
+
+/* ---------- Tablet: full width ---------- */
 @media (max-width: 1199px) {
-  .data__inner { row-gap: var(--space-6); }
-  .data__head { grid-column: 1 / span 10; gap: var(--space-4); }
-  /* room above for the top block's top face */
-  .data__inner > .stack { grid-column: 1 / -1; grid-row: 2; margin-top: calc(var(--depth) * var(--lean)); }
+  .data__head { grid-column: 1 / span 10; }
+  .data__inner > .stack,
   .data__note { grid-column: 1 / -1; }
   .stack { --cols: 12; --depth: 52px; --block-h: min(116px, 11svh); }
   .stack__figure { --fig-size: 48px; grid-column: 1 / span 5; padding-left: 28px; }
