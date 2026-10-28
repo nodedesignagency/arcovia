@@ -9,11 +9,9 @@
      scrolling back up lifts it off again, top block first.
    - A block falls in from above the stage while it turns one full circle
      on its vertical axis, then settles on the stack. Each block is a real
-     box: its top, ends and back are added here (CSS draws each block in an
-     axonometric view, leaning alternately right and left). Perspective
-     flattens out over the last stretch of the turn, so the face ends
-     exactly flat and the text crisp.
-   - Blocks move on `translate`; `transform` belongs to each block's lean.
+     box: its top, ends and back are added here (CSS draws the stack in an
+     axonometric view). Perspective flattens out over the last stretch of
+     the turn, so the face ends exactly flat and the text crisp.
    - A block with another landed on it darkens its top, which then only
      shows in the joint.
    - Motion runs on time, not on scroll position, so every block moves the
@@ -31,13 +29,12 @@
   var PERSPECTIVE = 1200;                            // css px
   var OVERLAP = 0.6;                                 // the next block starts 60% into this one's fall
 
-  // Blocks move on `translate`, leaving `transform` to the CSS lean of each block
   function currentY(el) {
-    var t = getComputedStyle(el).translate;
+    var t = getComputedStyle(el).transform;
     if (!t || t === "none") return 0;
-    return parseFloat(t.split(" ")[1]) || 0;
+    var v = t.slice(t.indexOf("(") + 1, -1).split(",").map(parseFloat);
+    return v.length === 6 ? v[5] : v[13];
   }
-  function setY(el, y) { el.style.translate = "0px " + y + "px"; }
 
   function DropStack(section) {
     this.section = section;
@@ -98,7 +95,7 @@
   DropStack.prototype.relayout = function () {
     var self = this;
     this.measure();
-    this.blocks.forEach(function (el, i) { if (self.state[i] === "up") setY(el, -self.rise[i]); });
+    this.blocks.forEach(function (el, i) { if (self.state[i] === "up") el.style.transform = "translateY(" + -self.rise[i] + "px)"; });
     this.sync();
   };
 
@@ -138,7 +135,7 @@
     if (this.turns[i]) this.turns[i].cancel();
     el.classList.remove("is-turning");
     this.state[i] = state;
-    setY(el, state === "landed" ? 0 : -this.rise[i]);
+    el.style.transform = state === "landed" ? "translateY(0px)" : "translateY(" + -this.rise[i] + "px)";
     el.classList.toggle("is-landed", state === "landed");
     this.cover();
   };
@@ -153,30 +150,28 @@
     var el = this.blocks[i];
     var from = currentY(el);
     if (this.anims[i]) this.anims[i].cancel();
-    setY(el, to);
+    el.style.transform = "translateY(" + to + "px)";
     if (!el.animate) { done(); return; }
-    var a = el.animate([{ translate: "0px " + from + "px" }, { translate: "0px " + to + "px" }], { duration: duration, easing: easing });
+    var a = el.animate([{ transform: "translateY(" + from + "px)" }, { transform: "translateY(" + to + "px)" }], { duration: duration, easing: easing });
     a.onfinish = done;
     this.anims[i] = a;
   };
 
   // One full turn on the vertical axis, around the middle of the box.
-  // Each block is drawn slanted (axonometric, leaning right or left); a turning
-  // box swept through that slant reads as a beam swinging diagonally, so the
-  // turning block cancels its slant and turns in plain perspective, then eases
-  // back into the slanted view as it settles. The small translate keeps the box
-  // centred while it does.
+  // The stack is drawn slanted (axonometric); a turning box swept through that
+  // slant reads as a beam swinging diagonally, so the turning block cancels the
+  // slant and turns in plain perspective, then eases back into the slanted view
+  // as it settles. The small translate keeps the box centred while it does.
   DropStack.prototype.turn = function (i, duration) {
     var el = this.blocks[i];
     var body = this.bodies[i];
     if (!body.animate) return;
     if (this.turns[i]) this.turns[i].cancel();
     el.classList.add("is-turning");
-    var cs = getComputedStyle(el);
+    var cs = getComputedStyle(this.stack);
     var lean = parseFloat(cs.getPropertyValue("--lean")) || 0;
-    var dir = parseFloat(cs.getPropertyValue("--dir")) || 1;
     var shift = lean * (parseFloat(cs.getPropertyValue("--depth")) || 0) / 2;
-    var unslant = "translate(" + -shift * dir + "px, " + shift + "px) matrix3d(1,0,0,0, 0,1,0,0, " + lean * dir + "," + -lean + ",1,0, 0,0,0,1) ";
+    var unslant = "translate(" + -shift + "px, " + shift + "px) matrix3d(1,0,0,0, 0,1,0,0, " + lean + "," + -lean + ",1,0, 0,0,0,1) ";
     var slant = "translate(0px, 0px) matrix3d(1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1) ";
     var p = "perspective(" + PERSPECTIVE + "px) ";
     var a = body.animate([
@@ -217,7 +212,7 @@
   };
 
   // The stack gives a little under the weight of a landing block
-  // (on `translate`, like the blocks)
+  // (on `translate`, so the stack's own transform, the 3D view, stays)
   DropStack.prototype.thud = function () {
     if (!this.stack.animate) return;
     this.stack.animate(

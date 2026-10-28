@@ -1,23 +1,15 @@
 /* ==========================================================================
    SECTION: data — Home, block 2
    The four figures as 3D concrete blocks on white, seen from above and
-   to the right, everything centred on one axis under the heading. The
-   whole stage stays pinned while each block comes down turning a full
-   circle on its vertical axis and settles on the stack (stack.js): the
-   first figure is the base, the last one tops the stack. Text is printed
-   flat on the concrete, never carved.
+   to the right, in one centred column under the heading. The whole stage
+   stays pinned while each block comes down turning a full circle on its
+   vertical axis and settles on the stack (stack.js): the first figure is
+   the base, the last one tops the stack. Text is printed flat on the
+   concrete, never carved.
    Uses shared tokens and the chip from styles.css.
    ========================================================================== */
 
-/* --depth: how deep each block is. --lean: how far that depth shifts up
-   and to the side, per px (the axonometric view). --lean-x is the
-   resulting overhang of the ends and the rise of the top block's top. */
 .data {
-  --joint: 8px;
-  --depth: 60px;
-  --lean: 0.5;
-  --lean-x: calc(var(--depth) * var(--lean));
-  --block-h: min(120px, 12.5svh); /* shorter screens get lower blocks, so everything fits under the header */
   position: relative;
   background: var(--color-white);
 }
@@ -42,18 +34,15 @@
   row-gap: clamp(16px, 3.2svh, 40px);
 }
 
-/* One centred column: the heading at the top, then the stack, then the footnote.
-   The blocks lean alternately left and right, so the stack overhangs both
-   sides evenly and stays centred on the page. */
+/* One centred column: the heading at the top, then the stack, then the footnote */
 .data__head,
 .data__inner > .stack,
 .data__note { grid-column: 4 / span 6; }
 
 .data__head {
   display: grid;
-  justify-items: center;
+  justify-items: start;
   gap: min(var(--space-4), 1.6svh);
-  text-align: center;
 }
 .data__title {
   margin-top: var(--space-1);
@@ -66,18 +55,20 @@
 }
 .data__sub {
   max-width: 32em;
-  text-wrap: balance;
+  text-wrap: pretty;
   font-size: min(var(--fs-lede), 2.5svh);
   line-height: var(--lh-lede);
   color: var(--color-text);
 }
 
-/* Room above for the top block's top face */
-.data__inner > .stack { margin-top: var(--lean-x); }
+/* Room above for the top block's top face; the ends lean out to the right,
+   so the stack is pulled in by as much to keep the whole box in the column */
+.data__inner > .stack {
+  margin-top: calc(var(--depth) * var(--lean));
+  margin-right: calc(var(--depth) * var(--lean));
+}
 
 .data__note {
-  text-align: center;
-  text-wrap: balance;
   font-size: 13px;
   line-height: 1.5;
   color: var(--color-text-muted);
@@ -90,36 +81,38 @@
 }
 
 /* ---------- Stack (component: drop-stack) ----------
-   Each block is a concrete box: the face with the text, a top and the end
-   it leans towards (always drawn), plus a back and the other end for the
-   turn. stack.js adds the sides. Each block is drawn in an axonometric
-   view, like the deck's concrete renders, leaning alternately right and
-   left (--dir) so the stack zig-zags: the view only shifts what lies
-   behind the faces, so the faces themselves stay exactly flat and the
-   text crisp. The blocks move on `translate` (stack.js), which leaves
-   `transform` to the lean. */
+   Each block is a concrete box: the face with the text, a top and a right
+   end (always drawn), plus a back and a left end for the turn. stack.js
+   adds the sides. The stack is drawn in an axonometric view, seen from
+   above and to the right, as in the deck's concrete renders: the view
+   only shifts what lies behind the faces, so the faces themselves stay
+   exactly flat and the text crisp.
+   --cols: columns the stack spans, so the text sits on the page grid.
+   --lean: how far the depth shifts up and to the right, per px of depth. */
 .stack {
+  --cols: 6;
+  --joint: 8px;
+  --depth: 60px;
+  --lean: 0.5;
+  --block-h: min(120px, 12.5svh); /* shorter screens get lower blocks, so everything fits under the header */
   display: flex;
   flex-direction: column-reverse; /* first figure at the bottom */
   gap: var(--joint);
   transform-style: preserve-3d;
+  transform: matrix3d(1, 0, 0, 0, 0, 1, 0, 0, calc(var(--lean) * -1), var(--lean), 1, 0, 0, 0, 0, 1);
 }
 
 .stack__block {
-  --dir: 1; /* 1 leans right, -1 leans left */
   position: relative;
   transform-style: preserve-3d;
-  transform: matrix3d(1, 0, 0, 0, 0, 1, 0, 0, calc(var(--lean) * var(--dir) * -1), var(--lean), 1, 0, 0, 0, 0, 1);
 }
-/* Counting from the top: the 2nd (3,000+) and 4th (24) lean left */
-.stack__block:nth-child(odd) { --dir: -1; }
 
 /* The base stands on the floor with a soft contact shadow */
 .stack__block:first-child::after {
   content: "";
   position: absolute;
   top: 100%;
-  left: -3%;
+  left: -1%;
   right: -3%;
   height: 22px;
   background: radial-gradient(50% 100% at 50% 0%, rgba(0, 0, 0, 0.22), rgba(0, 0, 0, 0) 70%);
@@ -149,16 +142,13 @@
   backface-visibility: hidden;
 }
 
-/* The figure over its line, centred on the face */
 .stack__face {
   position: relative;
   display: grid;
-  justify-items: center;
-  align-content: center;
-  row-gap: min(8px, 0.9svh);
+  grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
+  column-gap: var(--grid-gap);
+  align-items: center;
   min-height: var(--block-h);
-  padding: min(12px, 1.4svh) 28px;
-  text-align: center;
   /* crisp arrises: light catches the top edge, the bottom edge turns away */
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.55),
@@ -167,7 +157,7 @@
     inset -1px 0 0 rgba(0, 0, 0, 0.1);
 }
 
-/* Light from above: the top is brightest, the ends in shade */
+/* Light from the upper left: the top is brightest, the right end in shade */
 .stack__side {
   position: absolute;
   top: 0;
@@ -205,21 +195,13 @@
     url("../assets/concrete-cast.jpg");
 }
 .stack__side--right { left: 100%; transform-origin: 0 50%; transform: rotateY(90deg); }
-.stack__side--left {
-  right: 100%;
-  transform-origin: 100% 50%;
-  transform: rotateY(-90deg);
-  background-image:
-    linear-gradient(270deg, rgba(0, 0, 0, 0.32), rgba(0, 0, 0, 0.4)),
-    url("../assets/concrete-cast.jpg");
-}
+.stack__side--left { right: 100%; transform-origin: 100% 50%; transform: rotateY(-90deg); }
 
-/* The back and the far end never face us at rest: drawn only while the block turns */
+/* The back and the left end never face us at rest: drawn only while the block turns */
 .stack__side--back,
-.stack__side--left,
-.stack__block:nth-child(odd) .stack__side--right { display: none; }
-.stack__block:nth-child(odd) .stack__side--left,
-.stack__block.is-turning .stack__side { display: block; }
+.stack__side--left { display: none; }
+.stack__block.is-turning .stack__side--back,
+.stack__block.is-turning .stack__side--left { display: block; }
 .stack__side--back {
   left: 0;
   right: 0;
@@ -229,7 +211,9 @@
 
 /* Flat ink on concrete: no emboss, no carving */
 .stack__figure {
-  font-size: var(--fig-size, min(56px, 6svh));
+  grid-column: 1 / span 3;
+  padding-left: 36px;
+  font-size: var(--fig-size, min(60px, 6.6svh));
   font-weight: var(--weight-medium);
   line-height: 1;
   letter-spacing: -0.03em;
@@ -238,42 +222,61 @@
   color: var(--color-ink);
 }
 .stack__label {
-  text-wrap: balance;
+  grid-column: 4 / span 3;
+  padding-right: 28px;
+  max-width: 21em;
+  text-wrap: pretty;
   font-size: var(--label-size, min(17px, 2.2svh));
   line-height: 1.4;
   color: var(--color-ink);
 }
 
-/* ---------- Tablet ---------- */
-@media (max-width: 1199px) {
-  .data { --depth: 52px; --block-h: min(116px, 11svh); }
+/* ---------- Smaller desktops: a wider column, so the lines keep to two rows ---------- */
+@media (min-width: 1200px) and (max-width: 1439px) {
   .data__head,
   .data__inner > .stack,
-  .data__note { grid-column: 2 / span 10; }
-  .stack__figure { --fig-size: min(48px, 5.4svh); }
+  .data__note { grid-column: 3 / span 8; }
+  .stack { --cols: 8; }
+  .stack__figure { grid-column: 1 / span 4; }
+  .stack__label { grid-column: 5 / span 4; }
 }
 
-/* ---------- Phone ---------- */
-@media (max-width: 809px) {
-  .data { --joint: 6px; --depth: 32px; --block-h: 112px; }
-  .data__inner { row-gap: var(--space-5); }
-  .data__head,
+/* ---------- Tablet: full width ---------- */
+@media (max-width: 1199px) {
+  .data__head { grid-column: 1 / span 10; }
   .data__inner > .stack,
   .data__note { grid-column: 1 / -1; }
-  .data__head { gap: var(--space-3); }
+  .stack { --cols: 12; --depth: 52px; --block-h: min(116px, 11svh); }
+  .stack__figure { --fig-size: 48px; grid-column: 1 / span 5; padding-left: 28px; }
+  .stack__label { grid-column: 6 / span 7; padding-right: 24px; }
+}
+
+/* ---------- Phone: figure over its line ---------- */
+@media (max-width: 809px) {
+  .data__inner { row-gap: var(--space-5); }
+  .data__head { grid-column: 1 / -1; gap: var(--space-3); }
+  .data__title { margin-top: var(--space-1); }
   .data__sub { font-size: 15px; }
-  .stack__face { row-gap: 6px; padding: 16px 18px 18px; }
+  .stack { --joint: 6px; --depth: 32px; --block-h: 112px; }
+  .stack__face {
+    grid-template-columns: 1fr;
+    align-content: center;
+    row-gap: 6px;
+    padding: 16px 18px 18px;
+  }
+  .stack__figure,
+  .stack__label { grid-column: 1; padding: 0; }
   .stack__figure { --fig-size: 34px; }
   .stack__label { --label-size: 14px; line-height: 1.35; }
 }
 
 /* Short phones (iPhone SE and the like): everything has to fit under the header at once */
 @media (max-width: 809px) and (max-height: 760px) {
-  .data { --depth: 24px; --block-h: 98px; }
   .data__inner { row-gap: var(--space-3); }
   .data__head { gap: var(--space-2); }
   .data__title { font-size: 26px; }
   .data__sub { font-size: 14px; line-height: 1.45; }
+  .stack { --block-h: 98px; --depth: 24px; }
   .stack__face { padding: 12px 16px 14px; row-gap: 4px; }
   .stack__figure { --fig-size: 30px; }
 }
