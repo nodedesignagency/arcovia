@@ -160,7 +160,7 @@
   display: block;
   width: auto;
   height: auto;
-  margin: calc(-28px - 0.13em) 0 0 -0.05em;
+  margin: calc(-28px - 0.27em) 0 0 -0.05em; /* lifts the number so the top edge cuts it */
   border-radius: 0;
   box-shadow: none;
   font-size: var(--num-size);
@@ -270,5 +270,5 @@
   .service-row__title,
   .service-row__text { grid-column: 1 / -1; }
   .service-row__text { font-size: 16px; }
-  .services--debossed .service-card__num { --num-size: 120px; margin-top: calc(-22px - 0.13em); }
+  .services--debossed .service-card__num { --num-size: 120px; margin-top: calc(-22px - 0.27em); }
 }
