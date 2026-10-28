@@ -2,8 +2,9 @@
    SECTION: services — Home, block 3 (what we do)
    The headline and the six services from the brief, one line each.
    Two versions while exploring:
-   .services--cards (A): six white cards on concrete, as in the deck, each
-     with its number in an inset well; they rise in one after another.
+   .services--cards (A): six concrete blocks on white, the same cast
+     concrete as the data blocks, joined into one slab with dark joints;
+     each number sits in a small recess; the slab rises in as one piece.
    .services--index (B): an editorial list on a charcoal panel; on desktop,
      hovering a row dims the others.
    Items rise in with the shared reveal (data-reveal, main.js).
@@ -54,44 +55,71 @@
   .services__more:hover .services__arrow { transform: translateX(4px); }
 }
 
-/* ---------- Version A: white cards on concrete ---------- */
+/* ---------- Version A: concrete cards on white ---------- */
+.services--cards { background: var(--color-white); }
+
+/* The six blocks sit together as one slab: they butt up against each other,
+   with only a dark recessed joint between them (as between the data
+   blocks), rounded on the outside corners only, one shadow on the white.
+   The slab rises in as one piece. */
 .services__grid {
+  --joint: 8px;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: var(--grid-gap);
+  grid-auto-rows: 1fr;
+  gap: var(--joint);
+  overflow: hidden;
+  border-radius: var(--radius-l);
+  background: linear-gradient(#484848, #585858); /* shows only in the joints: the same shade as the data stack's */
+  box-shadow: 0 2px 4px -2px rgba(0, 0, 0, 0.16), 0 24px 48px -24px rgba(0, 0, 0, 0.42);
 }
 .services__item { display: flex; }
 
-/* Component: service-card */
+/* Component: service-card. Cast concrete, like the data blocks; each block
+   shows a different patch (--i), lit softly from above */
 .service-card {
   flex: 1;
   display: flex;
   flex-direction: column;
   min-height: 300px;
   padding: 28px 30px 32px;
-  border-radius: var(--radius-l);
-  background: var(--color-white);
-  box-shadow: var(--shadow-card);
-  transition: transform var(--dur-slow) var(--ease-out), box-shadow var(--dur-slow) var(--ease-out);
+  background-color: #bdbdbd;
+  background-image:
+    linear-gradient(172deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0) 40%, rgba(0, 0, 0, 0.04)),
+    url("../assets/concrete-cast.jpg");
+  background-size: auto, 960px;
+  background-position: 0 0, calc(var(--i, 0) * -271px - 120px) calc(var(--i, 0) * -413px - 60px);
+  /* crisp arrises along the joints: light catches the top edge, the bottom edge turns away */
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.55),
+    inset 1px 0 0 rgba(255, 255, 255, 0.2),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.16),
+    inset -1px 0 0 rgba(0, 0, 0, 0.1);
+  transition: filter var(--dur-base) var(--ease-out);
 }
+/* The blocks stay put in the slab; the one under the cursor catches a little more light */
 @media (hover: hover) {
-  .service-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-pop); }
+  .service-card:hover { filter: brightness(1.05); }
 }
 
-/* The number in an inset well, as in the deck's cards */
+/* The number in a small recess pressed into the concrete */
 .service-card__num {
   display: grid;
   place-items: center;
   width: 44px;
   height: 44px;
   border-radius: 12px;
-  background: var(--color-well);
-  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1), inset 0 0 0 1px rgba(0, 0, 0, 0.03);
+  background: rgba(0, 0, 0, 0.07);
+  box-shadow:
+    inset 0 2px 3px rgba(0, 0, 0, 0.22),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.35),
+    0 1px 0 rgba(255, 255, 255, 0.4);
   font-size: 13px;
   font-weight: var(--weight-semibold);
   font-variant-numeric: tabular-nums;
-  color: var(--color-text-muted);
+  color: var(--color-ink);
 }
+/* Text in ink: 7:1 and up on the concrete */
 .service-card__title {
   margin-top: auto;
   padding-top: var(--space-8);
@@ -107,7 +135,7 @@
   text-wrap: pretty;
   font-size: 16px;
   line-height: 1.55;
-  color: var(--color-text);
+  color: var(--color-ink);
 }
 
 /* ---------- Version B: an index on a charcoal panel ---------- */
@@ -182,7 +210,7 @@
   .services__title,
   .services__more { grid-column: 1 / -1; }
   .services__more { justify-self: start; }
-  .services__grid { grid-template-columns: 1fr; gap: var(--space-3); }
+  .services__grid { --joint: 6px; grid-template-columns: 1fr; grid-auto-rows: auto; }
   .service-card { min-height: 0; padding: 22px 22px 26px; }
   .service-card__title { padding-top: var(--space-6); }
   .services__panel { padding: var(--space-7) 22px var(--space-5); border-radius: var(--radius-l); }
