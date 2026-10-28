@@ -18,11 +18,12 @@
      light from the upper left). A diagonal band of sunlight drifts across
      over ~34 s and deepens the relief where it passes; the cursor adds a
      dim point light.
-   - setView() zooms the slab (scale around a point, plus a shift) and can cut
-     an elliptical hole through it. The height map is redrawn for each view,
-     so carving stays crisp at any zoom; the hole is transparent, so whatever
-     sits behind the canvas shows through (zoom.js uses this to fly through
-     the O of ARCOVIA).
+   - setView() zooms the slab (scale around a point, plus a shift) and can
+     burn a hole through it: a spark, then a ragged opening with a white-hot
+     edge and a soft halo, the concrete charred just beyond. The height map is
+     redrawn for each view, so carving stays crisp at any zoom; the hole is
+     transparent, so whatever sits behind the canvas shows through (zoom.js
+     uses this to burn through the O of ARCOVIA and fly into the statement).
    - Pauses off-screen and in hidden tabs. With reduced motion it renders
      one still frame. Without WebGL the CSS fallback stays.
    ========================================================================== */
@@ -51,7 +52,8 @@
     "uniform vec2 uOrigin;",     // zoom: the point that scales (css px, slab coordinates)
     "uniform vec2 uShift;",      // zoom: where that point sits on screen
     "uniform float uZoom;",      // zoom: scale
-    "uniform vec4 uHole;",       // hole through the slab: centre x, y and radii x, y (slab coordinates)
+    "uniform vec4 uBurn;",       // burn: centre x, y and the O's counter radii x, y (slab coordinates)
+    "uniform vec3 uBurnP;",      // burn: radius (in counter units), heat (glow), spark
     "",
     "float hash(vec2 p){ p = fract(p * vec2(123.34, 456.21)); p += dot(p, p + 45.32); return fract(p.x * p.y); }",
     "float noise(vec2 p){ vec2 i = floor(p), f = fract(p); vec2 u = f*f*(3.0-2.0*f);",
@@ -127,12 +129,29 @@
     "  c *= 1.0 - 0.07 * pow(length((uv - 0.5) * vec2(1.0, 1.2)), 2.0);",
     "  c += (hash(gl_FragCoord.xy + fract(uTime) * 61.0) - 0.5) * (2.0 / 255.0);",
     "",
-    "  // The hole: fully transparent inside the ellipse, with a one-pixel soft edge",
+    "  // The burn: a spark, then a ragged hole with a white-hot edge, a soft halo and charred concrete beyond",
     "  float a = 1.0;",
-    "  if (uHole.z > 0.0) {",
-    "    float d = length((p - uHole.xy) / uHole.zw);",
-    "    float aa = 1.2 / (min(uHole.z, uHole.w) * uZoom);",
-    "    a = smoothstep(1.0 - aa, 1.0 + aa, d);",
+    "  if (uBurn.z > 0.0) {",
+    "    vec2 q = (p - uBurn.xy) / uBurn.zw;",                     // 1.0 = the O's inner edge
+    "    float d = length(q);",
+    "    float ang = atan(q.y, q.x);",
+    "    float n = fbm(q * 3.0 + 7.3) * 0.7 + fbm(q * 11.0 + 1.7) * 0.3;",
+    "    float k = d - uBurnP.x * (0.78 + 0.34 * n);",               // below 0: burnt through
+    "    float aa = 1.5 / (min(uBurn.z, uBurn.w) * uZoom);",
+    "    if (uBurnP.x > 0.001) a = smoothstep(-aa, aa, k);",
+    "    float heat = uBurnP.y;",
+    // Char: a blackened, uneven band just beyond the edge. It stays once burnt (not tied to heat).
+    "    float charW = 0.12 + 0.16 * fbm(q * 6.0 + 21.0);",
+    "    float charAmt = (1.0 - smoothstep(0.0, charW, k)) * step(0.0, k) * clamp(uBurnP.x * 6.0, 0.0, 1.0);",
+    "    charAmt *= 0.75 + 0.35 * fbm(q * 18.0 + 5.0);",
+    // Heat: a thin white-hot line on the edge and a short glow onto the char, while it burns
+    "    float rim = exp(-abs(k) / 0.016);",
+    "    float halo = exp(-max(k, 0.0) / 0.045) * step(0.0, k);",
+    "    float ray = pow(abs(cos(ang * 4.0 + 0.3)), 40.0) + 0.6 * pow(abs(cos(ang * 4.0 + 1.1)), 70.0);",
+    "    float spark = uBurnP.z * (exp(-d / 0.12) * 1.2 + ray * exp(-d / 0.7));",
+    "    float light = clamp(heat * (rim * 1.1 + halo * 0.65) + spark, 0.0, 1.0);",
+    "    c *= 1.0 - 0.6 * charAmt;",
+    "    c = mix(c, 1.0, light);",
     "  }",
     "  gl_FragColor = vec4(vec3(c) * a, a);",
     "}"
@@ -151,7 +170,7 @@
       staticBand: opts.staticBand != null ? opts.staticBand : 0.6
     };
     this.mouse = { x: -9999, y: -9999, tx: -9999, ty: -9999, amt: 0, tamt: 0 };
-    this.view = { ox: 0, oy: 0, tx: 0, ty: 0, s: 1, hole: null };
+    this.view = { ox: 0, oy: 0, tx: 0, ty: 0, s: 1, burn: null };
     this.carves = [];
     this.visible = true;
     this.running = false;
@@ -178,7 +197,7 @@
     gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
 
     this.u = {};
-    ["uRes", "uScale", "uTime", "uBand", "uMouse", "uMouseAmt", "uSun", "uCursor", "uTex", "uTexSize", "uHeight", "uHTexel", "uOrigin", "uShift", "uZoom", "uHole"].forEach(function (n) {
+    ["uRes", "uScale", "uTime", "uBand", "uMouse", "uMouseAmt", "uSun", "uCursor", "uTex", "uTexSize", "uHeight", "uHTexel", "uOrigin", "uShift", "uZoom", "uBurn", "uBurnP"].forEach(function (n) {
       this.u[n] = gl.getUniformLocation(prog, n);
     }, this);
 
@@ -371,8 +390,11 @@
     this.heightDirty = false;
   };
 
-  /* Zoom the slab and/or cut a hole through it. view: { ox, oy, tx, ty, s, hole: { cx, cy, rx, ry } | null },
-     all in css px in the slab's own (unzoomed) coordinates. Draws a frame straight away. */
+  /* Zoom the slab and/or burn through it.
+     view: { ox, oy, tx, ty, s, burn: { cx, cy, rx, ry, r, heat, spark } | null }
+     Positions in css px in the slab's own (unzoomed) coordinates; r is the burn's
+     radius as a share of the O's counter (rx, ry), heat and spark run 0–1.
+     Draws a frame straight away. */
   ConcreteSurface.prototype.setView = function (view) {
     this.view = view;
     this.heightDirty = true;
@@ -475,8 +497,9 @@
     gl.uniform2f(u.uOrigin, v.ox, v.oy);
     gl.uniform2f(u.uShift, v.ox + v.tx, v.oy + v.ty);
     gl.uniform1f(u.uZoom, v.s);
-    if (v.hole) gl.uniform4f(u.uHole, v.hole.cx, v.hole.cy, v.hole.rx, v.hole.ry);
-    else gl.uniform4f(u.uHole, 0, 0, 0, 0);
+    var b = v.burn;
+    gl.uniform4f(u.uBurn, b ? b.cx : 0, b ? b.cy : 0, b ? b.rx : 0, b ? b.ry : 0);
+    gl.uniform3f(u.uBurnP, b ? b.r : 0, b ? b.heat : 0, b ? b.spark : 0);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
     this.needsFrame = false;
   };

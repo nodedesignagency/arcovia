@@ -145,7 +145,7 @@
    --zoom-travel of scrolling while the hero flies through the O of ARCOVIA
    and the statement's words light up; then the page carries on. */
 .zoom--on {
-  --zoom-travel: 260vh;
+  --zoom-travel: 360vh;   /* longer than Final 1: the burn needs room, and it shouldn't feel rushed */
   position: relative;
   height: calc(100vh + var(--zoom-travel));
 }

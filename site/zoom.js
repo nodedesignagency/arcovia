@@ -7,11 +7,12 @@
 
    Scroll progress p (0 → 1) over the pinned stage:
      0.00–0.10  hero text fades and lifts
-     0.03–0.14  the O's counter opens (an elliptical hole, inside the carved rim)
-     0.06–0.30  the O drifts to the centre of the screen
-     0.06–0.50  zoom: scale grows until the hole covers the screen
-     0.52–0.94  statement words light up
-   The zoom and the hole are drawn by the WebGL slab itself (concrete.js
+     0.10–0.20  a spark catches in the O
+     0.13–0.32  it burns open: a ragged hole with a white-hot edge
+     0.30–0.62  zoom: the O drifts to the centre and the view flies through
+     0.46–0.68  the statement rises from below into place (depth)
+     0.68–0.96  statement words light up
+   The zoom and the burn are drawn by the WebGL slab itself (concrete.js
    setView), so the carving stays crisp and nothing is scaled in CSS. Every
    frame is computed from p alone, so scrolling back up simply plays it in
    reverse. Without WebGL the hero just fades. With reduced motion (or no
@@ -137,10 +138,10 @@
     hero.style.opacity = "";
     hero.style.visibility = "";
     fades.forEach(function (el) { el.style.opacity = ""; el.style.transform = ""; });
-    if (inner) inner.style.transform = "";
+    if (inner) { inner.style.transform = ""; inner.style.opacity = ""; }
     words.forEach(function (w) { w.el.style.opacity = w.pale ? "var(--statement-pale)" : "1"; });
     var sfc = surface();
-    if (sfc) { sfc.setPaused(false); sfc.setView({ ox: 0, oy: 0, tx: 0, ty: 0, s: 1, hole: null }); }
+    if (sfc) { sfc.setPaused(false); sfc.setView({ ox: 0, oy: 0, tx: 0, ty: 0, s: 1, burn: null }); }
   }
 
   function update() {
@@ -165,12 +166,17 @@
       el.style.transform = f ? "translateY(" + (-28 * f).toFixed(1) + "px)" : "";
     });
 
-    // 2–3. The O opens into a hole and the view flies through it
-    var open = smooth(0.03, 0.14, p) * 0.94;
-    var cover = Math.sqrt(Math.pow(vw / 2 / (geo.rx * 0.94), 2) + Math.pow(vh / 2 / (geo.ry * 0.94), 2)) * 1.08;
-    var z = ramp(0.06, 0.5, p);
+    // 2. A spark catches in the O, then burns it open (only once the text has gone)
+    var spark = smooth(0.1, 0.14, p) * (1 - smooth(0.16, 0.24, p));
+    var burnR = smooth(0.13, 0.32, p) * 0.95;
+    var heat = smooth(0.11, 0.16, p) * (1 - 0.85 * smooth(0.36, 0.58, p));
+
+    // 3. Fly through: the O drifts to the centre while the scale grows until the hole covers the screen
+    var hole = 0.78 * 0.95;   // the burn's smallest radius, as a share of the counter
+    var cover = Math.sqrt(Math.pow(vw / 2 / (geo.rx * hole), 2) + Math.pow(vh / 2 / (geo.ry * hole), 2)) * 1.06;
+    var z = ramp(0.3, 0.62, p);
     var scale = Math.pow(cover, Math.pow(z, 1.8));
-    var t = smooth(0.06, 0.3, p);
+    var t = smooth(0.3, 0.48, p);
     var through = z >= 1;
     hero.classList.toggle("hero--zooming", p > 0);
     hero.style.visibility = through ? "hidden" : "";
@@ -182,19 +188,23 @@
           ox: geo.cx, oy: geo.cy,
           tx: (vw / 2 - geo.cx) * t, ty: (vh / 2 - geo.cy) * t,
           s: scale,
-          hole: open > 0.001 ? { cx: geo.cx, cy: geo.cy, rx: geo.rx * open, ry: geo.ry * open } : null
+          burn: spark > 0 || burnR > 0 || heat > 0 ? { cx: geo.cx, cy: geo.cy, rx: geo.rx, ry: geo.ry, r: burnR, heat: heat, spark: spark } : null
         });
       }
     } else {
-      // No WebGL: no hole to fly through, so the hero simply fades away
-      hero.style.opacity = String(1 - smooth(0.06, 0.4, p));
+      // No WebGL: nothing to burn through, so the hero simply fades away
+      hero.style.opacity = String(1 - smooth(0.2, 0.5, p));
     }
 
-    // The statement drifts forward a little as you enter it
-    if (inner) inner.style.transform = z < 1 ? "scale(" + (1 + 0.06 * (1 - smooth(0.06, 0.5, p))).toFixed(4) + ")" : "";
+    // The statement rises from below into place after half the zoom, for depth
+    var rise = smooth(0.46, 0.68, p);
+    if (inner) {
+      inner.style.transform = rise < 1 ? "translate3d(0," + ((1 - rise) * 42).toFixed(2) + "vh,0) scale(" + (0.94 + 0.06 * rise).toFixed(4) + ")" : "";
+      inner.style.opacity = rise < 1 ? (0.25 + 0.75 * rise).toFixed(3) : "";
+    }
 
     // 4. Words light up, each over the span of three words
-    var rr = ramp(0.52, 0.94, p);
+    var rr = ramp(0.68, 0.96, p);
     var n = words.length;
     words.forEach(function (w, i) {
       var v = clamp((rr * (n + 3) - i) / 3, 0, 1);
