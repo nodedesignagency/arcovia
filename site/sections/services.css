@@ -140,16 +140,17 @@
 
 /* ---------- Version C: Version A with big debossed numbers ----------
    Each number is large, tucked into the top-left corner of its block (the
-   top edge cuts it slightly) and pressed into the concrete. Two layers of
-   the same glyph, each blended with `overlay`, where neutral grey (#808080)
-   leaves the concrete unchanged:
-   1. the number itself: a dark fill clipped to the glyph, covered by a
-      slightly dark copy shifted down and right, so the recess sits a
-      little in shade and its top and left walls stay in deep shadow;
-   2. ::after, the same number: a light fill covered by a neutral copy
-      shifted up and left, so only the bottom and right walls catch light.
-   The face is the block's own concrete, a touch darker. Static CSS, so it reads the
-   same crisp way at all times. */
+   top edge cuts it slightly) and carved into the concrete the same way as
+   the hero's ARCOVIA: narrow, crisp walls, the face a shade darker than the
+   surface. Two layers of the same glyph, each blended with `overlay`, where
+   neutral grey (#808080) leaves the concrete unchanged:
+   1. the number itself: a dark fill clipped to the glyph, covered by the
+      face shifted down and right, so a thin dark line runs inside the top
+      and left edges and softens a little into the face;
+   2. ::after, the same number: a white fill covered by a neutral copy
+      shifted up and left, so a thin bright line runs inside the bottom and
+      right edges.
+   Static CSS, so it reads the same crisp way at all times. */
 .services--debossed .services__grid { counter-reset: service; }
 .services--debossed .services__item { counter-increment: service; }
 .services--debossed .service-card { isolation: isolate; overflow: hidden; }
@@ -168,10 +169,10 @@
   letter-spacing: -0.04em;
   font-variant-numeric: lining-nums proportional-nums; /* Montserrat's tabular 1 has a foot serif */
   color: transparent;
-  background: #222;
+  background: #1c1c1c;
   -webkit-background-clip: text;
   background-clip: text;
-  text-shadow: 4px 6px 5px #6e6e6e; /* a little under neutral: the recess sits in shade */
+  text-shadow: 2px 2.5px 1px #6c6c6c; /* the face, a shade under neutral */
   mix-blend-mode: overlay;
   user-select: none;
 }
@@ -180,10 +181,10 @@
   position: absolute;
   inset: 0;
   color: transparent;
-  background: #bdbdbd;
+  background: #fff;
   -webkit-background-clip: text;
   background-clip: text;
-  text-shadow: -1px -1.5px 1px #808080;
+  text-shadow: -1px -1px 0 #808080;
   mix-blend-mode: overlay;
 }
 .services--debossed .service-card__title { padding-top: var(--space-5); }
