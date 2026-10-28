@@ -88,12 +88,11 @@
     url("../assets/concrete-cast.jpg");
   background-size: auto, 960px;
   background-position: 0 0, calc(var(--i, 0) * -271px - 120px) calc(var(--i, 0) * -413px - 60px);
-  /* edges along the joints: the bottom and right turn away from the light
-     (no highlight on the top edge) */
+  /* edges along the joints: the bottom turns away from the light
+     (no line on the top or right edge) */
   box-shadow:
     inset 1px 0 0 rgba(255, 255, 255, 0.2),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.16),
-    inset -1px 0 0 rgba(0, 0, 0, 0.1);
+    inset 0 -1px 0 rgba(0, 0, 0, 0.16);
   transition: filter var(--dur-base) var(--ease-out);
 }
 /* The blocks stay put in the slab; the one under the cursor catches a little more light */
