@@ -16,7 +16,6 @@
   if (header) {
     var ticking = false;
     var lastY = window.scrollY;
-    var darkSections = document.querySelectorAll("[data-header-theme='dark']");
     var update = function () {
       var y = Math.max(0, window.scrollY);
       var dy = y - lastY;
@@ -32,7 +31,8 @@
 
       // Light type while the bar sits over a dark section
       var probe = 40, onDark = false;
-      darkSections.forEach(function (sec) {
+      // Queried each time: zoom.js marks the statement dark only once you're inside it
+      document.querySelectorAll("[data-header-theme='dark']").forEach(function (sec) {
         var r = sec.getBoundingClientRect();
         if (r.top <= probe && r.bottom >= probe) onDark = true;
       });
@@ -165,7 +165,8 @@
     var cs = getComputedStyle(wrap);
     var target = wrap.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
     mark.style.fontSize = "100px";
-    var w = mark.getBoundingClientRect().width - 0.035 * 100;
+    // offsetWidth ignores transforms, so this stays right during the zoom-through
+    var w = mark.offsetWidth - 0.035 * 100;
     var size = Math.floor((100 * target) / w * 100) / 100;
     mark.style.fontSize = "";
     hero.style.setProperty("--wordmark-size", size + "px");

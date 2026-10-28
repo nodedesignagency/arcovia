@@ -176,6 +176,7 @@
     return Promise.all([this.loadTexture(), fonts]).then(function () {
       self.layout();
       self.bind();
+      self.ready = true;
       self.host.classList.add("hero--gl");
       self.kick();
       return true;
@@ -229,6 +230,14 @@
 
   /* Size the canvas and redraw the height map from the live layout */
   ConcreteSurface.prototype.layout = function () {
+    // Measure the untransformed layout, even mid zoom-through (zoom.js scales the host)
+    var saved = this.host.style.transform;
+    this.host.style.transform = "none";
+    this.layoutNow();
+    this.host.style.transform = saved;
+  };
+
+  ConcreteSurface.prototype.layoutNow = function () {
     var gl = this.gl, rect = this.host.getBoundingClientRect();
     var w = Math.max(1, rect.width), h = Math.max(1, rect.height);
     var coarse = window.matchMedia("(pointer: coarse)").matches;
@@ -368,8 +377,17 @@
   };
 
   /* Start, stop or draw a single still frame depending on state */
+  /* Pause while something else owns the view (zoom.js, once the hero is flying away) */
+  ConcreteSurface.prototype.setPaused = function (paused) {
+    paused = !!paused;
+    if (this.paused === paused) return;
+    this.paused = paused;
+    if (this.ready) this.kick();
+  };
+
   ConcreteSurface.prototype.kick = function () {
-    var animate = this.visible && !document.hidden && !this.reduced.matches;
+    if (!this.ready) return;   // nothing to draw until the textures and height map exist
+    var animate = this.visible && !this.paused && !document.hidden && !this.reduced.matches;
     if (animate && !this.running) {
       this.running = true;
       this.loop = this.loop || this.frame.bind(this);
@@ -380,7 +398,7 @@
   };
 
   ConcreteSurface.prototype.frame = function (now) {
-    if (!this.visible || document.hidden || this.reduced.matches) { this.running = false; return; }
+    if (!this.visible || this.paused || document.hidden || this.reduced.matches) { this.running = false; return; }
     var dt = Math.min(0.1, (now - (this.last || now)) / 1000);
     var m = this.mouse;
     var ease = 1 - Math.exp(-dt * 7);

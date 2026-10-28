@@ -15,6 +15,7 @@
   <link rel="stylesheet" href="styles.css">
   <!-- One stylesheet per section, so a section can be approved and moved to main on its own -->
   <link rel="stylesheet" href="sections/hero.css">
+  <link rel="stylesheet" href="sections/statement.css">
 </head>
 <body>
 
@@ -38,7 +39,7 @@
        small bar and slides it away; scrolling up brings the small bar back
        with the labels row; the top of the page opens it again. No
        background: it sits straight on the page. Links are the V1 pages only
-       (Home is the logo). -->
+       (Home is the logo), three and three; Legal fills the sixth row. -->
   <header class="site-header" data-header>
     <div class="site-header__inner container">
       <div class="masthead-labels">
@@ -50,6 +51,7 @@
           <span class="masthead-clock__time masthead-clock__time--sj"><span class="visually-hidden">San Juan </span><span data-clock="America/Puerto_Rico">Atlantic Time</span></span>
         </p>
         <p class="masthead-label masthead-labels__site" aria-hidden="true">Site map</p>
+        <p class="masthead-label masthead-labels__company" aria-hidden="true">Company</p>
       </div>
 
       <div class="masthead-main">
@@ -60,12 +62,15 @@
         <!-- [COPY NEEDED] Draft line, to confirm with Lilla -->
         <p class="masthead-note">We build investor conviction, then run the process that turns it into capital.</p>
         <nav class="nav" aria-label="Main">
-          <ul class="nav__list">
+          <ul class="nav__list nav__list--site">
             <li class="nav__item" style="--i:0"><a class="nav__link" href="services.html">What We Do</a></li>
             <li class="nav__item" style="--i:1"><a class="nav__link" href="track-record.html">Track Record</a></li>
             <li class="nav__item" style="--i:2"><a class="nav__link" href="team.html">Team</a></li>
-            <li class="nav__item" style="--i:3"><a class="nav__link" href="about.html">About</a></li>
-            <li class="nav__item" style="--i:4"><a class="nav__link" href="contact.html">Contact</a></li>
+          </ul>
+          <ul class="nav__list nav__list--company">
+            <li class="nav__item" style="--i:0"><a class="nav__link" href="about.html">About</a></li>
+            <li class="nav__item" style="--i:1"><a class="nav__link" href="contact.html">Contact</a></li>
+            <li class="nav__item" style="--i:2"><a class="nav__link" href="legal.html">Legal</a></li>
           </ul>
           <button class="menu-btn" type="button" aria-expanded="false" aria-controls="menu" data-menu-open>
             Menu
@@ -105,68 +110,87 @@
 
   <main id="main">
 
-    <!-- SECTION:hero START · styles: sections/hero.css · scripts: concrete.js
-         Version B "Carved": live concrete framed by formwork joints and tie holes,
-         one path button, ARCOVIA carved across the bottom. -->
-    <section class="hero" data-hero aria-labelledby="hero-title">
-      <canvas class="hero__canvas" aria-hidden="true"></canvas>
+    <!-- SECTION:hero START · styles: sections/hero.css · scripts: concrete.js, zoom.js
+         Version B "Carved": live concrete, chip over the headline, one path button,
+         a carved seam and ARCOVIA carved across the bottom.
+         Hero and statement share one scroll stage (zoom.js): scrolling down opens the
+         O of ARCOVIA into a hole through the concrete and flies through it into the
+         statement. Without JS or with reduced motion they simply stack. -->
+    <div class="zoom" data-zoom>
+      <div class="zoom__stage">
+        <section class="hero" data-hero aria-labelledby="hero-title">
+          <canvas class="hero__canvas" aria-hidden="true"></canvas>
 
-      <div class="hero__inner container">
-        <div class="hero__heading" data-rise style="--rise:0">
-          <p class="chip">Independent capital markets advisory</p>
-          <h1 class="hero__title" id="hero-title">Where Capital<br> Meets Conviction</h1>
-        </div>
-
-        <div class="hero__aside" data-rise style="--rise:1">
-          <p class="hero__lede">For growth-stage founders, funds and foundations raising <span class="nowrap">$5M–$500M+</span>.</p>
-
-          <!-- Component: path-picker. One button; the three paths open above it. -->
-          <div class="path-picker" data-path-picker>
-            <div class="path-picker__panel" id="path-options" role="group" aria-labelledby="path-title" aria-hidden="true">
-              <p class="path-picker__title" id="path-title">Who are you?</p>
-              <a class="path-picker__option" href="services.html#founders">
-                <span class="path-picker__label">I’m raising capital</span>
-                <span class="path-picker__meta">Growth-stage founders and funds raising <span class="nowrap">$5M–$500M+</span></span>
-                <svg class="path-picker__arrow" aria-hidden="true"><use href="#icon-arrow"/></svg>
-              </a>
-              <a class="path-picker__option" href="services.html#investors">
-                <span class="path-picker__label">I’m an investor</span>
-                <span class="path-picker__meta">Family offices, VCs, funds and LPs</span>
-                <svg class="path-picker__arrow" aria-hidden="true"><use href="#icon-arrow"/></svg>
-              </a>
-              <a class="path-picker__option" href="services.html#institutions">
-                <span class="path-picker__label">I represent an institution</span>
-                <span class="path-picker__meta">Institutions and sovereign capital</span>
-                <svg class="path-picker__arrow" aria-hidden="true"><use href="#icon-arrow"/></svg>
-              </a>
+          <div class="hero__inner container">
+            <div class="hero__heading" data-rise data-zoom-fade style="--rise:0">
+              <p class="chip">Independent capital markets advisory</p>
+              <h1 class="hero__title" id="hero-title">Where Capital<br> Meets Conviction</h1>
             </div>
-            <button class="btn btn--primary path-picker__trigger" type="button" aria-expanded="false" aria-controls="path-options">
-              Choose your path
-              <svg class="btn__icon" aria-hidden="true"><use href="#icon-chevron"/></svg>
-            </button>
+
+            <div class="hero__aside" data-rise data-zoom-fade style="--rise:1">
+              <p class="hero__lede">For growth-stage founders, funds and foundations raising <span class="nowrap">$5M–$500M+</span>.</p>
+
+              <!-- Component: path-picker. One button; the three paths open above it. -->
+              <div class="path-picker" data-path-picker>
+                <div class="path-picker__panel" id="path-options" role="group" aria-labelledby="path-title" aria-hidden="true">
+                  <p class="path-picker__title" id="path-title">Who are you?</p>
+                  <a class="path-picker__option" href="services.html#founders">
+                    <span class="path-picker__label">I’m raising capital</span>
+                    <span class="path-picker__meta">Growth-stage founders and funds raising <span class="nowrap">$5M–$500M+</span></span>
+                    <svg class="path-picker__arrow" aria-hidden="true"><use href="#icon-arrow"/></svg>
+                  </a>
+                  <a class="path-picker__option" href="services.html#investors">
+                    <span class="path-picker__label">I’m an investor</span>
+                    <span class="path-picker__meta">Family offices, VCs, funds and LPs</span>
+                    <svg class="path-picker__arrow" aria-hidden="true"><use href="#icon-arrow"/></svg>
+                  </a>
+                  <a class="path-picker__option" href="services.html#institutions">
+                    <span class="path-picker__label">I represent an institution</span>
+                    <span class="path-picker__meta">Institutions and sovereign capital</span>
+                    <svg class="path-picker__arrow" aria-hidden="true"><use href="#icon-arrow"/></svg>
+                  </a>
+                </div>
+                <button class="btn btn--primary path-picker__trigger" type="button" aria-expanded="false" aria-controls="path-options">
+                  Choose your path
+                  <svg class="btn__icon" aria-hidden="true"><use href="#icon-chevron"/></svg>
+                </button>
+              </div>
+            </div>
+
+            <div class="seam hero__seam" data-carve="seam" aria-hidden="true">
+              <span class="seam__hole seam__hole--start" data-carve="hole"></span>
+              <span class="seam__hole seam__hole--end" data-carve="hole"></span>
+            </div>
           </div>
-        </div>
 
-        <div class="seam hero__seam" data-carve="seam" aria-hidden="true">
-          <span class="seam__hole seam__hole--start" data-carve="hole"></span>
-          <span class="seam__hole seam__hole--end" data-carve="hole"></span>
-        </div>
-      </div>
+          <div class="hero__wordmark-wrap container" aria-hidden="true">
+            <span class="hero__wordmark" data-carve="text">ARCOVIA</span>
+          </div>
+        </section>
 
-      <div class="hero__wordmark-wrap container" aria-hidden="true">
-        <span class="hero__wordmark" data-carve="text">ARCOVIA</span>
+        <!-- SECTION:statement START · styles: sections/statement.css · scripts: zoom.js
+             Home block 2. Seen through the O, then its words light up as you scroll.
+             "Spreadsheets validate data" stays pale on purpose: the tension in the line. -->
+        <section class="statement" data-statement aria-labelledby="statement-title">
+          <div class="statement__inner">
+            <h2 class="visually-hidden" id="statement-title">Why story moves capital</h2>
+            <p class="statement__text" data-reveal>Today’s markets are flooded with funding but starved for differentiation. <span class="statement__pale">Spreadsheets validate data,</span> but only stories inspire action. Arcovia combines the science of financial stewardship with the art of narrative design, building investor conviction long before a term sheet is signed.</p>
+          </div>
+        </section>
+        <!-- SECTION:statement END -->
       </div>
-    </section>
+    </div>
     <!-- SECTION:hero END -->
 
     <!-- Draft placeholder: next section goes here -->
-    <section class="section-next" data-header-theme="dark" aria-label="Next section, in progress">
-      <p>02 · Statement — next section, in progress</p>
+    <section class="section-next" aria-label="Next section, in progress">
+      <p>03 · Proof band — next section, in progress</p>
     </section>
 
   </main>
 
   <script src="concrete.js"></script>
   <script src="main.js"></script>
+  <script src="zoom.js"></script>
 </body>
 </html>

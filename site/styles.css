@@ -270,8 +270,8 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 
 /* ---------- Header: a masthead that folds, hides and comes back ----------
    After defiant.vc. Columns on the 12-column grid:
-   labels row: 1-2 Los Angeles · 3-4 San Juan · 5-7 clock · 8+ "Site map"
-   main row:   1-2 mark · 3-4 wordmark · 5-7 one line · 8-12 site map rows
+   labels row: 1-2 Los Angeles · 3-4 San Juan · 5-7 clock · 8-10 "Site map" · 11-12 "Company"
+   main row:   1-2 mark · 3-4 wordmark · 5-7 one line · 8-10 and 11-12 link rows
    States (set in main.js):
    - top of page: expanded
    - .is-compact: rows stack into "Menu +", mark shrinks, wordmark slides in
@@ -281,7 +281,7 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 :root {
   --mh-labels: 44px;      /* labels row, including its hairline */
   --mh-row: 34px;         /* one link row */
-  --mh-rows: 5;
+  --mh-rows: 3;
   --mh-pad: 16px;         /* space above the first row */
   --mh-main: calc(var(--mh-pad) + var(--mh-row) * var(--mh-rows));
   --mh-compact: 62px;
@@ -347,6 +347,7 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 .masthead-city--sj { grid-column: 3 / span 2; }
 .masthead-clock { grid-column: 5 / span 3; }
 .masthead-labels__site { grid-column: 8 / span 3; }
+.masthead-labels__company { grid-column: 11 / span 2; }
 
 .masthead-city,
 .masthead-label {
@@ -450,12 +451,16 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 }
 .is-compact .masthead-rule { top: calc((var(--mh-compact) - var(--mh-row)) / 2 + var(--mh-row)); }
 
-/* Site map: one column of rows */
+/* Site map: two columns of three rows, on the page grid */
 .nav {
   grid-column: 8 / -1;
   grid-row: 1;
   position: relative;
+  display: grid;
+  grid-template-columns: subgrid;
 }
+.nav__list--site { grid-column: 1 / span 3; }
+.nav__list--company { grid-column: 4 / span 2; }
 .nav__list {
   position: relative;
   height: calc(var(--mh-row) * var(--mh-rows));
@@ -466,7 +471,7 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   display: flex;
   align-items: center;
   transition: transform var(--mh-dur) var(--mh-ease), opacity calc(var(--mh-dur) * 0.55) var(--mh-ease), border-color var(--dur-slow) var(--ease-out);
-  transition-delay: calc((4 - var(--i)) * 22ms);
+  transition-delay: calc((2 - var(--i)) * 25ms);
 }
 .nav__item + .nav__item { border-top: 1px solid var(--mh-line); }
 
@@ -476,7 +481,7 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   transform: translateY(calc(var(--i) * var(--mh-row) * -1));
   opacity: 0;
   pointer-events: none;
-  transition-delay: calc(var(--i) * 22ms);
+  transition-delay: calc(var(--i) * 25ms);
 }
 
 .nav__link {
@@ -546,6 +551,7 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 /* Tablet and phone (to refine once desktop is approved): labels row over a simple bar */
 @media (max-width: 1199px) {
   .masthead-labels__site,
+  .masthead-labels__company,
   .masthead-note,
   .masthead-rule,
   .nav__list { display: none; }
@@ -557,7 +563,7 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   .is-compact .masthead-mark { margin-top: 0; }
   .masthead-word { font-size: 15px; }
   .is-compact .masthead-word { transform: none; }
-  .nav { margin-left: auto; }
+  .nav { margin-left: auto; display: block; }
 }
 @media (max-width: 809px) {
   .masthead-city--la { grid-column: 1 / span 4; }

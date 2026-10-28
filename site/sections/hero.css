@@ -3,6 +3,7 @@
    Live carved concrete (concrete.js), a bracketed chip over the headline,
    one path button, a seam and ARCOVIA carved across the bottom.
    Sits under the expanded masthead (--header-h, set in styles.css).
+   Shares a scroll stage with the statement (zoom.js): see the end of this file.
    Uses shared tokens and components from styles.css.
    ========================================================================== */
 
@@ -109,7 +110,8 @@
 /* Load-in: text fades up once */
 @media (prefers-reduced-motion: no-preference) {
   .hero [data-rise] {
-    animation: rise 700ms var(--ease-out) both;
+    /* backwards, not both: once done it lets go, so zoom.js can fade the same elements */
+    animation: rise 700ms var(--ease-out) backwards;
     animation-delay: calc(var(--rise, 0) * 80ms + 150ms);
   }
 }
@@ -130,3 +132,26 @@
   .hero__aside { grid-column: 1 / -1; gap: var(--space-5); margin-bottom: var(--space-7); }
 }
 
+
+/* ---------- Zoom-through stage (zoom.js) ----------
+   .zoom--on is added by zoom.js (not with reduced motion). The stage pins for
+   --zoom-travel of scrolling while the hero flies through the O of ARCOVIA
+   and the statement's words light up; then the page carries on. */
+.zoom--on {
+  --zoom-travel: 260vh;
+  position: relative;
+  height: calc(100vh + var(--zoom-travel));
+}
+.zoom--on .zoom__stage {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow: hidden;
+}
+.zoom--on .zoom__stage > .hero,
+.zoom--on .zoom__stage > .statement {
+  position: absolute;
+  inset: 0;
+  min-height: 0;
+}
+.zoom--on .hero { z-index: 2; will-change: transform; }

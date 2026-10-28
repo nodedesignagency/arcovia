@@ -1,0 +1,51 @@
+/* ==========================================================================
+   SECTION: statement — Home, block 2
+   A darker concrete room, seen through the O of ARCOVIA (zoom.js), holding
+   the brief's statement in large type. Its words light up as you scroll;
+   "Spreadsheets validate data" stays pale on purpose.
+   Uses shared tokens from styles.css.
+   ========================================================================== */
+
+.statement {
+  --statement-lit: #f4f4f3;
+  --statement-dim: 0.16;      /* words not yet reached */
+  --statement-pale: 0.42;     /* "Spreadsheets validate data," when lit */
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 100vh;
+  padding: var(--space-10) var(--gutter);
+  background-color: #4a4a4a;
+  background-image: url("../assets/concrete.jpg");
+  background-size: 1024px;
+  background-blend-mode: multiply;
+  color: var(--statement-lit);
+  overflow: hidden;
+}
+
+.statement__inner {
+  width: 100%;
+  max-width: 1080px;
+  transform-origin: 50% 50%;
+}
+
+.statement__text {
+  font-size: 48px;
+  font-weight: var(--weight-medium);
+  line-height: 1.18;
+  letter-spacing: -0.018em;
+  text-wrap: pretty;
+}
+
+/* Without zoom.js the text simply reads, with the pale phrase still pale */
+.statement__pale { opacity: var(--statement-pale); }
+/* With zoom.js each word is a span whose opacity is set as you scroll */
+.statement [data-reveal].is-split .statement__pale { opacity: 1; }
+.statement .w { opacity: var(--statement-dim); }
+
+@media (max-width: 1199px) {
+  .statement__text { font-size: 38px; }
+}
+@media (max-width: 809px) {
+  .statement__text { font-size: 27px; line-height: 1.22; }
+}
