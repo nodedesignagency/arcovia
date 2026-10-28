@@ -13,6 +13,8 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap">
   <link rel="preload" href="assets/concrete.jpg" as="image">
   <link rel="stylesheet" href="styles.css">
+  <!-- One stylesheet per section, so a section can be approved and moved to main on its own -->
+  <link rel="stylesheet" href="sections/hero.css">
 </head>
 <body>
 
@@ -82,7 +84,7 @@
 
   <main id="main">
 
-    <!-- ===== 1 · Hero (component: hero) =====
+    <!-- SECTION:hero START · styles: sections/hero.css · scripts: concrete.js
          Version B "Carved": live concrete framed by formwork joints and tie holes,
          one path button, ARCOVIA carved across the bottom. -->
     <section class="hero" data-hero aria-labelledby="hero-title">
@@ -147,6 +149,7 @@
         <span class="hero__wordmark" data-carve="text">ARCOVIA</span>
       </div>
     </section>
+    <!-- SECTION:hero END -->
 
     <!-- Draft placeholder: next section goes here -->
     <section class="section-next" aria-label="Next section, in progress">
