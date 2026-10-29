@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Final 2 · Arcovia</title>
+  <meta name="description" content="Where capital meets conviction. Independent capital markets advisory for growth-stage founders, funds and foundations raising $5M–$500M+.">
+  <meta name="robots" content="noindex, nofollow"><!-- Draft: keep staging out of search -->
+  <meta name="theme-color" content="#d3d3d3">
+  <link rel="icon" href="assets/a-mark.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap">
+  <link rel="preload" href="assets/concrete.jpg" as="image">
+  <link rel="stylesheet" href="styles.css">
+  <!-- One stylesheet per section, so a section can be approved and moved to main on its own -->
+  <link rel="stylesheet" href="sections/hero.css">
+  <link rel="stylesheet" href="sections/statement.css">
+</head>
+<body>
+  <!-- FINAL 2 (saved 29 Oct 2026): frozen snapshot for comparison. Do not edit; do not promote to main.
+       The golden paper-fire burn through the O, editorial statement that writes itself in.
+       The live exploration is site/index.html. -->
+
+  <!-- A-mark sprite: one source for header, hero, menu and footer -->
+  <svg class="sprite" aria-hidden="true" focusable="false">
+    <symbol id="a-mark" viewBox="0 0 554 539">
+      <path d="M200 77a77 77 0 1 0 154 0a77 77 0 1 0-154 0Z"/>
+      <path d="M215.63 142.83A90 90 0 0 0 265.8 166.3L72 539H0Z"/>
+      <path d="M288.2 166.3A90 90 0 0 0 338.37 142.83L554 539H482Z"/>
+    </symbol>
+    <symbol id="icon-chevron" viewBox="0 0 16 16"><path d="M3.5 10l4.5-4.5 4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="icon-arrow" viewBox="0 0 16 16"><path d="M2.5 8h11M9 3.5 13.5 8 9 12.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  </svg>
+
+  <a class="visually-hidden" href="#main">Skip to content</a>
+
+  <!-- ===== Header (component: site-header) =====
+       Masthead after defiant.vc. At the top of the page: a labels row (the
+       two offices and one clock), the big A-mark, the wordmark, one line on
+       what we do, and the site map as rows. Scrolling down folds it into a
+       small bar and slides it away; scrolling up brings the small bar back
+       with the labels row; the top of the page opens it again. No
+       background: it sits straight on the page. Links are the V1 pages only
+       (Home is the logo), three and three; Legal fills the sixth row. -->
+  <header class="site-header" data-header>
+    <div class="site-header__inner container">
+      <div class="masthead-labels">
+        <span class="masthead-city masthead-city--la">Los Angeles</span>
+        <span class="masthead-city masthead-city--sj">San Juan</span>
+        <!-- One clock: Los Angeles time; hover San Juan to see its time -->
+        <p class="masthead-clock">
+          <span class="masthead-clock__time masthead-clock__time--la"><span class="visually-hidden">Los Angeles </span><span data-clock="America/Los_Angeles">Pacific Time</span></span>
+          <span class="masthead-clock__time masthead-clock__time--sj"><span class="visually-hidden">San Juan </span><span data-clock="America/Puerto_Rico">Atlantic Time</span></span>
+        </p>
+        <p class="masthead-label masthead-labels__site" aria-hidden="true">Site map</p>
+        <p class="masthead-label masthead-labels__company" aria-hidden="true">Company</p>
+      </div>
+
+      <div class="masthead-main">
+        <a class="masthead-mark" href="index.html" aria-label="Arcovia, home">
+          <svg viewBox="0 0 554 539" aria-hidden="true"><use href="#a-mark"/></svg>
+        </a>
+        <a class="masthead-word" href="index.html" tabindex="-1" aria-hidden="true">ARCOVIA</a>
+        <!-- [COPY NEEDED] Draft line, to confirm with Lilla -->
+        <p class="masthead-note">We build investor conviction, then run the process that turns it into capital.</p>
+        <nav class="nav" aria-label="Main">
+          <ul class="nav__list nav__list--site">
+            <li class="nav__item" style="--i:0"><a class="nav__link" href="services.html">What We Do</a></li>
+            <li class="nav__item" style="--i:1"><a class="nav__link" href="track-record.html">Track Record</a></li>
+            <li class="nav__item" style="--i:2"><a class="nav__link" href="team.html">Team</a></li>
+          </ul>
+          <ul class="nav__list nav__list--company">
+            <li class="nav__item" style="--i:0"><a class="nav__link" href="about.html">About</a></li>
+            <li class="nav__item" style="--i:1"><a class="nav__link" href="contact.html">Contact</a></li>
+            <li class="nav__item" style="--i:2"><a class="nav__link" href="legal.html">Legal</a></li>
+          </ul>
+          <button class="menu-btn" type="button" aria-expanded="false" aria-controls="menu" data-menu-open>
+            Menu
+            <span class="menu-btn__plus" aria-hidden="true"></span>
+          </button>
+        </nav>
+        <span class="masthead-rule" aria-hidden="true"></span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== Full-screen menu (component: menu) ===== -->
+  <div class="menu" id="menu" data-menu aria-hidden="true" role="dialog" aria-modal="true" aria-label="Menu">
+    <div class="menu__top container">
+      <a class="logo" href="index.html" aria-label="Arcovia, home">
+        <svg class="logo__mark" viewBox="0 0 554 539" aria-hidden="true"><use href="#a-mark"/></svg>
+        <span class="logo__word">ARCOVIA</span>
+      </a>
+      <button class="menu__close" type="button" data-menu-close>Close</button>
+    </div>
+    <div class="menu__body container">
+      <ol class="menu__list">
+        <li class="menu__item" style="--i:0"><a class="menu__link" href="services.html"><span class="menu__index">1.</span>What We Do</a></li>
+        <li class="menu__item" style="--i:1"><a class="menu__link" href="track-record.html"><span class="menu__index">2.</span>Track Record</a></li>
+        <li class="menu__item" style="--i:2"><a class="menu__link" href="team.html"><span class="menu__index">3.</span>Team</a></li>
+        <li class="menu__item" style="--i:3"><a class="menu__link" href="about.html"><span class="menu__index">4.</span>About</a></li>
+        <li class="menu__item" style="--i:4"><a class="menu__link" href="contact.html"><span class="menu__index">5.</span>Contact</a></li>
+      </ol>
+      <div class="menu__foot">
+        <p><strong>Los Angeles</strong>2029 Century Park East, CA 90067</p>
+        <p><strong>San Juan</strong>450 Ave. 200, Puerto Rico 00901</p>
+        <p><a href="#" data-todo="LinkedIn company page URL [TO CONFIRM]">LinkedIn</a></p>
+        <a class="btn btn--primary" href="contact.html">Start a conversation</a>
+      </div>
+    </div>
+  </div>
+
+  <main id="main">
+
+    <!-- SECTION:hero START · styles: sections/hero.css · scripts: concrete.js, zoom.js
+         Version B "Carved": live concrete, chip over the headline, one path button,
+         a carved seam and ARCOVIA carved across the bottom.
+         Hero and statement share one scroll stage (zoom.js): scrolling down opens the
+         O of ARCOVIA into a hole through the concrete and flies through it into the
+         statement. Without JS or with reduced motion they simply stack. -->
+    <div class="zoom" data-zoom>
+      <div class="zoom__stage">
+        <section class="hero" data-hero aria-labelledby="hero-title">
+          <canvas class="hero__canvas" aria-hidden="true"></canvas>
+
+          <div class="hero__inner container">
+            <!-- Heading and path picker share a row, aligned at the bottom: the button sits on the headline's baseline -->
+            <div class="hero__content">
+              <div class="hero__heading" data-rise data-zoom-fade style="--rise:0">
+                <p class="chip">Independent capital markets advisory</p>
+                <h1 class="hero__title" id="hero-title">Where Capital<br> Meets Conviction</h1>
+              </div>
+
+              <div class="hero__aside" data-rise data-zoom-fade style="--rise:1">
+                <p class="hero__lede">For growth-stage founders, funds and foundations raising <span class="nowrap">$5M–$500M+</span>.</p>
+
+                <!-- Component: path-picker. One button; the three paths open above it. -->
+                <div class="path-picker" data-path-picker>
+                  <div class="path-picker__panel" id="path-options" role="group" aria-labelledby="path-title" aria-hidden="true">
+                    <p class="path-picker__title" id="path-title">Who are you?</p>
+                    <a class="path-picker__option" href="services.html#founders">
+                      <span class="path-picker__label">I’m raising capital</span>
+                      <span class="path-picker__meta">Growth-stage founders and funds raising <span class="nowrap">$5M–$500M+</span></span>
+                      <svg class="path-picker__arrow" aria-hidden="true"><use href="#icon-arrow"/></svg>
+                    </a>
+                    <a class="path-picker__option" href="services.html#investors">
+                      <span class="path-picker__label">I’m an investor</span>
+                      <span class="path-picker__meta">Family offices, VCs, funds and LPs</span>
+                      <svg class="path-picker__arrow" aria-hidden="true"><use href="#icon-arrow"/></svg>
+                    </a>
+                    <a class="path-picker__option" href="services.html#institutions">
+                      <span class="path-picker__label">I represent an institution</span>
+                      <span class="path-picker__meta">Institutions and sovereign capital</span>
+                      <svg class="path-picker__arrow" aria-hidden="true"><use href="#icon-arrow"/></svg>
+                    </a>
+                  </div>
+                  <button class="btn btn--primary path-picker__trigger" type="button" aria-expanded="false" aria-controls="path-options">
+                    Choose your path
+                    <svg class="btn__icon" aria-hidden="true"><use href="#icon-chevron"/></svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="seam hero__seam" data-carve="seam" aria-hidden="true">
+              <span class="seam__hole seam__hole--start" data-carve="hole"></span>
+              <span class="seam__hole seam__hole--end" data-carve="hole"></span>
+            </div>
+          </div>
+
+          <div class="hero__wordmark-wrap container" aria-hidden="true">
+            <span class="hero__wordmark" data-carve="text">ARCOVIA</span>
+          </div>
+        </section>
+
+        <!-- SECTION:statement START · styles: sections/statement.css · scripts: zoom.js
+             Home block 2. Seen through the O, then its words light up as you scroll.
+             "Spreadsheets validate data" stays pale on purpose: the tension in the line. -->
+        <section class="statement" data-statement aria-labelledby="statement-title">
+          <div class="statement__inner">
+            <h2 class="visually-hidden" id="statement-title">Why story moves capital</h2>
+            <p class="statement__text" data-reveal>Today’s markets are flooded with funding but starved for differentiation. <span class="statement__pale">Spreadsheets validate data,</span> but only stories inspire action. Arcovia combines the science of financial stewardship with the art of narrative design, building investor conviction long before a term sheet is signed.</p>
+          </div>
+        </section>
+        <!-- SECTION:statement END -->
+      </div>
+    </div>
+    <!-- SECTION:hero END -->
+
+    <!-- Draft placeholder: next section goes here -->
+    <section class="section-next" data-header-theme="dark" aria-label="Next section, in progress">
+      <p>03 · Proof band — next section, in progress</p>
+    </section>
+
+  </main>
+
+  <script src="concrete.js"></script>
+  <script src="main.js"></script>
+  <script src="zoom.js"></script>
+</body>
+</html>
