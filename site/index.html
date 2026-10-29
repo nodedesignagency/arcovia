@@ -196,8 +196,9 @@
          until only a thin concrete frame is left. Portraits are black and white and
          turn to colour on hover. The names hang on a line in groups, after a timeline
          reference the user sent; the person at the front (or the name under the
-         cursor) gets a pill, an accent dot and the line into it in the accent.
-         Clicking a name brings that card forward.
+         cursor) gets a pill, an ink dot and the line into it in ink.
+         Clicking a name brings that card forward. The last stop is a light grey card:
+         the rest of the team gathers round the A-mark, then a link to the Team page.
          Without JS, below desktop or with reduced motion, the row scrolls sideways.
          Component: team-card (becomes a CMS-driven Framer component). -->
     <section class="team" id="team" data-team aria-labelledby="team-title">
@@ -227,8 +228,10 @@
                 <ol class="team__names-list">
                   <li><button class="team__name" type="button" data-team-go="2">Team member 03</button></li>
                   <li><button class="team__name" type="button" data-team-go="3">Team member 04</button></li>
-                  <li><button class="team__name" type="button" data-team-go="4">Team member 05</button></li>
                 </ol>
+              </li>
+              <li class="team__group">
+                <button class="team__name team__name--more" type="button" data-team-go="4">See other members</button>
               </li>
             </ul>
           </div>
@@ -295,42 +298,21 @@
                   </a>
                 </article>
               </li>
-              <li class="team__item">
-                <article class="team-card" style="--i:4">
-                  <div class="team-card__media">
-                    <img class="team-card__photo" src="assets/team/portrait-placeholder.svg" alt="" width="600" height="720" loading="lazy" data-todo="Portrait of Team member 05 [PHOTO NEEDED]">
-                  </div>
-                  <span class="team-card__rim" aria-hidden="true"></span>
-                  <div class="team-card__body">
-                    <h3 class="team-card__name"><a class="team-card__link" href="team/team-member-5.html" data-todo="Profile page (CMS template) [TO BUILD]">Team member 05</a></h3>
-                    <p class="team-card__role">Title to come</p>
-                  </div>
-                  <a class="team-card__social" href="#" aria-label="Team member 05 on LinkedIn" data-todo="LinkedIn URL [TO CONFIRM]">
-                    <svg aria-hidden="true"><use href="#icon-linkedin"/></svg>
-                  </a>
-                </article>
-              </li>
-              <!-- Last in the row: on to the Team page. [COPY NEEDED] Draft label -->
-              <li class="team__more">
+              <!-- Last in the row: on to the Team page. Light grey, not concrete. The rest of the
+                   team gathers round the A-mark when this card comes to the front (team.js).
+                   [COPY NEEDED] Draft label; photos of the wider team -->
+              <li class="team__item team__item--more">
                 <a class="team-more" href="team.html">
-                  <svg class="team-more__mark" viewBox="0 0 554 539" aria-hidden="true">
-                    <!-- Pressed in: shadow inside the upper edges, light along the lower lip (like the seam's tie holes) -->
-                    <filter id="team-deboss" x="-5%" y="-5%" width="110%" height="110%" color-interpolation-filters="sRGB">
-                      <feOffset in="SourceAlpha" dy="12" result="down"/>
-                      <feComposite in="SourceAlpha" in2="down" operator="out" result="upper"/>
-                      <feGaussianBlur in="upper" stdDeviation="4"/>
-                      <feComposite in2="SourceAlpha" operator="in" result="upperSoft"/>
-                      <feFlood flood-color="#000" flood-opacity="0.5"/>
-                      <feComposite in2="upperSoft" operator="in" result="shadow"/>
-                      <feOffset in="SourceAlpha" dy="5" result="down2"/>
-                      <feComposite in="down2" in2="SourceAlpha" operator="out" result="lip"/>
-                      <feFlood flood-color="#fff" flood-opacity="0.7"/>
-                      <feComposite in2="lip" operator="in" result="light"/>
-                      <feMerge><feMergeNode in="SourceGraphic"/><feMergeNode in="shadow"/><feMergeNode in="light"/></feMerge>
-                    </filter>
-                    <use href="#a-mark" filter="url(#team-deboss)"/>
-                  </svg>
-                  <span class="team-more__label">Meet the whole team</span>
+                  <span class="team-more__crowd" aria-hidden="true">
+                    <span class="team-more__logo"><svg viewBox="0 0 554 539"><use href="#a-mark"/></svg></span>
+                    <span class="team-more__face" style="--slot:-90deg; --fx:50%; --fy:40%; --zoom:1.15"><img src="assets/team/colin-pham.jpg" alt="" loading="lazy"></span>
+                    <span class="team-more__face" style="--slot:-30deg; --fx:50%; --fy:42%; --zoom:1.35; --tone:0.92"><img src="assets/team/portrait-placeholder.svg" alt="" loading="lazy" data-todo="Photo of a team member [PHOTO NEEDED]"></span>
+                    <span class="team-more__face" style="--slot:30deg; --fx:46%; --fy:40%; --zoom:1.5; --tone:1.1"><img src="assets/team/portrait-placeholder.svg" alt="" loading="lazy" data-todo="Photo of a team member [PHOTO NEEDED]"></span>
+                    <span class="team-more__face" style="--slot:90deg; --fx:46%; --fy:33%; --zoom:2"><img src="assets/team/caroline-farah-lembck.jpg" alt="" loading="lazy"></span>
+                    <span class="team-more__face" style="--slot:150deg; --fx:54%; --fy:40%; --zoom:1.4; --tone:0.98"><img src="assets/team/portrait-placeholder.svg" alt="" loading="lazy" data-todo="Photo of a team member [PHOTO NEEDED]"></span>
+                    <span class="team-more__face" style="--slot:210deg; --fx:50%; --fy:44%; --zoom:1.25; --tone:1.16"><img src="assets/team/portrait-placeholder.svg" alt="" loading="lazy" data-todo="Photo of a team member [PHOTO NEEDED]"></span>
+                  </span>
+                  <span class="team-more__label">View more team members</span>
                   <span class="team-more__arrow" aria-hidden="true"><svg><use href="#icon-arrow"/></svg></span>
                 </a>
               </li>

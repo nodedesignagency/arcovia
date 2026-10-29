@@ -4,13 +4,15 @@
    card slides in from the right and comes to rest at the front, on top of
    the one before (which sinks back into shade), while the window cut into
    its slab opens until only a thin concrete frame is left. Each card rests
-   at the front for a moment before the next one comes.
+   at the front for a moment before the next one comes. The last stop is a
+   light grey card: when it reaches the front, the rest of the team gathers
+   round the A-mark (after a reference video the user sent).
    The names on the left hang on one line in groups (after a timeline
    reference the user sent): group names on the outer line, people one step
    in, the line curving between them. The person under the cursor, or else
-   the one at the front, is selected: pill, accent dot with a glow, and the
-   line leading into their dot in the accent. Clicking a name scrolls the
-   page to that card. ?names=mono shows the accent in ink.
+   the one at the front, is selected: pill, ink dot with a glow, and the
+   line leading into their dot in ink. "See other members", the last stop,
+   sits back on the outer line. Clicking a name scrolls the page to that card.
    Every frame comes from the scroll position alone (with light smoothing),
    so scrolling back up plays it in reverse. Desktop only (≥1200px), and not
    with reduced motion: there the row simply scrolls sideways on its own.
@@ -24,16 +26,12 @@
   var stage = team.querySelector(".team__stage");
   var viewport = team.querySelector(".team__viewport");
   var items = Array.prototype.slice.call(team.querySelectorAll(".team__item"));
-  var more = team.querySelector(".team__more");      // last tile, on to the Team page
   var names = Array.prototype.slice.call(team.querySelectorAll("[data-team-go]"));
   var list = team.querySelector(".team__names");
   var line = team.querySelector(".team__line");
   var pill = team.querySelector(".team__pill");
   var n = items.length;
   if (!stage || !viewport || n < 2) return;
-
-  // Review switch: ?names=mono shows the names' accent in ink
-  if (/[?&]names=mono\b/.test(location.search)) document.documentElement.setAttribute("data-names", "mono");
 
   var PER_CARD = 0.8;     // scroll for each card, in viewport heights
   var REST = 0.3;         // share of each card's stretch it spends resting at the front
@@ -88,8 +86,9 @@
       // Well under the stack: fade it out, so shadows don't pile up (it stays focusable)
       item.style.opacity = pos - k > 1.05 ? "0" : "";
     });
-    if (more) more.style.transform = "translate3d(" + (-pos * step).toFixed(2) + "px,0,0)";
     setFront(Math.round(pos));
+    // The last card gathers its crowd once it is (nearly) at the front
+    gatherTo(pos > n - 1.25 ? 1 : 0);
   }
 
   /* ---------- Names: groups on one line ---------- */
@@ -117,7 +116,8 @@
     while (line.firstChild) line.removeChild(line.firstChild);
     var nodes = Array.prototype.map.call(list.querySelectorAll(".team__group-name, .team__name"), function (row) {
       var person = row.classList.contains("team__name");
-      return { person: person, x: person ? INNER : OUTER, y: row.offsetTop + row.offsetHeight / 2, top: row.offsetTop };
+      var inner = person && !row.classList.contains("team__name--more");
+      return { person: person, x: inner ? INNER : OUTER, y: row.offsetTop + row.offsetHeight / 2, top: row.offsetTop };
     });
     if (!nodes.length) return;
     var defs = el(line, "defs", {});
@@ -139,7 +139,7 @@
     });
     glow = el(line, "circle", { "class": "glow", r: "8", cx: "0", cy: "0" });
     nodes.forEach(function (node) {
-      var dot = el(line, "circle", { "class": "dot", cx: node.x, cy: node.y, r: node.person ? 3.5 : 3.75 });
+      var dot = el(line, "circle", { "class": "dot", cx: node.x, cy: node.y, r: node.x === INNER ? 3.5 : 3.75 });
       if (node.person) node.dot = dot;
     });
     list.classList.add("is-drawn");
@@ -183,6 +183,68 @@
     refreshNames();
   }
 
+  /* ---------- Last card: the rest of the team gathers round the A-mark ----------
+     After a reference video the user sent. The faces join one by one: each flies
+     in from the right, large and soft, and settles sharp into the ring while the
+     whole ring turns anticlockwise, slowing to a stop once the last one is in.
+     Played in time (not scroll) once the card is at the front; it runs back if
+     you scroll away. Each face's place comes from the clock alone. */
+  var crowd = team.querySelector(".team-more__crowd");
+  var faces = crowd ? Array.prototype.slice.call(crowd.querySelectorAll(".team-more__face")) : [];
+  var GAP = 0.16;         // s between two faces joining
+  var JOIN = 0.55;        // s for one face to fly in and settle
+  var SPIN = 60 / GAP;    // deg/s the ring turns while faces join (one place per join)
+  var ENTER = 60;        // deg where faces come in: lower right (0 is right, clockwise)
+  var TAIL = 1.12;        // s the ring takes to slow to a stop after the last join
+  var LAST = (faces.length - 1) * GAP;
+  var TOTAL = LAST + TAIL;
+  var clock = 0, clockTo = 0, clockRaf = 0, clockLast = 0;
+
+  // How far the ring has turned by time t (deg, negative is anticlockwise): steady while
+  // faces join, then easing out over TAIL. With ENTER and TAIL as set, the first face ends at
+  // the top and the rest every 60° clockwise from it (the same places as --slot in team.css).
+  function turned(t) {
+    if (t <= LAST) return -SPIN * t;
+    var u = clamp((t - LAST) / TAIL, 0, 1);
+    return -SPIN * LAST - SPIN * TAIL / 2 * (1 - (1 - u) * (1 - u));
+  }
+  function drawCrowd() {
+    if (!faces.length) return;
+    var ring = faces[0].offsetWidth * 1.12;
+    faces.forEach(function (face, k) {
+      var start = k * GAP;
+      var j = clamp((clock - start) / JOIN, 0, 1);
+      var e = 1 - Math.pow(1 - j, 3);
+      var ang = (ENTER + turned(Math.max(clock, start)) - turned(start)) * Math.PI / 180;
+      var r = ring * (1 + 1.7 * (1 - e));
+      face.style.transform = "translate(" + (Math.cos(ang) * r).toFixed(2) + "px," + (Math.sin(ang) * r).toFixed(2) + "px) scale(" + (1 + 1.5 * (1 - e)).toFixed(3) + ")";
+      face.style.filter = j < 1 ? "blur(" + (10 * (1 - e)).toFixed(2) + "px)" : "";
+      face.style.opacity = clock > start ? Math.min(1, e * 3).toFixed(3) : "0";
+    });
+  }
+  function tick(now) {
+    var dt = Math.min(0.064, (now - (clockLast || now)) / 1000);
+    clockLast = now;
+    // Forwards in real time; back twice as fast
+    clock = clockTo > clock ? Math.min(clockTo, clock + dt) : Math.max(clockTo, clock - dt * 2);
+    drawCrowd();
+    if (clock !== clockTo) clockRaf = requestAnimationFrame(tick);
+    else { clockRaf = 0; clockLast = 0; }
+  }
+  function gatherTo(v) {
+    var to = v ? TOTAL : 0;
+    if (to === clockTo) return;
+    clockTo = to;
+    if (reduced.matches) { clock = to; drawCrowd(); return; }
+    if (!clockRaf) clockRaf = requestAnimationFrame(tick);
+  }
+  // Without the pinned row: gather once the card scrolls into view
+  if (crowd && "IntersectionObserver" in window) {
+    new IntersectionObserver(function (entries) {
+      if (!on && !reduced.matches) gatherTo(entries[0].isIntersecting);
+    }, { threshold: 0.6 }).observe(crowd.closest(".team-more"));
+  }
+
   /* Light smoothing so the row glides; stops once it has caught up */
   function frame(now) {
     var dt = Math.min(64, now - (last || now));
@@ -223,7 +285,6 @@
       drawCards();
     } else {
       team.style.removeProperty("--team-travel");
-      if (more) more.style.transform = "";
       items.forEach(function (item) {
         item.style.transform = "";
         item.style.opacity = "";
@@ -231,6 +292,10 @@
       });
       setFront(still);
     }
+    // Start the crowd from where it should be: gathered if the last card is already in front
+    clockTo = -1;
+    gatherTo(v ? pos > n - 1.25 : false);
+    if (!v && reduced.matches) gatherTo(1);
   }
   function update() { setOn(desktop.matches && !reduced.matches); }
 
