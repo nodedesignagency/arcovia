@@ -19,9 +19,9 @@
      over ~34 s and deepens the relief where it passes; the cursor adds a
      dim point light.
    - setView() zooms the slab (scale around a point, plus a shift) and can
-     open a hole through it, either burning (an ember, a ragged glowing edge) or
-     breaking (cracks run out from a point, light leaks through them, shards
-     drop away into the light). The height map is
+     open a hole through it: burning (an ember, a ragged glowing edge), breaking
+     (cracks, shards dropping away) or drilling (a round bore seen in
+     perspective that deepens, punches through to light and is flown down). The height map is
      redrawn for each view, so carving stays crisp at any zoom; the hole is
      transparent, so whatever sits behind the canvas shows through (zoom.js
      uses this to burn through the O of ARCOVIA and fly into the statement).
@@ -57,6 +57,9 @@
     "uniform vec3 uBurnP;",      // burn: radius (in counter units), heat (glow), warmth (0 white, 1 fire)
     "uniform vec4 uBreak;",      // break: centre x, y and the O's counter radii x, y (slab coordinates)
     "uniform vec3 uBreakP;",     // break: crack reach, break reach (counter units), light through the cracks
+    "uniform vec4 uDrill;",      // drill: centre x, y and the O's counter radii x, y (slab coordinates)
+    "uniform vec4 uDrillP;",     // drill: camera distance (1 at the start, 0 at the face, -K at the back), depth drilled (0–K), light through (0–1), dust (0–1)
+    "uniform vec4 uDrillQ;",     // drill: K (slab thickness / starting camera distance), bore radius (counter units), spin, thickness in counter radii
     "",
     "float hash(vec2 p){ p = fract(p * vec2(123.34, 456.21)); p += dot(p, p + 45.32); return fract(p.x * p.y); }",
     "float noise(vec2 p){ vec2 i = floor(p), f = fract(p); vec2 u = f*f*(3.0-2.0*f);",
@@ -261,6 +264,67 @@
     "      }",
     "    }",
     "  }",
+    "",
+    "  // The drill: a round bore through the O. Seen in perspective, its wall recedes to the",
+    "  // floor; dust swirls inside; it punches through to light, and the camera flies down it.",
+    "  if (uDrill.z > 0.0 && uDrillP.y > 0.0005) {",
+    "    vec2 Q = (sp - uShift) / uDrill.zw;",                   // 1.0 = the O's counter, at the starting distance
+    "    float rs = max(length(Q), 1e-4);",
+    "    float cam = uDrillP.x, D = uDrillP.y, lightThrough = uDrillP.z, dust = uDrillP.w;",
+    "    float K = uDrillQ.x, R0 = uDrillQ.y, spin = uDrillQ.z + uTime * 2.5, TH = uDrillQ.w;",
+    "    float unitPx = min(uDrill.z, uDrill.w);",
+    "    vec2 dirQ = Q / rs;",                                   // direction from the axis (no seam, unlike an angle)
+    "    float rimR = R0 * (1.0 + 0.035 * (noise(dirQ * 3.5 + 3.7) - 0.5));",   // a drilled edge, slightly chipped
+    "    float rf = rs * max(cam, 1e-4);",                       // this pixel's radius on the front face
+    "    if (cam <= 0.0 || rf < rimR) {",
+    "      float z = R0 / rs - cam;",                            // depth of the wall seen here (0 front, K back)
+    "      float lam = max(dot(-Q / rs, normalize(vec2(-0.58, -0.62))), 0.0);",
+    "      if (z < D) {",
+    // The bore's wall: concrete, lit on the side facing the light, darker deeper in,
+    // scored with rings by the bit, catching light from the far end once it breaks through
+    "        float zc = z / K * TH;",
+    "        float tw = texture2D(uTex, (dirQ * R0 * 1.6 + vec2(zc * 0.9, zc * 1.7)) * unitPx / uTexSize + 0.37).r / 0.765;",
+    "        float sh = 0.86 * (1.0 + (tw - 1.0) * 0.8) * (0.5 + 0.44 * lam);",
+    "        sh *= mix(1.0, 0.36, clamp(zc / TH, 0.0, 1.0));",
+    "        sh *= 1.0 + 0.018 * sin(zc * 48.0 + noise(dirQ * 2.0 + zc * 3.0) * 2.0);",
+    "        sh += 0.12 * exp(-zc / 0.03);",                       // the lip catches the light
+    "        sh += lightThrough * 0.9 * exp(-(K - z) / (0.2 * K));",
+    "        vec2 sd = mat2(cos(spin), -sin(spin), sin(spin), cos(spin)) * dirQ;",   // dust turning with the bit
+    "        sh += dust * 0.1 * noise(sd * 2.5 + zc * 2.5);",
+    "        col = vec3(clamp(sh, 0.0, 1.0));",
+    "      } else {",
+    // The bottom of the bore: freshly ground concrete with circular marks and spinning dust,
+    // then a ragged opening of light breaking through it
+    "        float fd = max(cam + D, 1e-4);",
+    "        vec2 fq = Q * fd;",                                   // position on the floor, counter units
+    "        float rb = length(fq);",
+    "        float tf = texture2D(uTex, (uDrill.xy + fq * uDrill.zw) / uTexSize + 0.61).r / 0.765;",
+    "        float sh = 0.86 * (1.0 + (tf - 1.0) * 0.6) * mix(0.84, 0.3, clamp(D / K, 0.0, 1.0));",   // matte, in the bore's shade
+    "        sh *= 1.0 + 0.025 * clamp(D / K * 3.0, 0.0, 1.0) * sin(rb * 70.0 + noise(fq * 9.0) * 3.0);",
+    "        vec2 fd2 = mat2(cos(spin * 1.3), sin(spin * 1.3), -sin(spin * 1.3), cos(spin * 1.3)) * fq;",
+    "        sh += dust * 0.08 * noise(fd2 * 6.0);",
+    "        float lr = lightThrough * R0 * (1.05 + 0.18 * (noise(fq / max(rb, 1e-4) * 2.5 + 9.1) - 0.5) + 0.06 * (noise(fq * 14.0) - 0.5));",
+    "        float edgePx = (rb - lr) * unitPx / fd;",            // px from the opening's edge
+    "        if (lightThrough > 0.0 && rb < lr) {",
+    "          a = 0.0;",
+    "        } else {",
+    "          sh = mix(sh, 1.0, lightThrough * exp(-max(edgePx, 0.0) / 9.0));",
+    "          col = vec3(clamp(sh, 0.0, 1.0));",
+    "        }",
+    "      }",
+    "    } else {",
+    // The front face around the hole: a shadowed rim, spalled chips of fresh concrete, dust
+    "      float beyond = rf - rimR;",                          // counter units past the rim
+    "      float pxOut = beyond * unitPx / cam;",
+    "      float drilled = smoothstep(0.0, 0.2 * K, D);",
+    "      float chipBand = R0 * (0.04 + 0.1 * noise(dirQ * 2.2 + 1.1));",
+    "      float chip = step(beyond, chipBand) * step(0.56, noise(dirQ * 4.1 + 4.4)) * drilled;",
+    "      col *= 1.0 + 0.08 * chip;",
+    "      col *= 1.0 - 0.3 * chip * (1.0 - smoothstep(0.0, 2.0, (chipBand - beyond) * unitPx / cam));",
+    "      col *= 1.0 - 0.28 * drilled * exp(-pxOut / 2.5);",
+    "      col = mix(col, vec3(0.93), dust * 0.5 * exp(-beyond / (0.7 * R0)));",
+    "    }",
+    "  }",
     "  gl_FragColor = vec4(col * a + inside * spill, a + spill);",
     "}"
   ].join("\n");
@@ -279,7 +343,7 @@
       burnWarmth: opts.burnWarmth != null ? opts.burnWarmth : 1      // 1: fire colours, 0: white heat only
     };
     this.mouse = { x: -9999, y: -9999, tx: -9999, ty: -9999, amt: 0, tamt: 0 };
-    this.view = { ox: 0, oy: 0, tx: 0, ty: 0, s: 1, burn: null, shatter: null };
+    this.view = { ox: 0, oy: 0, tx: 0, ty: 0, s: 1, burn: null, shatter: null, drill: null };
     this.carves = [];
     this.visible = true;
     this.running = false;
@@ -306,7 +370,7 @@
     gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
 
     this.u = {};
-    ["uRes", "uScale", "uTime", "uBand", "uMouse", "uMouseAmt", "uSun", "uCursor", "uTex", "uTexSize", "uHeight", "uHTexel", "uOrigin", "uShift", "uZoom", "uBurn", "uBurnP", "uBreak", "uBreakP"].forEach(function (n) {
+    ["uRes", "uScale", "uTime", "uBand", "uMouse", "uMouseAmt", "uSun", "uCursor", "uTex", "uTexSize", "uHeight", "uHTexel", "uOrigin", "uShift", "uZoom", "uBurn", "uBurnP", "uBreak", "uBreakP", "uDrill", "uDrillP", "uDrillQ"].forEach(function (n) {
       this.u[n] = gl.getUniformLocation(prog, n);
     }, this);
 
@@ -502,9 +566,12 @@
   /* Zoom the slab and burn or break through it.
      view: { ox, oy, tx, ty, s,
              burn: { cx, cy, rx, ry, r, heat } | null,
-             shatter: { cx, cy, rx, ry, crack, brk, light } | null }
+             shatter: { cx, cy, rx, ry, crack, brk, light } | null,
+             drill: { cx, cy, rx, ry, cam, depth, light, dust, k, r, spin, thick } | null }
      Positions in css px in the slab's own (unzoomed) coordinates. Radii (r, crack,
      brk) are shares of the O's counter (rx, ry); heat and light run 0–1.
+     drill: cam is the camera's distance to the face (1 at the start, 0 at the face,
+     -k once through the back); depth runs 0–k; s should be 1/cam while cam > 0.
      Draws a frame straight away. */
   ConcreteSurface.prototype.setView = function (view) {
     this.view = view;
@@ -617,6 +684,10 @@
     var k = v.shatter;
     gl.uniform4f(u.uBreak, k ? k.cx : 0, k ? k.cy : 0, k ? k.rx : 0, k ? k.ry : 0);
     gl.uniform3f(u.uBreakP, k ? k.crack : 0, k ? k.brk : 0, k ? k.light : 0);
+    var dr = v.drill;
+    gl.uniform4f(u.uDrill, dr ? dr.cx : 0, dr ? dr.cy : 0, dr ? dr.rx : 0, dr ? dr.ry : 0);
+    gl.uniform4f(u.uDrillP, dr ? dr.cam : 1, dr ? dr.depth : 0, dr ? dr.light : 0, dr ? dr.dust : 0);
+    gl.uniform4f(u.uDrillQ, dr ? dr.k : 1, dr ? dr.r : 1, dr ? dr.spin : 0, dr ? dr.thick : 2);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
     this.needsFrame = false;
   };
