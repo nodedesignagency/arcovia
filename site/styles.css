@@ -68,10 +68,9 @@
   --shadow-pop: 0 1px 2px rgba(0, 0, 0, 0.08), 0 18px 48px -12px rgba(0, 0, 0, 0.28);
   /* Menus and popovers: soft and even on every side (after the user's reference) */
   --shadow-menu:
-    0 0 0 1px rgba(17, 17, 17, 0.05),
-    0 1px 2px rgba(17, 17, 17, 0.04),
-    0 4px 12px rgba(17, 17, 17, 0.04),
-    0 16px 48px rgba(17, 17, 17, 0.1);
+    0 0 0 1px rgba(17, 17, 17, 0.06),
+    0 2px 4px -1px rgba(17, 17, 17, 0.03),
+    0 12px 32px -4px rgba(17, 17, 17, 0.09);
   /* Primary button, values from the Framer reference */
   --btn-dark: #292929;
   --shadow-btn:
@@ -673,11 +672,11 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   left: 0;
   bottom: calc(100% + 12px);
   z-index: 20;
-  width: 384px;
-  padding: 6px;
+  width: 392px;
+  padding: 8px;
   background: var(--color-white);
-  border-radius: 18px;
-  /* Soft and even on every side: a hairline ring, a close contact shadow, a wide diffuse one */
+  border-radius: 22px;
+  /* After the user's reference: a hairline border and a soft, wide, very light shadow */
   box-shadow: var(--shadow-menu);
   transform-origin: 28px 100%;
   opacity: 0;
@@ -693,35 +692,38 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 }
 
 .path-picker__title {
-  padding: 8px 10px 6px;
-  font-size: 13px;
+  padding: 10px 12px 8px;
+  font-size: 11px;
   font-weight: var(--weight-medium);
+  letter-spacing: 0.08em;
+  line-height: 16px;
+  text-transform: uppercase;
   color: var(--color-text-muted);
 }
 
-/* One row: icon tile on the left, title and one line on the right, a chevron on hover */
+/* One row: icon tile on the left, title and one line in the middle, a chevron on the right */
 .path-picker__option {
   display: grid;
-  grid-template-columns: 40px 1fr 16px;
+  grid-template-columns: 38px 1fr 16px;
   grid-template-rows: auto auto;
   column-gap: 14px;
-  row-gap: 1px;
+  row-gap: 2px;
   align-items: center;
-  padding: 10px;
-  border-radius: 12px;
+  padding: 12px;
+  border-radius: 14px;
   transition: background-color var(--dur-fast) var(--ease-out);
 }
 .path-picker__icon {
   grid-row: 1 / span 2;
   display: grid;
   place-items: center;
-  width: 40px;
-  height: 40px;
+  width: 38px;
+  height: 38px;
   border-radius: 10px;
-  background: var(--picker-tile, #f4f4f3);
-  box-shadow: inset 0 0 0 1px var(--picker-tile-ring, rgba(17, 17, 17, 0.06));
-  color: var(--color-ink);
-  transition: background-color var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out);
+  background: var(--color-white);
+  box-shadow: inset 0 0 0 1px rgba(17, 17, 17, 0.09);
+  color: #8a8a8a;
+  transition: color var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out);
 }
 .path-picker__icon svg { width: 20px; height: 20px; }
 .path-picker__label {
@@ -744,105 +746,25 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   grid-row: 1 / span 2;
   width: 16px;
   height: 16px;
-  color: var(--color-text-muted);
-  opacity: 0;
-  transform: translateX(-4px);
-  transition: opacity var(--dur-fast) var(--ease-out), transform var(--dur-base) var(--ease-out);
+  color: #a6a6a6;
+  transition: transform var(--dur-base) var(--ease-out), color var(--dur-fast) var(--ease-out);
 }
 .path-picker__option:focus-visible { outline-offset: -2px; }
-.path-picker__option:focus-visible .path-picker__arrow { opacity: 1; transform: none; }
 @media (hover: hover) {
-  .path-picker__option:hover { background: var(--picker-hover, #f4f4f3); }
+  .path-picker__option:hover { background: #f6f6f5; }
   .path-picker__option:hover .path-picker__icon {
-    background: var(--picker-tile-hover, #ffffff);
-    box-shadow: inset 0 0 0 1px rgba(17, 17, 17, 0.06), 0 1px 2px rgba(17, 17, 17, 0.06), 0 2px 6px rgba(17, 17, 17, 0.05);
+    color: var(--color-ink);
+    box-shadow: inset 0 0 0 1px rgba(17, 17, 17, 0.06), 0 1px 2px rgba(17, 17, 17, 0.06), 0 3px 8px rgba(17, 17, 17, 0.06);
   }
-  .path-picker__option:hover .path-picker__arrow { opacity: 1; transform: none; }
+  .path-picker__option:hover .path-picker__arrow { color: var(--color-ink); transform: translateX(2px); }
 }
 
-/* Liquid glass (after Apple's): a strong blur that brightens what's behind, a thick bright
-   edge that catches the light (strongest top-left), a soft sheen across the top, round glass
-   bubbles for the icons, and a glass capsule for the hovered row. */
-.path-picker[data-variant="glass"] .path-picker__panel {
-  --picker-hover: transparent;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.34) 0%, rgba(255, 255, 255, 0.12) 46%, rgba(255, 255, 255, 0.2) 100%);
-  -webkit-backdrop-filter: blur(26px) saturate(1.7) brightness(1.08);
-  backdrop-filter: blur(26px) saturate(1.7) brightness(1.08);
-  width: 404px;
-  border-radius: 26px;
-  padding: 8px;
-  box-shadow:
-    inset 0 1px 1px rgba(255, 255, 255, 0.85),
-    inset 0 -1px 1px rgba(255, 255, 255, 0.3),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.28),
-    inset 0 10px 22px -12px rgba(255, 255, 255, 0.7),
-    inset 0 -14px 26px -16px rgba(17, 17, 17, 0.08),
-    0 0 0 0.5px rgba(17, 17, 17, 0.06),
-    0 2px 6px rgba(17, 17, 17, 0.05),
-    0 18px 50px -8px rgba(17, 17, 17, 0.16);
-  isolation: isolate;
-}
-/* The glass edge: a 1.5px rim of light, bright at the top-left, fading, catching again bottom-right */
-.path-picker[data-variant="glass"] .path-picker__panel::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  padding: 1.5px;
-  border-radius: inherit;
-  background: linear-gradient(140deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.35) 22%, rgba(255, 255, 255, 0.05) 50%, rgba(255, 255, 255, 0.18) 78%, rgba(255, 255, 255, 0.7) 100%);
-  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;
-  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-  mask-composite: exclude;
-  pointer-events: none;
-}
-/* A soft sheen across the top, as if lit from above */
-.path-picker[data-variant="glass"] .path-picker__panel::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  border-radius: inherit;
-  background: radial-gradient(120% 55% at 30% 0%, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0) 70%);
-  pointer-events: none;
-}
-.path-picker[data-variant="glass"] .path-picker__title { color: rgba(21, 21, 21, 0.62); padding-left: 12px; }
-.path-picker[data-variant="glass"] .path-picker__option {
-  border-radius: 18px;
-  transition: background-color var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out);
-}
-.path-picker[data-variant="glass"] .path-picker__meta { color: rgba(21, 21, 21, 0.68); }
-/* Icons sit in round glass bubbles, the icon pressed in with a light lip */
-.path-picker[data-variant="glass"] .path-picker__icon {
-  border-radius: 50%;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0.22));
-  box-shadow:
-    inset 0 1px 1px rgba(255, 255, 255, 0.95),
-    inset 0 -1px 1px rgba(255, 255, 255, 0.35),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.4),
-    0 1px 3px rgba(17, 17, 17, 0.08);
-}
-.path-picker[data-variant="glass"] .path-picker__icon svg {
-  filter: drop-shadow(0 1px 0 rgba(255, 255, 255, 0.85));
-}
-@media (hover: hover) {
-  .path-picker[data-variant="glass"] .path-picker__option:hover {
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.26));
-    box-shadow:
-      inset 0 1px 1px rgba(255, 255, 255, 0.9),
-      inset 0 0 0 1px rgba(255, 255, 255, 0.35),
-      0 2px 10px rgba(17, 17, 17, 0.06);
-  }
-  .path-picker[data-variant="glass"] .path-picker__option:hover .path-picker__icon {
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.7));
-    box-shadow:
-      inset 0 1px 1px rgba(255, 255, 255, 1),
-      inset 0 0 0 1px rgba(255, 255, 255, 0.5),
-      0 2px 6px rgba(17, 17, 17, 0.1);
-  }
-}
+/* Without icons (?icons=none): title and line only */
+.path-picker[data-icons="none"] .path-picker__icon { display: none; }
+.path-picker[data-icons="none"] .path-picker__option { grid-template-columns: 1fr 16px; }
+.path-picker[data-icons="none"] .path-picker__label,
+.path-picker[data-icons="none"] .path-picker__meta { grid-column: 1; }
+.path-picker[data-icons="none"] .path-picker__arrow { grid-column: 2; }
 
 @media (max-width: 809px) {
   /* Full-width panel on phones; the button keeps its own width */
