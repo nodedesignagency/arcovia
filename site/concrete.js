@@ -19,8 +19,9 @@
      over ~34 s and deepens the relief where it passes; the cursor adds a
      dim point light.
    - setView() zooms the slab (scale around a point, plus a shift) and can
-     burn a hole through it like paper catching fire: an ember, then a ragged
-     opening whose edge glows, charred concrete beyond and light spilling in. The height map is
+     open a hole through it, either burning (an ember, a ragged glowing edge) or
+     breaking (cracks run out from a point, light leaks through them, shards
+     drop away into the light). The height map is
      redrawn for each view, so carving stays crisp at any zoom; the hole is
      transparent, so whatever sits behind the canvas shows through (zoom.js
      uses this to burn through the O of ARCOVIA and fly into the statement).
@@ -54,6 +55,8 @@
     "uniform float uZoom;",      // zoom: scale
     "uniform vec4 uBurn;",       // burn: centre x, y and the O's counter radii x, y (slab coordinates)
     "uniform vec3 uBurnP;",      // burn: radius (in counter units), heat (glow), warmth (0 white, 1 fire)
+    "uniform vec4 uBreak;",      // break: centre x, y and the O's counter radii x, y (slab coordinates)
+    "uniform vec3 uBreakP;",     // break: crack reach, break reach (counter units), light through the cracks
     "",
     "float hash(vec2 p){ p = fract(p * vec2(123.34, 456.21)); p += dot(p, p + 45.32); return fract(p.x * p.y); }",
     "float noise(vec2 p){ vec2 i = floor(p), f = fract(p); vec2 u = f*f*(3.0-2.0*f);",
@@ -61,6 +64,39 @@
     "float fbm(vec2 p){ float v = 0.0, a = 0.5; for(int i = 0; i < 4; i++){ v += a*noise(p); p = p*2.03 + 17.1; a *= 0.5; } return v; }",
     // Sharpen the softened height map so carved walls stay about 1.5 css px wide: crisp, never blurry
     "float H(vec2 uv){ return smoothstep(0.2, 0.8, texture2D(uHeight, uv).r); }",
+    "",
+    // Shatter pattern: Voronoi cells in a polar-warped space around the O, so cracks run
+    // out from the centre with rings between them, like an impact on a slab. Shards are
+    // small near the point of impact and grow chunkier outward.
+    "const float SN = 7.0;",     // shards around the circle
+    "const float SM = 1.3;",     // rings per step out: low, so the radial cracks run long
+    "const float SC = 0.4;",     // keeps the shards at the point of impact from getting tiny
+    "vec2 hash2(vec2 p){ return fract(sin(vec2(dot(p, vec2(127.1, 311.7)), dot(p, vec2(269.5, 183.3)))) * 43758.5453); }",
+    "vec2 warpQ(vec2 q){",
+    "  vec2 w = vec2(atan(q.y, q.x) / 6.2831853 * SN, log(length(q) + SC) * SM);",
+    // jagged, not geometric: a slow wander plus fine teeth along every crack
+    "  w += (vec2(noise(q * 4.0 + 3.0), noise(q * 4.0 + 11.0)) - 0.5) * 0.16;",
+    "  w += (vec2(noise(q * 21.0 + 5.0), noise(q * 21.0 + 17.0)) - 0.5) * 0.05;",
+    "  return w;",
+    "}",
+    "vec2 unwarp(vec2 w){ float d = exp(w.y / SM) - SC; float an = w.x / SN * 6.2831853; return d * vec2(cos(an), sin(an)); }",
+    // screen px per warped unit at distance d from the centre (the smaller of the two directions)
+    "float pxScale(float d, float unit){ return unit * min((d + SC) / SM, max(d, 0.04) * 6.2831853 / SN); }",
+    // xy: the shard's id, z: distance to the nearest crack (warped units); seed: the shard's centre (warped)
+    "vec3 voro(vec2 w, out vec2 seed){",
+    "  vec2 i = floor(w), f = fract(w);",
+    "  float f1 = 8.0, f2 = 8.0; vec2 id = vec2(0.0); seed = vec2(0.0);",
+    "  for (int y = -1; y <= 1; y++) for (int x = -1; x <= 1; x++) {",
+    "    vec2 g = vec2(float(x), float(y));",
+    "    vec2 cell = i + g;",
+    "    vec2 key = vec2(mod(cell.x, SN), cell.y);",           // wraps around the circle
+    "    vec2 o = 0.08 + 0.84 * hash2(key);",
+    "    vec2 r = g + o - f;",
+    "    float dd = dot(r, r);",
+    "    if (dd < f1) { f2 = f1; f1 = dd; id = key; seed = cell + o; } else if (dd < f2) { f2 = dd; }",
+    "  }",
+    "  return vec3(id, sqrt(f2) - sqrt(f1));",
+    "}",
     "",
     "void main(){",
     "  vec2 res = uRes / uScale;",
@@ -169,6 +205,62 @@
     "      inside = mix(vec3(1.0), gold, 0.5);",
     "    }",
     "  }",
+    "",
+    "  // The break: hairline cracks run out from the O; each crack opens just before its",
+    "  // shards give way, letting a thread of light through; then the shards sink and drop",
+    "  // back into the light, centre first.",
+    "  if (uBreak.z > 0.0) {",
+    "    vec2 q = (p - uBreak.xy) / uBreak.zw;",                  // 1.0 = the O's inner edge
+    "    float d = length(q);",
+    "    float unit = min(uBreak.z, uBreak.w) * uZoom;",          // screen px per counter unit
+    "    float crackR = uBreakP.x, breakR = uBreakP.y, glowAmt = uBreakP.z;",
+    "    if (d < max(crackR * 1.3, breakR) + 0.4) {",
+    "      vec2 sw; vec3 v = voro(warpQ(q), sw);",
+    "      float edgePx = v.z * 0.5 * pxScale(d, unit);",           // px to the nearest crack
+    "      vec2 seedQ = unwarp(sw);",
+    "      float ds = length(seedQ);",
+    "      float rnd = hash2(v.xy + 17.0).x;",
+    "      float when = ds * (1.0 + rnd * 0.25);",                  // when this shard lets go (break reach)
+    "      float fall = clamp((breakR - when) / (0.35 + ds * 0.25), 0.0, 1.0);",
+    "      float loosen = clamp((breakR - when + 0.7) / 0.7, 0.0, 1.0);",   // the crack opens just before
+    "      if (fall > 0.0) {",
+    // A falling shard sinks away from us: it shrinks toward its centre, turns a little and
+    // drops; this pixel is mapped back onto the shard, and if it misses, the slab is open here.
+    "        float ff = fall * fall;",
+    "        float sc = 1.0 - 0.88 * ff;",
+    "        float th = (rnd - 0.5) * 1.1 * ff;",
+    "        vec2 drop = vec2(0.0, 0.18 * (ds + SC) * ff);",
+    "        vec2 rq = mat2(cos(th), -sin(th), sin(th), cos(th)) * (q - seedQ - drop) / sc;",
+    "        vec2 qq = seedQ + rq;",
+    "        vec2 sw2; vec3 v2 = voro(warpQ(qq), sw2);",
+    "        if (ff < 0.97 && v2.x == v.x && v2.y == v.y) {",
+    "          float rimPx = v2.z * 0.5 * pxScale(length(qq), unit) * sc;",
+    "          float tt = texture2D(uTex, (uBreak.xy + qq * uBreak.zw) / uTexSize).r / 0.765;",
+    "          float sh = 0.84 * (1.0 + (tt - 1.0) * 0.6) * (1.0 - 0.5 * ff);",       // tilting into shadow
+    "          sh *= mix(0.42, 1.0, smoothstep(0.5, 4.0, rimPx));",                  // the broken edge, in shadow
+    "          col = vec3(sh);",
+    "        } else {",
+    "          a = 0.0;",
+    "        }",
+    "      } else {",
+    // Cracks spread from the centre with a soft, uneven front
+    "        float front = crackR * (0.85 + 0.3 * noise(q * 3.0 + 5.0));",
+    "        float vis = smoothstep(front, front * 0.82, d);",
+    "        if (vis > 0.0) {",
+    "          float w = 0.55 + 2.2 * loosen;",                         // hairline, opening as it loosens
+    "          float line = (1.0 - smoothstep(w * 0.5, w * 0.5 + 0.9, edgePx)) * vis;",
+    "          float gap = (1.0 - smoothstep(w * 0.5 - 0.6, w * 0.5 + 0.2, edgePx)) * loosen * vis;",
+    "          col *= 1.0 + (rnd - 0.5) * 0.06 * vis;",                 // each piece settles a touch differently
+    "          col *= 1.0 - 0.55 * line;",                             // dark hairline
+    // As a piece loosens, its broken edge shows the slab's thickness: a shadowed face along the crack
+    "          float face = (1.0 - smoothstep(w * 0.5, w * 0.5 + 2.0 + 7.0 * loosen, edgePx)) * loosen * vis;",
+    "          col *= 1.0 - 0.38 * face;",
+    "          col = mix(col, vec3(1.0), clamp(glowAmt * gap, 0.0, 1.0));",            // light through the opening
+    "          col += glowAmt * loosen * 0.18 * exp(-edgePx / 3.0) * vis;",            // a faint glow on its lips
+    "        }",
+    "      }",
+    "    }",
+    "  }",
     "  gl_FragColor = vec4(col * a + inside * spill, a + spill);",
     "}"
   ].join("\n");
@@ -187,7 +279,7 @@
       burnWarmth: opts.burnWarmth != null ? opts.burnWarmth : 1      // 1: fire colours, 0: white heat only
     };
     this.mouse = { x: -9999, y: -9999, tx: -9999, ty: -9999, amt: 0, tamt: 0 };
-    this.view = { ox: 0, oy: 0, tx: 0, ty: 0, s: 1, burn: null };
+    this.view = { ox: 0, oy: 0, tx: 0, ty: 0, s: 1, burn: null, shatter: null };
     this.carves = [];
     this.visible = true;
     this.running = false;
@@ -214,7 +306,7 @@
     gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
 
     this.u = {};
-    ["uRes", "uScale", "uTime", "uBand", "uMouse", "uMouseAmt", "uSun", "uCursor", "uTex", "uTexSize", "uHeight", "uHTexel", "uOrigin", "uShift", "uZoom", "uBurn", "uBurnP"].forEach(function (n) {
+    ["uRes", "uScale", "uTime", "uBand", "uMouse", "uMouseAmt", "uSun", "uCursor", "uTex", "uTexSize", "uHeight", "uHTexel", "uOrigin", "uShift", "uZoom", "uBurn", "uBurnP", "uBreak", "uBreakP"].forEach(function (n) {
       this.u[n] = gl.getUniformLocation(prog, n);
     }, this);
 
@@ -407,10 +499,12 @@
     this.heightDirty = false;
   };
 
-  /* Zoom the slab and/or burn through it.
-     view: { ox, oy, tx, ty, s, burn: { cx, cy, rx, ry, r, heat } | null }
-     Positions in css px in the slab's own (unzoomed) coordinates; r is the burn's
-     radius as a share of the O's counter (rx, ry), heat runs 0–1.
+  /* Zoom the slab and burn or break through it.
+     view: { ox, oy, tx, ty, s,
+             burn: { cx, cy, rx, ry, r, heat } | null,
+             shatter: { cx, cy, rx, ry, crack, brk, light } | null }
+     Positions in css px in the slab's own (unzoomed) coordinates. Radii (r, crack,
+     brk) are shares of the O's counter (rx, ry); heat and light run 0–1.
      Draws a frame straight away. */
   ConcreteSurface.prototype.setView = function (view) {
     this.view = view;
@@ -520,6 +614,9 @@
     var b = v.burn;
     gl.uniform4f(u.uBurn, b ? b.cx : 0, b ? b.cy : 0, b ? b.rx : 0, b ? b.ry : 0);
     gl.uniform3f(u.uBurnP, b ? b.r : 0, b ? b.heat : 0, o.burnWarmth);
+    var k = v.shatter;
+    gl.uniform4f(u.uBreak, k ? k.cx : 0, k ? k.cy : 0, k ? k.rx : 0, k ? k.ry : 0);
+    gl.uniform3f(u.uBreakP, k ? k.crack : 0, k ? k.brk : 0, k ? k.light : 0);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
     this.needsFrame = false;
   };

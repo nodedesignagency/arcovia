@@ -1,18 +1,21 @@
 /* ==========================================================================
    Zoom-through: hero → statement
    As you scroll past the hero, its text lifts away while the carved ARCOVIA
-   already starts to grow; an ember catches in the O and burns a hole through
-   the concrete, and the view flies through it into the statement behind.
+   already starts to grow; hairline cracks run out from the O, light leaks
+   through them, the concrete gives way in shards that drop back into the
+   light, and the view flies through the hole into the statement behind.
    The statement rises into place while its text writes itself in, letter
    by letter, with a soft fading front (after a reference the user sent).
 
    Scroll progress p (0 → 1) over the pinned stage:
      0.00–0.12  hero text fades and lifts; the zoom starts at the same time
-     0.02–0.60  an ember catches in the O and burns outwards
+     0.02–0.36  cracks run out from the centre of the O, across the slab
+     0.08–0.20  the cracks start letting light through as they open
+     0.12–0.54  shards sink and drop away into the light, centre first
      0.00–0.60  zoom: the O drifts to the centre and the view flies through
      0.30–0.58  the statement rises from below into place (depth)
      0.36–0.96  its text writes itself in, letter by letter
-   The zoom and the burn are drawn by the WebGL slab itself (concrete.js
+   The zoom and the break are drawn by the WebGL slab itself (concrete.js
    setView), so the carving stays crisp and nothing is scaled in CSS. Every
    frame is computed from p alone, so scrolling back up simply plays it in
    reverse. Without WebGL the hero just fades. With reduced motion (or no
@@ -157,7 +160,7 @@
     if (inner) { inner.style.transform = ""; inner.style.opacity = ""; }
     chars.forEach(function (c) { c.q = -1; paintChar(c, 1); });
     var sfc = surface();
-    if (sfc) { sfc.setPaused(false); sfc.setView({ ox: 0, oy: 0, tx: 0, ty: 0, s: 1, burn: null }); }
+    if (sfc) { sfc.setPaused(false); sfc.setView({ ox: 0, oy: 0, tx: 0, ty: 0, s: 1, burn: null, shatter: null }); }
   }
 
   function update() {
@@ -182,15 +185,16 @@
       el.style.transform = f ? "translateY(" + (-28 * f).toFixed(1) + "px)" : "";
     });
 
-    // 2. An ember catches in the O and burns outwards, past the O itself by the end
-    var BURN_END = 1.9, BURN_MIN = 0.6;   // final radius in counter units; the ragged edge's tightest point
-    var heat = smooth(0.02, 0.07, p) * (1 - 0.5 * smooth(0.48, 0.6, p));
-    var burnR = Math.pow(ramp(0.04, 0.6, p), 1.3) * BURN_END;
+    // 2. The O cracks, light leaks through, and the concrete breaks away, centre first
+    var BREAK_END = 5.2, HOLE_MIN = 1.9;   // final break reach in counter units; the hole's tightest radius then
+    var crack = Math.pow(ramp(0.02, 0.36, p), 0.85) * 3.2;
+    var light = smooth(0.08, 0.2, p);
+    var brk = Math.pow(ramp(0.12, 0.54, p), 1.15) * BREAK_END;
 
     // 3. Fly through, from the first scroll: the O drifts to the centre and the scale
-    //    grows until the burnt hole covers the whole screen
+    //    grows until the broken hole covers the whole screen
     var halfDiag = Math.sqrt(vw * vw + vh * vh) / 2;
-    var scaleEnd = halfDiag * 1.08 / (BURN_END * BURN_MIN * Math.min(geo.rx, geo.ry));
+    var scaleEnd = halfDiag * 1.08 / (HOLE_MIN * Math.min(geo.rx, geo.ry));
     var z = ramp(0, 0.6, p);
     var scale = Math.pow(scaleEnd, Math.pow(z, 1.6));
     var t = smooth(0, 0.42, p);
@@ -199,17 +203,17 @@
     hero.style.visibility = through ? "hidden" : "";
 
     if (sfc) {
-      sfc.setPaused(through);   // keeps running during the burn, so the fire flickers
+      sfc.setPaused(through);
       if (!through) {
         sfc.setView({
           ox: geo.cx, oy: geo.cy,
           tx: (vw / 2 - geo.cx) * t, ty: (vh / 2 - geo.cy) * t,
           s: scale,
-          burn: heat > 0 || burnR > 0 ? { cx: geo.cx, cy: geo.cy, rx: geo.rx, ry: geo.ry, r: burnR, heat: heat } : null
+          shatter: crack > 0 ? { cx: geo.cx, cy: geo.cy, rx: geo.rx, ry: geo.ry, crack: crack, brk: brk, light: light } : null
         });
       }
     } else {
-      // No WebGL: nothing to burn through, so the hero simply fades away
+      // No WebGL: nothing to break through, so the hero simply fades away
       hero.style.opacity = String(1 - smooth(0.1, 0.45, p));
     }
 
