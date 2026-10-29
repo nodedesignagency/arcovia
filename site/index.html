@@ -29,7 +29,7 @@
     </symbol>
     <symbol id="icon-chevron" viewBox="0 0 16 16"><path d="M3.5 10l4.5-4.5 4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
     <symbol id="icon-arrow" viewBox="0 0 16 16"><path d="M2.5 8h11M9 3.5 13.5 8 9 12.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
-    <symbol id="icon-linkedin" viewBox="0 0 24 24"><path d="M6.94 5a2 2 0 1 1-4-.002 2 2 0 0 1 4 .002ZM7 8.48H3V21h4V8.48Zm6.32 0H9.34V21h3.94v-6.57c0-3.66 4.77-4 4.77 0V21H22v-7.93c0-6.17-7.06-5.94-8.72-2.91l.04-1.68Z"/></symbol>
+    <symbol id="icon-linkedin" viewBox="0 0 24 24"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.13 1.45-2.13 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28ZM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13ZM7.12 20.45H3.56V9h3.56v11.45ZM22.23 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0h.01Z"/></symbol>
   </svg>
 
   <a class="visually-hidden" href="#main">Skip to content</a>
@@ -193,7 +193,10 @@
          portrait cards in a row that moves sideways as you scroll down (pinned stage).
          Each card is a concrete slab with a window cut into it, showing the portrait;
          as a card slides to the front it covers the one before, and its window opens
-         until the portrait fills the slab. Clicking a name brings that card forward.
+         until only a thin concrete frame is left. Portraits are black and white and
+         turn to colour on hover. A line runs through the names and bends out to the
+         person at the front (or the name under the cursor). Clicking a name brings
+         that card forward.
          Without JS, below desktop or with reduced motion, the row scrolls sideways.
          Component: team-card (becomes a CMS-driven Framer component). -->
     <section class="team" id="team" data-team aria-labelledby="team-title">
@@ -206,13 +209,17 @@
           </div>
 
           <!-- [COPY NEEDED] Names, titles, LinkedIn URLs and photos from the brief -->
-          <ol class="team__names" aria-label="People">
-            <li><button class="team__name" type="button" data-team-go="0" aria-current="true">Colin Pham</button></li>
-            <li><button class="team__name" type="button" data-team-go="1">Team member 02</button></li>
-            <li><button class="team__name" type="button" data-team-go="2">Team member 03</button></li>
-            <li><button class="team__name" type="button" data-team-go="3">Team member 04</button></li>
-            <li><button class="team__name" type="button" data-team-go="4">Team member 05</button></li>
-          </ol>
+          <div class="team__names">
+            <span class="team__pill" aria-hidden="true"></span>
+            <svg class="team__line" aria-hidden="true" focusable="false"></svg>
+            <ol class="team__names-list" aria-label="People">
+              <li><button class="team__name" type="button" data-team-go="0" aria-current="true">Colin Pham</button></li>
+              <li><button class="team__name" type="button" data-team-go="1">Team member 02</button></li>
+              <li><button class="team__name" type="button" data-team-go="2">Team member 03</button></li>
+              <li><button class="team__name" type="button" data-team-go="3">Team member 04</button></li>
+              <li><button class="team__name" type="button" data-team-go="4">Team member 05</button></li>
+            </ol>
+          </div>
 
           <div class="team__viewport">
             <ul class="team__track" data-team-track>

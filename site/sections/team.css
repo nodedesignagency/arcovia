@@ -5,9 +5,10 @@
    Each card (component: team-card) is a slab of cast concrete with a window
    cut into it, showing the portrait. In team.js the section pins; each card
    slides in from the right and comes to rest at the front, on top of the
-   one before, while its window opens until the portrait fills the slab.
+   one before, while its window opens until only a thin concrete frame is
+   left around the portrait.
    team.js drives four numbers on each .team__item:
-     --a  how far the window has opened (0 a window in the slab, 1 full bleed)
+     --a  how far the window has opened (0 a window in the slab, 1 open to the frame)
      --t  the text's colour: ink on concrete (0) or white on the photo (1)
      --o  the text's opacity: it fades out while the window's edge passes
           under it, switches colour, and fades back in
@@ -15,7 +16,12 @@
    The last tile in the row (team-more) leads on to the Team page.
    Without JS, below desktop or with reduced motion the row scrolls sideways
    on its own and every card keeps its window.
-   Portraits are shown in black and white: the site is monochrome.
+   Portraits are black and white and turn to colour on hover (the user's call:
+   the only colour on the site).
+   The names on the left hang on a line, after a timeline reference the user
+   sent: it bends out to the person at the front (or the name under the
+   cursor) with a soft pill behind them, and fills with ink down to the
+   person at the front as you scroll. team.js draws it.
    Uses shared tokens and the chip from styles.css.
    ========================================================================== */
 
@@ -26,6 +32,8 @@
   /* window cut into the slab, as a share of the card (from the reference) */
   --win-x: 17.5%;
   --win-y: 19%;
+  /* concrete left around the portrait once the window is fully open */
+  --frame: 6px;
   position: relative;
   padding-block: var(--space-10);
   /* The white room carries on from the statement */
@@ -58,39 +66,64 @@
 }
 .team__title-pale { display: block; color: var(--team-pale); }
 
-/* ---------- Names: a dot and a name per person; the one at the front is filled in ---------- */
+/* ---------- Names: a line through the dots that bends out to one name ----------
+   team.js draws the line and the dots in .team__line, moves the pill and
+   shifts the name the line bends out to (--shift). Rows are 36px. */
 .team__names {
   grid-column: 1 / span 3;
   grid-row: 2;
-  display: grid;
-  justify-items: start;
+  position: relative;
+  justify-self: start;
   margin-top: -6px;           /* first name's text lines up with the top of the cards */
 }
+.team__names-list { display: grid; justify-items: start; }
+.team__line {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 28px;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+.team__pill {
+  position: absolute;
+  top: 0;
+  left: -8px;
+  width: 0;
+  height: 32px;
+  border-radius: 9px;
+  background: var(--color-well);
+  pointer-events: none;
+}
 .team__name {
+  --shift: 0px;
+  position: relative;
   display: inline-flex;
   align-items: center;
-  gap: 14px;
   height: 36px;
+  padding: 0 12px 0 30px;
   font-size: var(--fs-nav);
   font-weight: var(--weight-book);
   color: var(--team-name);
   white-space: nowrap;
+  transform: translateX(var(--shift));
   transition: color var(--dur-base) var(--ease-out);
 }
-.team__name::before {
-  content: "";
-  flex: none;
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  box-shadow: inset 0 0 0 1px currentColor;
-  opacity: 0.6;
-  transition: background-color var(--dur-base) var(--ease-out), opacity var(--dur-base) var(--ease-out);
-}
 .team__name[aria-current="true"] { color: var(--color-ink); }
-.team__name[aria-current="true"]::before { background-color: currentColor; opacity: 1; }
+.team__name:focus-visible { outline-offset: -2px; }
 @media (hover: hover) {
   .team__name:hover { color: var(--color-ink); }
+}
+/* Without team.js: plain dots */
+.team__names:not(.is-drawn) .team__name::before {
+  content: "";
+  position: absolute;
+  left: 4px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
 }
 
 /* ---------- The row of cards ---------- */
@@ -159,7 +192,10 @@
   z-index: -1;
   overflow: hidden;
   background: #6f6f6f;
-  clip-path: inset(calc(var(--win-y) * (1 - var(--a))) calc(var(--win-x) * (1 - var(--a))));
+  clip-path: inset(
+    calc(var(--win-y) * (1 - var(--a)) + var(--frame) * var(--a))
+    calc(var(--win-x) * (1 - var(--a)) + var(--frame) * var(--a))
+  );
 }
 .team-card__photo {
   width: 100%;
@@ -169,6 +205,12 @@
   filter: grayscale(1) contrast(1.04);
   transform: scale(calc(1.08 - 0.08 * var(--a)));
   transform-origin: 50% 40%;
+  transition: filter 700ms var(--ease-out);
+}
+/* Colour comes up under the cursor (or keyboard focus) */
+.team-card:has(.team-card__link:focus-visible) .team-card__photo { filter: grayscale(0) contrast(1); }
+@media (hover: hover) {
+  .team-card:hover .team-card__photo { filter: grayscale(0) contrast(1); }
 }
 /* Shade along the bottom so white type reads on any photo */
 .team-card__media::after {
@@ -180,10 +222,12 @@
 }
 
 /* The window's edge, cut into the slab: shadow on the upper and left walls,
-   light on the lower lip. It fades out as the window opens to the card's edge. */
+   light on the lower lip. It stays (a little softer) around the open frame. */
 .team-card__rim {
   position: absolute;
-  inset: calc(var(--win-y) * (1 - var(--a))) calc(var(--win-x) * (1 - var(--a)));
+  inset:
+    calc(var(--win-y) * (1 - var(--a)) + var(--frame) * var(--a))
+    calc(var(--win-x) * (1 - var(--a)) + var(--frame) * var(--a));
   z-index: -1;
   pointer-events: none;
   box-shadow:
@@ -191,7 +235,7 @@
     inset 3px 4px 7px rgba(0, 0, 0, 0.42),
     0 1px 0 rgba(255, 255, 255, 0.42),
     1px 0 0 rgba(255, 255, 255, 0.2);
-  opacity: calc(1 - var(--a));
+  opacity: calc(1 - 0.35 * var(--a));
 }
 
 /* Covered by the next card: it sinks back into shade */
@@ -209,7 +253,7 @@
 .team-card__body {
   display: grid;
   gap: 2px;
-  padding-right: 56px;      /* clear of the LinkedIn button */
+  padding-right: 60px;      /* clear of the LinkedIn button */
   opacity: var(--o);
 }
 .team-card__name {
@@ -234,25 +278,35 @@
 .team-card__link:focus-visible { outline: none; }
 .team-card:has(.team-card__link:focus-visible) { outline: 2px solid var(--color-ink); outline-offset: 4px; }
 
+/* LinkedIn: a small rounded square, after a reference the user sent. On the
+   concrete it is a dark tile like the primary button; over the photo it turns
+   to dark glass with a fine light edge. It switches (--t) while it is faded
+   out with the text (--o). */
 .team-card__social {
   position: absolute;
   right: 22px;
-  bottom: 24px;
+  bottom: 22px;
   z-index: 2;
   display: grid;
   place-items: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: var(--color-white);
-  color: var(--color-ink);
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.12);
+  width: 42px;
+  height: 42px;
+  border-radius: 11px;
+  color: var(--color-on-dark);
+  background-color: color-mix(in srgb, rgba(255, 255, 255, 0.08) calc(var(--t) * 100%), var(--btn-dark));
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, rgba(255, 255, 255, 0.14) calc(var(--t) * 100%), rgba(255, 255, 255, 0.06)),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 1px 2px rgba(0, 0, 0, calc(0.2 - 0.2 * var(--t)));
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  opacity: var(--o);
   transition: background-color var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out);
 }
-.team-card__social svg { width: 15px; height: 15px; fill: currentColor; }
+.team-card__social svg { width: 20px; height: 20px; fill: currentColor; }
 .team-card__social:active { transform: scale(0.95); }
 @media (hover: hover) {
-  .team-card__social:hover { background: var(--color-well); }
+  .team-card__social:hover { background-color: color-mix(in srgb, rgba(255, 255, 255, 0.16) calc(var(--t) * 100%), #3b3b3b); }
 }
 
 /* ---------- Last tile: on to the Team page ----------
@@ -289,24 +343,28 @@
   fill: rgba(0, 0, 0, 0.1);
 }
 .team-more__label {
-  padding-right: 56px;
+  padding-right: 60px;
   font-size: 18px;
   font-weight: var(--weight-medium);
   line-height: 1.35;
   color: var(--color-ink);
 }
+/* The same dark tile as the LinkedIn button on the concrete */
 .team-more__arrow {
   position: absolute;
   right: 22px;
-  bottom: 24px;
+  bottom: 22px;
   display: grid;
   place-items: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
+  width: 42px;
+  height: 42px;
+  border-radius: 11px;
   color: var(--color-on-dark);
-  background: linear-gradient(180deg, rgba(207, 207, 207, 0.16) 0%, rgba(207, 207, 207, 0.11) 100%), var(--btn-dark);
-  box-shadow: var(--shadow-btn);
+  background-color: var(--btn-dark);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 1px 2px rgba(0, 0, 0, 0.2);
 }
 .team-more__arrow svg { width: 15px; height: 15px; transition: transform var(--dur-base) var(--ease-out); }
 @media (hover: hover) {

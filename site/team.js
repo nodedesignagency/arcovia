@@ -3,9 +3,13 @@
    The section pins (sticky stage) for one stretch of scroll per card. Each
    card slides in from the right and comes to rest at the front, on top of
    the one before (which sinks back into shade), while the window cut into
-   its slab opens until the portrait fills it. Each card rests at the front
-   for a moment before the next one comes. The names on the left follow
-   along; clicking one scrolls the page to that card.
+   its slab opens until only a thin concrete frame is left. Each card rests
+   at the front for a moment before the next one comes.
+   The names on the left hang on a line (after a timeline reference the user
+   sent): it bends out to the person at the front, or to the name under the
+   cursor, with a soft pill behind them, and fills with ink down to the
+   person at the front as you scroll. Clicking a name scrolls the page to
+   that card.
    Every frame comes from the scroll position alone (with light smoothing),
    so scrolling back up plays it in reverse. Desktop only (≥1200px), and not
    with reduced motion: there the row simply scrolls sideways on its own.
@@ -21,6 +25,9 @@
   var items = Array.prototype.slice.call(team.querySelectorAll(".team__item"));
   var more = team.querySelector(".team__more");      // last tile, on to the Team page
   var names = Array.prototype.slice.call(team.querySelectorAll("[data-team-go]"));
+  var list = team.querySelector(".team__names");
+  var line = team.querySelector(".team__line");
+  var pill = team.querySelector(".team__pill");
   var n = items.length;
   if (!stage || !viewport || n < 2) return;
 
@@ -39,6 +46,12 @@
   var current = -1;
   var raf = 0;
   var last = 0;
+
+  // The names' line: rows of ROW px, the line at X0, bending out by BEND
+  var ROW = 36, X0 = 6, BEND = 12;
+  var hover = -1;         // name under the cursor or keyboard focus, -1 for none
+  var bend = 0;           // where the line bends out: 0 … n-1, fractional in between
+  var still = 0;          // without the pinned row: the card scrolled to
 
   function clamp(v, a, b) { return v < a ? a : v > b ? b : v; }
   function smooth(e0, e1, x) { var t = clamp((x - e0) / (e1 - e0), 0, 1); return t * t * (3 - 2 * t); }
@@ -59,7 +72,7 @@
   }
 
   /* ---------- Draw: every card's place, window and shade ---------- */
-  function draw() {
+  function drawCards() {
     items.forEach(function (item, k) {
       var past = clamp(pos - k, 0, 1);                 // 1 once the next card fully covers it
       var x = -Math.min(pos, k) * step;                // cards at or past the front stay there
@@ -76,37 +89,102 @@
       item.style.opacity = pos - k > 1.05 ? "0" : "";
     });
     if (more) more.style.transform = "translate3d(" + (-pos * step).toFixed(2) + "px,0,0)";
-    var front = clamp(Math.round(pos), 0, n - 1);
-    if (front !== current) {
-      current = front;
+  }
+
+  /* ---------- Draw: the names' line, dots, pill and the name it bends out to ---------- */
+  var NS = "http://www.w3.org/2000/svg";
+  var rail, ink, halo, dots = [], widths = [];
+  function svgEl(tag, attrs) {
+    var el = document.createElementNS(NS, tag);
+    for (var a in attrs) el.setAttribute(a, attrs[a]);
+    return line.appendChild(el);
+  }
+  function buildNames() {
+    if (!line || !names.length) return;
+    rail = svgEl("path", { fill: "none", stroke: "#d4d4d4", "stroke-width": "1.25", "stroke-linecap": "round" });
+    ink = svgEl("path", { fill: "none", stroke: "#151515", "stroke-width": "1.5", "stroke-linecap": "round" });
+    halo = svgEl("circle", { r: "8", fill: "rgba(21,21,21,0.1)" });
+    names.forEach(function () { dots.push(svgEl("circle", { r: "2.75" })); });
+    list.classList.add("is-drawn");
+  }
+  function measureNames() {
+    widths = names.map(function (b) { return b.offsetWidth; });
+  }
+  // How far a name (or a point on the line) sits out from the line: 1 at the bend, 0 a row away
+  function out(i) { return 1 - smooth(0, 1, Math.abs(i - bend)); }
+  function front() { return on ? pos : still; }
+
+  function drawNames() {
+    var f = front();
+    var top = ROW / 2, bottom = (n - 1) * ROW + ROW / 2;
+    var fill = top + clamp(f, 0, n - 1) * ROW;
+    if (rail) {
+      // Sample the line every 1.5px: straight down, curving out and back around the bend
+      var d = "", di = "";
+      for (var y = top; y <= bottom + 0.01; y += 1.5) {
+        var pt = (X0 + BEND * out((y - top) / ROW)).toFixed(2) + " " + y.toFixed(2);
+        d += (d ? "L" : "M") + pt;
+        if (y <= fill) di += (di ? "L" : "M") + pt;
+      }
+      rail.setAttribute("d", d);
+      ink.setAttribute("d", di || "M0 0");
+      var at = clamp(Math.round(f), 0, n - 1);
+      dots.forEach(function (dot, k) {
+        var reached = k <= f + 0.02;
+        var big = k === at ? 4 : k === hover ? 3.5 : 2.75;
+        dot.setAttribute("cx", (X0 + BEND * out(k)).toFixed(2));
+        dot.setAttribute("cy", top + k * ROW);
+        dot.setAttribute("r", big);
+        dot.setAttribute("fill", reached || k === hover ? "#151515" : "#c4c4c4");
+      });
+      halo.setAttribute("cx", (X0 + BEND * out(at)).toFixed(2));
+      halo.setAttribute("cy", top + at * ROW);
+    }
+    names.forEach(function (b, k) { b.style.setProperty("--shift", (BEND * out(k)).toFixed(2) + "px"); });
+    if (pill && widths.length) {
+      var i = clamp(Math.floor(bend), 0, n - 1), j = Math.min(i + 1, n - 1), t = bend - i;
+      var w = widths[i] + (widths[j] - widths[i]) * t + BEND + 8;
+      pill.style.transform = "translate3d(0," + (bend * ROW + 2).toFixed(2) + "px,0)";
+      pill.style.width = w.toFixed(1) + "px";
+    }
+    var now = clamp(Math.round(f), 0, n - 1);
+    if (now !== current) {
+      current = now;
       names.forEach(function (b, k) {
-        if (k === front) b.setAttribute("aria-current", "true");
+        if (k === now) b.setAttribute("aria-current", "true");
         else b.removeAttribute("aria-current");
       });
     }
   }
 
-  /* Light smoothing so the row glides; stops once it has caught up */
+  /* Light smoothing so the row and the line glide; stops once both have caught up.
+     The line bends out to the name under the cursor, else follows the person at the front. */
   function frame(now) {
     var dt = Math.min(64, now - (last || now));
     last = now;
     var k = 1 - Math.exp(-dt / 90);
-    pos += (target - pos) * k;
-    intro += (introTarget - intro) * k;
-    if (Math.abs(target - pos) < 0.0005 && Math.abs(introTarget - intro) < 0.001) {
-      pos = target;
-      intro = introTarget;
+    if (on) {
+      pos += (target - pos) * k;
+      intro += (introTarget - intro) * k;
+    }
+    var bendTarget = hover >= 0 ? hover : front();
+    bend += (bendTarget - bend) * (reduced.matches ? 1 : 1 - Math.exp(-dt / 120));
+    if (Math.abs(target - pos) < 0.0005 && Math.abs(introTarget - intro) < 0.001 && Math.abs(bendTarget - bend) < 0.001) {
+      if (on) { pos = target; intro = introTarget; }
+      bend = bendTarget;
       raf = 0;
       last = 0;
     } else {
       raf = requestAnimationFrame(frame);
     }
-    draw();
+    if (on) drawCards();
+    drawNames();
   }
+  function kick() { if (!raf) raf = requestAnimationFrame(frame); }
   function onScroll() {
     if (!on) return;
     read();
-    if (!raf) raf = requestAnimationFrame(frame);
+    kick();
   }
 
   function measure() {
@@ -123,7 +201,9 @@
       read();
       pos = target;
       intro = introTarget;
-      draw();
+      bend = pos;
+      drawCards();
+      drawNames();
     } else {
       team.style.removeProperty("--team-travel");
       if (more) more.style.transform = "";
@@ -132,6 +212,8 @@
         item.style.opacity = "";
         ["--a", "--t", "--o", "--d"].forEach(function (p) { item.style.removeProperty(p); });
       });
+      bend = still;
+      drawNames();
     }
   }
   function update() { setOn(desktop.matches && !reduced.matches); }
@@ -147,9 +229,22 @@
     var y = window.scrollY + r.top + travel * (k / (n - 1));
     window.scrollTo({ top: Math.round(y), behavior: instant ? "auto" : "smooth" });
   }
-  names.forEach(function (b) {
-    b.addEventListener("click", function () { scrollToCard(+b.getAttribute("data-team-go")); });
+  names.forEach(function (b, k) {
+    b.addEventListener("click", function () { scrollToCard(k); });
+    // The line bends out to the name under the cursor or keyboard focus
+    b.addEventListener("pointerenter", function () { hover = k; kick(); });
+    b.addEventListener("focus", function () { if (b.matches(":focus-visible")) { hover = k; kick(); } });
+    b.addEventListener("blur", function () { if (hover === k) { hover = -1; kick(); } });
   });
+  if (list) list.addEventListener("pointerleave", function () { hover = -1; kick(); });
+
+  // Without the pinned row the cards scroll sideways; the names follow that instead
+  viewport.addEventListener("scroll", function () {
+    if (on) return;
+    var w = items[1].offsetLeft - items[0].offsetLeft;
+    var k = clamp(Math.round(viewport.scrollLeft / w), 0, n - 1);
+    if (k !== still) { still = k; kick(); }
+  }, { passive: true });
 
   // Tabbing onto a card brings it to the front. The browser may also have scrolled the
   // clipped stage sideways to show it; put that back, the transforms do the moving.
@@ -163,11 +258,17 @@
   });
 
   window.addEventListener("scroll", onScroll, { passive: true });
-  window.addEventListener("resize", function () { if (on) { measure(); onScroll(); } });
+  window.addEventListener("resize", function () { measureNames(); if (on) { measure(); onScroll(); } else drawNames(); });
   [desktop, reduced].forEach(function (mq) {
     if (mq.addEventListener) mq.addEventListener("change", update);
     else if (mq.addListener) mq.addListener(update);
   });
+  buildNames();
+  measureNames();
   update();
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { if (on) { measure(); draw(); } });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () {
+    measureNames();
+    if (on) { measure(); drawCards(); }
+    drawNames();
+  });
 })();
