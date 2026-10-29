@@ -198,7 +198,7 @@
          reference the user sent; the person at the front (or the name under the
          cursor) gets a pill, an ink dot and the line into it in ink.
          Clicking a name brings that card forward. The last stop is a black card leading on
-         to the Team page, in two versions while exploring (see below).
+         to the Team page: the team count, and square photos drifting in two columns.
          Without JS, below desktop or with reduced motion, the row scrolls sideways.
          Component: team-card (becomes a CMS-driven Framer component). -->
     <section class="team" id="team" data-team aria-labelledby="team-title">
@@ -235,9 +235,6 @@
               </li>
             </ul>
           </div>
-
-          <!-- Draft only: switch between the two last-card versions. Remove once one is chosen. -->
-          <p class="team__draft-switch">Last card <a href="?more=a#team" data-more-link="a">A</a> <a href="?more=b#team" data-more-link="b">B</a></p>
 
           <div class="team__viewport">
             <ul class="team__track" data-team-track>
@@ -301,59 +298,48 @@
                   </a>
                 </article>
               </li>
-              <!-- Last in the row: on to the Team page. Two versions while exploring, after the user's
-                   sketches (team.js shows one: A by default, ?more=b for B):
-                   A, a ring of tiles round the team count: the inner ring holds people (two with
-                   their role on a tag), the outer ring is empty seats.
-                   B, a big team count with a collage of tiles and photos running off the edge.
-                   Both build in once the card is in view beside the last person.
-                   [COPY NEEDED] The team count (12 is a placeholder from the sketch, not from the
-                   deck), photos of the wider team -->
-              <li class="team__item team__item--more" data-more="a">
-                <a class="team-more team-more--ring" href="team.html" aria-label="View all team members">
-                  <span class="team-more__ring" aria-hidden="true">
-                    <span class="team-more__tile is-seat" style="--x:-1; --y:-2; --i:6"></span>
-                    <span class="team-more__tile is-seat" style="--x:0; --y:-2; --i:7"></span>
-                    <span class="team-more__tile is-seat" style="--x:1; --y:-2; --i:8"></span>
-                    <span class="team-more__tile is-seat" style="--x:1.5; --y:-1; --i:9"></span>
-                    <span class="team-more__tile is-seat" style="--x:2; --y:0; --i:10"></span>
-                    <span class="team-more__tile is-seat" style="--x:1.5; --y:1; --i:11"></span>
-                    <span class="team-more__tile is-seat" style="--x:1; --y:2; --i:12"></span>
-                    <span class="team-more__tile is-seat" style="--x:0; --y:2; --i:13"></span>
-                    <span class="team-more__tile is-seat" style="--x:-1; --y:2; --i:14"></span>
-                    <span class="team-more__tile is-seat" style="--x:-1.5; --y:1; --i:15"></span>
-                    <span class="team-more__tile is-seat" style="--x:-2; --y:0; --i:16"></span>
-                    <span class="team-more__tile is-seat" style="--x:-1.5; --y:-1; --i:17"></span>
-                    <span class="team-more__tile is-photo" style="--x:-0.5; --y:-1; --i:0; --fx:50%; --fy:38%"><img src="assets/team/colin-pham.jpg" alt="" loading="lazy"></span>
-                    <span class="team-more__tile is-solid" style="--x:0.5; --y:-1; --i:1"></span>
-                    <span class="team-more__tile is-solid is-half-r" style="--x:1; --y:0; --i:2"></span>
-                    <span class="team-more__tile is-photo" style="--x:0.5; --y:1; --i:3; --fx:46%; --fy:30%; --zoom:1.35"><img src="assets/team/caroline-farah-lembck.jpg" alt="" loading="lazy"></span>
-                    <span class="team-more__tile is-solid" style="--x:-0.5; --y:1; --i:4"></span>
-                    <span class="team-more__tile is-solid is-half-l" style="--x:-1; --y:0; --i:5"></span>
-                    <span class="team-more__tag team-more__tag--left" style="--x:-0.5; --y:-1; --i:9">Founder &amp; CEO</span>
-                    <span class="team-more__tag team-more__tag--right" style="--x:0.5; --y:1; --i:11">Capital Markets</span>
-                    <span class="team-more__count"><span class="team-more__num" data-count="12">12</span>+<span class="team-more__what">Team members</span></span>
-                  </span>
-                  <span class="team-more__link">View all team members</span>
-                </a>
-              </li>
-              <li class="team__item team__item--more" data-more="b" hidden>
-                <a class="team-more team-more--collage" href="team.html" aria-label="View all team members">
-                  <span class="team-more__collage" aria-hidden="true">
-                    <span class="team-more__tile is-line" style="--left:66.99%; --top:20.85%; --wide:13.72%; --tall:11.01%; --i:0"></span>
-                    <span class="team-more__tile is-photo" style="--left:81.74%; --top:20.85%; --wide:20.73%; --tall:23.30%; --i:1; --fx:50%; --fy:36%"><img src="assets/team/portrait-placeholder.svg" alt="" loading="lazy" data-todo="Photo of a team member [PHOTO NEEDED]"></span>
-                    <span class="team-more__tile is-solid" style="--left:52.23%; --top:32.87%; --wide:13.56%; --tall:11.35%; --i:2"></span>
-                    <span class="team-more__tile is-concrete" style="--left:66.99%; --top:32.87%; --wide:13.72%; --tall:11.35%; --i:3"></span>
-                    <span class="team-more__tile is-photo" style="--left:56.22%; --top:45.16%; --wide:33.33%; --tall:24.52%; --i:4; --fx:50%; --fy:36%"><img src="assets/team/colin-pham.jpg" alt="" loading="lazy"></span>
-                    <span class="team-more__tile is-line" style="--left:90.75%; --top:45.16%; --wide:11.16%; --tall:17.22%; --i:5"></span>
-                    <span class="team-more__tile is-solid" style="--left:39.31%; --top:56.51%; --wide:15.79%; --tall:13.17%; --i:6"></span>
-                    <span class="team-more__tile is-solid" style="--left:90.75%; --top:63.46%; --wide:11.16%; --tall:18.91%; --i:7"></span>
-                    <span class="team-more__tile is-line" style="--left:29.67%; --top:70.69%; --wide:18.02%; --tall:13.24%; --i:8"></span>
-                    <span class="team-more__tile is-photo" style="--left:48.80%; --top:70.69%; --wide:20.73%; --tall:18.37%; --i:9; --fx:46%; --fy:30%"><img src="assets/team/caroline-farah-lembck.jpg" alt="" loading="lazy"></span>
-                    <span class="team-more__tile is-line" style="--left:70.73%; --top:70.69%; --wide:18.82%; --tall:11.48%; --i:10"></span>
-                    <span class="team-more__tile is-solid" style="--left:70.73%; --top:83.32%; --wide:31.90%; --tall:20.26%; --i:11"></span>
-                  </span>
+              <!-- Last in the row: on to the Team page. A black card: a big team count and
+                   "Team members" on the left, and two columns of square photos on the right
+                   drifting past each other (one up, one down), fading out at the top, the bottom
+                   and towards the text so they never run into it. It builds in once the card is
+                   in view beside the last person (team.js).
+                   [COPY NEEDED] The team count (12 is a placeholder from the user's sketch, not
+                   from the deck) and photos of the wider team -->
+              <li class="team__item team__item--more">
+                <a class="team-more" href="team.html" aria-label="View all team members">
                   <span class="team-more__count"><span class="team-more__num" data-count="12">12</span>+<span class="team-more__what">Team members</span></span>
+                  <span class="team-more__marquee" aria-hidden="true">
+                    <span class="team-more__col team-more__col--up">
+                      <span class="team-more__track">
+                        <span class="team-more__photo" style="--fx:50%; --fy:34%"><img src="assets/team/colin-pham.jpg" alt="" loading="lazy"></span>
+                        <span class="team-more__photo" style="--fx:50%; --fy:40%; --zoom:1.3; --tone:0.94"><img src="assets/team/portrait-placeholder.svg" alt="" loading="lazy" data-todo="Photo of a team member [PHOTO NEEDED]"></span>
+                        <span class="team-more__photo" style="--fx:46%; --fy:38%; --zoom:1.5; --tone:1.08"><img src="assets/team/portrait-placeholder.svg" alt="" loading="lazy" data-todo="Photo of a team member [PHOTO NEEDED]"></span>
+                        <span class="team-more__photo" style="--fx:54%; --fy:42%; --zoom:1.2; --tone:0.9"><img src="assets/team/portrait-placeholder.svg" alt="" loading="lazy" data-todo="Photo of a team member [PHOTO NEEDED]"></span>
+                        <span class="team-more__photo" style="--fx:50%; --fy:42%; --zoom:1.35; --tone:1.14"><img src="assets/team/portrait-placeholder.svg" alt="" loading="lazy" data-todo="Photo of a team member [PHOTO NEEDED]"></span>
+                        <!-- The same photos again, so the loop has no seam -->
+                        <span class="team-more__photo" style="--fx:50%; --fy:34%"><img src="assets/team/colin-pham.jpg" alt="" loading="lazy"></span>
+                        <span class="team-more__photo" style="--fx:50%; --fy:40%; --zoom:1.3; --tone:0.94"><img src="assets/team/portrait-placeholder.svg" alt="" loading="lazy" data-todo="Photo of a team member [PHOTO NEEDED]"></span>
+                        <span class="team-more__photo" style="--fx:46%; --fy:38%; --zoom:1.5; --tone:1.08"><img src="assets/team/portrait-placeholder.svg" alt="" loading="lazy" data-todo="Photo of a team member [PHOTO NEEDED]"></span>
+                        <span class="team-more__photo" style="--fx:54%; --fy:42%; --zoom:1.2; --tone:0.9"><img src="assets/team/portrait-placeholder.svg" alt="" loading="lazy" data-todo="Photo of a team member [PHOTO NEEDED]"></span>
+                        <span class="team-more__photo" style="--fx:50%; --fy:42%; --zoom:1.35; --tone:1.14"><img src="assets/team/portrait-placeholder.svg" alt="" loading="lazy" data-todo="Photo of a team member [PHOTO NEEDED]"></span>
+                      </span>
+                    </span>
+                    <span class="team-more__col team-more__col--down">
+                      <span class="team-more__track">
+                        <span class="team-more__photo" style="--fx:50%; --fy:40%; --zoom:1.4; --tone:1.12"><img src="assets/team/portrait-placeholder.svg" alt="" loading="lazy" data-todo="Photo of a team member [PHOTO NEEDED]"></span>
+                        <span class="team-more__photo" style="--fx:46%; --fy:28%; --zoom:1.25"><img src="assets/team/caroline-farah-lembck.jpg" alt="" loading="lazy"></span>
+                        <span class="team-more__photo" style="--fx:48%; --fy:44%; --zoom:1.25; --tone:0.98"><img src="assets/team/portrait-placeholder.svg" alt="" loading="lazy" data-todo="Photo of a team member [PHOTO NEEDED]"></span>
+                        <span class="team-more__photo" style="--fx:52%; --fy:38%; --zoom:1.45; --tone:1.04"><img src="assets/team/portrait-placeholder.svg" alt="" loading="lazy" data-todo="Photo of a team member [PHOTO NEEDED]"></span>
+                        <span class="team-more__photo" style="--fx:47%; --fy:40%; --zoom:1.3; --tone:0.92"><img src="assets/team/portrait-placeholder.svg" alt="" loading="lazy" data-todo="Photo of a team member [PHOTO NEEDED]"></span>
+                        <!-- The same photos again, so the loop has no seam -->
+                        <span class="team-more__photo" style="--fx:50%; --fy:40%; --zoom:1.4; --tone:1.12"><img src="assets/team/portrait-placeholder.svg" alt="" loading="lazy" data-todo="Photo of a team member [PHOTO NEEDED]"></span>
+                        <span class="team-more__photo" style="--fx:46%; --fy:28%; --zoom:1.25"><img src="assets/team/caroline-farah-lembck.jpg" alt="" loading="lazy"></span>
+                        <span class="team-more__photo" style="--fx:48%; --fy:44%; --zoom:1.25; --tone:0.98"><img src="assets/team/portrait-placeholder.svg" alt="" loading="lazy" data-todo="Photo of a team member [PHOTO NEEDED]"></span>
+                        <span class="team-more__photo" style="--fx:52%; --fy:38%; --zoom:1.45; --tone:1.04"><img src="assets/team/portrait-placeholder.svg" alt="" loading="lazy" data-todo="Photo of a team member [PHOTO NEEDED]"></span>
+                        <span class="team-more__photo" style="--fx:47%; --fy:40%; --zoom:1.3; --tone:0.92"><img src="assets/team/portrait-placeholder.svg" alt="" loading="lazy" data-todo="Photo of a team member [PHOTO NEEDED]"></span>
+                      </span>
+                    </span>
+                  </span>
                   <span class="team-more__link">View all team members</span>
                 </a>
               </li>

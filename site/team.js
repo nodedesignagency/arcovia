@@ -5,8 +5,9 @@
    the one before (which sinks back into shade), while the window cut into
    its slab opens until only a thin concrete frame is left. Each card rests
    at the front for a moment before the next one comes. The last stop is a
-   black card leading on to the Team page, in two versions while exploring
-   (?more=b shows B); it builds in once it is in view beside the last person.
+   black card leading on to the Team page (the team count, and square photos
+   drifting in two columns); it builds in once it is in view beside the last
+   person.
    The names on the left hang on one line in groups (after a timeline
    reference the user sent): group names on the outer line, people one step
    in, the line curving between them. The person under the cursor, or else
@@ -23,15 +24,6 @@
 
   var team = document.querySelector("[data-team]");
   if (!team) return;
-  // Draft: two versions of the last card while exploring; ?more=b shows B, else A
-  var pick = /[?&]more=b\b/.test(location.search) ? "b" : "a";
-  Array.prototype.forEach.call(team.querySelectorAll("[data-more]"), function (li) {
-    if (li.getAttribute("data-more") === pick) li.hidden = false;
-    else li.parentNode.removeChild(li);
-  });
-  Array.prototype.forEach.call(team.querySelectorAll("[data-more-link]"), function (a) {
-    a.classList.toggle("is-current", a.getAttribute("data-more-link") === pick);
-  });
   var stage = team.querySelector(".team__stage");
   var viewport = team.querySelector(".team__viewport");
   var items = Array.prototype.slice.call(team.querySelectorAll(".team__item"));
@@ -195,8 +187,8 @@
   }
 
   /* ---------- Last card: builds in once it is in view beside the last person ----------
-     The tiles settle one after another (CSS, on .is-in) and the team count runs up.
-     Going away it clears quickly, ready to build in again. */
+     The photo columns rise in and start to drift (CSS, on .is-in) and the team count
+     runs up. Going away it clears quickly, ready to build in again. */
   var moreCard = team.querySelector(".team-more");
   var countEl = moreCard && moreCard.querySelector("[data-count]");
   var countTo = countEl ? +countEl.getAttribute("data-count") : 0;

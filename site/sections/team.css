@@ -14,7 +14,7 @@
           under it, switches colour, and fades back in
      --d  how far the card has been covered by the next one (it sinks back)
    The last card in the row (team-more) is black and leads on to the Team
-   page; two versions while exploring (see its block below).
+   page: the team count, and square photos drifting in two columns.
    Without JS, below desktop or with reduced motion the row scrolls sideways
    on its own and every card keeps its window.
    Portraits are black and white and turn to colour on hover (the user's call:
@@ -334,73 +334,107 @@
 }
 
 /* ---------- Last card: on to the Team page ----------
-   Black, no shadow. Two versions while exploring, after the user's sketches
-   (team.js keeps one in the row: A by default, ?more=b for B):
-   A (.team-more--ring): the team count in the middle of a ring of rounded
-     tiles. The inner ring holds people (two carry their role on a tag);
-     the outer ring is empty seats, dashed and hatched.
-   B (.team-more--collage): a big team count top left and a collage of
-     tiles and photos running off the right and bottom edges; one tile is
-     cast concrete.
-   Both build in once the card is in view beside the last person (.is-in,
-   team.js): the tiles settle one after another and the count runs up.
-   Without team.js everything is simply there. Photos are black and white,
-   colour on hover. The underlined line at the bottom redraws on hover. */
+   Black, no shadow. Built on the user's sketch: a big team count top left
+   with "Team members" under it, "View all team members" at the bottom, and
+   on the right two columns of square photos drifting past each other in a
+   slow vertical marquee (one up, one down; after a reference the user
+   sent). The marquee fades out at the top, the bottom and towards the
+   text, so the photos never run into it. It builds in once the card is in
+   view beside the last person (.is-in, team.js): the columns rise in, the
+   count runs up, and only then do the columns start to move. Without
+   team.js everything is simply there and moving. Photos are black and
+   white, colour on hover. The underline redraws on hover. */
 .team-more {
   position: relative;
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
   width: var(--card-w);
   height: max(var(--card-h), 420px);
+  padding: 26px 26px 28px;
   overflow: hidden;
   color: var(--color-on-dark);
   background: #121212;
 }
 .team-more:focus-visible { outline-offset: 4px; }
 
-.team-more__tile {
+.team-more__count {
+  position: relative;
+  z-index: 2;
+  font-size: calc(var(--card-w) * 0.22);
+  font-weight: var(--weight-medium);
+  line-height: 1;
+  letter-spacing: -0.035em;
+  transition: opacity 500ms var(--ease-out);
+}
+.team-more__what {
+  display: block;
+  margin-top: 12px;
+  font-size: calc(var(--card-w) * 0.052);
+  font-weight: var(--weight-book);
+  letter-spacing: -0.01em;
+}
+
+/* The marquee: two columns on the right, masked soft at the top, the bottom
+   and its left edge (towards the text) */
+.team-more__marquee {
+  --sq: calc(var(--card-w) * 0.26);
+  --gap: 10px;
   position: absolute;
-  border-radius: var(--radius-tile, 12px);
+  top: 0;
+  bottom: 0;
+  right: 12px;
+  display: flex;
+  gap: var(--gap);
+  /* Eased fades: a straight ramp reads as no fade at all on bright photos */
+  -webkit-mask-image:
+    linear-gradient(to bottom, transparent, rgba(0, 0, 0, 0.25) 10%, #000 30%, #000 70%, rgba(0, 0, 0, 0.25) 90%, transparent),
+    linear-gradient(to right, transparent, rgba(0, 0, 0, 0.1) 14%, rgba(0, 0, 0, 0.55) 28%, #000 42%);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    linear-gradient(to bottom, transparent, rgba(0, 0, 0, 0.25) 10%, #000 30%, #000 70%, rgba(0, 0, 0, 0.25) 90%, transparent),
+    linear-gradient(to right, transparent, rgba(0, 0, 0, 0.1) 14%, rgba(0, 0, 0, 0.55) 28%, #000 42%);
+  mask-composite: intersect;
+}
+.team-more__col {
+  width: var(--sq);
+  transition: opacity 600ms var(--ease-out), transform 800ms var(--ease-out);
+}
+.team-more__col--down { transition-delay: 120ms; }
+/* Each track holds its photos twice; moving it by half loops without a seam */
+.team-more__track {
+  display: flex;
+  flex-direction: column;
+  animation: team-drift-up 28s linear infinite;
+}
+.team-more__col--down .team-more__track { animation-name: team-drift-down; animation-duration: 32s; }
+@keyframes team-drift-up { from { transform: translateY(0); } to { transform: translateY(-50%); } }
+@keyframes team-drift-down { from { transform: translateY(-50%); } to { transform: translateY(0); } }
+
+.team-more__photo {
+  flex: none;
+  width: var(--sq);
+  height: var(--sq);
+  margin-bottom: var(--gap);
+  border-radius: 12px;
   overflow: hidden;
-  transition:
-    opacity 520ms var(--ease-out) calc(var(--i, 0) * 45ms),
-    transform 680ms var(--ease-out) calc(var(--i, 0) * 45ms);
+  background: #2a2a2a;
 }
-/* An empty seat: dashed edge, fine hatching */
-.team-more__tile.is-seat {
-  border: 1px dashed rgba(255, 255, 255, 0.22);
-  background: repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.07) 0 1px, transparent 1px 7px);
-}
-.team-more__tile.is-solid { background: #1f1f1f; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.22); }
-.team-more__tile.is-line { box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.3); }
-.team-more__tile.is-concrete {
-  background: #bdbdbd url("../assets/concrete-cast.jpg") -300px -520px / 960px;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), inset 0 -1px 0 rgba(0, 0, 0, 0.2);
-}
-.team-more__tile.is-photo { background: #2a2a2a; }
-.team-more__tile img {
+.team-more__photo img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   object-position: var(--fx, 50%) var(--fy, 40%);
   transform: scale(var(--zoom, 1));
   transform-origin: var(--fx, 50%) var(--fy, 40%);
-  filter: grayscale(1);
+  filter: grayscale(1) brightness(var(--tone, 1));
   transition: filter 700ms var(--ease-out);
 }
-.team-more:focus-visible .team-more__tile img { filter: none; }
+.team-more:focus-visible .team-more__photo img { filter: brightness(var(--tone, 1)); }
 @media (hover: hover) {
-  .team-more:hover .team-more__tile img { filter: none; }
+  .team-more:hover .team-more__photo img { filter: brightness(var(--tone, 1)); }
 }
-
-.team-more__count {
-  font-weight: var(--weight-medium);
-  line-height: 1;
-  letter-spacing: -0.035em;
-  color: var(--color-on-dark);
-  transition: opacity 500ms var(--ease-out);
-}
-.team-more__what { display: block; letter-spacing: 0; font-weight: var(--weight-book); }
 
 /* "View all team members": its underline slides away and draws back in on hover */
 .team-more__link {
@@ -431,134 +465,19 @@
   100% { transform: scaleX(1); transform-origin: left; }
 }
 
-/* Build-in (team.js adds .is-in once the card is in view); going out is quick */
-.js .team-more:not(.is-in) .team-more__tile,
-.js .team-more:not(.is-in) .team-more__tag {
+/* Build-in (team.js adds .is-in once the card is in view); going out is quick.
+   The columns hold still until then. */
+.js .team-more:not(.is-in) .team-more__col {
   opacity: 0;
-  transform: scale(0.84);
+  transform: translateY(28px);
   transition-duration: 240ms;
   transition-delay: 0s;
 }
+.js .team-more:not(.is-in) .team-more__track { animation-play-state: paused; }
 .js .team-more:not(.is-in) .team-more__count { opacity: 0; }
-
-/* ----- A: a ring of tiles round the count ----- */
-.team-more--ring {
-  --tile: calc(var(--card-w) * 0.155);
-  --gap: calc(var(--tile) * 0.14);
-  --step: calc(var(--tile) + var(--gap));
-  --radius-tile: calc(var(--tile) * 0.22);
-  align-items: center;
-  justify-content: center;
-  gap: 26px;
-  padding: 24px;
+@media (prefers-reduced-motion: reduce) {
+  .team-more__track { animation-name: none; }
 }
-/* The ring's box: five rows, offset by half a tile like brickwork */
-.team-more__ring {
-  position: relative;
-  flex: none;
-  width: calc(var(--step) * 4 + var(--tile));
-  height: calc(var(--step) * 4 + var(--tile));
-}
-.team-more--ring .team-more__tile {
-  left: calc(50% + var(--x) * var(--step) - var(--tile) / 2);
-  top: calc(50% + var(--y) * var(--step) - var(--tile) / 2);
-  width: var(--tile);
-  height: var(--tile);
-}
-/* Either side of the count the inner tiles are narrower, to give it room */
-.team-more--ring .team-more__tile.is-half-l,
-.team-more--ring .team-more__tile.is-half-r { width: calc(var(--tile) * 0.62); }
-.team-more--ring .team-more__tile.is-half-r { left: calc(50% + var(--x) * var(--step) - var(--tile) / 2 + var(--tile) * 0.38); }
-.team-more--ring .team-more__count {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  text-align: center;
-  font-size: calc(var(--tile) * 0.66);
-}
-.team-more--ring .team-more__what {
-  margin-top: 7px;
-  font-size: 12.5px;
-  color: var(--color-on-dark-muted);
-}
-/* Role tags pinned to the two photos' outer corners */
-.team-more__tag {
-  position: absolute;
-  z-index: 2;
-  padding: 6px 12px;
-  border-radius: var(--radius-pill);
-  background: var(--color-white);
-  color: var(--color-ink);
-  font-size: 12px;
-  font-weight: var(--weight-medium);
-  line-height: 1.2;
-  white-space: nowrap;
-  box-shadow: 0 8px 18px -8px rgba(0, 0, 0, 0.6);
-  transition:
-    opacity 420ms var(--ease-out) calc(var(--i, 0) * 45ms + 200ms),
-    transform 520ms var(--ease-out) calc(var(--i, 0) * 45ms + 200ms);
-}
-.team-more__tag--left {
-  right: calc(50% - var(--x) * var(--step) + var(--tile) / 2 - 22px);
-  top: calc(50% + var(--y) * var(--step) + var(--tile) / 2 - 26px);
-  transform-origin: right center;
-}
-.team-more__tag--right {
-  left: calc(50% + var(--x) * var(--step) + var(--tile) / 2 - 22px);
-  top: calc(50% + var(--y) * var(--step) + var(--tile) / 2 - 12px);
-  transform-origin: left center;
-}
-.team-more--ring .team-more__link { align-self: center; }
-
-/* ----- B: big count, collage off the edge ----- */
-.team-more--collage {
-  --radius-tile: 10px;
-  justify-content: space-between;
-  align-items: flex-start;
-  padding: 26px 26px 28px;
-}
-.team-more__collage { position: absolute; inset: 0; }
-.team-more--collage .team-more__tile {
-  left: var(--left);
-  top: var(--top);
-  width: var(--wide);
-  height: var(--tall);
-}
-.js .team-more--collage:not(.is-in) .team-more__tile { transform: translateX(36px); }
-.team-more--collage .team-more__count {
-  position: relative;
-  z-index: 2;
-  font-size: calc(var(--card-w) * 0.22);
-}
-.team-more--collage .team-more__what {
-  margin-top: 12px;
-  font-size: calc(var(--card-w) * 0.052);
-  letter-spacing: -0.01em;
-}
-
-/* Draft only: the last-card version switch (remove once a version is chosen) */
-.team__draft-switch {
-  position: absolute;
-  right: var(--gutter);
-  bottom: 14px;
-  z-index: 5;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 12px;
-  color: var(--team-name);
-}
-.team__draft-switch a {
-  display: grid;
-  place-items: center;
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
-  color: var(--color-ink);
-  box-shadow: inset 0 0 0 1px rgba(21, 21, 21, 0.2);
-}
-.team__draft-switch a.is-current { background: var(--color-ink); color: var(--color-white); box-shadow: none; }
 
 /* ---------- Pinned: the row moves sideways as you scroll (team.js, desktop) ----------
    .team--on is added by team.js; --team-travel is the scroll it pins for. */
