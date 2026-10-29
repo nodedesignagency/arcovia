@@ -1,28 +1,165 @@
 /* ==========================================================================
-   SECTION: why-founders — Home, after the statement
-   Why founders choose Arcovia. Setup only for now: a plain heading on the
-   concrete so the section has its place on the page; the design comes next.
-   Uses shared tokens from styles.css.
+   SECTION: why-founders — Home, block 5 of the brief
+   "Calm, precise and senior-led": four stat cards (figure, label, line)
+   and a footnote. After the user's reference, founders.js pins the stage:
+   the headline starts huge across the screen, the cards rise one at a time
+   into a stack in front of it, each covering the last (whose figure still
+   shows above it), then the stack spreads into a row while the headline
+   shrinks into place above it as a normal heading.
+   This file is the settled layout; founders.js only adds transforms on top.
+   ?cards=concrete previews version B: a white room with cast-concrete cards.
+   Uses shared tokens and the chip from styles.css.
    ========================================================================== */
 
 .why-founders {
+  --card-pad: 28px;
+  --card-radius: var(--radius-l);
+  --card-bg: var(--color-white);
+  --card-shadow: var(--shadow-card);
+  --card-shade: rgba(21, 21, 21, 0.07);   /* veil over a card covered in the stack */
   position: relative;
-  padding-block: var(--space-10);
   color: var(--color-text);
 }
 
+.why-founders__stage {
+  padding-block: var(--space-10);
+}
+
+.why-founders__head {
+  display: grid;
+  justify-items: start;
+  gap: var(--space-4);
+  margin-bottom: var(--space-7);
+}
+
 .why-founders__title {
-  max-width: 16ch;
   font-size: var(--fs-h2);
   font-weight: var(--weight-book);
   line-height: var(--lh-h2);
   letter-spacing: var(--ls-h2);
   color: var(--color-ink);
 }
+/* Each part of the headline moves on its own while it shrinks into place */
+.why-founders__line {
+  display: inline-block;
+  transform-origin: 0 0;
+}
+
+.why-founders__cards {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--grid-gap);
+}
 
 .why-founders__note {
-  margin-top: var(--space-5);
-  font-size: var(--fs-body);
-  line-height: var(--lh-body);
+  margin-top: var(--space-6);
+  font-size: var(--fs-small);
+  line-height: var(--lh-small);
   color: var(--color-text-muted);
+}
+
+/* ---------- Component: stat-card ---------- */
+.stat-card {
+  --shade: 0;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  aspect-ratio: 4 / 5;
+  padding: var(--card-pad);
+  border-radius: var(--card-radius);
+  background: var(--card-bg);
+  box-shadow: var(--card-shadow);
+  transform-origin: 0 0;
+}
+/* A card covered by the next one in the stack sinks back into shade */
+.stat-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--card-shade);
+  opacity: var(--shade);
+  pointer-events: none;
+}
+
+.stat-card__figure {
+  font-size: 60px;
+  font-weight: var(--weight-book);
+  line-height: 1;
+  letter-spacing: -0.035em;
+  color: var(--color-ink);
+  white-space: nowrap;
+}
+
+.stat-card__label {
+  max-width: 17em;
+  margin-top: var(--space-4);
+  font-size: var(--fs-body);
+  font-weight: var(--weight-medium);
+  line-height: 1.4;
+  color: var(--color-ink);
+}
+
+.stat-card__line {
+  margin-top: auto;
+  padding-top: var(--space-5);
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--color-text-muted);
+}
+
+/* Once settled, a card lifts a little under the cursor */
+@media (hover: hover) {
+  .why-founders.is-settled .stat-card,
+  .why-founders:not(.why-founders--staged) .stat-card {
+    transition: translate var(--dur-slow) var(--ease-out), box-shadow var(--dur-slow) var(--ease-out);
+  }
+  .why-founders.is-settled .stat-card:hover,
+  .why-founders:not(.why-founders--staged) .stat-card:hover {
+    translate: 0 -4px;
+    box-shadow: var(--card-shadow), 0 22px 40px -18px rgba(0, 0, 0, 0.22);
+  }
+}
+
+/* ---------- Pinned stage (founders.js adds .why-founders--staged on desktop) ----------
+   The section grows by --founders-travel of scrolling while the stage stays put.
+   The top padding keeps the settled heading clear of the small header bar. */
+.why-founders--staged {
+  --founders-travel: 360vh;
+  height: calc(100vh + var(--founders-travel));
+}
+.why-founders--staged .why-founders__stage {
+  position: sticky;
+  top: 0;
+  display: flex;
+  align-items: center;
+  height: 100vh;
+  padding-block: calc(var(--mh-labels) + var(--mh-compact)) var(--space-5);
+  overflow: hidden;
+  overflow: clip;
+}
+.why-founders--staged .why-founders__inner { width: 100%; }
+
+/* ---------- Version B (?cards=concrete): a white room, cast-concrete cards ---------- */
+.why-founders[data-variant="concrete"] {
+  --card-bg: #c9c9c7 url("../assets/concrete-cast.jpg") center / 640px;
+  --card-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.12),
+    0 1px 2px rgba(0, 0, 0, 0.1),
+    0 18px 36px -14px rgba(0, 0, 0, 0.32);
+  --card-shade: rgba(21, 21, 21, 0.14);
+  background: var(--color-white);
+}
+.why-founders[data-variant="concrete"] .stat-card__line { color: var(--color-text); }
+
+/* ---------- Tablet and phone: the settled layout only (not reviewed yet) ---------- */
+@media (max-width: 1199px) {
+  .why-founders__cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .stat-card { aspect-ratio: auto; min-height: 320px; }
+}
+@media (max-width: 809px) {
+  .why-founders__cards { grid-template-columns: 1fr; }
+  .stat-card { min-height: 0; }
+  .stat-card__figure { font-size: 48px; }
 }
