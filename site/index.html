@@ -16,6 +16,7 @@
   <!-- One stylesheet per section, so a section can be approved and moved to main on its own -->
   <link rel="stylesheet" href="sections/hero.css">
   <link rel="stylesheet" href="sections/statement.css">
+  <link rel="stylesheet" href="sections/team.css">
 </head>
 <body>
 
@@ -28,6 +29,7 @@
     </symbol>
     <symbol id="icon-chevron" viewBox="0 0 16 16"><path d="M3.5 10l4.5-4.5 4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
     <symbol id="icon-arrow" viewBox="0 0 16 16"><path d="M2.5 8h11M9 3.5 13.5 8 9 12.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="icon-linkedin" viewBox="0 0 24 24"><path d="M6.94 5a2 2 0 1 1-4-.002 2 2 0 0 1 4 .002ZM7 8.48H3V21h4V8.48Zm6.32 0H9.34V21h3.94v-6.57c0-3.66 4.77-4 4.77 0V21H22v-7.93c0-6.17-7.06-5.94-8.72-2.91l.04-1.68Z"/></symbol>
   </svg>
 
   <a class="visually-hidden" href="#main">Skip to content</a>
@@ -186,6 +188,140 @@
     </div>
     <!-- SECTION:hero END -->
 
+    <!-- SECTION:team START · styles: sections/team.css · scripts: team.js
+         Home: the people, after a reference the user sent. Names down the left,
+         portrait cards in a row that moves sideways as you scroll down (pinned stage).
+         Each card is a concrete slab with a window cut into it, showing the portrait;
+         as a card slides to the front it covers the one before, and its window opens
+         until the portrait fills the slab. Clicking a name brings that card forward.
+         Without JS, below desktop or with reduced motion, the row scrolls sideways.
+         Component: team-card (becomes a CMS-driven Framer component). -->
+    <section class="team" id="team" data-team aria-labelledby="team-title">
+      <div class="team__stage">
+        <div class="team__inner container">
+          <!-- [COPY NEEDED] Draft chip, heading and line, to confirm with Lilla -->
+          <div class="team__head">
+            <p class="chip">Team</p>
+            <h2 class="team__title" id="team-title">Leadership <span class="team__title-pale">Senior people on every mandate</span></h2>
+          </div>
+
+          <!-- [COPY NEEDED] Names, titles, LinkedIn URLs and photos from the brief -->
+          <ol class="team__names" aria-label="People">
+            <li><button class="team__name" type="button" data-team-go="0" aria-current="true">Colin Pham</button></li>
+            <li><button class="team__name" type="button" data-team-go="1">Team member 02</button></li>
+            <li><button class="team__name" type="button" data-team-go="2">Team member 03</button></li>
+            <li><button class="team__name" type="button" data-team-go="3">Team member 04</button></li>
+            <li><button class="team__name" type="button" data-team-go="4">Team member 05</button></li>
+          </ol>
+
+          <div class="team__viewport">
+            <ul class="team__track" data-team-track>
+              <li class="team__item">
+                <article class="team-card" style="--i:0">
+                  <div class="team-card__media">
+                    <img class="team-card__photo" src="assets/team/portrait-placeholder.svg" alt="" width="600" height="720" loading="lazy" data-todo="Portrait of Colin Pham [PHOTO NEEDED]">
+                  </div>
+                  <span class="team-card__rim" aria-hidden="true"></span>
+                  <div class="team-card__body">
+                    <h3 class="team-card__name"><a class="team-card__link" href="team/colin-pham.html" data-todo="Profile page (CMS template) [TO BUILD]">Colin Pham</a></h3>
+                    <p class="team-card__role">Chief Executive Officer</p>
+                  </div>
+                  <a class="team-card__social" href="#" aria-label="Colin Pham on LinkedIn" data-todo="LinkedIn URL [TO CONFIRM]">
+                    <svg aria-hidden="true"><use href="#icon-linkedin"/></svg>
+                  </a>
+                </article>
+              </li>
+              <li class="team__item">
+                <article class="team-card" style="--i:1">
+                  <div class="team-card__media">
+                    <img class="team-card__photo" src="assets/team/portrait-placeholder.svg" alt="" width="600" height="720" loading="lazy" data-todo="Portrait of Team member 02 [PHOTO NEEDED]">
+                  </div>
+                  <span class="team-card__rim" aria-hidden="true"></span>
+                  <div class="team-card__body">
+                    <h3 class="team-card__name"><a class="team-card__link" href="team/team-member-2.html" data-todo="Profile page (CMS template) [TO BUILD]">Team member 02</a></h3>
+                    <p class="team-card__role">Title to come</p>
+                  </div>
+                  <a class="team-card__social" href="#" aria-label="Team member 02 on LinkedIn" data-todo="LinkedIn URL [TO CONFIRM]">
+                    <svg aria-hidden="true"><use href="#icon-linkedin"/></svg>
+                  </a>
+                </article>
+              </li>
+              <li class="team__item">
+                <article class="team-card" style="--i:2">
+                  <div class="team-card__media">
+                    <img class="team-card__photo" src="assets/team/portrait-placeholder.svg" alt="" width="600" height="720" loading="lazy" data-todo="Portrait of Team member 03 [PHOTO NEEDED]">
+                  </div>
+                  <span class="team-card__rim" aria-hidden="true"></span>
+                  <div class="team-card__body">
+                    <h3 class="team-card__name"><a class="team-card__link" href="team/team-member-3.html" data-todo="Profile page (CMS template) [TO BUILD]">Team member 03</a></h3>
+                    <p class="team-card__role">Title to come</p>
+                  </div>
+                  <a class="team-card__social" href="#" aria-label="Team member 03 on LinkedIn" data-todo="LinkedIn URL [TO CONFIRM]">
+                    <svg aria-hidden="true"><use href="#icon-linkedin"/></svg>
+                  </a>
+                </article>
+              </li>
+              <li class="team__item">
+                <article class="team-card" style="--i:3">
+                  <div class="team-card__media">
+                    <img class="team-card__photo" src="assets/team/portrait-placeholder.svg" alt="" width="600" height="720" loading="lazy" data-todo="Portrait of Team member 04 [PHOTO NEEDED]">
+                  </div>
+                  <span class="team-card__rim" aria-hidden="true"></span>
+                  <div class="team-card__body">
+                    <h3 class="team-card__name"><a class="team-card__link" href="team/team-member-4.html" data-todo="Profile page (CMS template) [TO BUILD]">Team member 04</a></h3>
+                    <p class="team-card__role">Title to come</p>
+                  </div>
+                  <a class="team-card__social" href="#" aria-label="Team member 04 on LinkedIn" data-todo="LinkedIn URL [TO CONFIRM]">
+                    <svg aria-hidden="true"><use href="#icon-linkedin"/></svg>
+                  </a>
+                </article>
+              </li>
+              <li class="team__item">
+                <article class="team-card" style="--i:4">
+                  <div class="team-card__media">
+                    <img class="team-card__photo" src="assets/team/portrait-placeholder.svg" alt="" width="600" height="720" loading="lazy" data-todo="Portrait of Team member 05 [PHOTO NEEDED]">
+                  </div>
+                  <span class="team-card__rim" aria-hidden="true"></span>
+                  <div class="team-card__body">
+                    <h3 class="team-card__name"><a class="team-card__link" href="team/team-member-5.html" data-todo="Profile page (CMS template) [TO BUILD]">Team member 05</a></h3>
+                    <p class="team-card__role">Title to come</p>
+                  </div>
+                  <a class="team-card__social" href="#" aria-label="Team member 05 on LinkedIn" data-todo="LinkedIn URL [TO CONFIRM]">
+                    <svg aria-hidden="true"><use href="#icon-linkedin"/></svg>
+                  </a>
+                </article>
+              </li>
+              <!-- Last in the row: on to the Team page. [COPY NEEDED] Draft label -->
+              <li class="team__more">
+                <a class="team-more" href="team.html">
+                  <svg class="team-more__mark" viewBox="0 0 554 539" aria-hidden="true">
+                    <!-- Pressed in: shadow inside the upper edges, light along the lower lip (like the seam's tie holes) -->
+                    <filter id="team-deboss" x="-5%" y="-5%" width="110%" height="110%" color-interpolation-filters="sRGB">
+                      <feOffset in="SourceAlpha" dy="12" result="down"/>
+                      <feComposite in="SourceAlpha" in2="down" operator="out" result="upper"/>
+                      <feGaussianBlur in="upper" stdDeviation="4"/>
+                      <feComposite in2="SourceAlpha" operator="in" result="upperSoft"/>
+                      <feFlood flood-color="#000" flood-opacity="0.5"/>
+                      <feComposite in2="upperSoft" operator="in" result="shadow"/>
+                      <feOffset in="SourceAlpha" dy="5" result="down2"/>
+                      <feComposite in="down2" in2="SourceAlpha" operator="out" result="lip"/>
+                      <feFlood flood-color="#fff" flood-opacity="0.7"/>
+                      <feComposite in2="lip" operator="in" result="light"/>
+                      <feMerge><feMergeNode in="SourceGraphic"/><feMergeNode in="shadow"/><feMergeNode in="light"/></feMerge>
+                    </filter>
+                    <use href="#a-mark" filter="url(#team-deboss)"/>
+                  </svg>
+                  <span class="team-more__label">Meet the whole team</span>
+                  <span class="team-more__arrow" aria-hidden="true"><svg><use href="#icon-arrow"/></svg></span>
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- SECTION:team END -->
+
     <!-- Draft placeholder: next section goes here -->
     <section class="section-next" data-header-theme="dark" aria-label="Next section, in progress">
       <p>03 · Proof band — next section, in progress</p>
@@ -196,5 +332,6 @@
   <script src="concrete.js"></script>
   <script src="main.js"></script>
   <script src="zoom.js"></script>
+  <script src="team.js"></script>
 </body>
 </html>

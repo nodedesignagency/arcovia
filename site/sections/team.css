@@ -1,0 +1,345 @@
+/* ==========================================================================
+   SECTION: team — Home, the people
+   After a reference the user sent: a heading, the names down the left and a
+   row of portrait cards that moves sideways as you scroll down.
+   Each card (component: team-card) is a slab of cast concrete with a window
+   cut into it, showing the portrait. In team.js the section pins; each card
+   slides in from the right and comes to rest at the front, on top of the
+   one before, while its window opens until the portrait fills the slab.
+   team.js drives four numbers on each .team__item:
+     --a  how far the window has opened (0 a window in the slab, 1 full bleed)
+     --t  the text's colour: ink on concrete (0) or white on the photo (1)
+     --o  the text's opacity: it fades out while the window's edge passes
+          under it, switches colour, and fades back in
+     --d  how far the card has been covered by the next one (it sinks back)
+   The last tile in the row (team-more) leads on to the Team page.
+   Without JS, below desktop or with reduced motion the row scrolls sideways
+   on its own and every card keeps its window.
+   Portraits are shown in black and white: the site is monochrome.
+   Uses shared tokens and the chip from styles.css.
+   ========================================================================== */
+
+.team {
+  --team-pale: #8a8a8a;         /* heading's second line: 3.4:1 on white, for large text only */
+  --team-name: #767676;         /* names not at the front: 4.5:1 on white */
+  --card-gap: 12px;
+  /* window cut into the slab, as a share of the card (from the reference) */
+  --win-x: 17.5%;
+  --win-y: 19%;
+  position: relative;
+  padding-block: var(--space-10);
+  /* The white room carries on from the statement */
+  background: var(--color-white);
+}
+
+/* Heading on the card column; the names under it, to the left of the cards */
+.team__inner {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--grid-gap);
+  align-items: start;
+}
+
+.team__head {
+  grid-column: 4 / -1;
+  display: grid;
+  justify-items: start;
+  gap: var(--space-5);
+  margin-bottom: var(--space-8);
+}
+.team__title {
+  max-width: 18em;
+  font-size: var(--fs-h2);
+  font-weight: var(--weight-medium);
+  line-height: var(--lh-h2);
+  letter-spacing: var(--ls-h2);
+  color: var(--color-ink);
+  text-wrap: balance;
+}
+.team__title-pale { display: block; color: var(--team-pale); }
+
+/* ---------- Names: a dot and a name per person; the one at the front is filled in ---------- */
+.team__names {
+  grid-column: 1 / span 3;
+  grid-row: 2;
+  display: grid;
+  justify-items: start;
+  margin-top: -6px;           /* first name's text lines up with the top of the cards */
+}
+.team__name {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  height: 36px;
+  font-size: var(--fs-nav);
+  font-weight: var(--weight-book);
+  color: var(--team-name);
+  white-space: nowrap;
+  transition: color var(--dur-base) var(--ease-out);
+}
+.team__name::before {
+  content: "";
+  flex: none;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 1px currentColor;
+  opacity: 0.6;
+  transition: background-color var(--dur-base) var(--ease-out), opacity var(--dur-base) var(--ease-out);
+}
+.team__name[aria-current="true"] { color: var(--color-ink); }
+.team__name[aria-current="true"]::before { background-color: currentColor; opacity: 1; }
+@media (hover: hover) {
+  .team__name:hover { color: var(--color-ink); }
+}
+
+/* ---------- The row of cards ---------- */
+.team__viewport {
+  grid-column: 4 / -1;
+  grid-row: 2;
+  /* card sizes come from this box's width: 4 of its 9 grid columns */
+  container-type: inline-size;
+  /* No JS: a row that scrolls sideways; room underneath for the shadows */
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  padding-bottom: var(--space-7);
+  margin-bottom: calc(var(--space-7) * -1);
+}
+.team__viewport::-webkit-scrollbar { display: none; }
+
+.team__track {
+  --card-w: calc((100cqw - 8 * var(--grid-gap)) / 9 * 4 + 3 * var(--grid-gap));
+  --card-h: min(calc(var(--card-w) * 1.18), calc(100vh - 380px));
+  display: flex;
+  gap: var(--card-gap);
+}
+.team__item,
+.team__more {
+  --a: 0;
+  --t: 0;
+  --o: 1;
+  --d: 0;
+  flex: none;
+  scroll-snap-align: start;
+  transform-origin: 50% 60%;
+  will-change: transform;
+}
+
+/* ---------- Component: team-card ---------- */
+.team-card {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  width: var(--card-w);
+  height: max(var(--card-h), 420px);
+  padding: 24px 24px 26px 26px;
+  overflow: hidden;
+  /* cast concrete, the same as the data and service blocks; each card shows another patch */
+  background-color: #bdbdbd;
+  background-image:
+    linear-gradient(172deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0) 40%, rgba(0, 0, 0, 0.04)),
+    url("../assets/concrete-cast.jpg");
+  background-size: auto, 960px;
+  background-position: 0 0, calc(var(--i, 0) * -271px - 120px) calc(var(--i, 0) * -413px - 60px);
+  box-shadow:
+    inset 1px 0 0 rgba(255, 255, 255, 0.2),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.16),
+    0 2px 4px -2px rgba(0, 0, 0, 0.16),
+    0 24px 48px -24px rgba(0, 0, 0, 0.42);
+}
+
+/* The portrait, seen through the window. The photo always covers the whole card,
+   so opening the window only reveals more of it; it settles from a slight zoom. */
+.team-card__media {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  background: #6f6f6f;
+  clip-path: inset(calc(var(--win-y) * (1 - var(--a))) calc(var(--win-x) * (1 - var(--a))));
+}
+.team-card__photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 30%;
+  filter: grayscale(1) contrast(1.04);
+  transform: scale(calc(1.08 - 0.08 * var(--a)));
+  transform-origin: 50% 40%;
+}
+/* Shade along the bottom so white type reads on any photo */
+.team-card__media::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.62), rgba(0, 0, 0, 0.18) 34%, rgba(0, 0, 0, 0) 52%);
+  opacity: var(--a);
+}
+
+/* The window's edge, cut into the slab: shadow on the upper and left walls,
+   light on the lower lip. It fades out as the window opens to the card's edge. */
+.team-card__rim {
+  position: absolute;
+  inset: calc(var(--win-y) * (1 - var(--a))) calc(var(--win-x) * (1 - var(--a)));
+  z-index: -1;
+  pointer-events: none;
+  box-shadow:
+    inset 0 0 0 1px rgba(0, 0, 0, 0.22),
+    inset 3px 4px 7px rgba(0, 0, 0, 0.42),
+    0 1px 0 rgba(255, 255, 255, 0.42),
+    1px 0 0 rgba(255, 255, 255, 0.2);
+  opacity: calc(1 - var(--a));
+}
+
+/* Covered by the next card: it sinks back into shade */
+.team-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  background: #000;
+  opacity: calc(var(--d) * 0.32);
+  pointer-events: none;
+}
+
+/* Name and title: ink on the concrete, white once the portrait fills the card */
+.team-card__body {
+  display: grid;
+  gap: 2px;
+  padding-right: 56px;      /* clear of the LinkedIn button */
+  opacity: var(--o);
+}
+.team-card__name {
+  font-size: 18px;
+  font-weight: var(--weight-medium);
+  line-height: 1.35;
+  letter-spacing: -0.005em;
+  color: color-mix(in srgb, var(--color-white) calc(var(--t) * 100%), var(--color-ink));
+}
+.team-card__role {
+  font-size: 15px;
+  line-height: 1.4;
+  color: color-mix(in srgb, rgba(255, 255, 255, 0.8) calc(var(--t) * 100%), var(--color-text-muted));
+}
+/* The whole card opens the profile; the LinkedIn button sits above that link */
+.team-card__link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+.team-card__link:focus-visible { outline: none; }
+.team-card:has(.team-card__link:focus-visible) { outline: 2px solid var(--color-ink); outline-offset: 4px; }
+
+.team-card__social {
+  position: absolute;
+  right: 22px;
+  bottom: 24px;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--color-white);
+  color: var(--color-ink);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.12);
+  transition: background-color var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out);
+}
+.team-card__social svg { width: 15px; height: 15px; fill: currentColor; }
+.team-card__social:active { transform: scale(0.95); }
+@media (hover: hover) {
+  .team-card__social:hover { background: var(--color-well); }
+}
+
+/* ---------- Last tile: on to the Team page ----------
+   The same concrete, no window: the A-mark pressed into it, a label and an arrow */
+.team-more {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  width: var(--card-w);
+  height: max(var(--card-h), 420px);
+  padding: 24px 22px 24px 26px;
+  background-color: #bdbdbd;
+  background-image:
+    linear-gradient(172deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0) 40%, rgba(0, 0, 0, 0.04)),
+    url("../assets/concrete-cast.jpg");
+  background-size: auto, 960px;
+  background-position: 0 0, -480px -780px;
+  box-shadow:
+    inset 1px 0 0 rgba(255, 255, 255, 0.2),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.16),
+    0 2px 4px -2px rgba(0, 0, 0, 0.16),
+    0 24px 48px -24px rgba(0, 0, 0, 0.42);
+}
+/* Pressed in (the filter is in the markup): a shade darker than the slab */
+.team-more__mark {
+  position: absolute;
+  top: var(--win-y);
+  left: 50%;
+  width: 34%;
+  height: auto;
+  overflow: visible;
+  transform: translateX(-50%);
+  fill: rgba(0, 0, 0, 0.1);
+}
+.team-more__label {
+  padding-right: 56px;
+  font-size: 18px;
+  font-weight: var(--weight-medium);
+  line-height: 1.35;
+  color: var(--color-ink);
+}
+.team-more__arrow {
+  position: absolute;
+  right: 22px;
+  bottom: 24px;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  color: var(--color-on-dark);
+  background: linear-gradient(180deg, rgba(207, 207, 207, 0.16) 0%, rgba(207, 207, 207, 0.11) 100%), var(--btn-dark);
+  box-shadow: var(--shadow-btn);
+}
+.team-more__arrow svg { width: 15px; height: 15px; transition: transform var(--dur-base) var(--ease-out); }
+@media (hover: hover) {
+  .team-more:hover .team-more__arrow svg { transform: translateX(3px); }
+}
+
+/* ---------- Pinned: the row moves sideways as you scroll (team.js, desktop) ----------
+   .team--on is added by team.js; --team-travel is the scroll it pins for. */
+.team--on {
+  height: calc(100vh + var(--team-travel, 300vh));
+  padding-block: 0;
+}
+.team--on .team__stage {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  /* room for the small header bar when it comes back */
+  padding: 112px 0 48px;
+  overflow: hidden;
+}
+.team--on .team__viewport {
+  overflow: visible;
+  padding-bottom: 0;
+  margin-bottom: 0;
+}
+
+/* ---------- Below desktop (to refine once desktop is approved) ---------- */
+@media (max-width: 1199px) {
+  .team__head { grid-column: 1 / -1; }
+  .team__names { display: none; }
+  .team__viewport { grid-column: 1 / -1; }
+  .team__track { --card-w: min(420px, 72vw); --card-h: calc(var(--card-w) * 1.18); }
+}
