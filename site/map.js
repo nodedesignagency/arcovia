@@ -1,30 +1,127 @@
 /* ==========================================================================
-   WorldMap — the compact world map: a dotted globe with the eight cities,
+   WorldMap — the compact world map: a concrete globe with the eight cities,
    arcs drawn out from Los Angeles. Built as one self-contained class so it
    can become a Framer code component later (props: cities, origin, view
-   centre, dot colour).
+   centre, texture).
 
    How it works
-   - Land is a fixed set of dots (assets/land-dots.js, from Natural Earth),
-     drawn on a canvas in an orthographic view, smaller and fainter towards
-     the edge of the globe so it reads as a sphere.
+   - The globe is a WebGL sphere of the same concrete as the hero (the
+     texture is wrapped around it in world space, so it turns with the
+     globe), lit softly from the upper left, darker towards the rim, with a
+     soft shadow on the white below it.
+   - Land is pressed into the concrete as small round pits. The pits sit on
+     the grid of assets/land-dots.js (from Natural Earth) and are drawn
+     exactly in the shader, so they stay crisp at any size: the wall facing
+     the light falls into shade and the far wall catches it.
+   - Drag (or use the arrow keys) to turn the globe; it glides on when let
+     go. Clicking a city in the list turns the globe to it. On touch,
+     sideways drags turn it and up-and-down still scrolls the page.
    - Arcs, markers and their hit areas are SVG on top; labels are HTML, so
      they stay crisp. Each arc follows the great circle from Los Angeles,
-     lifted off the surface in proportion to its length; any part that
-     passes behind the globe is left out.
+     lifted off the surface in proportion to its length; whatever turns
+     behind the globe is hidden.
    - The offices (Los Angeles, San Juan) are always labelled (on phones only
      when picked, as the city list right below names them). Any other city
      shows its label while its marker or its row in the city list
      ([data-city]) is hovered, focused or tapped; its arc darkens and the
      others fade.
    - The arcs draw out one after another the first time the map comes into
-     view. With reduced motion they are simply there.
+     view. With reduced motion they are simply there and turns are instant.
+   - Without WebGL the globe falls back to flat grey dots on a pale disc.
    ========================================================================== */
 (function () {
   "use strict";
 
   var NS = "http://www.w3.org/2000/svg";
   var RAD = Math.PI / 180;
+  // The land grid, as generated in assets/land-dots.js
+  var STEP = 1.2, LAT0 = -58.5, LAT1 = 83;
+  var LAT_RANGE = [-35, 65]; // how far the globe tilts north and south
+
+  var VERT = "attribute vec2 aPos; void main(){ gl_Position = vec4(aPos, 0.0, 1.0); }";
+
+  var FRAG = [
+    "precision highp float;",
+    "uniform vec2 uRes;",       // device px
+    "uniform float uScale;",    // device px per css px
+    "uniform vec2 uCenter;",    // globe centre, css px from the top left
+    "uniform float uR;",        // radius, css px
+    "uniform vec3 uE;",         // the view's right, up and toward-viewer axes in world space
+    "uniform vec3 uN;",
+    "uniform vec3 uC;",
+    "uniform sampler2D uTex;",  // concrete, seamless
+    "uniform sampler2D uMask;", // land: one texel per dot, rows of latitude
+    "uniform sampler2D uRows;", // dots in each row (n = r + 256 g)
+    "uniform vec2 uMaskSize;",  // widest row, number of rows
+    "const float STEP = " + STEP.toFixed(2) + ";",
+    "const float LAT0 = " + LAT0.toFixed(2) + ";",
+    "",
+    "float tex(vec2 uv){ return texture2D(uTex, uv).r; }",
+    "",
+    "void main(){",
+    "  vec2 p = vec2(gl_FragCoord.x, uRes.y - gl_FragCoord.y) / uScale;",
+    "  vec2 d = (p - uCenter) / uR;",
+    "  float r = length(d);",
+    "  float px = 1.0 / (uR * uScale);",
+    "",
+    "  // Soft shadow on the white, down and to the right of the light",
+    "  vec2 sd = (p - uCenter) / uR - vec2(0.09, 0.14);",
+    "  float sh = 0.13 * (1.0 - smoothstep(0.72, 1.22, length(sd)));",
+    "  float inside = 1.0 - smoothstep(1.0 - px, 1.0 + px, r);",
+    "  if (inside <= 0.0) { gl_FragColor = vec4(0.0, 0.0, 0.0, sh); return; }",
+    "",
+    "  float x = d.x, y = -d.y;",
+    "  float z = sqrt(max(0.0, 1.0 - x * x - y * y));",
+    "  vec3 Nv = vec3(x, y, z);",
+    "  vec3 P = x * uE + y * uN + z * uC;",
+    "  float lat = asin(clamp(P.z, -1.0, 1.0));",
+    "  float lon = atan(P.y, P.x);",
+    "",
+    "  // Concrete, wrapped in world space (tri-planar) so it turns with the globe",
+    "  vec3 w = pow(abs(P), vec3(4.0)); w /= (w.x + w.y + w.z);",
+    "  float k = 0.9;",
+    "  float t = tex(P.yz * k + 0.31) * w.x + tex(P.xz * k + 0.57) * w.y + tex(P.xy * k) * w.z;",
+    "  float albedo = 0.86 * (1.0 + (t / 0.765 - 1.0) * 0.9);",
+    "",
+    "  // Light: soft, from the upper left and in front",
+    "  vec3 L = normalize(vec3(-0.38, 0.48, 0.8));",
+    "",
+    "  // Land: a pit wherever the grid has a dot",
+    "  float latD = degrees(lat), lonD = degrees(lon);",
+    "  float row = floor((latD - LAT0) / STEP + 0.5);",
+    "  float pit = 0.0; vec2 u = vec2(0.0);",
+    "  if (row >= 0.0 && row < uMaskSize.y) {",
+    "    vec4 rn = texture2D(uRows, vec2((row + 0.5) / uMaskSize.y, 0.5));",
+    "    float n = floor(rn.r * 255.0 + 0.5) + floor(rn.g * 255.0 + 0.5) * 256.0;",
+    "    if (n > 0.0) {",
+    "      float latRow = LAT0 + row * STEP;",
+    "      float i = clamp(floor((lonD + 180.0) / 360.0 * n), 0.0, n - 1.0);",
+    "      float lonDot = -180.0 + (i + 0.5) * 360.0 / n;",
+    "      float land = texture2D(uMask, vec2((i + 0.5) / uMaskSize.x, (row + 0.5) / uMaskSize.y)).r;",
+    "      vec2 off = vec2((lonD - lonDot) * cos(radians(latRow)), latD - latRow);",
+    "      float rad = STEP * 0.34;",
+    "      float aa = degrees(px) / max(z, 0.2);",
+    "      pit = land * (1.0 - smoothstep(rad - aa, rad + aa, length(off)));",
+    "      u = off / rad;",
+    "    }",
+    "  }",
+    "  // The pit's wall facing the light falls into shade, the far wall catches it",
+    "  vec3 Lw = L.x * uE + L.y * uN + L.z * uC;",
+    "  vec3 east = vec3(-sin(lon), cos(lon), 0.0);",
+    "  vec3 north = vec3(-sin(lat) * cos(lon), -sin(lat) * sin(lon), cos(lat));",
+    "  vec2 lt = vec2(dot(Lw, east), dot(Lw, north));",
+    "  float wall = pit * smoothstep(0.3, 0.95, length(u));",
+    "  float pitLight = -dot(u / max(length(u), 1e-4), lt) * wall;",
+    "",
+    "  float diff = max(dot(Nv, L), 0.0);",
+    "  float lit = (0.64 + 0.4 * diff) * mix(0.86, 1.0, z);",
+    "  vec3 H = normalize(L + vec3(0.0, 0.0, 1.0));",
+    "  float spec = pow(max(dot(Nv, H), 0.0), 40.0) * 0.05;",
+    "  float a = albedo * (1.0 - 0.3 * pit);",
+    "  float c = a * lit * (1.0 + 0.45 * pitLight) + spec;",
+    "  gl_FragColor = vec4(vec3(c) * inside, inside + sh * (1.0 - inside));",
+    "}"
+  ].join("\n");
 
   function parseDots(str) {
     var out = [];
@@ -45,10 +142,22 @@
     return Math.abs(lat).toFixed(2) + "°" + (lat >= 0 ? "N" : "S") + ", " + Math.abs(lon).toFixed(2) + "°" + (lon >= 0 ? "E" : "W");
   }
 
+  function clampLat(v) { return Math.max(LAT_RANGE[0], Math.min(LAT_RANGE[1], v)); }
+  function wrapLon(v) { return ((v + 540) % 360) - 180; }
+  function ease(t) { return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2; }
+
+  function loadScript(src) {
+    return new Promise(function (resolve, reject) {
+      var s = document.createElement("script");
+      s.src = src; s.onload = resolve; s.onerror = reject;
+      document.head.appendChild(s);
+    });
+  }
+
   function WorldMap(root) {
     this.root = root;
     this.stage = root.querySelector(".map__stage");
-    this.canvas = root.querySelector(".map__dots");
+    this.canvas = root.querySelector(".map__globe");
     this.svg = root.querySelector(".map__lines");
     this.labelLayer = root.querySelector(".map__labels");
     this.cities = Array.prototype.slice.call(root.querySelectorAll("[data-city]")).map(function (el) {
@@ -63,16 +172,21 @@
       };
     });
     this.origin = this.cities.filter(function (c) { return c.id === root.getAttribute("data-origin"); })[0] || this.cities[0];
-    this.center = { lat: parseFloat(root.getAttribute("data-center-lat")) || 20, lon: parseFloat(root.getAttribute("data-center-lon")) || -35 };
+    this.home = { lat: parseFloat(root.getAttribute("data-center-lat")) || 20, lon: parseFloat(root.getAttribute("data-center-lon")) || -35 };
+    this.center = { lat: this.home.lat, lon: this.home.lon };
     this.dots = parseDots(window.ARCOVIA_LAND_DOTS);
     this.drawn = false;
+    this.settled = false;
     this.reduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    this.texture = root.getAttribute("data-texture") || "assets/concrete.jpg";
   }
 
   WorldMap.prototype.init = function () {
     var self = this;
     this.build();
+    this.gl = this.initGL();
     this.layout();
+    this.bindTurning();
 
     var width = window.innerWidth;
     window.addEventListener("resize", function () {
@@ -99,6 +213,7 @@
     this.svg.appendChild(this.markGroup);
 
     this.cities.forEach(function (c, i) {
+      c.v = toVec(c.lat, c.lon);
       if (c !== self.origin) {
         c.arc = document.createElementNS(NS, "path");
         c.arc.setAttribute("class", "map__arc");
@@ -124,25 +239,258 @@
       c.label.lastChild.textContent = (c.office ? "Office · " : "") + coords(c.lat, c.lon);
       self.labelLayer.appendChild(c.label);
 
-      var on = function () { self.focus(c); };
-      var off = function () { self.focus(null); };
+      var on = function () { if (!self.drag) self.focus(c); };
+      var off = function () { if (!self.drag) self.focus(null); };
       c.hit.addEventListener("pointerenter", on);
       c.hit.addEventListener("pointerleave", off);
       c.row.addEventListener("pointerenter", on);
       c.row.addEventListener("pointerleave", off);
       c.row.addEventListener("focus", on);
       c.row.addEventListener("blur", off);
+      // Picking a city turns the globe to it
+      c.row.addEventListener("click", function () { self.turnTo(c.lat, c.lon); });
+      c.row.addEventListener("keydown", function (e) {
+        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); self.turnTo(c.lat, c.lon); }
+      });
     });
   };
 
-  // How high above the globe's centre (cy) the highest arc reaches, in px (negative is up)
-  WorldMap.prototype.arcTop = function () {
-    var self = this, o = toVec(this.origin.lat, this.origin.lon), min = -this.R;
-    this.cities.forEach(function (c) {
-      if (c === self.origin) return;
-      self.arcPoints(o, toVec(c.lat, c.lon)).forEach(function (q) { if (q[3]) min = Math.min(min, q[1]); });
+  /* ---------- WebGL globe ---------- */
+  WorldMap.prototype.initGL = function () {
+    var gl = null;
+    try { gl = this.canvas.getContext("webgl", { premultipliedAlpha: true, antialias: false }); } catch (e) { gl = null; }
+    if (!gl) return null;
+    var self = this;
+    var compile = function (type, src) {
+      var s = gl.createShader(type);
+      gl.shaderSource(s, src);
+      gl.compileShader(s);
+      if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) { console.warn(gl.getShaderInfoLog(s)); return null; }
+      return s;
+    };
+    var v = compile(gl.VERTEX_SHADER, VERT), f = compile(gl.FRAGMENT_SHADER, FRAG);
+    if (!v || !f) return null;
+    var prog = gl.createProgram();
+    gl.attachShader(prog, v); gl.attachShader(prog, f); gl.linkProgram(prog);
+    if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) { console.warn(gl.getProgramInfoLog(prog)); return null; }
+    gl.useProgram(prog);
+    this.prog = prog;
+
+    var buf = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
+    var loc = gl.getAttribLocation(prog, "aPos");
+    gl.enableVertexAttribArray(loc);
+    gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+
+    this.u = {};
+    ["uRes", "uScale", "uCenter", "uR", "uE", "uN", "uC", "uTex", "uMask", "uRows", "uMaskSize"].forEach(function (n) { self.u[n] = gl.getUniformLocation(prog, n); });
+
+    // Land: one texel per grid dot. Rows are rebuilt exactly as the generator walked them.
+    var rows = [], widest = 1;
+    for (var lat = LAT0; lat <= LAT1; lat += STEP) {
+      var n = Math.max(1, Math.round((360 * Math.cos(lat * RAD)) / STEP));
+      rows.push(n); widest = Math.max(widest, n);
+    }
+    var H = rows.length, W = widest;
+    var mask = new Uint8Array(W * H * 4);
+    this.dots.forEach(function (d) {
+      var r = Math.round((d[0] - LAT0) / STEP);
+      if (r < 0 || r >= H) return;
+      var i = Math.round(((d[1] + 180) / 360) * rows[r] - 0.5);
+      if (i < 0 || i >= rows[r]) return;
+      var o = (r * W + i) * 4;
+      mask[o] = mask[o + 1] = mask[o + 2] = mask[o + 3] = 255;
     });
-    return min;
+    var rowData = new Uint8Array(H * 4);
+    rows.forEach(function (n, r) { rowData[r * 4] = n % 256; rowData[r * 4 + 1] = Math.floor(n / 256); rowData[r * 4 + 3] = 255; });
+    var dataTex = function (unit, w, h, data) {
+      var t = gl.createTexture();
+      gl.activeTexture(gl.TEXTURE0 + unit);
+      gl.bindTexture(gl.TEXTURE_2D, t);
+      gl.pixelStorei(gl.UNPACK_ALIGNMENT, 1);
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, w, h, 0, gl.RGBA, gl.UNSIGNED_BYTE, data);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    };
+    dataTex(1, W, H, mask);
+    dataTex(2, H, 1, rowData);
+    gl.uniform1i(this.u.uTex, 0);
+    gl.uniform1i(this.u.uMask, 1);
+    gl.uniform1i(this.u.uRows, 2);
+    gl.uniform2f(this.u.uMaskSize, W, H);
+
+    // Concrete: flat grey until the texture arrives (from disk, use the inlined copy the hero uses)
+    gl.activeTexture(gl.TEXTURE0);
+    var tex = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, tex);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([195, 195, 195, 255]));
+    var src = this.texture;
+    var ready = window.ARCOVIA_CONCRETE_DATA ? Promise.resolve(window.ARCOVIA_CONCRETE_DATA)
+      : location.protocol === "file:" ? loadScript(src.replace(/\.jpg$/, "-texture.js")).then(function () { return window.ARCOVIA_CONCRETE_DATA; })
+      : Promise.resolve(src);
+    ready.then(function (url) {
+      var img = new Image();
+      img.onload = function () {
+        gl.activeTexture(gl.TEXTURE0);
+        gl.bindTexture(gl.TEXTURE_2D, tex);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
+        gl.generateMipmap(gl.TEXTURE_2D);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
+        self.drawGlobe();
+      };
+      img.src = url;
+    }).catch(function () {});
+
+    this.root.classList.add("map--gl");
+    return gl;
+  };
+
+  // The view's axes in world space: right (east at the centre), up (north), toward the viewer
+  WorldMap.prototype.basis = function () {
+    var p0 = this.center.lat * RAD, l0 = this.center.lon * RAD;
+    return {
+      e: [-Math.sin(l0), Math.cos(l0), 0],
+      n: [-Math.sin(p0) * Math.cos(l0), -Math.sin(p0) * Math.sin(l0), Math.cos(p0)],
+      c: [Math.cos(p0) * Math.cos(l0), Math.cos(p0) * Math.sin(l0), Math.sin(p0)]
+    };
+  };
+
+  WorldMap.prototype.drawGlobe = function () {
+    if (!this.gl) { this.drawFlat(); return; }
+    var gl = this.gl, b = this.basis();
+    gl.viewport(0, 0, this.canvas.width, this.canvas.height);
+    gl.uniform2f(this.u.uRes, this.canvas.width, this.canvas.height);
+    gl.uniform1f(this.u.uScale, this.dpr);
+    gl.uniform2f(this.u.uCenter, this.cx, this.cy);
+    gl.uniform1f(this.u.uR, this.R);
+    gl.uniform3fv(this.u.uE, b.e);
+    gl.uniform3fv(this.u.uN, b.n);
+    gl.uniform3fv(this.u.uC, b.c);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+  };
+
+  // Fallback without WebGL: flat grey dots on a pale disc
+  WorldMap.prototype.drawFlat = function () {
+    var g = this.canvas.getContext("2d");
+    g.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
+    g.clearRect(0, 0, this.w, this.h);
+    g.fillStyle = "#eeeeee";
+    g.beginPath(); g.arc(this.cx, this.cy, this.R, 0, Math.PI * 2); g.fill();
+    var base = Math.max(1.05, this.R / 260);
+    g.fillStyle = "#8f8f8f";
+    for (var i = 0; i < this.dots.length; i++) {
+      var p = this.project(toVec(this.dots[i][0], this.dots[i][1]));
+      if (p[2] <= 0.02) continue;
+      g.globalAlpha = 0.25 + 0.75 * Math.sqrt(p[2]);
+      g.beginPath();
+      g.arc(p[0], p[1], base * (0.55 + 0.45 * p[2]), 0, Math.PI * 2);
+      g.fill();
+    }
+    g.globalAlpha = 1;
+  };
+
+  /* ---------- Turning ---------- */
+  WorldMap.prototype.bindTurning = function () {
+    var self = this, stage = this.stage;
+    var deg = function () { return 180 / Math.PI / self.R; }; // degrees per px of drag at the centre
+
+    stage.addEventListener("pointerdown", function (e) {
+      if (e.button !== 0) return;
+      self.stopMotion();
+      self.drag = { x: e.clientX, y: e.clientY, lat: self.center.lat, lon: self.center.lon, t: performance.now(), vx: 0, vy: 0, moved: false };
+      try { stage.setPointerCapture(e.pointerId); } catch (err) {}
+    });
+    stage.addEventListener("pointermove", function (e) {
+      var d = self.drag;
+      if (!d) return;
+      var now = performance.now(), dt = Math.max(1, now - d.t);
+      var dx = e.clientX - d.x, dy = e.clientY - d.y;
+      if (!d.moved && Math.abs(dx) + Math.abs(dy) < 3) return;
+      if (!d.moved) { d.moved = true; self.root.classList.add("is-turning"); self.focus(null); }
+      var lon = self.center.lon, lat = self.center.lat;
+      self.center.lon = wrapLon(d.lon - dx * deg());
+      self.center.lat = clampLat(d.lat + dy * deg());
+      // Velocity in degrees per ms, smoothed, for the glide after letting go
+      d.vx = 0.7 * d.vx + 0.3 * (wrapLon(self.center.lon - lon) / dt);
+      d.vy = 0.7 * d.vy + 0.3 * ((self.center.lat - lat) / dt);
+      d.t = now;
+      // Re-anchor, so a drag held against the tilt limit responds as soon as it turns back
+      d.lat = self.center.lat - dy * deg();
+      self.render();
+    });
+    var end = function () {
+      var d = self.drag;
+      if (!d) return;
+      self.drag = null;
+      self.root.classList.remove("is-turning");
+      if (d.moved && !self.reduced) self.glide(d.vx, d.vy);
+    };
+    stage.addEventListener("pointerup", end);
+    stage.addEventListener("pointercancel", end);
+
+    stage.addEventListener("keydown", function (e) {
+      var k = { ArrowLeft: [0, -20], ArrowRight: [0, 20], ArrowUp: [10, 0], ArrowDown: [-10, 0] }[e.key];
+      if (!k) return;
+      e.preventDefault();
+      self.turnTo(self.center.lat + k[0], self.center.lon + k[1]);
+    });
+  };
+
+  WorldMap.prototype.stopMotion = function () {
+    if (this.motion) cancelAnimationFrame(this.motion);
+    this.motion = null;
+  };
+
+  // Keep turning after a drag, slowing down
+  WorldMap.prototype.glide = function (vx, vy) {
+    var self = this, last = performance.now();
+    if (Math.abs(vx) + Math.abs(vy) < 0.005) return;
+    var step = function (now) {
+      var dt = Math.min(40, now - last); last = now;
+      self.center.lon = wrapLon(self.center.lon + vx * dt);
+      self.center.lat = clampLat(self.center.lat + vy * dt);
+      var f = Math.exp(-dt / 320);
+      vx *= f; vy *= f;
+      self.render();
+      self.motion = Math.abs(vx) + Math.abs(vy) > 0.0008 ? requestAnimationFrame(step) : null;
+    };
+    this.motion = requestAnimationFrame(step);
+  };
+
+  // Turn smoothly to face a point
+  WorldMap.prototype.turnTo = function (lat, lon) {
+    var self = this;
+    this.stopMotion();
+    var from = { lat: this.center.lat, lon: this.center.lon };
+    var to = { lat: clampLat(lat), lon: lon };
+    var dl = wrapLon(to.lon - from.lon);
+    if (this.reduced) { this.center = { lat: to.lat, lon: wrapLon(from.lon + dl) }; this.render(); return; }
+    var dur = 700 + 4 * Math.min(180, Math.abs(dl) + Math.abs(to.lat - from.lat)), t0 = performance.now();
+    var step = function (now) {
+      var k = Math.min(1, (now - t0) / dur), e = ease(k);
+      self.center.lat = from.lat + (to.lat - from.lat) * e;
+      self.center.lon = wrapLon(from.lon + dl * e);
+      self.render();
+      self.motion = k < 1 ? requestAnimationFrame(step) : null;
+    };
+    this.motion = requestAnimationFrame(step);
+  };
+
+  /* ---------- Layout and drawing ---------- */
+  // Project a unit vector (scaled by r) into the view: [x, y, z] in px, z > 0 faces us
+  WorldMap.prototype.project = function (v, r) {
+    var b = this.basis();
+    var R = this.R * (r || 1);
+    var x = v[0] * b.e[0] + v[1] * b.e[1] + v[2] * b.e[2];
+    var y = v[0] * b.n[0] + v[1] * b.n[1] + v[2] * b.n[2];
+    var z = v[0] * b.c[0] + v[1] * b.c[1] + v[2] * b.c[2];
+    return [this.cx + R * x, this.cy - R * y, z];
   };
 
   // Points along the great circle from a to b, lifted off the surface in
@@ -161,15 +509,14 @@
     return pts;
   };
 
-  // Project a unit vector (scaled by r) into the view: [x, y, z] in px, z > 0 faces us
-  WorldMap.prototype.project = function (v, r) {
-    var lat = Math.asin(Math.max(-1, Math.min(1, v[2]))), lon = Math.atan2(v[1], v[0]);
-    var p0 = this.center.lat * RAD, dl = lon - this.center.lon * RAD;
-    var R = this.R * (r || 1);
-    var x = Math.cos(lat) * Math.sin(dl);
-    var y = Math.cos(p0) * Math.sin(lat) - Math.sin(p0) * Math.cos(lat) * Math.cos(dl);
-    var z = Math.sin(p0) * Math.sin(lat) + Math.cos(p0) * Math.cos(lat) * Math.cos(dl);
-    return [this.cx + R * x, this.cy - R * y, z];
+  // How high above the globe's centre the highest arc reaches in the home view, in px (negative is up)
+  WorldMap.prototype.arcTop = function () {
+    var self = this, min = -this.R;
+    this.cities.forEach(function (c) {
+      if (c === self.origin) return;
+      self.arcPoints(self.origin.v, c.v).forEach(function (q) { if (q[3]) min = Math.min(min, q[1]); });
+    });
+    return min;
   };
 
   WorldMap.prototype.layout = function () {
@@ -177,70 +524,49 @@
     var phone = w < 600;
     // On phones the city list right below names the offices; their callouts show on tap like the rest
     this.root.classList.toggle("is-compact", phone);
-    // Globe size; the room above it is just what the highest arc needs;
+    // Globe size; the room above it is what the highest arc needs in the home view
     // the city list cuts the globe below its lowest city
     this.R = Math.min(phone ? w * 0.47 : w * 0.3, 400);
     this.cx = w / 2;
+    var saved = this.center;
+    this.center = { lat: this.home.lat, lon: this.home.lon };
     this.cy = 0;
-    var arcTop = this.arcTop();
-    var top = Math.max(16, Math.ceil(-arcTop) + 20);
-    var cut = this.R * 0.88;
+    // (and some more, as arcs rise higher when the globe is turned)
+    var top = Math.max(this.R * 0.2, Math.ceil(-this.arcTop()) + 20);
+    this.center = saved;
     this.cy = top;
-    var h = Math.round(top + cut);
+    var h = Math.round(top + this.R * 0.88);
     this.stage.style.height = h + "px";
     this.w = w; this.h = h;
-    this.drawDots();
-    this.drawLines();
+
+    this.dpr = Math.min(window.devicePixelRatio || 1, 2);
+    this.canvas.width = Math.round(w * this.dpr);
+    this.canvas.height = Math.round(h * this.dpr);
+    this.canvas.style.width = w + "px";
+    this.canvas.style.height = h + "px";
+    this.svg.setAttribute("viewBox", "0 0 " + w + " " + h);
+    this.svg.setAttribute("width", w);
+    this.svg.setAttribute("height", h);
+    this.size = this.R > 250 ? 8 : 7;
+    this.cities.forEach(function (c) { c.lw = c.label.offsetWidth; c.lh = c.label.offsetHeight; });
+    this.render();
   };
 
-  WorldMap.prototype.drawDots = function () {
-    var dpr = Math.min(window.devicePixelRatio || 1, 2);
-    var c = this.canvas;
-    c.width = Math.round(this.w * dpr);
-    c.height = Math.round(this.h * dpr);
-    c.style.width = this.w + "px";
-    c.style.height = this.h + "px";
-    var g = c.getContext("2d");
-    g.setTransform(dpr, 0, 0, dpr, 0, 0);
-    g.clearRect(0, 0, this.w, this.h);
-
-    // The sphere: a pale disc, a touch darker at the rim
-    var grad = g.createRadialGradient(this.cx - this.R * 0.3, this.cy - this.R * 0.35, this.R * 0.1, this.cx, this.cy, this.R);
-    grad.addColorStop(0, "#f8f8f8");
-    grad.addColorStop(1, "#eeeeee");
-    g.fillStyle = grad;
-    g.beginPath(); g.arc(this.cx, this.cy, this.R, 0, Math.PI * 2); g.fill();
-    g.strokeStyle = "rgba(43, 43, 43, 0.08)";
-    g.lineWidth = 1;
-    g.stroke();
-
-    // Land: smaller and fainter towards the rim
-    var base = Math.max(1.05, this.R / 260);
-    g.fillStyle = "#8f8f8f";
-    for (var i = 0; i < this.dots.length; i++) {
-      var p = this.project(toVec(this.dots[i][0], this.dots[i][1]));
-      if (p[2] <= 0.02) continue;
-      g.globalAlpha = 0.25 + 0.75 * Math.sqrt(p[2]);
-      g.beginPath();
-      g.arc(p[0], p[1], base * (0.55 + 0.45 * p[2]), 0, Math.PI * 2);
-      g.fill();
-    }
-    g.globalAlpha = 1;
+  WorldMap.prototype.render = function () {
+    this.drawGlobe();
+    this.drawLines();
   };
 
   WorldMap.prototype.drawLines = function () {
     var self = this;
-    this.svg.setAttribute("viewBox", "0 0 " + this.w + " " + this.h);
-    this.svg.setAttribute("width", this.w);
-    this.svg.setAttribute("height", this.h);
-    var o = toVec(this.origin.lat, this.origin.lon);
-    var size = this.R > 250 ? 8 : 7;
-
     this.cities.forEach(function (c) {
-      var v = toVec(c.lat, c.lon);
-      var p = self.project(v);
+      var p = self.project(c.v);
       c.x = p[0]; c.y = p[1];
-      var s = c === self.origin ? size + 2 : size;
+      var behind = p[2] < 0.03;
+      c.mark.classList.toggle("is-behind", behind);
+      c.label.classList.toggle("is-behind", behind);
+      c.hit.style.display = behind ? "none" : "";
+      var s = c === self.origin ? self.size + 2 : self.size;
       c.mark.setAttribute("x", (p[0] - s / 2).toFixed(1));
       c.mark.setAttribute("y", (p[1] - s / 2).toFixed(1));
       c.mark.setAttribute("width", s);
@@ -252,12 +578,14 @@
 
       // Great circle from the origin; parts behind the globe are left out
       var d = "", pen = false;
-      self.arcPoints(o, v).forEach(function (q) {
+      self.arcPoints(self.origin.v, c.v).forEach(function (q) {
         if (q[3]) { d += (pen ? "L" : "M") + q[0].toFixed(1) + " " + q[1].toFixed(1); pen = true; }
         else pen = false;
       });
       c.arc.setAttribute("d", d);
-      var len = c.arc.getTotalLength();
+      // The dash only serves the first draw
+      if (self.settled) { c.arc.style.strokeDasharray = "none"; return; }
+      var len = d ? c.arc.getTotalLength() : 0;
       c.arc.style.strokeDasharray = len + " " + len;
       c.arc.style.setProperty("--len", len);
     });
@@ -265,29 +593,27 @@
 
   // Beside the marker, kept inside the stage
   WorldMap.prototype.placeLabel = function (c) {
-    var el = c.label;
-    var gap = 12;
-    var w = el.offsetWidth, h = el.offsetHeight;
+    var gap = 12, w = c.lw, h = c.lh;
     var side = c.side;
     // No room on the preferred side: use the other one rather than cover the marker
     if (side === "left" && c.x - gap - w < 4) side = "right";
     else if (side === "right" && c.x + gap + w > this.w - 4) side = "left";
     var x = side === "left" ? c.x - gap - w : c.x + gap;
     var y = c.y - h / 2;
-    if (c.side === "above") { x = c.x - w / 2; y = c.y - gap - h; }
-    if (c.side === "below") { x = c.x - w / 2; y = c.y + gap; }
+    if (side === "above") { x = c.x - w / 2; y = c.y - gap - h; }
+    if (side === "below") { x = c.x - w / 2; y = c.y + gap; }
     x = Math.max(4, Math.min(this.w - w - 4, x));
     y = Math.max(4, Math.min(this.h - h - 4, y));
-    el.style.transform = "translate(" + Math.round(x) + "px, " + Math.round(y) + "px)";
+    c.label.style.transform = "translate(" + Math.round(x) + "px, " + Math.round(y) + "px)";
   };
 
   WorldMap.prototype.reveal = function (instant) {
-    var root = this.root;
+    var self = this, root = this.root;
     this.drawn = true;
     root.classList.toggle("is-instant", instant);
     root.classList.add("is-drawn");
     // Once everything is in, hover responds at once (the staggered delays only serve the first draw)
-    setTimeout(function () { root.classList.add("is-settled"); }, instant ? 0 : 2600);
+    setTimeout(function () { root.classList.add("is-settled"); self.settled = true; self.drawLines(); }, instant ? 0 : 2600);
   };
 
   WorldMap.prototype.focus = function (city) {

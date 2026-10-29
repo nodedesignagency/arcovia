@@ -417,8 +417,9 @@
 
     <!-- SECTION:map START · styles: sections/map.css · scripts: assets/land-dots.js, map.js
          Home, block 4: where we are in the world. The compact world map: a
-         dotted globe with the eight cities and arcs drawn out from Los Angeles,
-         cut by the city list (after Cloudflare's offices section). -->
+         concrete globe you can turn, land pressed in as pits, the eight cities
+         and arcs drawn out from Los Angeles, cut by the city list (after
+         Cloudflare's offices section). -->
     <section class="map" data-world-map data-origin="la" data-center-lat="30" data-center-lon="-34" aria-labelledby="map-title">
       <div class="container">
         <div class="map__head">
@@ -429,9 +430,9 @@
         </div>
 
         <figure class="map__figure">
-          <!-- Component: world-map (compact). map.js draws the globe, arcs, markers and labels from the city list below. -->
-          <div class="map__stage" role="img" aria-label="Globe with arcs from Los Angeles to San Francisco, New York, San Juan, São Paulo, London, Paris and Abu Dhabi">
-            <canvas class="map__dots"></canvas>
+          <!-- Component: world-map (compact). map.js draws the globe, arcs, markers and labels from the city list below; drag to turn it, pick a city to turn to it. -->
+          <div class="map__stage" tabindex="0" role="img" aria-label="Concrete globe with arcs from Los Angeles to San Francisco, New York, San Juan, São Paulo, London, Paris and Abu Dhabi. Drag, or use the arrow keys, to turn it.">
+            <canvas class="map__globe"></canvas>
             <svg class="map__lines" aria-hidden="true"></svg>
             <div class="map__labels"></div>
           </div>

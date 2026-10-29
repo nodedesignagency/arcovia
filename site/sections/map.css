@@ -1,10 +1,11 @@
 /* ==========================================================================
    SECTION: map — Home, block 4 (where we are in the world)
    The compact world map on white, after Cloudflare's offices section, with
-   the arcs and coordinate labels of Grok and SpaceXAI: a dotted globe with
-   the eight cities, arcs drawn out from Los Angeles, cut by the city list.
-   map.js draws the globe (canvas), the arcs and markers (SVG) and the
-   labels (HTML) from the city list's data attributes.
+   the arcs and coordinate labels of Grok and SpaceXAI: a concrete globe you
+   can turn, land pressed in as pits, the eight cities, arcs drawn out from
+   Los Angeles, cut by the city list. map.js draws the globe (WebGL canvas),
+   the arcs and markers (SVG) and the labels (HTML) from the city list's
+   data attributes.
    Uses shared tokens, the chip and the arrow icon from styles.css.
    ========================================================================== */
 
@@ -62,18 +63,26 @@
 /* ---------- Stage: globe, arcs and labels ---------- */
 .map__figure { margin: var(--space-6) 0 0; }
 
+/* The canvas ends where the city list starts, so the list cuts the globe;
+   arcs and labels may rise above the stage while it turns */
 .map__stage {
   position: relative;
   height: 640px; /* set by map.js */
-  overflow: hidden;
+  cursor: grab;
+  touch-action: pan-y; /* sideways drags turn the globe, up and down still scrolls */
+  user-select: none;
+  -webkit-user-select: none;
+  outline-offset: 4px;
 }
-.map__dots,
+.is-turning .map__stage { cursor: grabbing; }
+.map__globe,
 .map__lines,
 .map__labels {
   position: absolute;
   inset: 0;
 }
 .map__lines { overflow: visible; }
+.map__globe { pointer-events: none; }
 .map__labels { pointer-events: none; }
 
 /* Arcs draw out from Los Angeles, one after another */
@@ -146,6 +155,10 @@
 .is-compact .map__label--office:not(.is-active) { opacity: 0; }
 .map__label.is-active { opacity: 1; }
 
+/* Turned to the far side of the globe */
+.map .map__mark.is-behind,
+.map .map__label.is-behind { opacity: 0; transition-duration: 120ms; transition-delay: 0s; }
+
 /* Hovering a city brings its arc forward and fades the others */
 .has-focus .map__arc { opacity: 0.3; }
 .map__arc.is-active { opacity: 1; stroke: var(--color-ink); stroke-width: 1.6; }
@@ -175,6 +188,7 @@
   padding: 22px 24px 24px;
   background: var(--color-white);
   outline-offset: -2px;
+  cursor: pointer; /* picking a city turns the globe to it */
   transition: background-color var(--dur-fast) var(--ease-out);
 }
 .map__city.is-active { background: var(--color-well); }
