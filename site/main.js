@@ -96,7 +96,10 @@
   }
 
   /* ---------- Path picker: one button, three paths ---------- */
+  // Review switch: ?picker=glass shows the frosted glass version of the menu
+  var pickerVariant = (location.search.match(/[?&]picker=(\w+)/) || [])[1];
   document.querySelectorAll("[data-path-picker]").forEach(function (picker) {
+    if (pickerVariant) picker.setAttribute("data-variant", pickerVariant);
     var trigger = picker.querySelector(".path-picker__trigger");
     var panel = picker.querySelector(".path-picker__panel");
     var options = panel.querySelectorAll(".path-picker__option");

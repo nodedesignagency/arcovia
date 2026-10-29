@@ -27,6 +27,11 @@
       <path d="M288.2 166.3A90 90 0 0 0 338.37 142.83L554 539H482Z"/>
     </symbol>
     <symbol id="icon-chevron" viewBox="0 0 16 16"><path d="M3.5 10l4.5-4.5 4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <!-- Path icons: 24px line icons, 1.5 stroke -->
+    <symbol id="icon-raise" viewBox="0 0 24 24"><path d="M4 17l5.2-5.2 3.6 3.2L20 7.8M15 7.5h5.2v5.2" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="icon-invest" viewBox="0 0 24 24"><path d="M12 3.5v8.5h8.5M20.5 12A8.5 8.5 0 1 1 12 3.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M15 3.9a8.5 8.5 0 0 1 5.1 5.1H15z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></symbol>
+    <symbol id="icon-institution" viewBox="0 0 24 24"><path d="M3.5 9.5 12 4l8.5 5.5M5.5 10.5v7M10 10.5v7M14 10.5v7M18.5 10.5v7M3.5 20h17" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="icon-chevron-right" viewBox="0 0 16 16"><path d="M6 3.5 10.5 8 6 12.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
     <symbol id="icon-arrow" viewBox="0 0 16 16"><path d="M2.5 8h11M9 3.5 13.5 8 9 12.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
   </svg>
 
@@ -133,24 +138,29 @@
               <div class="hero__aside" data-rise data-zoom-fade style="--rise:1">
                 <p class="hero__lede">For growth-stage founders, funds and foundations raising <span class="nowrap">$5M–$500M+</span>.</p>
 
-                <!-- Component: path-picker. One button; the three paths open above it. -->
+                <!-- Component: path-picker. One button; the three paths open above it, each with
+                     an icon tile, a title and one line. Two looks: white (default) and glass
+                     (data-variant="glass", or ?picker=glass to preview). -->
                 <div class="path-picker" data-path-picker>
                   <div class="path-picker__panel" id="path-options" role="group" aria-labelledby="path-title" aria-hidden="true">
                     <p class="path-picker__title" id="path-title">Who are you?</p>
                     <a class="path-picker__option" href="services.html#founders">
+                      <span class="path-picker__icon" aria-hidden="true"><svg><use href="#icon-raise"/></svg></span>
                       <span class="path-picker__label">I’m raising capital</span>
-                      <span class="path-picker__meta">Growth-stage founders and funds raising <span class="nowrap">$5M–$500M+</span></span>
-                      <svg class="path-picker__arrow" aria-hidden="true"><use href="#icon-arrow"/></svg>
+                      <span class="path-picker__meta">Founders and funds raising <span class="nowrap">$5M–$500M+</span></span>
+                      <svg class="path-picker__arrow" aria-hidden="true"><use href="#icon-chevron-right"/></svg>
                     </a>
                     <a class="path-picker__option" href="services.html#investors">
+                      <span class="path-picker__icon" aria-hidden="true"><svg><use href="#icon-invest"/></svg></span>
                       <span class="path-picker__label">I’m an investor</span>
                       <span class="path-picker__meta">Family offices, VCs, funds and LPs</span>
-                      <svg class="path-picker__arrow" aria-hidden="true"><use href="#icon-arrow"/></svg>
+                      <svg class="path-picker__arrow" aria-hidden="true"><use href="#icon-chevron-right"/></svg>
                     </a>
                     <a class="path-picker__option" href="services.html#institutions">
+                      <span class="path-picker__icon" aria-hidden="true"><svg><use href="#icon-institution"/></svg></span>
                       <span class="path-picker__label">I represent an institution</span>
                       <span class="path-picker__meta">Institutions and sovereign capital</span>
-                      <svg class="path-picker__arrow" aria-hidden="true"><use href="#icon-arrow"/></svg>
+                      <svg class="path-picker__arrow" aria-hidden="true"><use href="#icon-chevron-right"/></svg>
                     </a>
                   </div>
                   <button class="btn btn--primary path-picker__trigger" type="button" aria-expanded="false" aria-controls="path-options">
