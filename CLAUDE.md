@@ -39,6 +39,7 @@ cd ~/Desktop/arcovia-preview && ./preview.sh <branch>
 - `site/main.js`: small shared JS (header, menu, path picker, office clocks, wordmark fit).
 - `site/zoom.js`: the hero → statement zoom-through (pinned scroll stage).
 - `site/concrete.js`: WebGL concrete for the hero (carved text and marks, drifting sunlight, cursor light). Built to become a Framer code component.
+- `site/sections/why-founders.css`: "Why founders choose Arcovia" (Home, after the statement; `SECTION:why-founders`). Only the scaffold so far: a heading and a `[COPY NEEDED]` line; layout and copy still to decide with the user.
 - `site/assets/`: concrete texture (seamless, 90 KB), traced A-mark SVG (replace with the CM.SUPPLY master when it arrives).
 - `site/versions/<name>/`: frozen snapshots the user asked to keep for comparison (e.g. `final-1`). Never edit them and never promote them to `main`; open with `./preview.sh <branch> versions/<name>/index.html`.
 - `review/`: screenshots and videos for review. Git-ignored; send them to the user, don't commit them.

@@ -1,0 +1,28 @@
+/* ==========================================================================
+   SECTION: why-founders — Home, after the statement
+   Why founders choose Arcovia. Setup only for now: a plain heading on the
+   concrete so the section has its place on the page; the design comes next.
+   Uses shared tokens from styles.css.
+   ========================================================================== */
+
+.why-founders {
+  position: relative;
+  padding-block: var(--space-10);
+  color: var(--color-text);
+}
+
+.why-founders__title {
+  max-width: 16ch;
+  font-size: var(--fs-h2);
+  font-weight: var(--weight-book);
+  line-height: var(--lh-h2);
+  letter-spacing: var(--ls-h2);
+  color: var(--color-ink);
+}
+
+.why-founders__note {
+  margin-top: var(--space-5);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--color-text-muted);
+}
