@@ -2,18 +2,19 @@
    Why founders choose Arcovia: cards stack, then settle into a row
    After a reference the user sent. The section pins (sticky stage) while:
      0.00–0.05  the headline stands alone, huge, its lines staggered on the grid
-     0.05–0.64  the four cards rise from below, one at a time, into a stack in
-                front of it; each covers the one before, whose figure still
-                shows above it, and the stack recentres as it grows
-     0.68–0.90  the stack spreads into a row while the headline shrinks into
-                place above it as a normal heading; the chip and footnote fade in
+     0.05–0.64  the four cards rise from below, one at a time, larger than in the
+                row, into a stack in front of it; each covers the one before, whose
+                figure still shows above it, and older cards are pushed up off the
+                screen (as in the reference)
+     0.68–0.90  the stack spreads into a row and the cards shrink to their normal
+                size, while the headline shrinks into place above it as a normal
+                heading; the chip and footnote fade in
      0.90–1.00  rest on the settled layout
    The settled layout is the real page (why-founders.css); this only adds
    transforms on top, so at the end nothing is scaled and the text is native.
    Every frame comes from the scroll position alone (with light smoothing),
    so scrolling back up plays it in reverse. Desktop only (≥1200px), and not
    with reduced motion: there the section is simply the settled layout.
-   ?cards=concrete previews version B (cast-concrete cards on white).
    ========================================================================== */
 (function () {
   "use strict";
@@ -30,14 +31,11 @@
   var n = cards.length;
   if (!stage || !inner || !title || !lines.length || n < 2) return;
 
-  // Review switch: ?cards=concrete shows version B
-  if (/[?&]cards=concrete\b/.test(location.search)) sec.setAttribute("data-variant", "concrete");
-
   var HOLD = 0.05;          // the headline alone
   var RISE = 0.125;         // each card's rise
   var EACH = 0.15;          // from one card's start to the next
   var SPREAD = [0.68, 0.9]; // the stack spreads and the headline settles
-  var STACK_SCALE = 1.1;    // cards are a little larger in the stack
+  var STACK_SCALE = 1.5;    // cards are larger in the stack, and shrink as they settle
   var BIG = 0.148;          // the big headline's size, as a share of the grid's width
   var LEAD = 0.96;          // its line spacing
   var INDENT = [0, 12, 1];  // where each of its lines starts, in grid columns (12: flush right)
@@ -92,15 +90,12 @@
     var natural = cards.map(rel);
     var fig = cards[0].querySelector(".stat-card__figure");
     var figBottom = fig ? fig.getBoundingClientRect().bottom - cards[0].getBoundingClientRect().top : 90;
-    var sc = STACK_SCALE;
     var cardH = Math.max.apply(null, natural.map(function (c) { return c.h; }));
-    var step = (figBottom + 20) * sc;
-    // Keep the whole stack on screen on shorter windows
-    var room = vh - 64;
-    if (cardH * sc + (n - 1) * step > room) {
-      sc = room / (cardH + (n - 1) * (figBottom + 20));
-      step = (figBottom + 20) * sc;
-    }
+    var peek = figBottom + 18;      // how much of the card before shows above, at normal size
+    // The newest card and the figure of the one before must fit on screen, so shorter
+    // windows get a smaller stack
+    var sc = Math.min(STACK_SCALE, (vh - 48) / (cardH + peek));
+    var step = peek * sc;
     var ss = getComputedStyle(stage);
     return {
       vw: vw, vh: vh, k: k, heads: heads, cards: natural,
@@ -113,10 +108,13 @@
   /* ---------- One frame, from the progress p alone ---------- */
   function draw() {
     var g = geo;
-    // How far each card has risen, and how many sit on the stack
+    // How far each card has risen, and how many sit on the stack. The newest card stays in
+    // the middle with the figure of the one before above it; older cards move up off the screen.
     var rise = cards.map(function (c, i) { return easeOut(ramp(HOLD + i * EACH, HOLD + i * EACH + RISE, p)); });
     var landed = rise.reduce(function (a, b) { return a + b; }, 0);
-    var stackTop = (g.vh - (g.cardH + Math.max(0, landed - 1) * g.step)) / 2;
+    var above = Math.min(Math.max(0, landed - 1), 1) * g.step;
+    var newest = (g.vh - (g.cardH + above)) / 2 + above;
+    var stackTop = newest - Math.max(0, landed - 1) * g.step;
     var spread = ramp(SPREAD[0], SPREAD[1], p);
     var f = easeInOut(spread);
 
@@ -128,7 +126,8 @@
       y = lerp(y, c.y, f);
       var sc = lerp(g.sc, 1, f);
       var still = f >= 1;
-      el.style.transform = still ? "" : "translate3d(" + (x - c.x).toFixed(2) + "px," + (y - c.y).toFixed(2) + "px,0) scale(" + sc.toFixed(4) + ")";
+      // A 2D transform keeps the card painted (not cached as a bitmap), so its text stays sharp
+      el.style.transform = still ? "" : "translate(" + (x - c.x).toFixed(2) + "px," + (y - c.y).toFixed(2) + "px) scale(" + sc.toFixed(4) + ")";
       var shade = i < n - 1 ? rise[i + 1] * (1 - f) : 0;
       if (shade > 0.001) el.style.setProperty("--shade", shade.toFixed(3)); else el.style.removeProperty("--shade");
     });

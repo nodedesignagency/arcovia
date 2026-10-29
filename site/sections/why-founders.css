@@ -5,20 +5,20 @@
    the headline starts huge across the screen, the cards rise one at a time
    into a stack in front of it, each covering the last (whose figure still
    shows above it), then the stack spreads into a row while the headline
-   shrinks into place above it as a normal heading.
+   shrinks into place above it as a normal heading. The cards are larger in
+   the stack and shrink to their normal size as they settle.
+   White cards on black (the user's choice); heading, chip and footnote in white.
    This file is the settled layout; founders.js only adds transforms on top.
-   ?cards=concrete previews version B: a white room with cast-concrete cards.
    Uses shared tokens and the chip from styles.css.
    ========================================================================== */
 
 .why-founders {
   --card-pad: 28px;
   --card-radius: var(--radius-l);
-  --card-bg: var(--color-white);
-  --card-shadow: var(--shadow-card);
-  --card-shade: rgba(21, 21, 21, 0.07);   /* veil over a card covered in the stack */
+  --card-shade: rgba(21, 21, 21, 0.08);   /* veil over a card covered in the stack */
   position: relative;
-  color: var(--color-text);
+  background: var(--color-black);
+  color: var(--color-on-dark);
 }
 
 .why-founders__stage {
@@ -31,13 +31,14 @@
   gap: var(--space-4);
   margin-bottom: var(--space-7);
 }
+.why-founders__chip { color: var(--color-on-dark); }
 
 .why-founders__title {
   font-size: var(--fs-h2);
   font-weight: var(--weight-book);
   line-height: var(--lh-h2);
   letter-spacing: var(--ls-h2);
-  color: var(--color-ink);
+  color: var(--color-on-dark);
 }
 /* Each part of the headline moves on its own while it shrinks into place */
 .why-founders__line {
@@ -55,7 +56,7 @@
   margin-top: var(--space-6);
   font-size: var(--fs-small);
   line-height: var(--lh-small);
-  color: var(--color-text-muted);
+  color: var(--color-on-dark);
 }
 
 /* ---------- Component: stat-card ---------- */
@@ -67,8 +68,9 @@
   aspect-ratio: 4 / 5;
   padding: var(--card-pad);
   border-radius: var(--card-radius);
-  background: var(--card-bg);
-  box-shadow: var(--card-shadow);
+  background: var(--color-white);
+  /* On black the drop shadow only shows where a card lies over the one before, in the stack */
+  box-shadow: var(--shadow-card);
   transform-origin: 0 0;
 }
 /* A card covered by the next one in the stack sinks back into shade */
@@ -112,12 +114,11 @@
 @media (hover: hover) {
   .why-founders.is-settled .stat-card,
   .why-founders:not(.why-founders--staged) .stat-card {
-    transition: translate var(--dur-slow) var(--ease-out), box-shadow var(--dur-slow) var(--ease-out);
+    transition: translate var(--dur-slow) var(--ease-out);
   }
   .why-founders.is-settled .stat-card:hover,
   .why-founders:not(.why-founders--staged) .stat-card:hover {
     translate: 0 -4px;
-    box-shadow: var(--card-shadow), 0 22px 40px -18px rgba(0, 0, 0, 0.22);
   }
 }
 
@@ -139,19 +140,6 @@
   overflow: clip;
 }
 .why-founders--staged .why-founders__inner { width: 100%; }
-
-/* ---------- Version B (?cards=concrete): a white room, cast-concrete cards ---------- */
-.why-founders[data-variant="concrete"] {
-  --card-bg: #c9c9c7 url("../assets/concrete-cast.jpg") center / 640px;
-  --card-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.45),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.12),
-    0 1px 2px rgba(0, 0, 0, 0.1),
-    0 18px 36px -14px rgba(0, 0, 0, 0.32);
-  --card-shade: rgba(21, 21, 21, 0.14);
-  background: var(--color-white);
-}
-.why-founders[data-variant="concrete"] .stat-card__line { color: var(--color-text); }
 
 /* ---------- Tablet and phone: the settled layout only (not reviewed yet) ---------- */
 @media (max-width: 1199px) {
