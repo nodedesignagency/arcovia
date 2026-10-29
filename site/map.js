@@ -16,17 +16,17 @@
      smooth and a shade darker. The coastline is resolved per pixel, so it
      stays crisp at any size.
    - Drag (or use the arrow keys) to turn the globe; it glides on when let
-     go. Clicking a city in the list turns the globe to it. On touch,
+     go. On touch,
      sideways drags turn it and up-and-down still scrolls the page.
    - Arcs, markers and their hit areas are SVG on top; labels are HTML, so
      they stay crisp. Each arc follows the great circle from Los Angeles,
      lifted off the surface in proportion to its length; whatever turns
      behind the globe is hidden.
    - The offices (Los Angeles, San Juan) are always labelled (on phones only
-     when picked, as the city list right below names them). Any other city
-     shows its label while its marker or its row in the city list
+     when picked, as the city index right below names them). Any other city
+     shows its label while its marker or its row in the city index
      ([data-city]) is hovered, focused or tapped; its arc darkens and the
-     others fade.
+     others fade. Picking a city in the index turns the globe to it.
    - The arcs draw out one after another the first time the map comes into
      view. With reduced motion they are simply there and turns are instant.
    - Without WebGL the globe falls back to flat grey dots on a pale disc.
@@ -67,7 +67,10 @@
     "",
     "  // Soft shadow on the white, down and to the right of the light",
     "  vec2 sd = (p - uCenter) / uR - vec2(0.09, 0.14);",
-    "  float sh = 0.13 * (1.0 - smoothstep(0.72, 1.22, length(sd)));",
+    "  float sh = 0.13 * (1.0 - smoothstep(0.7, 1.12, length(sd)));",
+    "  // and fades out before the canvas ends, so it never shows an edge",
+    "  vec2 css = uRes / uScale;",
+    "  sh *= smoothstep(0.0, 28.0, min(min(p.x, css.x - p.x), min(p.y, css.y - p.y)));",
     "  float inside = 1.0 - smoothstep(1.0 - px, 1.0 + px, r);",
     "  if (inside <= 0.0) { gl_FragColor = vec4(0.0, 0.0, 0.0, sh); return; }",
     "",
@@ -509,20 +512,22 @@
   WorldMap.prototype.layout = function () {
     var w = this.stage.clientWidth;
     var phone = w < 600;
-    // On phones the city list right below names the offices; their callouts show on tap like the rest
+    var wide = window.matchMedia("(min-width: 1200px)").matches;
+    // On phones the city index right below names the offices; their callouts show on tap like the rest
     this.root.classList.toggle("is-compact", phone);
-    // Globe size; the room above it is what the highest arc needs in the home view
-    // the city list cuts the globe below its lowest city
-    this.R = Math.min(phone ? w * 0.47 : w * 0.3, 400);
-    this.cx = w / 2;
+    // The whole globe. On desktop it sits to the right of its column, which leaves
+    // room on its left for the Los Angeles callout; stacked, it is centred.
+    this.R = Math.min(w * (phone ? 0.42 : wide ? 0.34 : 0.3), 320);
+    this.cx = wide ? w - this.R * 1.3 : w / 2;
+    // Room above for the highest arc in the home view (and some more, as arcs
+    // rise higher when the globe is turned), and below for the shadow
     var saved = this.center;
     this.center = { lat: this.home.lat, lon: this.home.lon };
     this.cy = 0;
-    // (and some more, as arcs rise higher when the globe is turned)
     var top = Math.max(this.R * 0.2, Math.ceil(-this.arcTop()) + 20);
     this.center = saved;
     this.cy = top;
-    var h = Math.round(top + this.R * 0.88);
+    var h = Math.round(top + this.R * 1.22);
     this.stage.style.height = h + "px";
     this.w = w; this.h = h;
 

@@ -1,11 +1,12 @@
 /* ==========================================================================
    SECTION: map — Home, block 4 (where we are in the world)
-   The compact world map on white, after Cloudflare's offices section, with
-   the arcs and coordinate labels of Grok and SpaceXAI: a concrete globe you
-   can turn, land pressed in as pits, the eight cities, arcs drawn out from
-   Los Angeles, cut by the city list. map.js draws the globe (WebGL canvas),
-   the arcs and markers (SVG) and the labels (HTML) from the city list's
-   data attributes.
+   Laid out after Grok's offices section, on white: the text on the left
+   (chip, headline, body, an outlined pill), the concrete globe on the right
+   with SpaceXAI-style arcs and coordinate labels, and a quiet index of the
+   eight cities under the text. map.js draws the globe (WebGL canvas), the
+   arcs and markers (SVG) and the labels (HTML) from the index's data
+   attributes. Desktop is two columns; tablet and phone stack text, globe,
+   index.
    Uses shared tokens, the chip and the arrow icon from styles.css.
    ========================================================================== */
 
@@ -14,16 +15,27 @@
   background: var(--color-white);
 }
 
-/* ---------- Head: centred ---------- */
+.map { overflow-x: clip; } /* arcs and labels may reach past the column while the globe turns */
+
+/* ---------- Layout: text and index on the left, globe on the right ---------- */
+.map__layout {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--grid-gap);
+  row-gap: var(--space-7);
+}
+.map__head { grid-column: 1 / span 5; grid-row: 1; align-self: end; }
+.map__cities { grid-column: 1 / span 5; grid-row: 2; align-self: start; }
+.map__figure { grid-column: 6 / -1; grid-row: 1 / span 2; align-self: center; margin: 0; }
+
+/* ---------- Head ---------- */
 .map__head {
   display: grid;
-  justify-items: center;
+  justify-items: start;
   gap: var(--space-5);
-  max-width: 1040px;
-  margin-inline: auto;
-  text-align: center;
 }
 .map__title {
+  max-width: 11em;
   margin-top: var(--space-1);
   text-wrap: balance;
   font-size: var(--fs-h2);
@@ -32,39 +44,44 @@
   letter-spacing: var(--ls-h2);
   color: var(--color-ink);
 }
-/* One sentence per line where there is room */
-.map__title > span { display: block; }
 .map__body {
-  max-width: 36em;
+  max-width: 30em;
   text-wrap: pretty;
-  font-size: var(--fs-lede);
-  line-height: var(--lh-lede);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
   color: var(--color-text);
 }
+/* An outlined pill, as in the reference */
 .map__more {
   display: inline-flex;
   align-items: center;
   gap: 10px;
+  height: 44px;
   margin-top: var(--space-2);
-  font-size: var(--fs-nav);
+  padding: 0 20px;
+  border: 1px solid rgba(43, 43, 43, 0.28);
+  border-radius: var(--radius-pill);
+  font-size: var(--fs-small);
   font-weight: var(--weight-medium);
   color: var(--color-ink);
+  transition: border-color var(--dur-fast) var(--ease-out), background-color var(--dur-fast) var(--ease-out);
 }
 .map__arrow {
   flex: none;
-  width: 16px;
-  height: 16px;
+  width: 14px;
+  height: 14px;
   transition: transform var(--dur-base) var(--ease-out);
 }
 @media (hover: hover) {
-  .map__more:hover .map__arrow { transform: translateX(4px); }
+  .map__more:hover { border-color: var(--color-ink); }
+  .map__more:hover .map__arrow { transform: translateX(3px); }
 }
 
 /* ---------- Stage: globe, arcs and labels ---------- */
 .map__figure { margin: var(--space-6) 0 0; }
 
-/* The canvas ends where the city list starts, so the list cuts the globe;
-   arcs and labels may rise above the stage while it turns */
+/* The whole globe, its arcs and its shadow; arcs and labels may reach past
+   the stage while it turns */
 .map__stage {
   position: relative;
   height: 640px; /* set by map.js */
@@ -172,23 +189,25 @@
 .is-instant .map__mark,
 .is-instant .map__label { transition: none; }
 
-/* ---------- City list: cuts the globe, lined like a table ---------- */
+/* ---------- City index: two columns of names, quiet; picking one turns the globe ---------- */
 .map__cities {
-  position: relative;
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 1px;
-  border-block: 1px solid var(--color-line);
-  background: var(--color-line); /* shows only as the rules between cells */
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-rows: repeat(4, auto);
+  grid-auto-flow: column;
+  column-gap: var(--grid-gap);
+  max-width: 30em;
+  border-bottom: 1px solid var(--color-line);
 }
 .map__city {
-  display: grid;
-  align-content: start;
-  gap: 6px;
-  padding: 22px 24px 24px;
-  background: var(--color-white);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 42px;
+  padding: 8px 4px;
+  border-top: 1px solid var(--color-line);
   outline-offset: -2px;
-  cursor: pointer; /* picking a city turns the globe to it */
+  cursor: pointer;
   transition: background-color var(--dur-fast) var(--ease-out);
 }
 .map__city.is-active { background: var(--color-well); }
@@ -196,7 +215,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: var(--weight-medium);
   color: var(--color-ink);
 }
@@ -208,20 +227,21 @@
   height: 7px;
   background: var(--color-ink);
 }
-.map__city-meta {
-  padding-left: 17px;
-  font-size: 13px;
-  line-height: 1.45;
-  font-variant-numeric: tabular-nums;
+.map__city-tag {
+  margin-left: auto;
+  font-size: 12px;
   color: var(--color-text-muted);
 }
 
-/* ---------- Tablet ---------- */
+/* ---------- Tablet: text, globe, index, one under the other ---------- */
 @media (max-width: 1199px) {
   .map { padding-block: var(--space-10) var(--space-9); }
-}
-@media (max-width: 999px) {
-  .map__cities { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .map__layout { row-gap: var(--space-6); }
+  .map__head,
+  .map__figure,
+  .map__cities { grid-column: 1 / -1; grid-row: auto; align-self: auto; }
+  .map__title { max-width: 14em; }
+  .map__cities { max-width: none; }
 }
 
 /* ---------- Phone ---------- */
@@ -229,8 +249,6 @@
   .map { padding-block: var(--space-9) var(--space-8); }
   .map__head { gap: var(--space-4); }
   .map__body { font-size: 16px; }
-  .map__figure { margin-top: var(--space-6); }
-  .map__city { padding: 16px 14px 18px; }
-  .map__city-name { font-size: 15px; gap: 8px; }
-  .map__city-meta { padding-left: 15px; font-size: 12px; }
+  .map__layout { row-gap: var(--space-5); }
+  .map__city-name { font-size: 14px; gap: 8px; }
 }

@@ -416,61 +416,39 @@
     <!-- SECTION:services-b END -->
 
     <!-- SECTION:map START · styles: sections/map.css · scripts: assets/land-dots.js, map.js
-         Home, block 4: where we are in the world. The compact world map: a
-         concrete globe you can turn, land pressed in as pits, the eight cities
-         and arcs drawn out from Los Angeles, cut by the city list (after
-         Cloudflare's offices section). -->
+         Home, block 4: where we are in the world, laid out after Grok's offices
+         section: the text on the left, the concrete globe on the right (turn it
+         by dragging; land in stone relief; arcs drawn out from Los Angeles),
+         and a quiet index of the eight cities under the text. -->
     <section class="map" data-world-map data-origin="la" data-center-lat="30" data-center-lon="-34" aria-labelledby="map-title">
-      <div class="container">
+      <div class="map__layout container">
         <div class="map__head">
           <p class="chip">Where we are</p>
-          <h2 class="map__title" id="map-title"><span>Rooted in <span class="nowrap">Los Angeles</span> and <span class="nowrap">San Juan.</span></span> <span>Working across four regions.</span></h2>
+          <h2 class="map__title" id="map-title">Rooted in <span class="nowrap">Los Angeles</span> and <span class="nowrap">San Juan.</span> Working across four regions.</h2>
           <p class="map__body">Our team and senior advisors work across North America, Europe, the Middle East and Asia-Pacific, with 3,000+ institutional relationships in more than 50 countries.</p>
           <a class="map__more" href="about.html#map">Explore the map<svg class="map__arrow" aria-hidden="true"><use href="#icon-arrow"/></svg></a>
         </div>
 
         <figure class="map__figure">
-          <!-- Component: world-map (compact). map.js draws the globe, arcs, markers and labels from the city list below; drag to turn it, pick a city to turn to it. -->
+          <!-- Component: world-map (compact). map.js draws the globe, arcs, markers and labels from the city index; drag to turn it, pick a city to turn to it. -->
           <div class="map__stage" tabindex="0" role="img" aria-label="Concrete globe with arcs from Los Angeles to San Francisco, New York, San Juan, São Paulo, London, Paris and Abu Dhabi. Drag, or use the arrow keys, to turn it.">
             <canvas class="map__globe"></canvas>
             <svg class="map__lines" aria-hidden="true"></svg>
             <div class="map__labels"></div>
           </div>
-          <ul class="map__cities">
-            <li class="map__city" tabindex="0" data-city="la" data-name="Los Angeles" data-lat="34.0522" data-lon="-118.2437" data-office data-side="left">
-              <span class="map__city-name">Los Angeles</span>
-              <span class="map__city-meta">Office · 2029 Century Park East, CA&nbsp;90067</span>
-            </li>
-            <li class="map__city" tabindex="0" data-city="sf" data-name="San Francisco" data-lat="37.7749" data-lon="-122.4194" data-side="above">
-              <span class="map__city-name">San Francisco</span>
-              <span class="map__city-meta">37.77°N, 122.42°W</span>
-            </li>
-            <li class="map__city" tabindex="0" data-city="ny" data-name="New York" data-lat="40.7128" data-lon="-74.0060" data-side="above">
-              <span class="map__city-name">New York</span>
-              <span class="map__city-meta">40.71°N, 74.01°W</span>
-            </li>
-            <li class="map__city" tabindex="0" data-city="sj" data-name="San Juan" data-lat="18.4655" data-lon="-66.1057" data-office data-side="right">
-              <span class="map__city-name">San Juan</span>
-              <span class="map__city-meta">Office · 450 Ave. 200, Puerto Rico 00901</span>
-            </li>
-            <li class="map__city" tabindex="0" data-city="sp" data-name="São Paulo" data-lat="-23.5505" data-lon="-46.6333" data-side="right">
-              <span class="map__city-name">São Paulo</span>
-              <span class="map__city-meta">23.55°S, 46.63°W</span>
-            </li>
-            <li class="map__city" tabindex="0" data-city="ldn" data-name="London" data-lat="51.5074" data-lon="-0.1278" data-side="above">
-              <span class="map__city-name">London</span>
-              <span class="map__city-meta">51.51°N, 0.13°W</span>
-            </li>
-            <li class="map__city" tabindex="0" data-city="par" data-name="Paris" data-lat="48.8566" data-lon="2.3522" data-side="right">
-              <span class="map__city-name">Paris</span>
-              <span class="map__city-meta">48.86°N, 2.35°E</span>
-            </li>
-            <li class="map__city" tabindex="0" data-city="ad" data-name="Abu Dhabi" data-lat="24.4539" data-lon="54.3773" data-side="left">
-              <span class="map__city-name">Abu Dhabi</span>
-              <span class="map__city-meta">24.45°N, 54.38°E</span>
-            </li>
-          </ul>
         </figure>
+
+        <!-- City index: the map's data (coordinates, label side); pick a city to turn the globe to it -->
+        <ul class="map__cities" aria-label="Cities">
+          <li class="map__city" tabindex="0" data-city="la" data-name="Los Angeles" data-lat="34.0522" data-lon="-118.2437" data-office data-side="left"><span class="map__city-name">Los Angeles</span><span class="map__city-tag">Office</span></li>
+          <li class="map__city" tabindex="0" data-city="sj" data-name="San Juan" data-lat="18.4655" data-lon="-66.1057" data-office data-side="right"><span class="map__city-name">San Juan</span><span class="map__city-tag">Office</span></li>
+          <li class="map__city" tabindex="0" data-city="sf" data-name="San Francisco" data-lat="37.7749" data-lon="-122.4194" data-side="above"><span class="map__city-name">San Francisco</span></li>
+          <li class="map__city" tabindex="0" data-city="ny" data-name="New York" data-lat="40.7128" data-lon="-74.0060" data-side="above"><span class="map__city-name">New York</span></li>
+          <li class="map__city" tabindex="0" data-city="sp" data-name="São Paulo" data-lat="-23.5505" data-lon="-46.6333" data-side="right"><span class="map__city-name">São Paulo</span></li>
+          <li class="map__city" tabindex="0" data-city="ldn" data-name="London" data-lat="51.5074" data-lon="-0.1278" data-side="above"><span class="map__city-name">London</span></li>
+          <li class="map__city" tabindex="0" data-city="par" data-name="Paris" data-lat="48.8566" data-lon="2.3522" data-side="right"><span class="map__city-name">Paris</span></li>
+          <li class="map__city" tabindex="0" data-city="ad" data-name="Abu Dhabi" data-lat="24.4539" data-lon="54.3773" data-side="left"><span class="map__city-name">Abu Dhabi</span></li>
+        </ul>
       </div>
     </section>
     <!-- SECTION:map END -->
