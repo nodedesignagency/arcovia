@@ -27,8 +27,12 @@
      shows its label while its marker or its row in the city index
      ([data-city]) is hovered, focused or tapped; its arc darkens and the
      others fade. Picking a city in the index turns the globe to it.
-   - The arcs draw out one after another the first time the map comes into
-     view. With reduced motion they are simply there and turns are instant.
+   - Every time the map comes into view, the arcs draw out from Los Angeles
+     to the hubs one after another and each hub's marker lands as its arc
+     arrives; then a short pulse keeps running out along each arc, a wave
+     every few seconds, while the map is on screen. Leaving the screen
+     resets it, so it plays again on the way back. With reduced motion the
+     arcs are simply there, without pulses, and turns are instant.
    - Without WebGL the globe falls back to flat grey dots on a pale disc.
    ========================================================================== */
 (function () {
@@ -37,6 +41,9 @@
   var NS = "http://www.w3.org/2000/svg";
   var RAD = Math.PI / 180;
   var LAT_RANGE = [-35, 65]; // how far the globe tilts north and south
+  // Arcs: each draws out from Los Angeles in DRAW ms, the next one STAGGER ms later;
+  // then a pulse runs out along each arc (TRAVEL ms) every PERIOD ms
+  var DELAY = 250, STAGGER = 200, DRAW = 1300, TRAVEL = 1500, PERIOD = 4200, PULSE = 26;
 
   var VERT = "attribute vec2 aPos; void main(){ gl_Position = vec4(aPos, 0.0, 1.0); }";
 
@@ -180,8 +187,9 @@
     this.home = { lat: parseFloat(root.getAttribute("data-center-lat")) || 20, lon: parseFloat(root.getAttribute("data-center-lon")) || -35 };
     this.center = { lat: this.home.lat, lon: this.home.lon };
     this.dots = parseDots(window.ARCOVIA_LAND_DOTS);
-    this.drawn = false;
-    this.settled = false;
+    this.t0 = null;      // when the arcs started drawing; null: not drawn (off screen)
+    this.visible = false;
+    this.loop = null;
     this.reduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     this.texture = root.getAttribute("data-texture") || "assets/concrete.jpg";
   }
@@ -200,13 +208,65 @@
       self.layout();
     });
 
-    if (this.reduced || !("IntersectionObserver" in window)) { this.reveal(true); return; }
+    // With reduced motion the arcs are simply there; otherwise they draw out every
+    // time the map comes into view, and reset once it has left the screen
+    if (this.reduced || !("IntersectionObserver" in window)) { this.instant = true; this.root.classList.add("is-instant"); this.paint(); return; }
     var io = new IntersectionObserver(function (entries) {
-      if (!entries[0].isIntersecting) return;
-      io.disconnect();
-      self.reveal(false);
-    }, { threshold: 0.25 });
+      var e = entries[0];
+      self.visible = e.isIntersecting;
+      if (!e.isIntersecting) { self.t0 = null; self.stop(); self.paint(); return; }
+      if (self.t0 === null && e.intersectionRatio >= 0.3) self.t0 = performance.now();
+      self.start();
+    }, { threshold: [0, 0.3] });
     io.observe(this.stage);
+  };
+
+  /* ---------- Arcs drawing out from Los Angeles, then pulses ---------- */
+  WorldMap.prototype.start = function () {
+    var self = this;
+    if (this.loop) return;
+    var tick = function () {
+      self.paint();
+      self.loop = self.visible ? requestAnimationFrame(tick) : null;
+    };
+    this.loop = requestAnimationFrame(tick);
+  };
+
+  WorldMap.prototype.stop = function () {
+    if (this.loop) cancelAnimationFrame(this.loop);
+    this.loop = null;
+  };
+
+  // Each arc's progress and pulse at this moment; markers land as their arc arrives
+  WorldMap.prototype.paint = function () {
+    var self = this;
+    var el = this.instant ? Infinity : this.t0 === null ? -1 : performance.now() - this.t0;
+    this.cities.forEach(function (c) {
+      var landed = el >= 0;
+      if (c.arc) {
+        var start = DELAY + c.n * STAGGER;
+        var p = el === Infinity ? 1 : ease(Math.max(0, Math.min(1, (el - start) / DRAW)));
+        landed = p >= 0.98;
+        c.arc.style.visibility = p > 0 ? "" : "hidden";
+        c.arc.style.strokeDasharray = p >= 1 ? "none" : (c.len * p).toFixed(1) + " " + (c.len + 2).toFixed(1);
+
+        // The pulse: a short dash running from Los Angeles out to the hub
+        var q = -1;
+        if (!self.instant && p >= 1) {
+          var since = el - start - DRAW - 300;
+          if (since >= 0) q = (since % PERIOD) / TRAVEL;
+        }
+        if (q >= 0 && q < 1 && c.len > PULSE) {
+          var span = c.len + PULSE;
+          c.pulse.style.visibility = "";
+          c.pulse.style.strokeDasharray = PULSE + " " + (span + PULSE);
+          c.pulse.style.strokeDashoffset = (PULSE - q * span).toFixed(1);
+          c.pulse.setAttribute("stroke-opacity", Math.sin(Math.PI * q).toFixed(3));
+        } else c.pulse.style.visibility = "hidden";
+      }
+      c.mark.classList.toggle("is-landed", landed);
+      c.label.classList.toggle("is-landed", landed);
+    });
   };
 
   // Markers, arcs, hit areas and labels, one set per city
@@ -217,17 +277,22 @@
     this.svg.appendChild(this.arcGroup);
     this.svg.appendChild(this.markGroup);
 
+    var n = 0;
     this.cities.forEach(function (c, i) {
       c.v = toVec(c.lat, c.lon);
       if (c !== self.origin) {
+        c.n = n++;
         c.arc = document.createElementNS(NS, "path");
         c.arc.setAttribute("class", "map__arc");
-        c.arc.style.setProperty("--n", i);
+        c.arc.style.visibility = "hidden";
         self.arcGroup.appendChild(c.arc);
+        c.pulse = document.createElementNS(NS, "path");
+        c.pulse.setAttribute("class", "map__pulse");
+        c.pulse.style.visibility = "hidden";
+        self.arcGroup.appendChild(c.pulse);
       }
       c.mark = document.createElementNS(NS, "rect");
       c.mark.setAttribute("class", "map__mark" + (c === self.origin ? " map__mark--origin" : ""));
-      c.mark.style.setProperty("--n", i);
       self.markGroup.appendChild(c.mark);
 
       c.hit = document.createElementNS(NS, "circle");
@@ -237,7 +302,6 @@
 
       c.label = document.createElement("div");
       c.label.className = "map__label" + (c.office ? " map__label--office" : "");
-      c.label.style.setProperty("--n", c === self.origin ? -10 : i);
       c.label.setAttribute("aria-hidden", "true");
       c.label.innerHTML = '<span class="map__label-name"></span><span class="map__label-meta"></span>';
       c.label.firstChild.textContent = c.name;
@@ -575,12 +639,10 @@
         else pen = false;
       });
       c.arc.setAttribute("d", d);
-      // The dash only serves the first draw
-      if (self.settled) { c.arc.style.strokeDasharray = "none"; return; }
-      var len = d ? c.arc.getTotalLength() : 0;
-      c.arc.style.strokeDasharray = len + " " + len;
-      c.arc.style.setProperty("--len", len);
+      c.pulse.setAttribute("d", d);
+      c.len = d ? c.arc.getTotalLength() : 0;
     });
+    this.paint();
   };
 
   // Beside the marker, kept inside the stage
@@ -599,15 +661,6 @@
     c.label.style.transform = "translate(" + Math.round(x) + "px, " + Math.round(y) + "px)";
   };
 
-  WorldMap.prototype.reveal = function (instant) {
-    var self = this, root = this.root;
-    this.drawn = true;
-    root.classList.toggle("is-instant", instant);
-    root.classList.add("is-drawn");
-    // Once everything is in, hover responds at once (the staggered delays only serve the first draw)
-    setTimeout(function () { root.classList.add("is-settled"); self.settled = true; self.drawLines(); }, instant ? 0 : 2600);
-  };
-
   WorldMap.prototype.focus = function (city) {
     // Los Angeles is where every arc starts: focusing it keeps them all
     this.root.classList.toggle("has-focus", !!city && city !== this.origin);
@@ -616,7 +669,7 @@
       c.row.classList.toggle("is-active", on);
       c.label.classList.toggle("is-active", on);
       c.mark.classList.toggle("is-active", on);
-      if (c.arc) c.arc.classList.toggle("is-active", on);
+      if (c.arc) { c.arc.classList.toggle("is-active", on); c.pulse.classList.toggle("is-active", on); }
     });
   };
 

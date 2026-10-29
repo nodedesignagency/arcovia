@@ -102,19 +102,22 @@
 .map__globe { pointer-events: none; }
 .map__labels { pointer-events: none; }
 
-/* Arcs draw out from Los Angeles, one after another */
+/* Arcs draw out from Los Angeles, one after another (map.js sets the dash) */
 .map__arc {
   fill: none;
   stroke: rgba(43, 43, 43, 0.5);
   stroke-width: 1.1;
   stroke-linecap: round;
-  stroke-dashoffset: var(--len, 0);
-  transition:
-    stroke-dashoffset 1.5s var(--ease-out) calc(var(--n, 0) * 130ms + 200ms),
-    opacity var(--dur-base) var(--ease-out),
-    stroke var(--dur-base) var(--ease-out);
+  transition: opacity var(--dur-base) var(--ease-out), stroke var(--dur-base) var(--ease-out);
 }
-.is-drawn .map__arc { stroke-dashoffset: 0; }
+/* A short pulse running out from Los Angeles along each arc */
+.map__pulse {
+  fill: none;
+  stroke: var(--color-ink);
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  transition: opacity var(--dur-base) var(--ease-out);
+}
 
 /* Square markers, as in the references; each lands as its arc arrives */
 .map__mark {
@@ -126,12 +129,9 @@
   transform-box: fill-box;
   transform-origin: center;
   transform: scale(0.4);
-  transition:
-    opacity 400ms var(--ease-out) calc(var(--n, 0) * 130ms + 1300ms),
-    transform 400ms var(--ease-out) calc(var(--n, 0) * 130ms + 1300ms);
+  transition: opacity 360ms var(--ease-out), transform 420ms var(--ease-out);
 }
-.map__mark--origin { transition-delay: 0s; }
-.is-drawn .map__mark { opacity: 1; transform: none; }
+.map__mark.is-landed { opacity: 1; transform: none; }
 
 .map__hit { fill: transparent; pointer-events: all; }
 
@@ -166,9 +166,8 @@
   padding: 8px 10px 9px;
   background: rgba(255, 255, 255, 0.94);
   border: 1px solid rgba(43, 43, 43, 0.22);
-  transition-delay: calc(var(--n, 0) * 130ms + 1500ms);
 }
-.is-drawn .map__label--office { opacity: 1; }
+.map__label--office.is-landed { opacity: 1; transition-delay: 150ms; }
 .is-compact .map__label--office:not(.is-active) { opacity: 0; }
 .map__label.is-active { opacity: 1; }
 
@@ -177,14 +176,13 @@
 .map .map__label.is-behind { opacity: 0; transition-duration: 120ms; transition-delay: 0s; }
 
 /* Hovering a city brings its arc forward and fades the others */
-.has-focus .map__arc { opacity: 0.3; }
+.has-focus .map__arc,
+.has-focus .map__pulse { opacity: 0.3; }
+.map__pulse.is-active { opacity: 1; }
 .map__arc.is-active { opacity: 1; stroke: var(--color-ink); stroke-width: 1.6; }
 .map__mark.is-active { transform: scale(1.35); }
 
-/* Once drawn, everything responds at once; reduced motion skips the draw */
-.is-settled .map__arc,
-.is-settled .map__mark,
-.is-settled .map__label { transition-delay: 0s; }
+/* Reduced motion: no transitions */
 .is-instant .map__arc,
 .is-instant .map__mark,
 .is-instant .map__label { transition: none; }
