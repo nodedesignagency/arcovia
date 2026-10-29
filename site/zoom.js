@@ -10,7 +10,8 @@
 
    Scroll progress p (0 → 1) over the pinned stage:
      0.00–0.12  hero text fades and lifts; the zoom starts at the same time
-     0.03–0.30  the drill bores into the O: chips and dust fly, the bore deepens
+     0.03–0.30  the drill bores into the O: a small point at the centre that widens to
+                fill the O (0.035–0.24) while it deepens; chips and dust fly
      0.28–0.40  it punches through: light breaks through the bottom of the bore
      0.00–0.60  the camera moves in, down the bore and out through the back
      0.00–0.60  zoom: the O drifts to the centre and the view flies through
@@ -75,7 +76,7 @@
     return out;
   })();
 
-  function drawDebris(p, vw, vh, ox, oy, s, cam) {
+  function drawDebris(p, vw, vh, ox, oy, s, boreR) {
     if (!dctx) return;
     var dpr = Math.min(window.devicePixelRatio || 1, 2);
     if (debris.width !== Math.round(vw * dpr) || debris.height !== Math.round(vh * dpr)) {
@@ -86,7 +87,7 @@
     dctx.clearRect(0, 0, debris.width, debris.height);
     if (p < 0.04 || p > 0.52) return;
     dctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    var rim = 0.97 * Math.min(geo.rx, geo.ry) * Math.min(s, 40);   // the bore's radius on screen
+    var rim = boreR * Math.min(geo.rx, geo.ry) * Math.min(s, 40);   // the bore's radius on screen
     particles.forEach(function (q) {
       var age = (p - q.launch) / q.life;
       if (age <= 0 || age >= 1) return;
@@ -313,14 +314,16 @@
       //    slow at first, then the rim rushes past and the light at the far end opens up.
       var cam = 1 - (1 + DRILL_K) * Math.pow(z, 1.6);
       var depth = DRILL_K * smooth(0.03, 0.3, p);
+      // The bore starts as a small drill point at the centre and widens until it fills the O
+      var boreR = 0.97 * (0.1 + 0.9 * smooth(0.035, 0.24, p));
       view.s = cam > 0.02 ? 1 / cam : 50;
       view.drill = depth > 0 ? {
         cx: geo.cx, cy: geo.cy, rx: geo.rx, ry: geo.ry,
         cam: cam, depth: depth, light: smooth(0.28, 0.4, p),
         dust: smooth(0.03, 0.08, p) * (1 - smooth(0.36, 0.5, p)),
-        k: DRILL_K, r: 0.97, spin: p * 60, thick: 2.2
+        k: DRILL_K, r: boreR, spin: p * 60, thick: 2.2
       } : null;
-      debrisArgs = [p, vw, vh, geo.cx + tx, geo.cy + ty, view.s, cam];
+      debrisArgs = [p, vw, vh, geo.cx + tx, geo.cy + ty, view.s, boreR];
     }
 
     if (sfc) {
