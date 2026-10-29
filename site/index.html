@@ -197,8 +197,8 @@
          turn to colour on hover. The names hang on a line in groups, after a timeline
          reference the user sent; the person at the front (or the name under the
          cursor) gets a pill, an ink dot and the line into it in ink.
-         Clicking a name brings that card forward. The last stop is a light grey card:
-         the rest of the team gathers round the A-mark, then a link to the Team page.
+         Clicking a name brings that card forward. The last stop is a black card: the rest
+         of the team gathers round a "+" (an arrow on hover), a link to the Team page.
          Without JS, below desktop or with reduced motion, the row scrolls sideways.
          Component: team-card (becomes a CMS-driven Framer component). -->
     <section class="team" id="team" data-team aria-labelledby="team-title">
@@ -298,13 +298,13 @@
                   </a>
                 </article>
               </li>
-              <!-- Last in the row: on to the Team page. Light grey, not concrete. The rest of the
-                   team gathers round the A-mark when this card comes to the front (team.js).
-                   [COPY NEEDED] Draft label; photos of the wider team -->
+              <!-- Last in the row: on to the Team page. A black card: the rest of the team
+                   gathers round a round "+" (an arrow on hover) once the card is in view
+                   beside the last person (team.js). [COPY NEEDED] Draft label; photos of the wider team -->
               <li class="team__item team__item--more">
                 <a class="team-more" href="team.html">
                   <span class="team-more__crowd" aria-hidden="true">
-                    <span class="team-more__logo"><svg viewBox="0 0 554 539"><use href="#a-mark"/></svg></span>
+                    <span class="team-more__hub"><span class="team-more__plus"></span><svg class="team-more__go"><use href="#icon-arrow"/></svg></span>
                     <span class="team-more__face" style="--slot:-90deg; --fx:50%; --fy:40%; --zoom:1.15"><img src="assets/team/colin-pham.jpg" alt="" loading="lazy"></span>
                     <span class="team-more__face" style="--slot:-30deg; --fx:50%; --fy:42%; --zoom:1.35; --tone:0.92"><img src="assets/team/portrait-placeholder.svg" alt="" loading="lazy" data-todo="Photo of a team member [PHOTO NEEDED]"></span>
                     <span class="team-more__face" style="--slot:30deg; --fx:46%; --fy:40%; --zoom:1.5; --tone:1.1"><img src="assets/team/portrait-placeholder.svg" alt="" loading="lazy" data-todo="Photo of a team member [PHOTO NEEDED]"></span>
@@ -313,7 +313,6 @@
                     <span class="team-more__face" style="--slot:210deg; --fx:50%; --fy:44%; --zoom:1.25; --tone:1.16"><img src="assets/team/portrait-placeholder.svg" alt="" loading="lazy" data-todo="Photo of a team member [PHOTO NEEDED]"></span>
                   </span>
                   <span class="team-more__label">View more team members</span>
-                  <span class="team-more__arrow" aria-hidden="true"><svg><use href="#icon-arrow"/></svg></span>
                 </a>
               </li>
             </ul>

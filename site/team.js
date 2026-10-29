@@ -5,8 +5,8 @@
    the one before (which sinks back into shade), while the window cut into
    its slab opens until only a thin concrete frame is left. Each card rests
    at the front for a moment before the next one comes. The last stop is a
-   light grey card: when it reaches the front, the rest of the team gathers
-   round the A-mark (after a reference video the user sent).
+   black card: once it is in view beside the last person, the rest of the
+   team gathers round its "+" (after a reference video the user sent).
    The names on the left hang on one line in groups (after a timeline
    reference the user sent): group names on the outer line, people one step
    in, the line curving between them. The person under the cursor, or else
@@ -87,8 +87,8 @@
       item.style.opacity = pos - k > 1.05 ? "0" : "";
     });
     setFront(Math.round(pos));
-    // The last card gathers its crowd once it is (nearly) at the front
-    gatherTo(pos > n - 1.25 ? 1 : 0);
+    // The last card gathers its crowd once it is fully in view, beside the last person
+    gatherTo(pos > n - 2.2 ? 1 : 0);
   }
 
   /* ---------- Names: groups on one line ---------- */
@@ -183,12 +183,12 @@
     refreshNames();
   }
 
-  /* ---------- Last card: the rest of the team gathers round the A-mark ----------
+  /* ---------- Last card: the rest of the team gathers round the "+" ----------
      After a reference video the user sent. The faces join one by one: each flies
      in from the right, large and soft, and settles sharp into the ring while the
      whole ring turns anticlockwise, slowing to a stop once the last one is in.
-     Played in time (not scroll) once the card is at the front; it runs back if
-     you scroll away. Each face's place comes from the clock alone. */
+     Played in time (not scroll) once the card is in view beside the last person;
+     it runs back if you scroll away. Each face's place comes from the clock alone. */
   var crowd = team.querySelector(".team-more__crowd");
   var faces = crowd ? Array.prototype.slice.call(crowd.querySelectorAll(".team-more__face")) : [];
   var GAP = 0.16;         // s between two faces joining
@@ -292,9 +292,9 @@
       });
       setFront(still);
     }
-    // Start the crowd from where it should be: gathered if the last card is already in front
+    // Start the crowd from where it should be: gathered if the last card is already in view
     clockTo = -1;
-    gatherTo(v ? pos > n - 1.25 : false);
+    gatherTo(v ? pos > n - 2.2 : false);
     if (!v && reduced.matches) gatherTo(1);
   }
   function update() { setOn(desktop.matches && !reduced.matches); }
