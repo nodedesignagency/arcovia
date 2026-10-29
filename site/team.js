@@ -5,8 +5,8 @@
    the one before (which sinks back into shade), while the window cut into
    its slab opens until only a thin concrete frame is left. Each card rests
    at the front for a moment before the next one comes. The last stop is a
-   black card: once it is in view beside the last person, the rest of the
-   team gathers round its "+" (after a reference video the user sent).
+   black card leading on to the Team page, in two versions while exploring
+   (?more=b shows B); it builds in once it is in view beside the last person.
    The names on the left hang on one line in groups (after a timeline
    reference the user sent): group names on the outer line, people one step
    in, the line curving between them. The person under the cursor, or else
@@ -23,6 +23,15 @@
 
   var team = document.querySelector("[data-team]");
   if (!team) return;
+  // Draft: two versions of the last card while exploring; ?more=b shows B, else A
+  var pick = /[?&]more=b\b/.test(location.search) ? "b" : "a";
+  Array.prototype.forEach.call(team.querySelectorAll("[data-more]"), function (li) {
+    if (li.getAttribute("data-more") === pick) li.hidden = false;
+    else li.parentNode.removeChild(li);
+  });
+  Array.prototype.forEach.call(team.querySelectorAll("[data-more-link]"), function (a) {
+    a.classList.toggle("is-current", a.getAttribute("data-more-link") === pick);
+  });
   var stage = team.querySelector(".team__stage");
   var viewport = team.querySelector(".team__viewport");
   var items = Array.prototype.slice.call(team.querySelectorAll(".team__item"));
@@ -83,12 +92,14 @@
       item.style.setProperty("--t", a < 0.5 ? "0" : "1");
       item.style.setProperty("--o", (1 - smooth(0.08, 0.28, a) + smooth(0.72, 0.92, a)).toFixed(4));
       item.style.setProperty("--d", past.toFixed(4));
-      // Well under the stack: fade it out, so shadows don't pile up (it stays focusable)
-      item.style.opacity = pos - k > 1.05 ? "0" : "";
+      // Once the next card fully covers it, fade it out so its shadow doesn't show round
+      // the edges of the one on top (it stays focusable)
+      var gone = smooth(0.85, 1, past);
+      item.style.opacity = gone ? (1 - gone).toFixed(3) : "";
     });
     setFront(Math.round(pos));
-    // The last card gathers its crowd once it is fully in view, beside the last person
-    gatherTo(pos > n - 2.2 ? 1 : 0);
+    // The last card builds in once it is fully in view, beside the last person
+    showMore(pos > n - 2.2);
   }
 
   /* ---------- Names: groups on one line ---------- */
@@ -183,66 +194,34 @@
     refreshNames();
   }
 
-  /* ---------- Last card: the rest of the team gathers round the "+" ----------
-     After a reference video the user sent. The faces join one by one: each flies
-     in from the right, large and soft, and settles sharp into the ring while the
-     whole ring turns anticlockwise, slowing to a stop once the last one is in.
-     Played in time (not scroll) once the card is in view beside the last person;
-     it runs back if you scroll away. Each face's place comes from the clock alone. */
-  var crowd = team.querySelector(".team-more__crowd");
-  var faces = crowd ? Array.prototype.slice.call(crowd.querySelectorAll(".team-more__face")) : [];
-  var GAP = 0.16;         // s between two faces joining
-  var JOIN = 0.55;        // s for one face to fly in and settle
-  var SPIN = 60 / GAP;    // deg/s the ring turns while faces join (one place per join)
-  var ENTER = 60;        // deg where faces come in: lower right (0 is right, clockwise)
-  var TAIL = 1.12;        // s the ring takes to slow to a stop after the last join
-  var LAST = (faces.length - 1) * GAP;
-  var TOTAL = LAST + TAIL;
-  var clock = 0, clockTo = 0, clockRaf = 0, clockLast = 0;
-
-  // How far the ring has turned by time t (deg, negative is anticlockwise): steady while
-  // faces join, then easing out over TAIL. With ENTER and TAIL as set, the first face ends at
-  // the top and the rest every 60° clockwise from it (the same places as --slot in team.css).
-  function turned(t) {
-    if (t <= LAST) return -SPIN * t;
-    var u = clamp((t - LAST) / TAIL, 0, 1);
-    return -SPIN * LAST - SPIN * TAIL / 2 * (1 - (1 - u) * (1 - u));
-  }
-  function drawCrowd() {
-    if (!faces.length) return;
-    var ring = faces[0].offsetWidth * 1.12;
-    faces.forEach(function (face, k) {
-      var start = k * GAP;
-      var j = clamp((clock - start) / JOIN, 0, 1);
-      var e = 1 - Math.pow(1 - j, 3);
-      var ang = (ENTER + turned(Math.max(clock, start)) - turned(start)) * Math.PI / 180;
-      var r = ring * (1 + 1.7 * (1 - e));
-      face.style.transform = "translate(" + (Math.cos(ang) * r).toFixed(2) + "px," + (Math.sin(ang) * r).toFixed(2) + "px) scale(" + (1 + 1.5 * (1 - e)).toFixed(3) + ")";
-      face.style.filter = j < 1 ? "blur(" + (10 * (1 - e)).toFixed(2) + "px)" : "";
-      face.style.opacity = clock > start ? Math.min(1, e * 3).toFixed(3) : "0";
+  /* ---------- Last card: builds in once it is in view beside the last person ----------
+     The tiles settle one after another (CSS, on .is-in) and the team count runs up.
+     Going away it clears quickly, ready to build in again. */
+  var moreCard = team.querySelector(".team-more");
+  var countEl = moreCard && moreCard.querySelector("[data-count]");
+  var countTo = countEl ? +countEl.getAttribute("data-count") : 0;
+  var shown = null, countRaf = 0;
+  function showMore(v) {
+    v = !!v;
+    if (!moreCard || v === shown) return;
+    shown = v;
+    moreCard.classList.toggle("is-in", v);
+    if (!countEl) return;
+    cancelAnimationFrame(countRaf);
+    if (!v || reduced.matches) { countEl.textContent = v ? countTo : 0; return; }
+    var t0 = 0;
+    countRaf = requestAnimationFrame(function run(now) {
+      if (!t0) t0 = now;
+      var u = clamp((now - t0 - 150) / 900, 0, 1);
+      countEl.textContent = Math.round(countTo * (1 - Math.pow(1 - u, 3)));
+      if (u < 1) countRaf = requestAnimationFrame(run);
     });
   }
-  function tick(now) {
-    var dt = Math.min(0.064, (now - (clockLast || now)) / 1000);
-    clockLast = now;
-    // Forwards in real time; back twice as fast
-    clock = clockTo > clock ? Math.min(clockTo, clock + dt) : Math.max(clockTo, clock - dt * 2);
-    drawCrowd();
-    if (clock !== clockTo) clockRaf = requestAnimationFrame(tick);
-    else { clockRaf = 0; clockLast = 0; }
-  }
-  function gatherTo(v) {
-    var to = v ? TOTAL : 0;
-    if (to === clockTo) return;
-    clockTo = to;
-    if (reduced.matches) { clock = to; drawCrowd(); return; }
-    if (!clockRaf) clockRaf = requestAnimationFrame(tick);
-  }
-  // Without the pinned row: gather once the card scrolls into view
-  if (crowd && "IntersectionObserver" in window) {
+  // Without the pinned row: build in once the card scrolls into view
+  if (moreCard && "IntersectionObserver" in window) {
     new IntersectionObserver(function (entries) {
-      if (!on && !reduced.matches) gatherTo(entries[0].isIntersecting);
-    }, { threshold: 0.6 }).observe(crowd.closest(".team-more"));
+      if (!on && !reduced.matches) showMore(entries[0].isIntersecting);
+    }, { threshold: 0.6 }).observe(moreCard);
   }
 
   /* Light smoothing so the row glides; stops once it has caught up */
@@ -292,10 +271,9 @@
       });
       setFront(still);
     }
-    // Start the crowd from where it should be: gathered if the last card is already in view
-    clockTo = -1;
-    gatherTo(v ? pos > n - 2.2 : false);
-    if (!v && reduced.matches) gatherTo(1);
+    // Start the last card as it should be: built in if it is already in view
+    shown = null;
+    showMore(v ? pos > n - 2.2 : reduced.matches);
   }
   function update() { setOn(desktop.matches && !reduced.matches); }
 
