@@ -5,11 +5,12 @@
    the one before (which sinks back into shade), while the window cut into
    its slab opens until only a thin concrete frame is left. Each card rests
    at the front for a moment before the next one comes.
-   The names on the left hang on a line (after a timeline reference the user
-   sent): it bends out to the person at the front, or to the name under the
-   cursor, with a soft pill behind them, and fills with ink down to the
-   person at the front as you scroll. Clicking a name scrolls the page to
-   that card.
+   The names on the left hang on one line in groups (after a timeline
+   reference the user sent): group names on the outer line, people one step
+   in, the line curving between them. The person under the cursor, or else
+   the one at the front, is selected: pill, accent dot with a glow, and the
+   line leading into their dot in the accent. Clicking a name scrolls the
+   page to that card. ?names=mono shows the accent in ink.
    Every frame comes from the scroll position alone (with light smoothing),
    so scrolling back up plays it in reverse. Desktop only (≥1200px), and not
    with reduced motion: there the row simply scrolls sideways on its own.
@@ -31,6 +32,9 @@
   var n = items.length;
   if (!stage || !viewport || n < 2) return;
 
+  // Review switch: ?names=mono shows the names' accent in ink
+  if (/[?&]names=mono\b/.test(location.search)) document.documentElement.setAttribute("data-names", "mono");
+
   var PER_CARD = 0.8;     // scroll for each card, in viewport heights
   var REST = 0.3;         // share of each card's stretch it spends resting at the front
   var SINK = 0.06;        // how much a covered card shrinks back
@@ -43,15 +47,11 @@
   var target = 0;
   var intro = 0;          // the first card's window opens as the section comes up
   var introTarget = 0;
-  var current = -1;
+  var current = -1;       // the person at the front
+  var still = 0;          // without the pinned row: the card scrolled to
+  var hover = -1;         // name under the cursor or keyboard focus, -1 for none
   var raf = 0;
   var last = 0;
-
-  // The names' line: rows of ROW px, the line at X0, bending out by BEND
-  var ROW = 36, X0 = 6, BEND = 12;
-  var hover = -1;         // name under the cursor or keyboard focus, -1 for none
-  var bend = 0;           // where the line bends out: 0 … n-1, fractional in between
-  var still = 0;          // without the pinned row: the card scrolled to
 
   function clamp(v, a, b) { return v < a ? a : v > b ? b : v; }
   function smooth(e0, e1, x) { var t = clamp((x - e0) / (e1 - e0), 0, 1); return t * t * (3 - 2 * t); }
@@ -89,102 +89,121 @@
       item.style.opacity = pos - k > 1.05 ? "0" : "";
     });
     if (more) more.style.transform = "translate3d(" + (-pos * step).toFixed(2) + "px,0,0)";
+    setFront(Math.round(pos));
   }
 
-  /* ---------- Draw: the names' line, dots, pill and the name it bends out to ---------- */
+  /* ---------- Names: groups on one line ---------- */
   var NS = "http://www.w3.org/2000/svg";
-  var rail, ink, halo, dots = [], widths = [];
-  function svgEl(tag, attrs) {
-    var el = document.createElementNS(NS, tag);
-    for (var a in attrs) el.setAttribute(a, attrs[a]);
-    return line.appendChild(el);
+  var OUTER = 6, INNER = 24;      // x of the group names' dots and the people's dots
+  var people = [];                // per person: where their dot sits, their dot and lead-in
+  var glow = null;
+  var selected = -1;
+
+  function el(parent, tag, attrs) {
+    var e = document.createElementNS(NS, tag);
+    for (var a in attrs) e.setAttribute(a, attrs[a]);
+    return parent.appendChild(e);
   }
-  function buildNames() {
-    if (!line || !names.length) return;
-    rail = svgEl("path", { fill: "none", stroke: "#d4d4d4", "stroke-width": "1.25", "stroke-linecap": "round" });
-    ink = svgEl("path", { fill: "none", stroke: "#151515", "stroke-width": "1.5", "stroke-linecap": "round" });
-    halo = svgEl("circle", { r: "8", fill: "rgba(21,21,21,0.1)" });
-    names.forEach(function () { dots.push(svgEl("circle", { r: "2.75" })); });
+  // Straight on, or an S-curve where the line steps between the two columns
+  function seg(p, q) {
+    if (p.x === q.x) return "L" + q.x + " " + q.y;
+    var mid = (p.y + q.y) / 2;
+    return "C" + p.x + " " + mid + " " + q.x + " " + mid + " " + q.x + " " + q.y;
+  }
+
+  // Lay the line out from where the rows actually sit (again after fonts load and on resize)
+  function layoutNames() {
+    if (!line || !list) return;
+    while (line.firstChild) line.removeChild(line.firstChild);
+    var nodes = Array.prototype.map.call(list.querySelectorAll(".team__group-name, .team__name"), function (row) {
+      var person = row.classList.contains("team__name");
+      return { person: person, x: person ? INNER : OUTER, y: row.offsetTop + row.offsetHeight / 2, top: row.offsetTop };
+    });
+    if (!nodes.length) return;
+    var defs = el(line, "defs", {});
+    var d = "M" + nodes[0].x + " " + nodes[0].y;
+    for (var i = 1; i < nodes.length; i++) d += seg(nodes[i - 1], nodes[i]);
+    el(line, "path", { "class": "rail", d: d });
+
+    people = [];
+    nodes.forEach(function (node, i) {
+      if (!node.person) return;
+      var k = people.length;
+      var prev = nodes[i - 1];
+      // The stretch of line leading into this person: faint at the row above, full at the dot
+      var g = el(defs, "linearGradient", { id: "team-lead-" + k, gradientUnits: "userSpaceOnUse", x1: 0, y1: prev.y, x2: 0, y2: node.y });
+      el(g, "stop", { offset: "0", "stop-opacity": "0.25" });
+      el(g, "stop", { offset: "1", "stop-opacity": "1" });
+      node.lead = el(line, "path", { "class": "lead", d: "M" + prev.x + " " + prev.y + seg(prev, node), stroke: "url(#team-lead-" + k + ")" });
+      people.push(node);
+    });
+    glow = el(line, "circle", { "class": "glow", r: "8", cx: "0", cy: "0" });
+    nodes.forEach(function (node) {
+      var dot = el(line, "circle", { "class": "dot", cx: node.x, cy: node.y, r: node.person ? 3.5 : 3.75 });
+      if (node.person) node.dot = dot;
+    });
     list.classList.add("is-drawn");
-  }
-  function measureNames() {
-    widths = names.map(function (b) { return b.offsetWidth; });
-  }
-  // How far a name (or a point on the line) sits out from the line: 1 at the bend, 0 a row away
-  function out(i) { return 1 - smooth(0, 1, Math.abs(i - bend)); }
-  function front() { return on ? pos : still; }
-
-  function drawNames() {
-    var f = front();
-    var top = ROW / 2, bottom = (n - 1) * ROW + ROW / 2;
-    var fill = top + clamp(f, 0, n - 1) * ROW;
-    if (rail) {
-      // Sample the line every 1.5px: straight down, curving out and back around the bend
-      var d = "", di = "";
-      for (var y = top; y <= bottom + 0.01; y += 1.5) {
-        var pt = (X0 + BEND * out((y - top) / ROW)).toFixed(2) + " " + y.toFixed(2);
-        d += (d ? "L" : "M") + pt;
-        if (y <= fill) di += (di ? "L" : "M") + pt;
-      }
-      rail.setAttribute("d", d);
-      ink.setAttribute("d", di || "M0 0");
-      var at = clamp(Math.round(f), 0, n - 1);
-      dots.forEach(function (dot, k) {
-        var reached = k <= f + 0.02;
-        var big = k === at ? 4 : k === hover ? 3.5 : 2.75;
-        dot.setAttribute("cx", (X0 + BEND * out(k)).toFixed(2));
-        dot.setAttribute("cy", top + k * ROW);
-        dot.setAttribute("r", big);
-        dot.setAttribute("fill", reached || k === hover ? "#151515" : "#c4c4c4");
-      });
-      halo.setAttribute("cx", (X0 + BEND * out(at)).toFixed(2));
-      halo.setAttribute("cy", top + at * ROW);
-    }
-    names.forEach(function (b, k) { b.style.setProperty("--shift", (BEND * out(k)).toFixed(2) + "px"); });
-    if (pill && widths.length) {
-      var i = clamp(Math.floor(bend), 0, n - 1), j = Math.min(i + 1, n - 1), t = bend - i;
-      var w = widths[i] + (widths[j] - widths[i]) * t + BEND + 8;
-      pill.style.transform = "translate3d(0," + (bend * ROW + 2).toFixed(2) + "px,0)";
-      pill.style.width = w.toFixed(1) + "px";
-    }
-    var now = clamp(Math.round(f), 0, n - 1);
-    if (now !== current) {
-      current = now;
-      names.forEach(function (b, k) {
-        if (k === now) b.setAttribute("aria-current", "true");
-        else b.removeAttribute("aria-current");
-      });
-    }
+    var keep = selected;
+    selected = -1;
+    select(keep < 0 ? Math.max(current, 0) : keep, true);
   }
 
-  /* Light smoothing so the row and the line glide; stops once both have caught up.
-     The line bends out to the name under the cursor, else follows the person at the front. */
+  function select(k, instant) {
+    if (!people.length) return;
+    k = clamp(k, 0, people.length - 1);
+    if (k === selected) return;
+    selected = k;
+    people.forEach(function (p, i) {
+      p.lead.classList.toggle("is-on", i === k);
+      p.dot.classList.toggle("is-on", i === k);
+    });
+    names.forEach(function (b, i) { b.classList.toggle("is-selected", i === k); });
+    var p = people[k];
+    var moving = [glow, pill].filter(Boolean);
+    if (instant) moving.forEach(function (e) { e.style.transition = "none"; });
+    glow.style.transform = "translate(" + p.x + "px," + p.y + "px)";
+    if (pill) pill.style.transform = "translate3d(0," + (p.top + 3) + "px,0)";
+    if (instant) {
+      // Let the jump land before the transitions come back
+      void list.offsetHeight;
+      moving.forEach(function (e) { e.style.transition = ""; });
+    }
+  }
+  // The name under the cursor wins; otherwise the person at the front
+  function refreshNames() { select(hover >= 0 ? hover : current); }
+
+  function setFront(k) {
+    k = clamp(k, 0, n - 1);
+    if (k === current) return;
+    current = k;
+    names.forEach(function (b, i) {
+      if (i === k) b.setAttribute("aria-current", "true");
+      else b.removeAttribute("aria-current");
+    });
+    refreshNames();
+  }
+
+  /* Light smoothing so the row glides; stops once it has caught up */
   function frame(now) {
     var dt = Math.min(64, now - (last || now));
     last = now;
     var k = 1 - Math.exp(-dt / 90);
-    if (on) {
-      pos += (target - pos) * k;
-      intro += (introTarget - intro) * k;
-    }
-    var bendTarget = hover >= 0 ? hover : front();
-    bend += (bendTarget - bend) * (reduced.matches ? 1 : 1 - Math.exp(-dt / 120));
-    if (Math.abs(target - pos) < 0.0005 && Math.abs(introTarget - intro) < 0.001 && Math.abs(bendTarget - bend) < 0.001) {
-      if (on) { pos = target; intro = introTarget; }
-      bend = bendTarget;
+    pos += (target - pos) * k;
+    intro += (introTarget - intro) * k;
+    if (Math.abs(target - pos) < 0.0005 && Math.abs(introTarget - intro) < 0.001) {
+      pos = target;
+      intro = introTarget;
       raf = 0;
       last = 0;
     } else {
       raf = requestAnimationFrame(frame);
     }
-    if (on) drawCards();
-    drawNames();
+    drawCards();
   }
-  function kick() { if (!raf) raf = requestAnimationFrame(frame); }
   function onScroll() {
     if (!on) return;
     read();
-    kick();
+    if (!raf) raf = requestAnimationFrame(frame);
   }
 
   function measure() {
@@ -201,9 +220,7 @@
       read();
       pos = target;
       intro = introTarget;
-      bend = pos;
       drawCards();
-      drawNames();
     } else {
       team.style.removeProperty("--team-travel");
       if (more) more.style.transform = "";
@@ -212,8 +229,7 @@
         item.style.opacity = "";
         ["--a", "--t", "--o", "--d"].forEach(function (p) { item.style.removeProperty(p); });
       });
-      bend = still;
-      drawNames();
+      setFront(still);
     }
   }
   function update() { setOn(desktop.matches && !reduced.matches); }
@@ -231,19 +247,19 @@
   }
   names.forEach(function (b, k) {
     b.addEventListener("click", function () { scrollToCard(k); });
-    // The line bends out to the name under the cursor or keyboard focus
-    b.addEventListener("pointerenter", function () { hover = k; kick(); });
-    b.addEventListener("focus", function () { if (b.matches(":focus-visible")) { hover = k; kick(); } });
-    b.addEventListener("blur", function () { if (hover === k) { hover = -1; kick(); } });
+    // Hovering (or tabbing onto) a name selects it while the pointer or focus is there
+    b.addEventListener("pointerenter", function () { hover = k; refreshNames(); });
+    b.addEventListener("focus", function () { if (b.matches(":focus-visible")) { hover = k; refreshNames(); } });
+    b.addEventListener("blur", function () { if (hover === k) { hover = -1; refreshNames(); } });
   });
-  if (list) list.addEventListener("pointerleave", function () { hover = -1; kick(); });
+  if (list) list.addEventListener("pointerleave", function () { hover = -1; refreshNames(); });
 
   // Without the pinned row the cards scroll sideways; the names follow that instead
   viewport.addEventListener("scroll", function () {
     if (on) return;
     var w = items[1].offsetLeft - items[0].offsetLeft;
-    var k = clamp(Math.round(viewport.scrollLeft / w), 0, n - 1);
-    if (k !== still) { still = k; kick(); }
+    still = clamp(Math.round(viewport.scrollLeft / w), 0, n - 1);
+    setFront(still);
   }, { passive: true });
 
   // Tabbing onto a card brings it to the front. The browser may also have scrolled the
@@ -258,17 +274,15 @@
   });
 
   window.addEventListener("scroll", onScroll, { passive: true });
-  window.addEventListener("resize", function () { measureNames(); if (on) { measure(); onScroll(); } else drawNames(); });
+  window.addEventListener("resize", function () { layoutNames(); if (on) { measure(); onScroll(); } });
   [desktop, reduced].forEach(function (mq) {
     if (mq.addEventListener) mq.addEventListener("change", update);
     else if (mq.addListener) mq.addListener(update);
   });
-  buildNames();
-  measureNames();
+  layoutNames();
   update();
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () {
-    measureNames();
+    layoutNames();
     if (on) { measure(); drawCards(); }
-    drawNames();
   });
 })();

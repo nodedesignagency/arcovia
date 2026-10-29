@@ -18,10 +18,8 @@
    on its own and every card keeps its window.
    Portraits are black and white and turn to colour on hover (the user's call:
    the only colour on the site).
-   The names on the left hang on a line, after a timeline reference the user
-   sent: it bends out to the person at the front (or the name under the
-   cursor) with a soft pill behind them, and fills with ink down to the
-   person at the front as you scroll. team.js draws it.
+   The names on the left hang on one line in groups, after a timeline
+   reference the user sent (see the names block below).
    Uses shared tokens and the chip from styles.css.
    ========================================================================== */
 
@@ -66,64 +64,89 @@
 }
 .team__title-pale { display: block; color: var(--team-pale); }
 
-/* ---------- Names: a line through the dots that bends out to one name ----------
-   team.js draws the line and the dots in .team__line, moves the pill and
-   shifts the name the line bends out to (--shift). Rows are 36px. */
+/* ---------- Names: groups on one line, after the user's timeline reference ----------
+   Group names sit on the outer line and people one step in; the line curves
+   between the two. One person is selected: the one under the cursor (or
+   keyboard focus), else the one at the front of the row. They get a soft pill
+   behind their row, their dot in the accent with a glow, and the stretch of
+   line leading into it in the accent. team.js draws the line and dots in
+   .team__line and moves the pill and the glow; dots and lines fade over. */
 .team__names {
+  --row: 40px;
+  --accent: #e7358c;          /* the reference's pink; ?names=mono makes it ink */
   grid-column: 1 / span 3;
   grid-row: 2;
   position: relative;
-  justify-self: start;
-  margin-top: -6px;           /* first name's text lines up with the top of the cards */
+  margin-top: -10px;          /* first row's text lines up with the top of the cards */
 }
-.team__names-list { display: grid; justify-items: start; }
+:root[data-names="mono"] .team__names { --accent: var(--color-ink); }
+
+.team__group-name {
+  display: flex;
+  align-items: center;
+  height: var(--row);
+  padding-left: 22px;
+  font-size: var(--fs-nav);
+  font-weight: var(--weight-semibold);
+  color: var(--color-ink);
+}
+.team__name {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: var(--row);
+  padding: 0 12px 0 42px;
+  font-size: var(--fs-nav);
+  font-weight: var(--weight-book);
+  color: var(--team-name);
+  text-align: left;
+  white-space: nowrap;
+  transition: color var(--dur-base) var(--ease-out);
+}
+.team__name.is-selected { color: var(--color-text); }
+.team__name:focus-visible { outline-offset: -2px; border-radius: 10px; }
+
+.team__pill {
+  position: absolute;
+  top: 0;
+  left: -12px;
+  right: 0;
+  height: calc(var(--row) - 6px);
+  border-radius: 10px;
+  background: #efefef;
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 380ms var(--ease-out), opacity var(--dur-base) var(--ease-out);
+}
+.team__names.is-drawn .team__pill { opacity: 1; }
+
 .team__line {
   position: absolute;
   top: 0;
   left: 0;
-  width: 28px;
+  width: 32px;
   height: 100%;
   overflow: visible;
   pointer-events: none;
 }
-.team__pill {
-  position: absolute;
-  top: 0;
-  left: -8px;
-  width: 0;
-  height: 32px;
-  border-radius: 9px;
-  background: var(--color-well);
-  pointer-events: none;
-}
-.team__name {
-  --shift: 0px;
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  height: 36px;
-  padding: 0 12px 0 30px;
-  font-size: var(--fs-nav);
-  font-weight: var(--weight-book);
-  color: var(--team-name);
-  white-space: nowrap;
-  transform: translateX(var(--shift));
-  transition: color var(--dur-base) var(--ease-out);
-}
-.team__name[aria-current="true"] { color: var(--color-ink); }
-.team__name:focus-visible { outline-offset: -2px; }
-@media (hover: hover) {
-  .team__name:hover { color: var(--color-ink); }
-}
+.team__line .rail { fill: none; stroke: #d9d9d9; stroke-width: 1.25; }
+.team__line .lead { fill: none; stroke-width: 1.5; stroke-linecap: round; opacity: 0; transition: opacity 380ms var(--ease-out); }
+.team__line .lead.is-on { opacity: 1; }
+.team__line stop { stop-color: var(--accent); }
+.team__line .dot { fill: #c2c2c2; transition: fill 380ms var(--ease-out); }
+.team__line .dot.is-on { fill: var(--accent); }
+.team__line .glow { fill: var(--accent); opacity: 0.22; transition: transform 380ms var(--ease-out); }
+
 /* Without team.js: plain dots */
 .team__names:not(.is-drawn) .team__name::before {
   content: "";
   position: absolute;
-  left: 4px;
-  width: 6px;
-  height: 6px;
+  left: 21px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
-  background: currentColor;
+  background: #c2c2c2;
 }
 
 /* ---------- The row of cards ---------- */
@@ -217,7 +240,7 @@
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.62), rgba(0, 0, 0, 0.18) 34%, rgba(0, 0, 0, 0) 52%);
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.32) 26%, rgba(0, 0, 0, 0.1) 42%, rgba(0, 0, 0, 0) 58%);
   opacity: var(--a);
 }
 

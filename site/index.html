@@ -194,9 +194,10 @@
          Each card is a concrete slab with a window cut into it, showing the portrait;
          as a card slides to the front it covers the one before, and its window opens
          until only a thin concrete frame is left. Portraits are black and white and
-         turn to colour on hover. A line runs through the names and bends out to the
-         person at the front (or the name under the cursor). Clicking a name brings
-         that card forward.
+         turn to colour on hover. The names hang on a line in groups, after a timeline
+         reference the user sent; the person at the front (or the name under the
+         cursor) gets a pill, an accent dot and the line into it in the accent.
+         Clicking a name brings that card forward.
          Without JS, below desktop or with reduced motion, the row scrolls sideways.
          Component: team-card (becomes a CMS-driven Framer component). -->
     <section class="team" id="team" data-team aria-labelledby="team-title">
@@ -208,17 +209,28 @@
             <h2 class="team__title" id="team-title">Leadership <span class="team__title-pale">Senior people on every mandate</span></h2>
           </div>
 
-          <!-- [COPY NEEDED] Names, titles, LinkedIn URLs and photos from the brief -->
+          <!-- Names in groups, on one line (team.js draws it). [COPY NEEDED] Names, titles,
+               LinkedIn URLs and photos for the rest of the team, and their group's name -->
           <div class="team__names">
             <span class="team__pill" aria-hidden="true"></span>
             <svg class="team__line" aria-hidden="true" focusable="false"></svg>
-            <ol class="team__names-list" aria-label="People">
-              <li><button class="team__name" type="button" data-team-go="0" aria-current="true">Colin Pham</button></li>
-              <li><button class="team__name" type="button" data-team-go="1">Team member 02</button></li>
-              <li><button class="team__name" type="button" data-team-go="2">Team member 03</button></li>
-              <li><button class="team__name" type="button" data-team-go="3">Team member 04</button></li>
-              <li><button class="team__name" type="button" data-team-go="4">Team member 05</button></li>
-            </ol>
+            <ul class="team__groups" aria-label="People">
+              <li class="team__group">
+                <p class="team__group-name">Founders</p>
+                <ol class="team__names-list">
+                  <li><button class="team__name" type="button" data-team-go="0" aria-current="true">Colin Pham</button></li>
+                  <li><button class="team__name" type="button" data-team-go="1">Caroline Farah Lembck</button></li>
+                </ol>
+              </li>
+              <li class="team__group">
+                <p class="team__group-name">Senior advisors</p>
+                <ol class="team__names-list">
+                  <li><button class="team__name" type="button" data-team-go="2">Team member 03</button></li>
+                  <li><button class="team__name" type="button" data-team-go="3">Team member 04</button></li>
+                  <li><button class="team__name" type="button" data-team-go="4">Team member 05</button></li>
+                </ol>
+              </li>
+            </ul>
           </div>
 
           <div class="team__viewport">
@@ -226,12 +238,12 @@
               <li class="team__item">
                 <article class="team-card" style="--i:0">
                   <div class="team-card__media">
-                    <img class="team-card__photo" src="assets/team/portrait-placeholder.svg" alt="" width="600" height="720" loading="lazy" data-todo="Portrait of Colin Pham [PHOTO NEEDED]">
+                    <img class="team-card__photo" src="assets/team/colin-pham.jpg" alt="" width="1020" height="1200" loading="lazy">
                   </div>
                   <span class="team-card__rim" aria-hidden="true"></span>
                   <div class="team-card__body">
                     <h3 class="team-card__name"><a class="team-card__link" href="team/colin-pham.html" data-todo="Profile page (CMS template) [TO BUILD]">Colin Pham</a></h3>
-                    <p class="team-card__role">Chief Executive Officer</p>
+                    <p class="team-card__role">Founder &amp; CEO</p>
                   </div>
                   <a class="team-card__social" href="#" aria-label="Colin Pham on LinkedIn" data-todo="LinkedIn URL [TO CONFIRM]">
                     <svg aria-hidden="true"><use href="#icon-linkedin"/></svg>
@@ -241,14 +253,14 @@
               <li class="team__item">
                 <article class="team-card" style="--i:1">
                   <div class="team-card__media">
-                    <img class="team-card__photo" src="assets/team/portrait-placeholder.svg" alt="" width="600" height="720" loading="lazy" data-todo="Portrait of Team member 02 [PHOTO NEEDED]">
+                    <img class="team-card__photo" src="assets/team/caroline-farah-lembck.jpg" alt="" width="680" height="800" loading="lazy">
                   </div>
                   <span class="team-card__rim" aria-hidden="true"></span>
                   <div class="team-card__body">
-                    <h3 class="team-card__name"><a class="team-card__link" href="team/team-member-2.html" data-todo="Profile page (CMS template) [TO BUILD]">Team member 02</a></h3>
-                    <p class="team-card__role">Title to come</p>
+                    <h3 class="team-card__name"><a class="team-card__link" href="team/caroline-farah-lembck.html" data-todo="Profile page (CMS template) [TO BUILD]">Caroline Farah Lembck</a></h3>
+                    <p class="team-card__role">Co-Founder &amp; Managing Principal, Capital Markets</p>
                   </div>
-                  <a class="team-card__social" href="#" aria-label="Team member 02 on LinkedIn" data-todo="LinkedIn URL [TO CONFIRM]">
+                  <a class="team-card__social" href="#" aria-label="Caroline Farah Lembck on LinkedIn" data-todo="LinkedIn URL [TO CONFIRM]">
                     <svg aria-hidden="true"><use href="#icon-linkedin"/></svg>
                   </a>
                 </article>
