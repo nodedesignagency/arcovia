@@ -9,10 +9,12 @@
      texture is wrapped around it in world space, so it turns with the
      globe), lit softly from the upper left, darker towards the rim, with a
      soft shadow on the white below it.
-   - Land is pressed into the concrete as small round pits. The pits sit on
-     the grid of assets/land-dots.js (from Natural Earth) and are drawn
-     exactly in the shader, so they stay crisp at any size: the wall facing
-     the light falls into shade and the far wall catches it.
+   - Land is raised stone with real terrain: a bevelled coastline (Natural
+     Earth, assets/globe-land.png) and relief from NASA's GEBCO elevation
+     (assets/globe-relief.jpg) light up like a carved relief globe, with
+     faint engraved contour lines across the higher ground. The sea stays
+     smooth and a shade darker. The coastline is resolved per pixel, so it
+     stays crisp at any size.
    - Drag (or use the arrow keys) to turn the globe; it glides on when let
      go. Clicking a city in the list turns the globe to it. On touch,
      sideways drags turn it and up-and-down still scrolls the page.
@@ -34,8 +36,6 @@
 
   var NS = "http://www.w3.org/2000/svg";
   var RAD = Math.PI / 180;
-  // The land grid, as generated in assets/land-dots.js
-  var STEP = 1.2, LAT0 = -58.5, LAT1 = 83;
   var LAT_RANGE = [-35, 65]; // how far the globe tilts north and south
 
   var VERT = "attribute vec2 aPos; void main(){ gl_Position = vec4(aPos, 0.0, 1.0); }";
@@ -50,13 +50,14 @@
     "uniform vec3 uN;",
     "uniform vec3 uC;",
     "uniform sampler2D uTex;",  // concrete, seamless
-    "uniform sampler2D uMask;", // land: one texel per dot, rows of latitude
-    "uniform sampler2D uRows;", // dots in each row (n = r + 256 g)
-    "uniform vec2 uMaskSize;",  // widest row, number of rows
-    "const float STEP = " + STEP.toFixed(2) + ";",
-    "const float LAT0 = " + LAT0.toFixed(2) + ";",
+    "uniform sampler2D uLand;",   // coastline: land coverage, equirectangular
+    "uniform sampler2D uRelief;", // height: a bevel along the coast plus land elevation
+    "const vec2 TEXEL = vec2(1.0 / 2048.0, 1.0 / 1024.0);",
+    "const float TEXEL_DEG = 360.0 / 2048.0;",
+    "const float PI = 3.14159265;",
     "",
     "float tex(vec2 uv){ return texture2D(uTex, uv).r; }",
+    "float height(vec2 uv){ return texture2D(uRelief, uv).r; }",
     "",
     "void main(){",
     "  vec2 p = vec2(gl_FragCoord.x, uRes.y - gl_FragCoord.y) / uScale;",
@@ -72,53 +73,54 @@
     "",
     "  float x = d.x, y = -d.y;",
     "  float z = sqrt(max(0.0, 1.0 - x * x - y * y));",
-    "  vec3 Nv = vec3(x, y, z);",
     "  vec3 P = x * uE + y * uN + z * uC;",
     "  float lat = asin(clamp(P.z, -1.0, 1.0));",
     "  float lon = atan(P.y, P.x);",
+    "  vec2 uv = vec2(lon / (2.0 * PI) + 0.5, 0.5 - lat / PI);",
+    "  vec3 east = vec3(-sin(lon), cos(lon), 0.0);",
+    "  vec3 north = vec3(-sin(lat) * cos(lon), -sin(lat) * sin(lon), cos(lat));",
     "",
     "  // Concrete, wrapped in world space (tri-planar) so it turns with the globe",
     "  vec3 w = pow(abs(P), vec3(4.0)); w /= (w.x + w.y + w.z);",
     "  float k = 0.9;",
     "  float t = tex(P.yz * k + 0.31) * w.x + tex(P.xz * k + 0.57) * w.y + tex(P.xy * k) * w.z;",
-    "  float albedo = 0.86 * (1.0 + (t / 0.765 - 1.0) * 0.9);",
+    "  float grit = tex(P.yz * 2.3 + 0.7) * w.x + tex(P.xz * 2.3 + 0.2) * w.y + tex(P.xy * 2.3 + 0.45) * w.z;",
+    "",
+    "  // Land: crisp coastline from the coverage, at any size",
+    "  float pxDeg = degrees(px) / max(z, 0.2);",
+    "  float edge = clamp(0.5 * pxDeg / TEXEL_DEG, 0.03, 0.5);",
+    "  float land = smoothstep(0.5 - edge, 0.5 + edge, texture2D(uLand, uv).r);",
+    "",
+    "  // Relief: the surface normal follows the height map (coastal bevel and terrain)",
+    "  float h = height(uv);",
+    "  float hE = height(uv + vec2(TEXEL.x, 0.0)) - height(uv - vec2(TEXEL.x, 0.0));",
+    "  float hN = height(uv - vec2(0.0, TEXEL.y)) - height(uv + vec2(0.0, TEXEL.y));",
+    "  float dE = hE / (2.0 * TEXEL.x * 2.0 * PI * max(cos(lat), 0.05));",
+    "  float dN = hN / (2.0 * TEXEL.y * PI);",
+    "  vec3 Nw = normalize(P - 0.013 * (dE * east + dN * north));",
+    "",
+    "  // Contours: thin engraved lines across the higher ground",
+    "  float levels = 9.0;",
+    "  float q = (h - 0.32) / 0.68 * levels;",
+    "  float gradPx = length(vec2(hE, hN)) * 0.5 / (TEXEL_DEG / pxDeg) * levels / 0.68;",
+    "  float dist = abs(fract(q + 0.5) - 0.5) / max(gradPx, 1e-4);",
+    "  // (from the second level up, so the lowlands stay calm)",
+    "  float contour = (1.0 - smoothstep(0.35, 0.95, dist)) * smoothstep(0.6, 0.9, q) * land * smoothstep(0.25, 0.5, z);",
     "",
     "  // Light: soft, from the upper left and in front",
     "  vec3 L = normalize(vec3(-0.38, 0.48, 0.8));",
-    "",
-    "  // Land: a pit wherever the grid has a dot",
-    "  float latD = degrees(lat), lonD = degrees(lon);",
-    "  float row = floor((latD - LAT0) / STEP + 0.5);",
-    "  float pit = 0.0; vec2 u = vec2(0.0);",
-    "  if (row >= 0.0 && row < uMaskSize.y) {",
-    "    vec4 rn = texture2D(uRows, vec2((row + 0.5) / uMaskSize.y, 0.5));",
-    "    float n = floor(rn.r * 255.0 + 0.5) + floor(rn.g * 255.0 + 0.5) * 256.0;",
-    "    if (n > 0.0) {",
-    "      float latRow = LAT0 + row * STEP;",
-    "      float i = clamp(floor((lonD + 180.0) / 360.0 * n), 0.0, n - 1.0);",
-    "      float lonDot = -180.0 + (i + 0.5) * 360.0 / n;",
-    "      float land = texture2D(uMask, vec2((i + 0.5) / uMaskSize.x, (row + 0.5) / uMaskSize.y)).r;",
-    "      vec2 off = vec2((lonD - lonDot) * cos(radians(latRow)), latD - latRow);",
-    "      float rad = STEP * 0.34;",
-    "      float aa = degrees(px) / max(z, 0.2);",
-    "      pit = land * (1.0 - smoothstep(rad - aa, rad + aa, length(off)));",
-    "      u = off / rad;",
-    "    }",
-    "  }",
-    "  // The pit's wall facing the light falls into shade, the far wall catches it",
     "  vec3 Lw = L.x * uE + L.y * uN + L.z * uC;",
-    "  vec3 east = vec3(-sin(lon), cos(lon), 0.0);",
-    "  vec3 north = vec3(-sin(lat) * cos(lon), -sin(lat) * sin(lon), cos(lat));",
-    "  vec2 lt = vec2(dot(Lw, east), dot(Lw, north));",
-    "  float wall = pit * smoothstep(0.3, 0.95, length(u));",
-    "  float pitLight = -dot(u / max(length(u), 1e-4), lt) * wall;",
-    "",
-    "  float diff = max(dot(Nv, L), 0.0);",
+    "  float diff = max(dot(Nw, Lw), 0.0);",
+    "  float flat_ = max(dot(P, Lw), 0.0);",
     "  float lit = (0.64 + 0.4 * diff) * mix(0.86, 1.0, z);",
-    "  vec3 H = normalize(L + vec3(0.0, 0.0, 1.0));",
-    "  float spec = pow(max(dot(Nv, H), 0.0), 40.0) * 0.05;",
-    "  float a = albedo * (1.0 - 0.3 * pit);",
-    "  float c = a * lit * (1.0 + 0.45 * pitLight) + spec;",
+    "  vec3 H = normalize(Lw + uC);",
+    "  float spec = pow(max(dot(Nw, H), 0.0), 40.0) * 0.05;",
+    "",
+    "  // Sea: smooth and a shade darker; land: lighter stone with a finer grit",
+    "  float sea = 0.8 * (1.0 + (t / 0.765 - 1.0) * 0.9);",
+    "  float stone = 0.9 * (1.0 + (t / 0.765 - 1.0) * 0.6 + (grit / 0.765 - 1.0) * 0.5);",
+    "  float albedo = mix(sea, stone, land) * (1.0 - 0.1 * contour);",
+    "  float c = albedo * lit + spec;",
     "  gl_FragColor = vec4(vec3(c) * inside, inside + sh * (1.0 - inside));",
     "}"
   ].join("\n");
@@ -284,68 +286,53 @@
     gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
 
     this.u = {};
-    ["uRes", "uScale", "uCenter", "uR", "uE", "uN", "uC", "uTex", "uMask", "uRows", "uMaskSize"].forEach(function (n) { self.u[n] = gl.getUniformLocation(prog, n); });
+    ["uRes", "uScale", "uCenter", "uR", "uE", "uN", "uC", "uTex", "uLand", "uRelief"].forEach(function (n) { self.u[n] = gl.getUniformLocation(prog, n); });
+    gl.uniform1i(this.u.uTex, 0);
+    gl.uniform1i(this.u.uLand, 1);
+    gl.uniform1i(this.u.uRelief, 2);
 
-    // Land: one texel per grid dot. Rows are rebuilt exactly as the generator walked them.
-    var rows = [], widest = 1;
-    for (var lat = LAT0; lat <= LAT1; lat += STEP) {
-      var n = Math.max(1, Math.round((360 * Math.cos(lat * RAD)) / STEP));
-      rows.push(n); widest = Math.max(widest, n);
-    }
-    var H = rows.length, W = widest;
-    var mask = new Uint8Array(W * H * 4);
-    this.dots.forEach(function (d) {
-      var r = Math.round((d[0] - LAT0) / STEP);
-      if (r < 0 || r >= H) return;
-      var i = Math.round(((d[1] + 180) / 360) * rows[r] - 0.5);
-      if (i < 0 || i >= rows[r]) return;
-      var o = (r * W + i) * 4;
-      mask[o] = mask[o + 1] = mask[o + 2] = mask[o + 3] = 255;
-    });
-    var rowData = new Uint8Array(H * 4);
-    rows.forEach(function (n, r) { rowData[r * 4] = n % 256; rowData[r * 4 + 1] = Math.floor(n / 256); rowData[r * 4 + 3] = 255; });
-    var dataTex = function (unit, w, h, data) {
+    // A texture per unit: flat until its image arrives
+    var blank = function (unit, v) {
       var t = gl.createTexture();
       gl.activeTexture(gl.TEXTURE0 + unit);
       gl.bindTexture(gl.TEXTURE_2D, t);
-      gl.pixelStorei(gl.UNPACK_ALIGNMENT, 1);
-      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, w, h, 0, gl.RGBA, gl.UNSIGNED_BYTE, data);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([v, v, v, 255]));
+      return t;
     };
-    dataTex(1, W, H, mask);
-    dataTex(2, H, 1, rowData);
-    gl.uniform1i(this.u.uTex, 0);
-    gl.uniform1i(this.u.uMask, 1);
-    gl.uniform1i(this.u.uRows, 2);
-    gl.uniform2f(this.u.uMaskSize, W, H);
+    var upload = function (unit, t, img, mipmaps) {
+      gl.activeTexture(gl.TEXTURE0 + unit);
+      gl.bindTexture(gl.TEXTURE_2D, t);
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
+      // The land and relief maps skip mipmaps: their seam at the date line would show as a line
+      if (mipmaps) gl.generateMipmap(gl.TEXTURE_2D);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, mipmaps ? gl.LINEAR_MIPMAP_LINEAR : gl.LINEAR);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, mipmaps ? gl.REPEAT : gl.CLAMP_TO_EDGE);
+      self.drawGlobe();
+    };
+    var image = function (url, done) {
+      var img = new Image();
+      img.onload = function () { done(img); };
+      img.src = url;
+    };
+    var landTex = blank(1, 0), reliefTex = blank(2, 0);
+    // From disk, browsers refuse to hand local images to WebGL: use the inlined copies
+    var maps = location.protocol === "file:"
+      ? loadScript("assets/globe-textures.js").then(function () { return window.ARCOVIA_GLOBE_TEXTURES; })
+      : Promise.resolve({ land: "assets/globe-land.png", relief: "assets/globe-relief.jpg" });
+    maps.then(function (m) {
+      image(m.land, function (img) { upload(1, landTex, img, false); });
+      image(m.relief, function (img) { upload(2, reliefTex, img, false); });
+    }).catch(function () {});
 
-    // Concrete: flat grey until the texture arrives (from disk, use the inlined copy the hero uses)
-    gl.activeTexture(gl.TEXTURE0);
-    var tex = gl.createTexture();
-    gl.bindTexture(gl.TEXTURE_2D, tex);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([195, 195, 195, 255]));
+    // Concrete: as the hero's (from disk, the inlined copy the hero uses)
+    var concrete = blank(0, 195);
     var src = this.texture;
     var ready = window.ARCOVIA_CONCRETE_DATA ? Promise.resolve(window.ARCOVIA_CONCRETE_DATA)
       : location.protocol === "file:" ? loadScript(src.replace(/\.jpg$/, "-texture.js")).then(function () { return window.ARCOVIA_CONCRETE_DATA; })
       : Promise.resolve(src);
-    ready.then(function (url) {
-      var img = new Image();
-      img.onload = function () {
-        gl.activeTexture(gl.TEXTURE0);
-        gl.bindTexture(gl.TEXTURE_2D, tex);
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
-        gl.generateMipmap(gl.TEXTURE_2D);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
-        self.drawGlobe();
-      };
-      img.src = url;
-    }).catch(function () {});
+    ready.then(function (url) { image(url, function (img) { upload(0, concrete, img, true); }); }).catch(function () {});
 
     this.root.classList.add("map--gl");
     return gl;
