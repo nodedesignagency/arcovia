@@ -172,7 +172,9 @@ export const TOKENS_CSS = `/* ---------- Tokens ---------- */
 export const BASE_CSS = `/* ---------- Base, scoped to Arcovia components ----------
    The HTML site set these on html/body and bare elements. Here they live on the
    .arc wrapper; :where() keeps element rules at their original (zero-class)
-   specificity, so component classes still win exactly as before. */
+   specificity, so component classes still win exactly as before.
+   Element resets keep element specificity (0,0,1), as on the HTML site, so they still beat
+   Framer's own global element rules (this sheet comes later in the page). */
 .arc {
   font-family: var(--font-sans);
   font-weight: var(--weight-book);
@@ -186,10 +188,10 @@ export const BASE_CSS = `/* ---------- Base, scoped to Arcovia components ------
   text-size-adjust: 100%;
 }
 .arc, :where(.arc) *, :where(.arc) *::before, :where(.arc) *::after { box-sizing: border-box; }
-:where(.arc) :where(h1, h2, h3, h4, p, ul, ol, figure) { margin: 0; }
-:where(.arc) :where(ul, ol) { padding: 0; list-style: none; }
+:where(.arc) :is(h1, h2, h3, h4, p, ul, ol, figure) { margin: 0; }
+:where(.arc) :is(ul, ol) { padding: 0; list-style: none; }
 :where(.arc) a { color: inherit; text-decoration: none; }
-:where(.arc) :where(img, svg) { display: block; max-width: 100%; }
+:where(.arc) :is(img, svg) { display: block; max-width: 100%; }
 :where(.arc) button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
 :where(.arc) :focus-visible {
   outline: 2px solid var(--color-ink);
@@ -197,9 +199,11 @@ export const BASE_CSS = `/* ---------- Base, scoped to Arcovia components ------
   border-radius: 4px;
 }
 
-/* Shared parts below are wrapped in :where() (zero specificity): this stylesheet is repeated in
-   every component, and a section's own rules must always win over it, as they did on the HTML site. */
-:where(.visually-hidden) {
+/* Shared parts below are written as :where(.x):not(_), specificity (0,0,1): above the element resets
+   (they come later), but below any section class. This stylesheet is repeated in every component,
+   and a section's own rules (.why-founders__chip, .hero__inner…) must always win over it, as they
+   did on the HTML site, wherever the next copy of this sheet lands. */
+:where(.visually-hidden):not(_) {
   position: absolute !important;
   width: 1px; height: 1px;
   margin: -1px; padding: 0;
@@ -209,10 +213,10 @@ export const BASE_CSS = `/* ---------- Base, scoped to Arcovia components ------
   border: 0;
 }
 
-:where(.sprite) { position: absolute; width: 0; height: 0; overflow: hidden; }
-:where(.nowrap) { white-space: nowrap; }
+:where(.sprite):not(_) { position: absolute; width: 0; height: 0; overflow: hidden; }
+:where(.nowrap):not(_) { white-space: nowrap; }
 
-:where(.container) {
+:where(.container):not(_) {
   width: 100%;
   max-width: var(--container-max);
   margin-inline: auto;
@@ -220,7 +224,7 @@ export const BASE_CSS = `/* ---------- Base, scoped to Arcovia components ------
 }
 
 
-:where(.eyebrow) {
+:where(.eyebrow):not(_) {
   font-size: var(--fs-caps);
   font-weight: var(--weight-medium);
   letter-spacing: var(--ls-caps);
@@ -230,7 +234,7 @@ export const BASE_CSS = `/* ---------- Base, scoped to Arcovia components ------
 }
 
 
-:where(.chip) {
+:where(.chip):not(_) {
   display: inline-block;
   max-width: 100%;
   white-space: nowrap;
@@ -242,14 +246,14 @@ export const BASE_CSS = `/* ---------- Base, scoped to Arcovia components ------
   color: var(--color-text);
 }
 
-:where(.chip)::before { content: "[\\00a0"; content: "[\\00a0" / ""; }
-:where(.chip)::after { content: "\\00a0]"; content: "\\00a0]" / ""; }
+:where(.chip):not(_)::before { content: "[\\00a0"; content: "[\\00a0" / ""; }
+:where(.chip):not(_)::after { content: "\\00a0]"; content: "\\00a0]" / ""; }
 @media (max-width: 809px) {
-  :where(.chip) { font-size: 11px; letter-spacing: 0.08em; }
+  :where(.chip):not(_) { font-size: 11px; letter-spacing: 0.08em; }
 }
 
 
-:where(.btn) {
+:where(.btn):not(_) {
   --btn-h: 48px;
   display: inline-flex;
   align-items: center;
@@ -267,24 +271,24 @@ export const BASE_CSS = `/* ---------- Base, scoped to Arcovia components ------
   -webkit-tap-highlight-color: transparent;
   user-select: none;
 }
-:where(.btn:active) { transform: scale(0.98); }
-:where(.btn--small) { --btn-h: 40px; padding: 0 18px; font-size: 14px; }
+:where(.btn:active):not(_) { transform: scale(0.98); }
+:where(.btn--small):not(_) { --btn-h: 40px; padding: 0 18px; font-size: 14px; }
 
 
-:where(.btn--primary) {
+:where(.btn--primary):not(_) {
   color: var(--color-on-dark);
   background: linear-gradient(180deg, rgba(207, 207, 207, 0.16) 0%, rgba(207, 207, 207, 0.11) 100%), var(--btn-dark);
   box-shadow: var(--shadow-btn);
 }
-:where(.btn--quiet) { background: var(--color-white); color: var(--color-ink); box-shadow: var(--shadow-card); }
+:where(.btn--quiet):not(_) { background: var(--color-white); color: var(--color-ink); box-shadow: var(--shadow-card); }
 
 @media (hover: hover) {
-  :where(.btn--primary:hover) { background: linear-gradient(180deg, rgba(207, 207, 207, 0.22) 0%, rgba(207, 207, 207, 0.15) 100%), var(--btn-dark); }
-  :where(.btn--quiet:hover) { background: var(--color-well); }
+  :where(.btn--primary:hover):not(_) { background: linear-gradient(180deg, rgba(207, 207, 207, 0.22) 0%, rgba(207, 207, 207, 0.15) 100%), var(--btn-dark); }
+  :where(.btn--quiet:hover):not(_) { background: var(--color-well); }
 }
-:where(.btn--primary:active) { box-shadow: var(--shadow-btn-pressed); }
+:where(.btn--primary:active):not(_) { box-shadow: var(--shadow-btn-pressed); }
 
-:where(.btn__icon) {
+:where(.btn__icon):not(_) {
   width: 14px;
   height: 14px;
   flex: none;
@@ -292,24 +296,24 @@ export const BASE_CSS = `/* ---------- Base, scoped to Arcovia components ------
 }
 
 
-:where(.logo) {
+:where(.logo):not(_) {
   display: inline-flex;
   align-items: center;
   gap: 12px;
   color: var(--color-ink);
 }
-:where(.logo__mark) { flex: none; width: 28px; height: auto; fill: currentColor; }
+:where(.logo__mark):not(_) { flex: none; width: 28px; height: auto; fill: currentColor; }
 
-:where(.logo__word) { flex: none; width: auto; height: 13px; fill: currentColor; }
+:where(.logo__word):not(_) { flex: none; width: auto; height: 13px; fill: currentColor; }
 
 
-:where(.seam) {
+:where(.seam):not(_) {
   position: relative;
   height: 1px;
   background: rgba(43, 43, 43, 0.16);
   box-shadow: 0 1px 0 rgba(255, 255, 255, 0.45);
 }
-:where(.seam__hole) {
+:where(.seam__hole):not(_) {
   position: absolute;
   top: 50%;
   width: 9px;
@@ -318,8 +322,8 @@ export const BASE_CSS = `/* ---------- Base, scoped to Arcovia components ------
   background: rgba(0, 0, 0, 0.06);
   box-shadow: inset 1.5px 1.5px 2px rgba(0, 0, 0, 0.35), 1px 1px 0 rgba(255, 255, 255, 0.55);
 }
-:where(.seam__hole--start) { left: 0; transform: translate(-50%, -50%); }
-:where(.seam__hole--end) { right: 0; transform: translate(50%, -50%); }
+:where(.seam__hole--start):not(_) { left: 0; transform: translate(-50%, -50%); }
+:where(.seam__hole--end):not(_) { right: 0; transform: translate(50%, -50%); }
 
 
 /* ---------- Reduced motion ---------- */
