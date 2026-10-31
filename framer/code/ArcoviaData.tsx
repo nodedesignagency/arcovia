@@ -260,7 +260,7 @@ const DATA_CSS = `/* ===========================================================
 }
 
 /* ---------- Smaller desktops: a wider column, so the lines keep to two rows ---------- */
-@media (min-width: 1200px) and (max-width: 1439px) {
+@container arc (min-width: 1200px) and (max-width: 1439px) {
   .data__head,
   .data__inner > .stack,
   .data__note { grid-column: 3 / span 8; }
@@ -270,7 +270,7 @@ const DATA_CSS = `/* ===========================================================
 }
 
 /* ---------- Tablet ---------- */
-@media (max-width: 1199px) {
+@container arc (max-width: 1199px) {
   .data { --depth: 52px; --block-h: min(116px, 11svh); }
   .data__head,
   .data__inner > .stack,
@@ -281,7 +281,7 @@ const DATA_CSS = `/* ===========================================================
 }
 
 /* ---------- Phone ---------- */
-@media (max-width: 809px) {
+@container arc (max-width: 809px) {
   .data { --joint: 6px; --depth: 32px; --block-h: 112px; }
   .data__inner { row-gap: var(--space-5); }
   .data__head,
@@ -303,7 +303,8 @@ const DATA_CSS = `/* ===========================================================
 }
 
 /* Short phones (iPhone SE and the like): everything has to fit under the header at once */
-@media (max-width: 809px) and (max-height: 760px) {
+@media (max-height: 760px) {
+@container arc (max-width: 809px) {
   .data { --depth: 24px; --block-h: 98px; }
   .data__inner { row-gap: var(--space-3); }
   .data__head { gap: var(--space-2); }
@@ -311,6 +312,7 @@ const DATA_CSS = `/* ===========================================================
   .data__sub { font-size: 14px; line-height: 1.45; }
   .stack__face { padding: 12px 16px 14px; row-gap: 4px; }
   .stack__figure { --fig-size: 30px; }
+}
 }
 `
 

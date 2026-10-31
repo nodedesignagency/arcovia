@@ -145,7 +145,7 @@ const HERO_CSS = `/* ---------- Path picker: one button, three paths ---------- 
 .path-picker[data-icons="none"] .path-picker__meta { grid-column: 1; }
 .path-picker[data-icons="none"] .path-picker__arrow { grid-column: 2; }
 
-@media (max-width: 809px) {
+@container arc (max-width: 809px) {
   /* Full-width panel on phones; the button keeps its own width */
   .path-picker { display: block; justify-self: stretch; }
   .path-picker__panel { width: 100%; }
@@ -243,7 +243,7 @@ const HERO_CSS = `/* ---------- Path picker: one button, three paths ---------- 
 
 /* The path menu is as wide as this column, so it lines up with the grid */
 .hero__aside {
-  --picker-w: calc((min(100vw, var(--container-max)) - 2 * var(--gutter) - 11 * var(--grid-gap)) / 12 * 4 + 3 * var(--grid-gap));
+  --picker-w: calc((min(100cqw, var(--container-max)) - 2 * var(--gutter) - 11 * var(--grid-gap)) / 12 * 4 + 3 * var(--grid-gap));
 }
 
 .hero__lede {
@@ -269,7 +269,7 @@ const HERO_CSS = `/* ---------- Path picker: one button, three paths ---------- 
 .hero__wordmark {
   display: block;
   width: max-content;
-  font-size: var(--wordmark-size, 18vw);
+  font-size: var(--wordmark-size, 18cqw);
   font-weight: var(--weight-medium);
   line-height: 1;
   letter-spacing: 0.035em;
@@ -296,14 +296,16 @@ const HERO_CSS = `/* ---------- Path picker: one button, three paths ---------- 
   to { opacity: 1; transform: none; }
 }
 
-@media (max-width: 1199px) {
+@container arc (max-width: 1199px) {
   .hero__inner { grid-template-rows: 1fr auto auto; }
   .hero__heading { grid-column: 1 / span 11; align-self: end; margin-bottom: var(--space-7); }
   .hero__aside { grid-column: 6 / span 7; grid-row: 2; align-self: start; padding-top: 0; margin-bottom: var(--space-8); }
+  /* The path menu stays as wide as this column, which spans 7 columns here (4 on desktop) */
+  .hero__aside { --picker-w: calc((min(100cqw, var(--container-max)) - 2 * var(--gutter) - 11 * var(--grid-gap)) / 12 * 7 + 6 * var(--grid-gap)); }
   .hero__inner > .hero__seam { grid-row: 3; }
 }
 
-@media (max-width: 809px) {
+@container arc (max-width: 809px) {
   .hero__heading { grid-column: 1 / -1; gap: var(--space-5); margin-bottom: var(--space-5); }
   .hero__aside { grid-column: 1 / -1; gap: var(--space-5); margin-bottom: var(--space-7); }
 }
@@ -374,7 +376,7 @@ const HERO_CSS = `/* ---------- Path picker: one button, three paths ---------- 
 .statement__text {
   /* Full width of the page grid, so the right margin matches the left. The size is a share of
      the grid's width, so the lines break the same way at every desktop width. */
-  font-size: calc((min(100vw, var(--container-max)) - 2 * var(--gutter)) * 0.0445);
+  font-size: calc((min(100cqw, var(--container-max)) - 2 * var(--gutter)) * 0.0445);
   font-weight: var(--weight-book);
   line-height: 1.12;
   letter-spacing: -0.025em;
@@ -388,10 +390,10 @@ const HERO_CSS = `/* ---------- Path picker: one button, three paths ---------- 
 /* With zoom.js each letter starts invisible; its opacity is set as you scroll */
 .statement [data-reveal].is-split .c { opacity: 0; }
 
-@media (max-width: 1199px) {
+@container arc (max-width: 1199px) {
   .statement__text { font-size: 44px; }
 }
-@media (max-width: 809px) {
+@container arc (max-width: 809px) {
   .statement__text { font-size: 30px; line-height: 1.16; text-indent: calc(var(--col) * 2); }
 }
 
@@ -404,13 +406,13 @@ const HERO_CSS = `/* ---------- Path picker: one button, three paths ---------- 
      from the component itself (cqw), and the load-in animation is off so
      thumbnails never catch the text mid-fade.
    ========================================================================== */
-.hero { --wordmark-fit: calc((min(100vw, var(--container-max)) - 2 * var(--gutter)) * 0.2038); }
+.hero { --wordmark-fit: calc((min(100cqw, var(--container-max)) - 2 * var(--gutter)) * 0.2038); }
 .hero__wordmark { font-size: var(--wordmark-size, var(--wordmark-fit)); }
 .hero__inner { padding-bottom: calc(var(--wordmark-visible, calc(var(--wordmark-fit) * 0.6)) + var(--space-6)); }
 .arc-hero[data-static] { container-type: inline-size; }
 .arc-hero[data-static] .hero { --wordmark-fit: calc((min(100cqw, var(--container-max)) - 2 * var(--gutter)) * 0.2038); }
 .arc-hero[data-static] [data-rise] { animation: none; }
-@media (min-width: 1200px) {
+@container arc (min-width: 1200px) {
   .arc-hero[data-static] .statement__text { font-size: calc((min(100cqw, var(--container-max)) - 2 * var(--gutter)) * 0.0445); }
 }
 `

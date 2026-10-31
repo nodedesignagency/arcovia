@@ -264,7 +264,7 @@ const HEADER_CSS = `/* ---------- Header: a masthead that folds, hides and comes
   .menu-btn:hover .menu-btn__plus { transform: rotate(90deg); }
 }
 
-@media (min-width: 1200px) {
+@container arc (min-width: 1200px) {
   .nav .menu-btn {
     position: absolute;
     top: 0;
@@ -281,7 +281,7 @@ const HEADER_CSS = `/* ---------- Header: a masthead that folds, hides and comes
 }
 
 /* Tablet and phone (to refine once desktop is approved): labels row over a simple bar */
-@media (max-width: 1199px) {
+@container arc (max-width: 1199px) {
   .masthead-labels__site,
   .masthead-labels__company,
   .masthead-note,
@@ -296,7 +296,7 @@ const HEADER_CSS = `/* ---------- Header: a masthead that folds, hides and comes
   .is-compact .masthead-word { transform: none; }
   .nav { margin-left: auto; display: block; }
 }
-@media (max-width: 809px) {
+@container arc (max-width: 809px) {
   .masthead-city--la { grid-column: 1 / span 4; }
   .masthead-city--sj { grid-column: 5 / span 4; }
   .masthead-clock { grid-column: 9 / span 4; justify-self: end; }

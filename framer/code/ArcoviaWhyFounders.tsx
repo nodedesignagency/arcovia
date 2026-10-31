@@ -167,11 +167,11 @@ const WHY_FOUNDERS_CSS = `/* ===================================================
 .why-founders--staged .why-founders__inner { width: 100%; }
 
 /* ---------- Tablet and phone: the settled layout only (not reviewed yet) ---------- */
-@media (max-width: 1199px) {
+@container arc (max-width: 1199px) {
   .why-founders__cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .stat-card { aspect-ratio: auto; min-height: 320px; }
 }
-@media (max-width: 809px) {
+@container arc (max-width: 809px) {
   .why-founders__cards { grid-template-columns: 1fr; }
   .stat-card { min-height: 0; }
   .stat-card__figure { font-size: 48px; }

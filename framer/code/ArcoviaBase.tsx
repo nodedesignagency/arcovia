@@ -167,7 +167,35 @@ export const TOKENS_CSS = `/* ---------- Tokens ---------- */
   --mh-dur: 560ms;
   --mh-line: rgba(21, 21, 21, 0.16);
 }
-@media (max-width: 1199px) { :root { --mh-main: 64px; --mh-mark: 30px; } }`
+@media (max-width: 1199px) { :root { --mh-main: 64px; --mh-mark: 30px; } }
+
+/* Breakpoints by component width (Framer canvas frames and live) */
+@container arc (max-width: 1199px) {
+  :where(.arc) > * {
+    --fs-hero: 60px;
+    --fs-h2: 40px;
+    --fs-h3: 24px;
+    --fs-lede: 19px;
+    --fs-body: 16px;
+    --gutter: 32px;
+    --grid-gap: 20px;
+  }
+}
+
+@container arc (max-width: 809px) {
+  :where(.arc) > * {
+    --fs-hero: 38px;
+    --ls-hero: -0.024em;
+    --fs-h2: 32px;
+    --fs-h3: 22px;
+    --fs-lede: 17px;
+    --fs-body: 16px;
+    --fs-caps: 11px;
+    --gutter: 20px;
+    --grid-gap: 12px;
+  }
+}
+@container arc (max-width: 1199px) { :where(.arc) > * { --mh-main: 64px; --mh-mark: 30px; --header-h: calc(var(--mh-labels) + var(--mh-main)); } }`
 
 export const BASE_CSS = `/* ---------- Base, scoped to Arcovia components ----------
    The HTML site set these on html/body and bare elements. Here they live on the
@@ -188,6 +216,10 @@ export const BASE_CSS = `/* ---------- Base, scoped to Arcovia components ------
   text-size-adjust: 100%;
 }
 .arc, :where(.arc) *, :where(.arc) *::before, :where(.arc) *::after { box-sizing: border-box; }
+/* Each component is a size container: its sections answer to their own width (@container arc),
+   so the Framer canvas shows the Tablet and Phone frames correctly. The menu host is excluded:
+   the menu is fixed to the window and a container would trap it. */
+.arc:not(.arc-menu-host) { container: arc / inline-size; }
 :where(.arc) :is(h1, h2, h3, h4, p, ul, ol, figure) { margin: 0; }
 :where(.arc) :is(ul, ol) { padding: 0; list-style: none; }
 :where(.arc) a { color: inherit; text-decoration: none; }
@@ -248,7 +280,7 @@ export const BASE_CSS = `/* ---------- Base, scoped to Arcovia components ------
 
 :where(.chip):not(_)::before { content: "[\\00a0"; content: "[\\00a0" / ""; }
 :where(.chip):not(_)::after { content: "\\00a0]"; content: "\\00a0]" / ""; }
-@media (max-width: 809px) {
+@container arc (max-width: 809px) {
   :where(.chip):not(_) { font-size: 11px; letter-spacing: 0.08em; }
 }
 

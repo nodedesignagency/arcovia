@@ -530,12 +530,25 @@ const TEAM_CSS = `/* ===========================================================
   margin-bottom: 0;
 }
 
-/* ---------- Below desktop (to refine once desktop is approved) ---------- */
-@media (max-width: 1199px) {
+/* ---------- Below desktop: a row you swipe ----------
+   No pinned stage here, so every card shows what the front card shows on desktop: the
+   portrait open to the thin concrete frame, the name in white. The row runs out to the
+   right edge of the screen, so cards slide off the edge instead of being cut at the
+   margin, and the next card always peeks in (two and a bit on tablet, one on phone).
+   Inside the row, 100cqw is the row's own width (the viewport is a size container). */
+@container arc (max-width: 1199px) {
   .team__head { grid-column: 1 / -1; }
   .team__names { display: none; }
-  .team__viewport { grid-column: 1 / -1; }
-  .team__track { --card-w: min(420px, 72vw); --card-h: calc(var(--card-w) * 1.18); }
+  .team__viewport {
+    grid-column: 1 / -1;
+    margin-right: calc(var(--gutter) * -1);
+    padding-right: var(--gutter);
+  }
+  .team__track { --card-w: min(420px, calc(100cqw * 0.44)); --card-h: calc(var(--card-w) * 1.3); }
+  .team__item { --a: 1; --t: 1; }
+}
+@container arc (max-width: 809px) {
+  .team__track { --card-w: calc(100cqw * 0.8); }
 }
 `
 

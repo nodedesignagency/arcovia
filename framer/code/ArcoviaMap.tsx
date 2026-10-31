@@ -260,7 +260,7 @@ const MAP_CSS = `/* ============================================================
 }
 
 /* ---------- Tablet: text, globe, index, one under the other ---------- */
-@media (max-width: 1199px) {
+@container arc (max-width: 1199px) {
   .map { padding-block: var(--space-10) var(--space-9); }
   .map__layout { row-gap: var(--space-6); }
   .map__head,
@@ -271,7 +271,7 @@ const MAP_CSS = `/* ============================================================
 }
 
 /* ---------- Phone ---------- */
-@media (max-width: 809px) {
+@container arc (max-width: 809px) {
   .map { padding-block: var(--space-9) var(--space-8); }
   .map__head { gap: var(--space-4); }
   .map__body { font-size: 16px; }
