@@ -278,6 +278,12 @@ const MAP_CSS = `/* ============================================================
   .map__layout { row-gap: var(--space-5); }
   .map__city-name { font-size: 14px; gap: 8px; }
 }
+
+/* Framer canvas only: the still globe follows the live compact map on phones, where the
+   office labels show only for a picked city (the script's .is-compact) */
+@container arc (max-width: 809px) {
+  .map__label.map__label--still.is-landed { opacity: 0; }
+}
 `
 
 type Side = "left" | "right" | "above" | "below"
@@ -465,7 +471,7 @@ export default function ArcoviaMap(incoming: Partial<Props>) {
                             <div className="map__labels">
                                 {still
                                     ? still.labels.map((l, i) => (
-                                          <div key={i} className="map__label map__label--office is-landed" aria-hidden="true" style={{ left: l.x + "%", top: l.y + "%", transform: STILL_SHIFT[l.side] }}>
+                                          <div key={i} className="map__label map__label--office map__label--still is-landed" aria-hidden="true" style={{ left: l.x + "%", top: l.y + "%", transform: STILL_SHIFT[l.side] }}>
                                               <span className="map__label-name">{l.name}</span>
                                               <span className="map__label-meta">{l.meta}</span>
                                           </div>
