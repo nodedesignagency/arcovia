@@ -18,6 +18,7 @@
   <link rel="stylesheet" href="sections/statement.css">
   <link rel="stylesheet" href="sections/data.css">
   <link rel="stylesheet" href="sections/team.css">
+  <link rel="stylesheet" href="sections/map.css">
 </head>
 <body>
 
@@ -412,6 +413,52 @@
     </section>
     <!-- SECTION:team END -->
 
+    <!-- SECTION:map START · styles: sections/map.css · scripts: assets/land-dots.js, map.js
+         Home, block 4: where we are in the world, laid out after Grok's offices
+         section: the text on the left, the concrete globe on the right (turn it
+         by dragging; land in stone relief; arcs drawn out from Los Angeles),
+         and a quiet index of the fifteen cities under the text. -->
+    <section class="map" data-world-map data-origin="la" data-center-lat="30" data-center-lon="-26" aria-labelledby="map-title">
+      <div class="map__layout container">
+        <div class="map__head">
+          <p class="chip">Where we are</p>
+          <h2 class="map__title" id="map-title">Rooted in <span class="nowrap">Los Angeles</span> and <span class="nowrap">San Juan.</span> Working across four regions.</h2>
+          <p class="map__body">Our team and senior advisors work across North America, Europe, the Middle East and Asia-Pacific, with 3,000+ institutional relationships in more than 50 countries.</p>
+          <a class="map__more" href="about.html#map">Explore the map<svg class="map__arrow" aria-hidden="true"><use href="#icon-arrow"/></svg></a>
+        </div>
+
+        <figure class="map__figure">
+          <!-- Component: world-map (compact). map.js draws the globe, arcs, markers and labels from the city index; drag to turn it, pick a city to turn to it. -->
+          <div class="map__stage" tabindex="0" role="img" aria-label="Concrete globe with arcs from Los Angeles to San Juan, San Francisco, New York, Houston, São Paulo, Dubai, Abu Dhabi, London, Paris, Geneva, Zurich, Milan, Monaco and Budapest. Drag, or use the arrow keys, to turn it.">
+            <canvas class="map__globe"></canvas>
+            <svg class="map__lines" aria-hidden="true"></svg>
+            <div class="map__labels"></div>
+          </div>
+        </figure>
+
+        <!-- City index: the map's data (coordinates, label side); pick a city to turn the globe to it.
+             Column one: the offices, the Americas, the Middle East; column two: Europe. -->
+        <ul class="map__cities" aria-label="Cities">
+          <li class="map__city" tabindex="0" data-city="la" data-name="Los Angeles" data-lat="34.0522" data-lon="-118.2437" data-office data-side="left"><span class="map__city-name">Los Angeles</span><span class="map__city-tag">Office</span></li>
+          <li class="map__city" tabindex="0" data-city="sj" data-name="San Juan" data-lat="18.4655" data-lon="-66.1057" data-office data-side="right"><span class="map__city-name">San Juan</span><span class="map__city-tag">Office</span></li>
+          <li class="map__city" tabindex="0" data-city="sf" data-name="San Francisco" data-lat="37.7749" data-lon="-122.4194" data-side="above"><span class="map__city-name">San Francisco</span></li>
+          <li class="map__city" tabindex="0" data-city="ny" data-name="New York" data-lat="40.7128" data-lon="-74.0060" data-side="above"><span class="map__city-name">New York</span></li>
+          <li class="map__city" tabindex="0" data-city="hou" data-name="Houston" data-lat="29.7604" data-lon="-95.3698" data-side="below"><span class="map__city-name">Houston</span></li>
+          <li class="map__city" tabindex="0" data-city="sp" data-name="São Paulo" data-lat="-23.5505" data-lon="-46.6333" data-side="right"><span class="map__city-name">São Paulo</span></li>
+          <li class="map__city" tabindex="0" data-city="dxb" data-name="Dubai" data-lat="25.2048" data-lon="55.2708" data-side="above"><span class="map__city-name">Dubai</span></li>
+          <li class="map__city" tabindex="0" data-city="ad" data-name="Abu Dhabi" data-lat="24.4539" data-lon="54.3773" data-side="left"><span class="map__city-name">Abu Dhabi</span></li>
+          <li class="map__city" tabindex="0" data-city="ldn" data-name="London" data-lat="51.5074" data-lon="-0.1278" data-side="above"><span class="map__city-name">London</span></li>
+          <li class="map__city" tabindex="0" data-city="par" data-name="Paris" data-lat="48.8566" data-lon="2.3522" data-side="right"><span class="map__city-name">Paris</span></li>
+          <li class="map__city" tabindex="0" data-city="gva" data-name="Geneva" data-lat="46.2044" data-lon="6.1432" data-side="left"><span class="map__city-name">Geneva</span></li>
+          <li class="map__city" tabindex="0" data-city="zrh" data-name="Zurich" data-lat="47.3769" data-lon="8.5417" data-side="above"><span class="map__city-name">Zurich</span></li>
+          <li class="map__city" tabindex="0" data-city="mil" data-name="Milan" data-lat="45.4642" data-lon="9.1900" data-side="right"><span class="map__city-name">Milan</span></li>
+          <li class="map__city" tabindex="0" data-city="mco" data-name="Monaco" data-lat="43.7384" data-lon="7.4246" data-side="below"><span class="map__city-name">Monaco</span></li>
+          <li class="map__city" tabindex="0" data-city="bud" data-name="Budapest" data-lat="47.4979" data-lon="19.0402" data-side="right"><span class="map__city-name">Budapest</span></li>
+        </ul>
+      </div>
+    </section>
+    <!-- SECTION:map END -->
+
   </main>
 
   <script src="concrete.js"></script>
@@ -419,5 +466,7 @@
   <script src="zoom.js"></script>
   <script src="stack.js"></script>
   <script src="team.js"></script>
+  <script src="assets/land-dots.js"></script>
+  <script src="map.js"></script>
 </body>
 </html>
