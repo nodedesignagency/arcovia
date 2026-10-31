@@ -51,7 +51,7 @@ Six pages plus legal: Home (with the world map), About, What We Do (Founders, In
 
 Out of scope: Gatherings, Journal, Press. Never link to them.
 
-Map: 8 points (Los Angeles, San Francisco, New York, San Juan, São Paulo, London, Paris, Abu Dhabi). Hover shows the city label. Arcs drawn out from Los Angeles. No filters.
+Map: 15 points (Los Angeles, San Francisco, New York, Houston, San Juan, São Paulo, London, Paris, Geneva, Zurich, Milan, Monaco, Budapest, Dubai, Abu Dhabi; the user added Milan, Budapest, Geneva, Houston, Dubai, Monaco and Zurich to the original eight). Offices: Los Angeles and San Juan. Hover shows the city label. Arcs drawn out from Los Angeles. No filters.
 
 ## Design direction
 

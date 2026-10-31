@@ -1,5 +1,5 @@
 /* ==========================================================================
-   WorldMap — the compact world map: a concrete globe with the eight cities,
+   WorldMap — the compact world map: a concrete globe with the fifteen cities,
    arcs drawn out from Los Angeles. Built as one self-contained class so it
    can become a Framer code component later (props: cities, origin, view
    centre, texture).
@@ -43,7 +43,7 @@
   var LAT_RANGE = [-35, 65]; // how far the globe tilts north and south
   // Arcs: each draws out from Los Angeles in DRAW ms, the next one STAGGER ms later;
   // then a pulse runs out along each arc (TRAVEL ms) every PERIOD ms
-  var DELAY = 250, STAGGER = 200, DRAW = 1300, TRAVEL = 1500, PERIOD = 4200, PULSE = 26;
+  var DELAY = 250, STAGGER = 130, DRAW = 1300, TRAVEL = 1500, PERIOD = 4200, PULSE = 26;
 
   var VERT = "attribute vec2 aPos; void main(){ gl_Position = vec4(aPos, 0.0, 1.0); }";
 
@@ -297,7 +297,7 @@
 
       c.hit = document.createElementNS(NS, "circle");
       c.hit.setAttribute("class", "map__hit");
-      c.hit.setAttribute("r", 16);
+      c.hit.setAttribute("r", 11); // small: the European hubs sit close together
       self.markGroup.appendChild(c.hit);
 
       c.label = document.createElement("div");
@@ -603,7 +603,8 @@
     this.svg.setAttribute("viewBox", "0 0 " + w + " " + h);
     this.svg.setAttribute("width", w);
     this.svg.setAttribute("height", h);
-    this.size = this.R > 250 ? 8 : 7;
+    // Hubs small enough for the European cluster to stay apart; offices a size up, Los Angeles another
+    this.size = this.R > 250 ? 5 : 4;
     this.cities.forEach(function (c) { c.lw = c.label.offsetWidth; c.lh = c.label.offsetHeight; });
     this.render();
   };
@@ -622,7 +623,7 @@
       c.mark.classList.toggle("is-behind", behind);
       c.label.classList.toggle("is-behind", behind);
       c.hit.style.display = behind ? "none" : "";
-      var s = c === self.origin ? self.size + 2 : self.size;
+      var s = self.size + (c === self.origin ? 3 : c.office ? 2 : 0);
       c.mark.setAttribute("x", (p[0] - s / 2).toFixed(1));
       c.mark.setAttribute("y", (p[1] - s / 2).toFixed(1));
       c.mark.setAttribute("width", s);
