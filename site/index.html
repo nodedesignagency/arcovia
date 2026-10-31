@@ -18,6 +18,7 @@
   <link rel="stylesheet" href="sections/statement.css">
   <link rel="stylesheet" href="sections/data.css">
   <link rel="stylesheet" href="sections/team.css">
+  <link rel="stylesheet" href="sections/why-founders.css">
   <link rel="stylesheet" href="sections/map.css">
 </head>
 <body>
@@ -413,6 +414,51 @@
     </section>
     <!-- SECTION:team END -->
 
+    <!-- SECTION:why-founders START · styles: sections/why-founders.css · scripts: founders.js
+         Home, block 5 of the brief (after the team, before the map): why founders choose Arcovia. After the user's reference:
+         the headline starts huge across the screen, the four cards rise one at a time into a
+         stack in front of it (each covering the last, whose figure still shows above), then
+         the stack spreads into a row while the cards and the headline shrink into place.
+         White cards on black. Without JS, with reduced motion or below 1200px it is simply
+         the settled layout. -->
+    <section class="why-founders" id="why-founders" data-founders data-header-theme="dark" aria-labelledby="why-founders-title">
+      <div class="why-founders__stage">
+        <div class="why-founders__inner container">
+          <div class="why-founders__head">
+            <p class="chip why-founders__chip">Why founders choose Arcovia</p>
+            <h2 class="why-founders__title" id="why-founders-title"><span class="why-founders__line">Calm,</span> <span class="why-founders__line">precise and</span> <span class="why-founders__line">senior-led</span></h2>
+          </div>
+
+          <!-- Component: stat-card (figure, label, line) -->
+          <ul class="why-founders__cards">
+            <li class="stat-card">
+              <p class="stat-card__figure">18 days</p>
+              <h3 class="stat-card__label">to the first qualified investor conversation</h3>
+              <p class="stat-card__line">Every mandate starts with investor thesis alignment and narrative architecture, matched to the investors most likely to commit.</p>
+            </li>
+            <li class="stat-card">
+              <p class="stat-card__figure">200+</p>
+              <h3 class="stat-card__label">active LP and family office relationships</h3>
+              <p class="stat-card__line">With a dedicated senior team on every mandate.</p>
+            </li>
+            <li class="stat-card">
+              <p class="stat-card__figure">20–25%</p>
+              <h3 class="stat-card__label">faster execution than the industry average</h3>
+              <p class="stat-card__line">Qualified meetings in weeks, without compromising selectivity.</p>
+            </li>
+            <li class="stat-card">
+              <p class="stat-card__figure">600M+</p>
+              <h3 class="stat-card__label">organic views generated for partners</h3>
+              <p class="stat-card__line">Creative partners and cultural strategy that help investors see the full story, not only the spreadsheet.</p>
+            </li>
+          </ul>
+
+          <p class="why-founders__note">Performance metrics are based on internal data and management estimates.</p>
+        </div>
+      </div>
+    </section>
+    <!-- SECTION:why-founders END -->
+
     <!-- SECTION:map START · styles: sections/map.css · scripts: assets/land-dots.js, map.js
          Home, block 4: where we are in the world, laid out after Grok's offices
          section: the text on the left, the concrete globe on the right (turn it
@@ -466,6 +512,7 @@
   <script src="zoom.js"></script>
   <script src="stack.js"></script>
   <script src="team.js"></script>
+  <script src="founders.js"></script>
   <script src="assets/land-dots.js"></script>
   <script src="map.js"></script>
 </body>
