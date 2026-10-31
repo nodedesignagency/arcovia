@@ -527,8 +527,9 @@ function initFounders(root: HTMLElement, life: Life) {
 
     life.on(window, "scroll", queue, { passive: true })
     life.on(window, "resize", setMode)
-    if (desktop.addEventListener) life.on(desktop, "change", setMode)
-    if (reduced.addEventListener) life.on(reduced, "change", setMode)
+    // (older Safari has no addEventListener on media queries)
+    if (typeof desktop.addEventListener === "function") life.on(desktop, "change", setMode)
+    if (typeof reduced.addEventListener === "function") life.on(reduced, "change", setMode)
     // The headline is measured from the real font, so measure again once it's in. The
     // component can mount after the page has loaded, before its font has started
     // loading, so also listen for later font loads.

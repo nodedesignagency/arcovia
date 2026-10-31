@@ -722,7 +722,7 @@ export class ConcreteSurface {
         this.listen(document, "visibilitychange", () => {
             this.kick()
         })
-        if (this.reduced.addEventListener)
+        if (typeof this.reduced.addEventListener === "function")
             this.listen(this.reduced, "change", () => {
                 this.kick()
             })

@@ -759,6 +759,17 @@ class WorldMap {
             self.layout()
         })
 
+        // layout() measures the labels. On the HTML page Montserrat was linked in <head> and
+        // ready by then; here its stylesheet arrives with the component, so measure again once it loads.
+        const fonts = (document as any).fonts
+        if (fonts) {
+            const again = () => {
+                if (!self.life.dead) self.layout()
+            }
+            this.life.on(fonts, "loadingdone", again)
+            if (fonts.ready) fonts.ready.then(again)
+        }
+
         // With reduced motion the arcs are simply there; otherwise they draw out every
         // time the map comes into view, and reset once it has left the screen
         if (this.reduced || !("IntersectionObserver" in window)) {

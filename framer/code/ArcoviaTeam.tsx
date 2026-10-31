@@ -539,6 +539,13 @@ const TEAM_CSS = `/* ===========================================================
 }
 `
 
+/* Not in team.css. The plain dots shown before the script draws the line (on the Framer
+   canvas) put "See other members" on the people's column, over its first letter; on the
+   canvas it sits on the outer line instead, where the drawn version puts it. */
+const CANVAS_CSS = `
+.team__names:not(.is-drawn) .team__name--more::before { left: 3px; }
+`
+
 /** A ControlType.ResponsiveImage value */
 interface ImageValue {
     src: string
@@ -676,7 +683,7 @@ export default function ArcoviaTeam(incoming: Partial<Props>) {
     return (
         <div className="arc arc-team" ref={ref} style={p.style}>
             {baseStyle()}
-            {cssTag("team", TEAM_CSS)}
+            {cssTag("team", TEAM_CSS + CANVAS_CSS)}
             {sprite()}
             <section className="team" id="team" data-team="" aria-labelledby="team-title">
                 <div className="team__stage">
