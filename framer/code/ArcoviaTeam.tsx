@@ -1134,7 +1134,7 @@ function initTeam(host: HTMLElement, life: Life) {
         }
     })
     ;[desktop, reduced].forEach((mq) => {
-        if (mq.addEventListener) life.on(mq, "change", update)
+        if ((mq as any).addEventListener) life.on(mq, "change", update)
         else if ((mq as any).addListener) {
             ;(mq as any).addListener(update)
             life.add(() => (mq as any).removeListener(update))
