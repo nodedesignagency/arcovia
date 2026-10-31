@@ -16,6 +16,7 @@
   <!-- One stylesheet per section, so a section can be approved and moved to main on its own -->
   <link rel="stylesheet" href="sections/hero.css">
   <link rel="stylesheet" href="sections/statement.css">
+  <link rel="stylesheet" href="sections/data.css">
 </head>
 <body>
 
@@ -194,10 +195,64 @@
     </div>
     <!-- SECTION:hero END -->
 
+    <!-- SECTION:data START · styles: sections/data.css · scripts: stack.js
+         Home, block 2: the four figures as concrete blocks on a white wall.
+         The heading stays pinned while each block comes down turning a full
+         circle and settles on the stack; the first figure is the base. -->
+    <section class="data" data-stack aria-labelledby="data-title">
+      <div class="data__stage">
+        <div class="data__inner container">
+          <!-- [COPY NEEDED] Draft chip, heading and subheading, to confirm with Lilla -->
+          <div class="data__head">
+            <p class="chip">Track record</p>
+            <h2 class="data__title" id="data-title">A record to build on</h2>
+            <p class="data__sub">What the Arcovia team and our senior advisors bring to every mandate.</p>
+          </div>
+          <ul class="stack">
+            <li class="stack__block" style="--i:0">
+              <div class="stack__body">
+                <div class="stack__face">
+                  <p class="stack__figure">24</p>
+                  <p class="stack__label">transactions closed by the Arcovia team</p>
+                </div>
+              </div>
+            </li>
+            <li class="stack__block" style="--i:1">
+              <div class="stack__body">
+                <div class="stack__face">
+                  <p class="stack__figure">$330M+</p>
+                  <p class="stack__label">capital raised</p>
+                </div>
+              </div>
+            </li>
+            <li class="stack__block" style="--i:2">
+              <div class="stack__body">
+                <div class="stack__face">
+                  <p class="stack__figure">3,000+</p>
+                  <p class="stack__label">institutional relationships across 50+ countries</p>
+                </div>
+              </div>
+            </li>
+            <li class="stack__block" style="--i:3">
+              <div class="stack__body">
+                <div class="stack__face">
+                  <p class="stack__figure">$68B+</p>
+                  <p class="stack__label">combined transaction experience of our senior advisors</p>
+                </div>
+              </div>
+            </li>
+          </ul>
+          <p class="data__note">Advisor figures include experience at prior firms. See <a href="#" data-todo="Disclosures page or section [TO CONFIRM]">Disclosures</a>.</p>
+        </div>
+      </div>
+    </section>
+    <!-- SECTION:data END -->
+
   </main>
 
   <script src="concrete.js"></script>
   <script src="main.js"></script>
   <script src="zoom.js"></script>
+  <script src="stack.js"></script>
 </body>
 </html>
