@@ -1,0 +1,252 @@
+/* ==========================================================================
+   SECTION: map — Home, block 4 (where we are in the world)
+   Laid out after Grok's offices section, on white: the text on the left
+   (chip, headline, body, an outlined pill), the concrete globe on the right
+   with SpaceXAI-style arcs and coordinate labels, and a quiet index of the
+   fifteen cities under the text. map.js draws the globe (WebGL canvas), the
+   arcs and markers (SVG) and the labels (HTML) from the index's data
+   attributes. Desktop is two columns; tablet and phone stack text, globe,
+   index.
+   Uses shared tokens, the chip and the arrow icon from styles.css.
+   ========================================================================== */
+
+.map {
+  padding-block: var(--space-11) var(--space-10);
+  background: var(--color-white);
+}
+
+.map { overflow-x: clip; } /* arcs and labels may reach past the column while the globe turns */
+
+/* ---------- Layout: text and index on the left, globe on the right ---------- */
+.map__layout {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--grid-gap);
+  row-gap: var(--space-7);
+}
+.map__head { grid-column: 1 / span 5; grid-row: 1; align-self: end; }
+.map__cities { grid-column: 1 / span 5; grid-row: 2; align-self: start; }
+.map__figure { grid-column: 6 / -1; grid-row: 1 / span 2; align-self: center; margin: 0; }
+
+/* ---------- Head ---------- */
+.map__head {
+  display: grid;
+  justify-items: start;
+  gap: var(--space-5);
+}
+.map__title {
+  max-width: 11em;
+  margin-top: var(--space-1);
+  text-wrap: balance;
+  font-size: var(--fs-h2);
+  font-weight: var(--weight-medium);
+  line-height: var(--lh-h2);
+  letter-spacing: var(--ls-h2);
+  color: var(--color-ink);
+}
+.map__body {
+  max-width: 30em;
+  text-wrap: pretty;
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--color-text);
+}
+/* An outlined pill, as in the reference */
+.map__more {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  height: 44px;
+  margin-top: var(--space-2);
+  padding: 0 20px;
+  border: 1px solid rgba(43, 43, 43, 0.28);
+  border-radius: var(--radius-pill);
+  font-size: var(--fs-small);
+  font-weight: var(--weight-medium);
+  color: var(--color-ink);
+  transition: border-color var(--dur-fast) var(--ease-out), background-color var(--dur-fast) var(--ease-out);
+}
+.map__arrow {
+  flex: none;
+  width: 14px;
+  height: 14px;
+  transition: transform var(--dur-base) var(--ease-out);
+}
+@media (hover: hover) {
+  .map__more:hover { border-color: var(--color-ink); }
+  .map__more:hover .map__arrow { transform: translateX(3px); }
+}
+
+/* ---------- Stage: globe, arcs and labels ---------- */
+.map__figure { margin: var(--space-6) 0 0; }
+
+/* The whole globe, its arcs and its shadow; arcs and labels may reach past
+   the stage while it turns */
+.map__stage {
+  position: relative;
+  height: 640px; /* set by map.js */
+  cursor: grab;
+  touch-action: pan-y; /* sideways drags turn the globe, up and down still scrolls */
+  user-select: none;
+  -webkit-user-select: none;
+  outline-offset: 4px;
+}
+.is-turning .map__stage { cursor: grabbing; }
+.map__globe,
+.map__lines,
+.map__labels {
+  position: absolute;
+  inset: 0;
+}
+.map__lines { overflow: visible; }
+.map__globe { pointer-events: none; }
+.map__labels { pointer-events: none; }
+
+/* Arcs draw out from Los Angeles, one after another (map.js sets the dash) */
+.map__arc {
+  fill: none;
+  stroke: rgba(43, 43, 43, 0.5);
+  stroke-width: 1.1;
+  stroke-linecap: round;
+  transition: opacity var(--dur-base) var(--ease-out), stroke var(--dur-base) var(--ease-out);
+}
+/* A short pulse running out from Los Angeles along each arc */
+.map__pulse {
+  fill: none;
+  stroke: var(--color-ink);
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  transition: opacity var(--dur-base) var(--ease-out);
+}
+
+/* Square markers, as in the references; each lands as its arc arrives */
+.map__mark {
+  fill: var(--color-ink);
+  stroke: var(--color-white);
+  stroke-width: 2;
+  paint-order: stroke;
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+  transform: scale(0.4);
+  transition: opacity 360ms var(--ease-out), transform 420ms var(--ease-out);
+}
+.map__mark.is-landed { opacity: 1; transform: none; }
+
+.map__hit { fill: transparent; pointer-events: all; }
+
+/* Labels: city and coordinates; the offices in a thin box, always shown */
+.map__label {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: grid;
+  gap: 2px;
+  padding: 4px 6px;
+  background: rgba(255, 255, 255, 0.86); /* keeps the text clear of the dots */
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity var(--dur-base) var(--ease-out);
+}
+.map__label-name {
+  font-size: 11px;
+  font-weight: var(--weight-semibold);
+  letter-spacing: 0.08em;
+  line-height: 1.3;
+  text-transform: uppercase;
+  color: var(--color-ink);
+}
+.map__label-meta {
+  font-size: 11px;
+  line-height: 1.3;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-muted);
+}
+.map__label--office {
+  padding: 8px 10px 9px;
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid rgba(43, 43, 43, 0.22);
+}
+.map__label--office.is-landed { opacity: 1; transition-delay: 150ms; }
+.is-compact .map__label--office:not(.is-active) { opacity: 0; }
+.map__label.is-active { opacity: 1; }
+
+/* Turned to the far side of the globe */
+.map .map__mark.is-behind,
+.map .map__label.is-behind { opacity: 0; transition-duration: 120ms; transition-delay: 0s; }
+
+/* Hovering a city brings its arc forward and fades the others */
+.has-focus .map__arc,
+.has-focus .map__pulse { opacity: 0.3; }
+.map__pulse.is-active { opacity: 1; }
+.map__arc.is-active { opacity: 1; stroke: var(--color-ink); stroke-width: 1.6; }
+.map__mark.is-active { transform: scale(1.35); }
+
+/* Reduced motion: no transitions */
+.is-instant .map__arc,
+.is-instant .map__mark,
+.is-instant .map__label { transition: none; }
+
+/* ---------- City index: two columns of names, quiet; picking one turns the globe ---------- */
+.map__cities {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-rows: repeat(8, auto);
+  grid-auto-flow: column;
+  column-gap: var(--grid-gap);
+  max-width: 30em;
+  border-bottom: 1px solid var(--color-line);
+}
+.map__city {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 38px;
+  padding: 6px 4px;
+  border-top: 1px solid var(--color-line);
+  outline-offset: -2px;
+  cursor: pointer;
+  transition: background-color var(--dur-fast) var(--ease-out);
+}
+.map__city.is-active { background: var(--color-well); }
+.map__city-name {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 15px;
+  font-weight: var(--weight-medium);
+  color: var(--color-ink);
+}
+/* The same square as on the map */
+.map__city-name::before {
+  content: "";
+  flex: none;
+  width: 7px;
+  height: 7px;
+  background: var(--color-ink);
+}
+.map__city-tag {
+  margin-left: auto;
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+/* ---------- Tablet: text, globe, index, one under the other ---------- */
+@media (max-width: 1199px) {
+  .map { padding-block: var(--space-10) var(--space-9); }
+  .map__layout { row-gap: var(--space-6); }
+  .map__head,
+  .map__figure,
+  .map__cities { grid-column: 1 / -1; grid-row: auto; align-self: auto; }
+  .map__title { max-width: 14em; }
+  .map__cities { max-width: none; }
+}
+
+/* ---------- Phone ---------- */
+@media (max-width: 809px) {
+  .map { padding-block: var(--space-9) var(--space-8); }
+  .map__head { gap: var(--space-4); }
+  .map__body { font-size: 16px; }
+  .map__layout { row-gap: var(--space-5); }
+  .map__city-name { font-size: 14px; gap: 8px; }
+}
