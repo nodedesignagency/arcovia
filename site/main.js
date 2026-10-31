@@ -5,18 +5,60 @@
   var root = document.documentElement;
   root.classList.add("js");
 
-  /* ---------- Header: thin bar once scrolled ---------- */
+  // Review switch: ?ink=soft shows the previous, softer text colours
+  try {
+    var ink = new URLSearchParams(location.search).get("ink");
+    if (ink) root.setAttribute("data-ink", ink);
+  } catch (e) { /* old browser: keep the default */ }
+
+  /* ---------- Header: fold on leaving the top, hide going down, return going up ---------- */
   var header = document.querySelector("[data-header]");
   if (header) {
     var ticking = false;
+    var lastY = window.scrollY;
     var update = function () {
-      header.classList.toggle("is-scrolled", window.scrollY > 24);
+      var y = Math.max(0, window.scrollY);
+      var dy = y - lastY;
+      var atTop = y < 8;
+      header.classList.toggle("is-compact", !atTop);
+      if (atTop || root.style.overflow === "hidden") {
+        header.classList.remove("is-hidden");
+      } else if (Math.abs(dy) > 6) {
+        // Down: slide away once past the masthead. Up: come back as the small bar.
+        header.classList.toggle("is-hidden", dy > 0 && y > header.offsetHeight && !header.contains(document.activeElement));
+      }
+      if (atTop || Math.abs(dy) > 6) lastY = y;
+
+      // Light type while the bar sits over a dark section
+      var probe = 40, onDark = false;
+      // Queried each time: zoom.js marks the statement dark only once you're inside it
+      document.querySelectorAll("[data-header-theme='dark']").forEach(function (sec) {
+        var r = sec.getBoundingClientRect();
+        if (r.top <= probe && r.bottom >= probe) onDark = true;
+      });
+      header.classList.toggle("is-on-dark", onDark);
       ticking = false;
     };
     window.addEventListener("scroll", function () {
       if (!ticking) { ticking = true; requestAnimationFrame(update); }
     }, { passive: true });
+    // Keyboard users tabbing into a hidden header bring it back
+    header.addEventListener("focusin", function () { header.classList.remove("is-hidden"); });
     update();
+
+    // How far the wordmark travels to sit beside the small mark when the masthead folds
+    var measure = function () {
+      var grid = header.querySelector(".masthead-main");
+      if (!grid || window.innerWidth < 1200) { header.style.removeProperty("--word-shift"); return; }
+      var cs = getComputedStyle(grid);
+      var cols = cs.gridTemplateColumns.split(" ").map(parseFloat);
+      var gap = parseFloat(cs.columnGap) || 0;
+      var col3 = cols[0] + cols[1] + gap * 2;
+      var small = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--mh-mark-small")) || 22;
+      header.style.setProperty("--word-shift", (small + 12 - col3) + "px");
+    };
+    measure();
+    window.addEventListener("resize", measure);
   }
 
   /* ---------- Full-screen menu ---------- */
@@ -54,7 +96,10 @@
   }
 
   /* ---------- Path picker: one button, three paths ---------- */
+  // Review switch: ?icons=none shows the menu without icons
+  var pickerIcons = (location.search.match(/[?&]icons=(\w+)/) || [])[1];
   document.querySelectorAll("[data-path-picker]").forEach(function (picker) {
+    if (pickerIcons) picker.setAttribute("data-icons", pickerIcons);
     var trigger = picker.querySelector(".path-picker__trigger");
     var panel = picker.querySelector(".path-picker__panel");
     var options = panel.querySelectorAll(".path-picker__option");
@@ -98,7 +143,11 @@
       var now = new Date();
       clocks.forEach(function (el) {
         try {
-          el.textContent = new Intl.DateTimeFormat("en-US", { hour: "numeric", minute: "2-digit", timeZone: el.getAttribute("data-clock"), timeZoneName: "short" }).format(now);
+          // "7:02 AM" plus the zone ("PDT") in its own span, so phones can drop it
+          var parts = new Intl.DateTimeFormat("en-US", { hour: "numeric", minute: "2-digit", timeZone: el.getAttribute("data-clock"), timeZoneName: "short" }).formatToParts(now);
+          var time = "", zone = "";
+          parts.forEach(function (p) { if (p.type === "timeZoneName") zone = p.value; else time += p.value; });
+          el.innerHTML = time.trim() + ' <span class="office__tz">' + zone + "</span>";
         } catch (e) { /* unknown zone: keep the fallback text */ }
       });
     };
@@ -119,7 +168,8 @@
     var cs = getComputedStyle(wrap);
     var target = wrap.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
     mark.style.fontSize = "100px";
-    var w = mark.getBoundingClientRect().width - 0.035 * 100;
+    // offsetWidth ignores transforms, so this stays right during the zoom-through
+    var w = mark.offsetWidth - 0.035 * 100;
     var size = Math.floor((100 * target) / w * 100) / 100;
     mark.style.fontSize = "";
     hero.style.setProperty("--wordmark-size", size + "px");
@@ -136,7 +186,9 @@
 
   // Live concrete
   if (window.ConcreteSurface) {
-    window.arcoviaHero = new window.ConcreteSurface(hero, { canvas: ".hero__canvas" });
+    // Review switch: ?burn=mono burns with white heat only, no fire colours
+    var mono = /[?&]burn=mono\b/.test(location.search);
+    window.arcoviaHero = new window.ConcreteSurface(hero, { canvas: ".hero__canvas", burnWarmth: mono ? 0 : 1 });
     window.arcoviaHero.init();
   }
 })();

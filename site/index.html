@@ -15,44 +15,73 @@
   <link rel="stylesheet" href="styles.css">
   <!-- One stylesheet per section, so a section can be approved and moved to main on its own -->
   <link rel="stylesheet" href="sections/hero.css">
+  <link rel="stylesheet" href="sections/statement.css">
 </head>
 <body>
 
-  <!-- A-mark sprite: one source for header, hero, menu and footer -->
+  <!-- Sprite: logo, icons. One source for header, menu and footer -->
   <svg class="sprite" aria-hidden="true" focusable="false">
-    <symbol id="a-mark" viewBox="0 0 554 539">
-      <path d="M200 77a77 77 0 1 0 154 0a77 77 0 1 0-154 0Z"/>
-      <path d="M215.63 142.83A90 90 0 0 0 265.8 166.3L72 539H0Z"/>
-      <path d="M288.2 166.3A90 90 0 0 0 338.37 142.83L554 539H482Z"/>
-    </symbol>
-    <symbol id="icon-chevron" viewBox="0 0 16 16"><path d="M3.5 10l4.5-4.5 4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <!-- Official Arcovia logo (site/assets/logo/, from the client): brandmark and wordmark -->
+    <symbol id="a-mark" viewBox="0 0 72 57"><path d="M12.0606 45.653L6.4043 56.272L9.58059 56.3005C11.096 56.3148 12.4458 56.3605 14.1267 56.2321L35.0366 17.4288C32.9219 16.7924 31.1725 15.7479 29.6286 14.4009L12.0606 45.653Z"/><path d="M62.5327 50.738L42.9184 14.1807C41.2461 15.8616 39.5509 16.9432 37.3164 17.1743L57.8439 56.243H65.3551C64.3192 54.3652 63.3831 52.7499 62.5327 50.738Z"/><path d="M36.201 16.0215C40.6267 16.0215 44.2145 12.4351 44.2145 8.0109C44.2145 3.58674 40.6267 0.000244141 36.201 0.000244141C31.7753 0.000244141 28.1875 3.58674 28.1875 8.0109C28.1875 12.4351 31.7753 16.0215 36.201 16.0215Z"/></symbol>
+    <symbol id="wordmark" viewBox="0 0 72 11"><path d="M60.8672 10.8151L65.4337 0.362549H67.1239L71.6903 10.8151H69.7629L68.7103 8.30942H63.8028L62.7353 10.8151H60.8672ZM64.47 6.69336H68.0431L66.2491 2.54201L64.47 6.69336Z"/><path d="M57.1562 10.8149V0.436523H58.9799V10.8149H57.1562Z"/><path d="M49.3426 10.889L45.043 0.436523H47.0593L50.1877 8.41305L53.3012 0.436523H55.2731L50.9735 10.889H49.3426Z"/><path d="M38.9389 10.993C35.7513 10.993 33.5273 8.57632 33.5273 5.65554V5.62589C33.5273 2.71995 35.7809 0.258789 38.9686 0.258789C42.1562 0.258789 44.3802 2.67547 44.3802 5.59624V5.62589C44.3802 8.53184 42.1266 10.993 38.9389 10.993ZM38.9686 9.3028C41.0294 9.3028 42.4676 7.67191 42.4676 5.65554V5.62589C42.4676 3.60952 41.0146 1.94898 38.9389 1.94898C36.8781 1.94898 35.4399 3.57987 35.4399 5.59624V5.62589C35.4399 7.64226 36.8929 9.3028 38.9686 9.3028Z"/><path d="M28.1356 10.993C25.111 10.993 22.8574 8.63562 22.8574 5.65554V5.62589C22.8574 2.67547 25.0665 0.258789 28.1949 0.258789C30.1223 0.258789 31.2787 0.92597 32.2721 1.87485L31.1008 3.22404C30.2557 2.45307 29.381 1.94898 28.18 1.94898C26.223 1.94898 24.77 3.56504 24.77 5.59624V5.62589C24.77 7.65709 26.2082 9.3028 28.1949 9.3028C29.4551 9.3028 30.2854 8.79871 31.1749 7.96844L32.3462 9.15454C31.2936 10.2962 30.063 10.993 28.1356 10.993Z"/><path d="M12.6016 10.8149V0.436523H17.2274C18.5321 0.436523 19.5551 0.822006 20.2223 1.47436C20.7708 2.05259 21.0822 2.80872 21.0822 3.71313V3.74278C21.0822 5.4478 20.0592 6.47081 18.621 6.88594L21.4232 10.8149H19.2585L16.7084 7.19729H14.4252V10.8149H12.6016ZM14.4252 5.58123H17.0939C18.3986 5.58123 19.2289 4.91405 19.2289 3.84656V3.81691C19.2289 2.69011 18.4431 2.09706 17.0791 2.09706H14.4252V5.58123Z"/><path d="M0 10.8151L4.56649 0.362549H6.25668L10.8232 10.8151H8.89575L7.84309 8.30942H2.9356L1.86811 10.8151H0ZM3.60278 6.69336H7.17591L5.38193 2.54201L3.60278 6.69336Z"/></symbol>
+    <!-- Path icons: 24px line icons, 1.5 stroke -->
+    <!-- Path icons: the user's duotone icons (sources in assets/icons/), recoloured with currentColor -->
+    <symbol id="icon-raise" viewBox="0 0 24 24"><path opacity="0.2" d="M12 22C7.28595 22 4.92893 22 3.46447 20.5355C2 19.0711 2 16.714 2 12C2 7.28595 2 4.92893 3.46447 3.46447C4.92893 2 7.28595 2 12 2C16.714 2 19.0711 2 20.5355 3.46447C22 4.92893 22 7.28595 22 12C22 16.714 22 19.0711 20.5355 20.5355C19.0711 22 16.714 22 12 22Z" fill="currentColor"/><path d="M7 14.25C7.41421 14.25 7.75 14.5858 7.75 15V18C7.75 18.4142 7.41421 18.75 7 18.75C6.58579 18.75 6.25 18.4142 6.25 18V15C6.25 14.5858 6.58579 14.25 7 14.25Z" fill="currentColor"/><path d="M12 11.25C12.4142 11.25 12.75 11.5858 12.75 12V18C12.75 18.4142 12.4142 18.75 12 18.75C11.5858 18.75 11.25 18.4142 11.25 18V12C11.25 11.5858 11.5858 11.25 12 11.25Z" fill="currentColor"/><path d="M17 8.25C17.4142 8.25 17.75 8.58579 17.75 9V18C17.75 18.4142 17.4142 18.75 17 18.75C16.5858 18.75 16.25 18.4142 16.25 18V9C16.25 8.58579 16.5858 8.25 17 8.25Z" fill="currentColor"/></symbol>
+    <symbol id="icon-invest" viewBox="0 0 24 24"><path opacity="0.2" d="M6.25993 21.3884H6C5.05719 21.3884 4.58579 21.3884 4.29289 21.0955C4 20.8026 4 20.3312 4 19.3884V18.2764C4 17.7579 4 17.4987 4.13318 17.2672C4.26636 17.0356 4.46727 16.9188 4.8691 16.6851C7.51457 15.1464 11.2715 14.2803 13.7791 15.7759C13.9475 15.8764 14.0991 15.9977 14.2285 16.1431C14.7866 16.77 14.746 17.7161 14.1028 18.2775C13.9669 18.396 13.8222 18.486 13.6764 18.5172C13.7962 18.5033 13.911 18.4874 14.0206 18.4699C14.932 18.3245 15.697 17.8375 16.3974 17.3084L18.2046 15.9433C18.8417 15.462 19.7873 15.4619 20.4245 15.943C20.9982 16.3762 21.1736 17.0894 20.8109 17.6707C20.388 18.3487 19.7921 19.216 19.2199 19.7459C18.6469 20.2766 17.7939 20.7504 17.0975 21.0865C16.326 21.4589 15.4738 21.6734 14.6069 21.8138C12.8488 22.0983 11.0166 22.0549 9.27633 21.6964C8.29253 21.4937 7.27079 21.3884 6.25993 21.3884Z" fill="currentColor"/><path d="M6.58579 2.58579C6.21901 2.95256 6.08188 3.4593 6.03061 4.2498C7.24895 4.23355 8.23355 3.24896 8.2498 2.03061C7.4593 2.08188 6.95256 2.21901 6.58579 2.58579Z" fill="currentColor"/><path d="M17.4142 2.58579C17.0474 2.21901 16.5407 2.08188 15.7502 2.03061C15.7664 3.24895 16.751 4.23355 17.9694 4.2498C17.9181 3.4593 17.781 2.95256 17.4142 2.58579Z" fill="currentColor"/><path d="M17.4142 9.41421C17.0474 9.78099 16.5407 9.91812 15.7502 9.96939C15.7665 8.75104 16.751 7.76645 17.9694 7.7502C17.9181 8.5407 17.781 9.04744 17.4142 9.41421Z" fill="currentColor"/><path d="M6.58579 9.41421C6.95256 9.78099 7.4593 9.91812 8.2498 9.96939C8.23355 8.75105 7.24895 7.76645 6.03061 7.7502C6.08188 8.5407 6.21901 9.04744 6.58579 9.41421Z" fill="currentColor"/><path d="M6 5.75C8.07107 5.75 9.75 4.07107 9.75 2H14.25C14.25 4.07107 15.9289 5.75 18 5.75V6.25C15.9289 6.25 14.25 7.92893 14.25 10H9.75C9.75 7.92893 8.07107 6.25 6 6.25V5.75ZM12 7C12.5523 7 13 6.55228 13 6C13 5.44772 12.5523 5 12 5C11.4477 5 11 5.44772 11 6C11 6.55228 11.4477 7 12 7Z" fill-rule="evenodd" clip-rule="evenodd" fill="currentColor"/></symbol>
+    <symbol id="icon-institution" viewBox="0 0 24 24"><path d="M12.75 8.83697V9.87803C13.6239 10.1869 14.25 11.0203 14.25 12C14.25 12.0492 14.2484 12.0979 14.2453 12.1463L15.2025 12.5565C15.2337 12.3757 15.25 12.1898 15.25 12C15.25 10.4632 14.1833 9.17555 12.75 8.83697Z" fill="currentColor"/><path d="M11.25 8.83697C9.81665 9.17555 8.75 10.4632 8.75 12C8.75 12.1898 8.76626 12.3757 8.79747 12.5565L9.75468 12.1463C9.75158 12.0979 9.75 12.0492 9.75 12C9.75 11.0203 10.3761 10.1869 11.25 9.87803V8.83697Z" fill="currentColor"/><path d="M14.6113 13.9351L13.6544 13.525C13.2432 13.9708 12.6542 14.25 12 14.25C11.3458 14.25 10.7568 13.9708 10.3456 13.525L9.38865 13.9351C9.98087 14.733 10.9301 15.25 12 15.25C13.0699 15.25 14.0191 14.733 14.6113 13.9351Z" fill="currentColor"/><path d="M13.0549 4.25H10.9451C9.57755 4.24998 8.47521 4.24996 7.60825 4.36652C6.70814 4.48754 5.95027 4.74643 5.34835 5.34835C5.07033 5.62637 4.8655 5.93766 4.71362 6.28086C4.64592 6.26078 4.57422 6.25 4.5 6.25C4.08579 6.25 3.75 6.58579 3.75 7V10C3.75 10.3266 3.95871 10.6044 4.25002 10.7073V13.2927C3.95871 13.3956 3.75 13.6734 3.75 14V17C3.75 17.4142 4.08579 17.75 4.5 17.75C4.57422 17.75 4.64592 17.7392 4.71362 17.7191C4.8655 18.0623 5.07033 18.3736 5.34835 18.6517C5.95027 19.2536 6.70814 19.5125 7.60825 19.6335C8.47522 19.75 9.57754 19.75 10.9451 19.75H13.0549C14.4225 19.75 15.5248 19.75 16.3918 19.6335C17.2919 19.5125 18.0497 19.2536 18.6516 18.6517C19.2536 18.0497 19.5125 17.2919 19.6335 16.3918C19.75 15.5248 19.75 14.4225 19.75 13.0549V10.9451C19.75 9.57754 19.75 8.47522 19.6335 7.60825C19.5125 6.70814 19.2536 5.95027 18.6516 5.34835C18.0497 4.74643 17.2919 4.48754 16.3918 4.36652C15.5248 4.24996 14.4225 4.24998 13.0549 4.25ZM7.25 12C7.25 9.37665 9.37665 7.25 12 7.25C14.6234 7.25 16.75 9.37665 16.75 12C16.75 14.6234 14.6234 16.75 12 16.75C9.37665 16.75 7.25 14.6234 7.25 12Z" fill-rule="evenodd" clip-rule="evenodd" fill="currentColor"/><path opacity="0.2" d="M3.46447 3.46447C2 4.92893 2 7.28595 2 12C2 16.714 2 19.0711 3.46447 20.5355C4.92893 22 7.28595 22 12 22C16.714 22 19.0711 22 20.5355 20.5355C22 19.0711 22 16.714 22 12C22 7.28595 22 4.92893 20.5355 3.46447C19.0711 2 16.714 2 12 2C7.28595 2 4.92893 2 3.46447 3.46447ZM10.9451 4.25H13.0549C14.4225 4.24998 15.5248 4.24996 16.3918 4.36652C17.2919 4.48754 18.0497 4.74643 18.6516 5.34835C19.2536 5.95027 19.5125 6.70814 19.6335 7.60825C19.75 8.47522 19.75 9.57754 19.75 10.9451V13.0549C19.75 14.4225 19.75 15.5248 19.6335 16.3918C19.5125 17.2919 19.2536 18.0497 18.6516 18.6517C18.0497 19.2536 17.2919 19.5125 16.3918 19.6335C15.5248 19.75 14.4225 19.75 13.0549 19.75H10.9451C9.57754 19.75 8.47522 19.75 7.60825 19.6335C6.70814 19.5125 5.95027 19.2536 5.34835 18.6517C5.07033 18.3736 4.8655 18.0623 4.71362 17.7191C4.64592 17.7392 4.57422 17.75 4.5 17.75C4.08579 17.75 3.75 17.4142 3.75 17V14C3.75 13.6734 3.95871 13.3956 4.25002 13.2927V10.7073C3.95871 10.6044 3.75 10.3266 3.75 10V7C3.75 6.58579 4.08579 6.25 4.5 6.25C4.57422 6.25 4.64592 6.26078 4.71362 6.28086C4.8655 5.93766 5.07033 5.62637 5.34835 5.34835C5.95027 4.74643 6.70814 4.48754 7.60825 4.36652C8.47521 4.24996 9.57755 4.24998 10.9451 4.25Z" fill-rule="evenodd" clip-rule="evenodd" fill="currentColor"/></symbol>
+    <symbol id="icon-chevron-right" viewBox="0 0 16 16"><path d="M6 3.5 10.5 8 6 12.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
     <symbol id="icon-arrow" viewBox="0 0 16 16"><path d="M2.5 8h11M9 3.5 13.5 8 9 12.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
   </svg>
 
   <a class="visually-hidden" href="#main">Skip to content</a>
 
   <!-- ===== Header (component: site-header) =====
-       A masthead: logo, what Arcovia is, then the nav. Shrinks to a thin bar on scroll. -->
+       Masthead after defiant.vc. At the top of the page: a labels row (the
+       two offices and one clock), the big A-mark, the wordmark, one line on
+       what we do, and the site map as rows. Scrolling down folds it into a
+       small bar and slides it away; scrolling up brings the small bar back
+       with the labels row; the top of the page opens it again. No
+       background: it sits straight on the page. Links are the V1 pages only
+       (Home is the logo), three and three; Legal fills the sixth row. -->
   <header class="site-header" data-header>
     <div class="site-header__inner container">
-      <a class="logo site-header__logo" href="index.html" aria-label="Arcovia, home">
-        <svg class="logo__mark" viewBox="0 0 554 539" aria-hidden="true"><use href="#a-mark"/></svg>
-        <span class="logo__word">ARCOVIA</span>
-      </a>
-      <p class="site-header__note">Independent capital<br> markets advisory</p>
-      <nav class="nav" aria-label="Main">
-        <ul class="nav__list">
-          <li><a class="nav__link" href="services.html">What We Do</a></li>
-          <li><a class="nav__link" href="track-record.html">Track Record</a></li>
-          <li><a class="nav__link" href="team.html">Team</a></li>
-          <li><a class="nav__link" href="about.html">About</a></li>
-        </ul>
-        <a class="btn btn--primary btn--small site-header__cta" href="contact.html">Start a conversation</a>
-        <button class="menu-btn" type="button" aria-expanded="false" aria-controls="menu" data-menu-open>
-          <span class="menu-btn__icon" aria-hidden="true"><span></span><span></span></span>
-          Menu
-        </button>
-      </nav>
+      <div class="masthead-labels">
+        <span class="masthead-city masthead-city--la">Los Angeles</span>
+        <span class="masthead-city masthead-city--sj">San Juan</span>
+        <!-- One clock: Los Angeles time; hover San Juan to see its time -->
+        <p class="masthead-clock">
+          <span class="masthead-clock__time masthead-clock__time--la"><span class="visually-hidden">Los Angeles </span><span data-clock="America/Los_Angeles">Pacific Time</span></span>
+          <span class="masthead-clock__time masthead-clock__time--sj"><span class="visually-hidden">San Juan </span><span data-clock="America/Puerto_Rico">Atlantic Time</span></span>
+        </p>
+        <p class="masthead-label masthead-labels__site" aria-hidden="true">Site map</p>
+        <p class="masthead-label masthead-labels__company" aria-hidden="true">Company</p>
+      </div>
+
+      <div class="masthead-main">
+        <a class="masthead-mark" href="index.html" aria-label="Arcovia, home">
+          <svg viewBox="0 0 72 57" aria-hidden="true"><use href="#a-mark"/></svg>
+        </a>
+        <a class="masthead-word" href="index.html" tabindex="-1" aria-hidden="true"><svg viewBox="0 0 72 11"><use href="#wordmark"/></svg></a>
+        <!-- [COPY NEEDED] Draft line, to confirm with Lilla -->
+        <p class="masthead-note">We build investor conviction, then run the process that turns it into capital.</p>
+        <nav class="nav" aria-label="Main">
+          <ul class="nav__list nav__list--site">
+            <li class="nav__item" style="--i:0"><a class="nav__link" href="services.html">What We Do</a></li>
+            <li class="nav__item" style="--i:1"><a class="nav__link" href="track-record.html">Track Record</a></li>
+            <li class="nav__item" style="--i:2"><a class="nav__link" href="team.html">Team</a></li>
+          </ul>
+          <ul class="nav__list nav__list--company">
+            <li class="nav__item" style="--i:0"><a class="nav__link" href="about.html">About</a></li>
+            <li class="nav__item" style="--i:1"><a class="nav__link" href="contact.html">Contact</a></li>
+            <li class="nav__item" style="--i:2"><a class="nav__link" href="legal.html">Legal</a></li>
+          </ul>
+          <button class="menu-btn" type="button" aria-expanded="false" aria-controls="menu" data-menu-open>
+            Menu
+            <span class="menu-btn__plus" aria-hidden="true"></span>
+          </button>
+        </nav>
+        <span class="masthead-rule" aria-hidden="true"></span>
+      </div>
     </div>
   </header>
 
@@ -60,8 +89,8 @@
   <div class="menu" id="menu" data-menu aria-hidden="true" role="dialog" aria-modal="true" aria-label="Menu">
     <div class="menu__top container">
       <a class="logo" href="index.html" aria-label="Arcovia, home">
-        <svg class="logo__mark" viewBox="0 0 554 539" aria-hidden="true"><use href="#a-mark"/></svg>
-        <span class="logo__word">ARCOVIA</span>
+        <svg class="logo__mark" viewBox="0 0 72 57" aria-hidden="true"><use href="#a-mark"/></svg>
+        <svg class="logo__word" viewBox="0 0 72 11" aria-hidden="true"><use href="#wordmark"/></svg>
       </a>
       <button class="menu__close" type="button" data-menu-close>Close</button>
     </div>
@@ -84,81 +113,91 @@
 
   <main id="main">
 
-    <!-- SECTION:hero START · styles: sections/hero.css · scripts: concrete.js
-         Version B "Carved": live concrete framed by formwork joints and tie holes,
-         one path button, ARCOVIA carved across the bottom. -->
-    <section class="hero" data-hero aria-labelledby="hero-title">
-      <canvas class="hero__canvas" aria-hidden="true"></canvas>
+    <!-- SECTION:hero START · styles: sections/hero.css · scripts: concrete.js, zoom.js
+         Version B "Carved": live concrete, chip over the headline, one path button,
+         a carved seam and ARCOVIA carved across the bottom.
+         Hero and statement share one scroll stage (zoom.js): scrolling down opens the
+         O of ARCOVIA into a hole through the concrete and flies through it into the
+         statement. Without JS or with reduced motion they simply stack. -->
+    <div class="zoom" data-zoom>
+      <div class="zoom__stage">
+        <section class="hero" data-hero aria-labelledby="hero-title">
+          <canvas class="hero__canvas" aria-hidden="true"></canvas>
+          <canvas class="hero__debris" aria-hidden="true"></canvas>
 
-      <div class="hero__inner container">
-        <div class="seam hero__seam" data-carve="seam" aria-hidden="true">
-          <span class="seam__hole seam__hole--start" data-carve="hole"></span>
-          <span class="seam__hole seam__hole--end" data-carve="hole"></span>
-        </div>
+          <div class="hero__inner container">
+            <!-- Heading and path picker share a row, aligned at the bottom: the button sits on the headline's baseline -->
+            <div class="hero__content">
+              <div class="hero__heading" data-rise data-zoom-fade style="--rise:0">
+                <p class="chip">Independent capital markets advisory</p>
+                <h1 class="hero__title" id="hero-title">Where Capital<br> Meets Conviction</h1>
+              </div>
 
-        <h1 class="hero__title" id="hero-title" data-rise style="--rise:0">Where Capital<br> Meets Conviction</h1>
+              <div class="hero__aside" data-rise data-zoom-fade style="--rise:1">
+                <p class="hero__lede">For growth-stage founders, funds and foundations raising <span class="nowrap">$5M–$500M+</span>.</p>
 
-        <div class="hero__aside" data-rise style="--rise:1">
-          <p class="hero__lede">For growth-stage founders, funds and foundations raising <span class="nowrap">$5M–$500M+</span>.</p>
-
-          <!-- Component: path-picker. One button; the three paths open above it. -->
-          <div class="path-picker" data-path-picker>
-            <div class="path-picker__panel" id="path-options" role="group" aria-labelledby="path-title" aria-hidden="true">
-              <p class="path-picker__title" id="path-title">Who are you?</p>
-              <a class="path-picker__option" href="services.html#founders">
-                <span class="path-picker__label">I’m raising capital</span>
-                <span class="path-picker__meta">Growth-stage founders and funds raising <span class="nowrap">$5M–$500M+</span></span>
-                <svg class="path-picker__arrow" aria-hidden="true"><use href="#icon-arrow"/></svg>
-              </a>
-              <a class="path-picker__option" href="services.html#investors">
-                <span class="path-picker__label">I’m an investor</span>
-                <span class="path-picker__meta">Family offices, VCs, funds and LPs</span>
-                <svg class="path-picker__arrow" aria-hidden="true"><use href="#icon-arrow"/></svg>
-              </a>
-              <a class="path-picker__option" href="services.html#institutions">
-                <span class="path-picker__label">I represent an institution</span>
-                <span class="path-picker__meta">Institutions and sovereign capital</span>
-                <svg class="path-picker__arrow" aria-hidden="true"><use href="#icon-arrow"/></svg>
-              </a>
+                <!-- Component: path-picker. One button; the three paths open above it, each with
+                     an icon tile, a title, one line and a chevron. ?icons=none previews it without icons. -->
+                <div class="path-picker" data-path-picker>
+                  <div class="path-picker__panel" id="path-options" role="group" aria-labelledby="path-title" aria-hidden="true">
+                    <p class="path-picker__title" id="path-title">Who are you?</p><!-- set in capitals by CSS -->
+                    <a class="path-picker__option" href="services.html#founders">
+                      <span class="path-picker__icon" aria-hidden="true"><svg><use href="#icon-raise"/></svg></span>
+                      <span class="path-picker__label">I’m raising capital</span>
+                      <span class="path-picker__meta">Founders and funds raising <span class="nowrap">$5M–$500M+</span></span>
+                      <svg class="path-picker__arrow" aria-hidden="true"><use href="#icon-chevron-right"/></svg>
+                    </a>
+                    <a class="path-picker__option" href="services.html#investors">
+                      <span class="path-picker__icon" aria-hidden="true"><svg><use href="#icon-invest"/></svg></span>
+                      <span class="path-picker__label">I’m an investor</span>
+                      <span class="path-picker__meta">Family offices, VCs, funds and LPs</span>
+                      <svg class="path-picker__arrow" aria-hidden="true"><use href="#icon-chevron-right"/></svg>
+                    </a>
+                    <a class="path-picker__option" href="services.html#institutions">
+                      <span class="path-picker__icon" aria-hidden="true"><svg><use href="#icon-institution"/></svg></span>
+                      <span class="path-picker__label">I represent an institution</span>
+                      <span class="path-picker__meta">Institutions and sovereign capital</span>
+                      <svg class="path-picker__arrow" aria-hidden="true"><use href="#icon-chevron-right"/></svg>
+                    </a>
+                  </div>
+                  <button class="btn btn--primary path-picker__trigger" type="button" aria-expanded="false" aria-controls="path-options">
+                    Choose your path
+                    <!-- Up-down chevrons: "pick one of several". Inline so each chevron can turn: inward = close -->
+                    <svg class="btn__icon path-picker__chevrons" viewBox="0 0 16 16" aria-hidden="true"><path class="path-picker__chev path-picker__chev--up" d="M5 6.25 8 3.25l3 3"/><path class="path-picker__chev path-picker__chev--down" d="M5 9.75l3 3 3-3"/></svg>
+                  </button>
+                </div>
+              </div>
             </div>
-            <button class="btn btn--primary path-picker__trigger" type="button" aria-expanded="false" aria-controls="path-options">
-              Choose your path
-              <svg class="btn__icon" aria-hidden="true"><use href="#icon-chevron"/></svg>
-            </button>
-          </div>
-        </div>
 
-        <!-- Component: offices. The two offices with their local time, live. -->
-        <div class="hero__info" data-rise style="--rise:2">
-          <div class="seam hero__seam" data-carve="seam" aria-hidden="true">
-            <span class="seam__hole seam__hole--start" data-carve="hole"></span>
-            <span class="seam__hole seam__hole--end" data-carve="hole"></span>
+            <div class="seam hero__seam" data-carve="seam" aria-hidden="true">
+              <span class="seam__hole seam__hole--start" data-carve="hole"></span>
+              <span class="seam__hole seam__hole--end" data-carve="hole"></span>
+            </div>
           </div>
-          <p class="office">
-            <span class="office__city">Los Angeles</span>
-            <span class="office__time" data-clock="America/Los_Angeles">Pacific Time</span>
-          </p>
-          <p class="office">
-            <span class="office__city">San Juan</span>
-            <span class="office__time" data-clock="America/Puerto_Rico">Atlantic Time</span>
-          </p>
-        </div>
-      </div>
 
-      <div class="hero__wordmark-wrap container" aria-hidden="true">
-        <span class="hero__wordmark" data-carve="text">ARCOVIA</span>
+          <div class="hero__wordmark-wrap container" aria-hidden="true">
+            <span class="hero__wordmark" data-carve="text">ARCOVIA</span>
+          </div>
+        </section>
+
+        <!-- SECTION:statement START · styles: sections/statement.css · scripts: zoom.js
+             Home block 2. Seen through the O, then its words light up as you scroll.
+             "Spreadsheets validate data" stays pale on purpose: the tension in the line. -->
+        <section class="statement" data-statement aria-labelledby="statement-title">
+          <div class="statement__inner">
+            <h2 class="visually-hidden" id="statement-title">Why story moves capital</h2>
+            <p class="statement__text" data-reveal>Today’s markets are flooded with funding but starved for differentiation. <span class="statement__pale">Spreadsheets validate data,</span> but only stories inspire action. Arcovia combines the science of financial stewardship with the art of narrative design, building investor conviction long before a term sheet is signed.</p>
+          </div>
+        </section>
+        <!-- SECTION:statement END -->
       </div>
-    </section>
+    </div>
     <!-- SECTION:hero END -->
-
-    <!-- Draft placeholder: next section goes here -->
-    <section class="section-next" aria-label="Next section, in progress">
-      <p>02 · Statement — next section, in progress</p>
-    </section>
 
   </main>
 
   <script src="concrete.js"></script>
   <script src="main.js"></script>
+  <script src="zoom.js"></script>
 </body>
 </html>
