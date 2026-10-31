@@ -264,14 +264,9 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   gap: 12px;
   color: var(--color-ink);
 }
-.logo__mark { flex: none; width: 24px; height: auto; fill: currentColor; }
-.logo__word {
-  font-size: 15px;
-  font-weight: var(--weight-medium);
-  letter-spacing: 0.22em;
-  line-height: 1;
-  margin-right: -0.22em;
-}
+.logo__mark { flex: none; width: 28px; height: auto; fill: currentColor; }
+/* The official wordmark, drawn (not typeset) */
+.logo__word { flex: none; width: auto; height: 13px; fill: currentColor; }
 
 /* ---------- Header: a masthead that folds, hides and comes back ----------
    After defiant.vc. Columns on the 12-column grid:
@@ -284,14 +279,15 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
    - .is-on-dark: light type over dark sections
    No background in any state. */
 :root {
-  --mh-labels: 44px;      /* labels row, including its hairline */
-  --mh-row: 34px;         /* one link row */
+  --mh-labels: 48px;      /* labels row, including its hairline */
+  --mh-row: 40px;         /* one link row */
+  --fs-masthead: 18px;    /* nav links and "Menu +" */
   --mh-rows: 3;
   --mh-pad: 16px;         /* space above the first row */
   --mh-main: calc(var(--mh-pad) + var(--mh-row) * var(--mh-rows));
-  --mh-compact: 62px;
-  --mh-mark: 96px;        /* big A-mark width */
-  --mh-mark-small: 22px;
+  --mh-compact: 68px;
+  --mh-mark: 116px;       /* big A-mark width (official mark, 72:57) */
+  --mh-mark-small: 30px;
   --header-h: calc(var(--mh-labels) + var(--mh-main));
   --mh-ease: cubic-bezier(0.65, 0, 0.2, 1);
   --mh-dur: 560ms;
@@ -356,7 +352,7 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 
 .masthead-city,
 .masthead-label {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: var(--weight-medium);
   letter-spacing: 0.06em;
   line-height: 16px;
@@ -370,7 +366,7 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 /* The clock shows Los Angeles; hovering San Juan swaps to its time */
 .masthead-clock {
   display: grid;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: var(--weight-semibold);
   line-height: 16px;
   color: var(--color-ink);
@@ -412,7 +408,7 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 }
 .masthead-mark svg { width: 100%; height: auto; fill: currentColor; }
 /* Small mark centred on the row: half the row minus half the mark's height */
-.is-compact .masthead-mark { width: var(--mh-mark-small); margin-top: calc(var(--mh-row) / 2 - var(--mh-mark-small) * 0.486); }
+.is-compact .masthead-mark { width: var(--mh-mark-small); margin-top: calc(var(--mh-row) / 2 - var(--mh-mark-small) * 0.396); }
 
 .masthead-word {
   grid-column: 3 / span 2;
@@ -421,21 +417,19 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   height: var(--mh-row);
   display: flex;
   align-items: center;
-  font-size: 17px;
-  font-weight: var(--weight-medium);
-  letter-spacing: 0.2em;
   color: var(--color-ink);
   transform-origin: left center;
   transition: transform var(--mh-dur) var(--mh-ease), color var(--dur-slow) var(--ease-out);
 }
 /* --word-shift is measured in main.js: from column 3 to just right of the small mark */
+.masthead-word svg { display: block; width: auto; height: 16px; fill: currentColor; }
 .is-compact .masthead-word { transform: translateX(var(--word-shift, 0px)) scale(0.88); }
 
 .masthead-note {
   grid-column: 5 / span 3;
   grid-row: 1;
   padding-top: 7px;
-  font-size: var(--fs-small);
+  font-size: 16px;
   line-height: 1.45;
   color: var(--color-text-muted);
   text-wrap: pretty;
@@ -492,7 +486,7 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 .nav__link {
   display: inline-flex;
   align-items: center;
-  font-size: var(--fs-nav);
+  font-size: var(--fs-masthead);
   font-weight: var(--weight-medium);
   color: var(--color-ink);
   transition: color var(--dur-slow) var(--ease-out);
@@ -517,7 +511,7 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   align-items: center;
   gap: 10px;
   height: var(--mh-row);
-  font-size: var(--fs-nav);
+  font-size: var(--fs-masthead);
   font-weight: var(--weight-medium);
   color: var(--color-ink);
   transition: color var(--dur-slow) var(--ease-out);
@@ -566,7 +560,6 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   .masthead-main { display: flex; align-items: center; gap: 12px; padding-top: 0; }
   .is-compact .masthead-main { padding-top: 0; }
   .is-compact .masthead-mark { margin-top: 0; }
-  .masthead-word { font-size: 15px; }
   .is-compact .masthead-word { transform: none; }
   .nav { margin-left: auto; display: block; }
 }
@@ -670,12 +663,13 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 .path-picker__panel {
   position: absolute;
   left: 0;
-  bottom: calc(100% + 12px);
+  bottom: calc(100% + 14px);
   z-index: 20;
-  width: 392px;
-  padding: 8px;
+  /* As wide as the hero's right-hand column, so it lines up with the grid */
+  width: var(--picker-w, 440px);
+  padding: 10px;
   background: var(--color-white);
-  border-radius: 22px;
+  border-radius: 24px;
   /* After the user's reference: a hairline border and a soft, wide, very light shadow */
   box-shadow: var(--shadow-menu);
   transform-origin: 28px 100%;
@@ -693,10 +687,10 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 
 .path-picker__title {
   /* A hairline under the title, inset to line up with the rows */
-  margin: 0 12px 6px;
-  padding: 10px 0 12px;
+  margin: 0 14px 8px;
+  padding: 12px 0 14px;
   border-bottom: 1px solid rgba(17, 17, 17, 0.08);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: var(--weight-medium);
   letter-spacing: 0.08em;
   line-height: 16px;
@@ -704,35 +698,32 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   color: var(--color-text-muted);
 }
 
-/* One row: icon tile on the left, title and one line in the middle, a chevron on the right */
+/* One row: the icon on the left (no tile), title and one line in the middle, a chevron on the right */
 .path-picker__option {
   display: grid;
-  grid-template-columns: 38px 1fr 16px;
+  grid-template-columns: 30px 1fr 16px;
   grid-template-rows: auto auto;
-  column-gap: 14px;
-  row-gap: 2px;
+  column-gap: 16px;
+  row-gap: 3px;
   align-items: center;
-  padding: 12px;
-  border-radius: 14px;
+  padding: 14px;
+  border-radius: 16px;
   transition: background-color var(--dur-fast) var(--ease-out);
 }
 .path-picker__icon {
   grid-row: 1 / span 2;
   display: grid;
   place-items: center;
-  width: 38px;
-  height: 38px;
-  border-radius: 10px;
-  background: var(--color-white);
-  box-shadow: inset 0 0 0 1px rgba(17, 17, 17, 0.09);
+  width: 30px;
+  height: 30px;
   color: var(--color-text);
-  transition: color var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out);
+  transition: transform var(--dur-base) var(--ease-out);
 }
-.path-picker__icon svg { width: 22px; height: 22px; }
+.path-picker__icon svg { width: 30px; height: 30px; }
 .path-picker__label {
   grid-column: 2;
   align-self: end;
-  font-size: 15px;
+  font-size: 18px;
   font-weight: var(--weight-medium);
   line-height: 1.3;
   color: var(--color-ink);
@@ -740,7 +731,7 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 .path-picker__meta {
   grid-column: 2;
   align-self: start;
-  font-size: 13px;
+  font-size: 14px;
   line-height: 1.4;
   color: var(--color-text-muted);
 }
@@ -755,10 +746,7 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 .path-picker__option:focus-visible { outline-offset: -2px; }
 @media (hover: hover) {
   .path-picker__option:hover { background: #f6f6f5; }
-  .path-picker__option:hover .path-picker__icon {
-    color: var(--color-ink);
-    box-shadow: inset 0 0 0 1px rgba(17, 17, 17, 0.06), 0 1px 2px rgba(17, 17, 17, 0.06), 0 3px 8px rgba(17, 17, 17, 0.06);
-  }
+  .path-picker__option:hover .path-picker__icon { transform: scale(1.06); }
   .path-picker__option:hover .path-picker__arrow { color: var(--color-ink); transform: translateX(2px); }
 }
 

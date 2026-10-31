@@ -473,7 +473,7 @@
       var kind = el.getAttribute("data-carve");
       if (kind === "mark") {
         var paths = markPaths(el);
-        var vb = (el.getAttribute("viewBox") || "0 0 554 539").split(/[\s,]+/).map(Number);
+        var vb = (el.getAttribute("viewBox") || "0 0 72 57").split(/[\s,]+/).map(Number);
         var k = Math.min(r.width / vb[2], r.height / vb[3]);
         out.push({ kind: kind, paths: paths, x: x + (r.width - vb[2] * k) / 2, y: y + (r.height - vb[3] * k) / 2, k: k });
       } else if (kind === "text") {

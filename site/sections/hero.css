@@ -87,6 +87,11 @@
   margin-bottom: calc(var(--fs-hero) * 0.15);
 }
 
+/* The path menu is as wide as this column, so it lines up with the grid */
+.hero__aside {
+  --picker-w: calc((min(100vw, var(--container-max)) - 2 * var(--gutter) - 11 * var(--grid-gap)) / 12 * 4 + 3 * var(--grid-gap));
+}
+
 .hero__lede {
   max-width: 22em;
   font-size: var(--fs-lede);
