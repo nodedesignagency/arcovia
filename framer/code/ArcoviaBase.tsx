@@ -196,7 +196,10 @@ export const BASE_CSS = `/* ---------- Base, scoped to Arcovia components ------
   outline-offset: 3px;
   border-radius: 4px;
 }
-.visually-hidden {
+
+/* Shared parts below are wrapped in :where() (zero specificity): this stylesheet is repeated in
+   every component, and a section's own rules must always win over it, as they did on the HTML site. */
+:where(.visually-hidden) {
   position: absolute !important;
   width: 1px; height: 1px;
   margin: -1px; padding: 0;
@@ -206,10 +209,10 @@ export const BASE_CSS = `/* ---------- Base, scoped to Arcovia components ------
   border: 0;
 }
 
-.sprite { position: absolute; width: 0; height: 0; overflow: hidden; }
-.nowrap { white-space: nowrap; }
+:where(.sprite) { position: absolute; width: 0; height: 0; overflow: hidden; }
+:where(.nowrap) { white-space: nowrap; }
 
-.container {
+:where(.container) {
   width: 100%;
   max-width: var(--container-max);
   margin-inline: auto;
@@ -217,8 +220,7 @@ export const BASE_CSS = `/* ---------- Base, scoped to Arcovia components ------
 }
 
 
-/* ---------- Type helpers ---------- */
-.eyebrow {
+:where(.eyebrow) {
   font-size: var(--fs-caps);
   font-weight: var(--weight-medium);
   letter-spacing: var(--ls-caps);
@@ -227,8 +229,8 @@ export const BASE_CSS = `/* ---------- Base, scoped to Arcovia components ------
   color: var(--color-text-muted);
 }
 
-/* ---------- Chip: a short label between square brackets, set as plain text ---------- */
-.chip {
+
+:where(.chip) {
   display: inline-block;
   max-width: 100%;
   white-space: nowrap;
@@ -239,15 +241,15 @@ export const BASE_CSS = `/* ---------- Base, scoped to Arcovia components ------
   text-transform: uppercase;
   color: var(--color-text);
 }
-/* Brackets are decoration only: the "/ ''" keeps screen readers from announcing them */
-.chip::before { content: "[\\00a0"; content: "[\\00a0" / ""; }
-.chip::after { content: "\\00a0]"; content: "\\00a0]" / ""; }
+
+:where(.chip)::before { content: "[\\00a0"; content: "[\\00a0" / ""; }
+:where(.chip)::after { content: "\\00a0]"; content: "\\00a0]" / ""; }
 @media (max-width: 809px) {
-  .chip { font-size: 11px; letter-spacing: 0.08em; }
+  :where(.chip) { font-size: 11px; letter-spacing: 0.08em; }
 }
 
-/* ---------- Buttons ---------- */
-.btn {
+
+:where(.btn) {
   --btn-h: 48px;
   display: inline-flex;
   align-items: center;
@@ -265,52 +267,49 @@ export const BASE_CSS = `/* ---------- Base, scoped to Arcovia components ------
   -webkit-tap-highlight-color: transparent;
   user-select: none;
 }
-.btn:active { transform: scale(0.98); }
-.btn--small { --btn-h: 40px; padding: 0 18px; font-size: 14px; }
+:where(.btn:active) { transform: scale(0.98); }
+:where(.btn--small) { --btn-h: 40px; padding: 0 18px; font-size: 14px; }
 
-/* Primary: from the Framer reference. A dark pill lit from above: soft grey
-   sheen over #292929, a fine outer ring, a whisper of drop shadow, a white
-   highlight along the top edge and a darker rim along the bottom. */
-.btn--primary {
+
+:where(.btn--primary) {
   color: var(--color-on-dark);
   background: linear-gradient(180deg, rgba(207, 207, 207, 0.16) 0%, rgba(207, 207, 207, 0.11) 100%), var(--btn-dark);
   box-shadow: var(--shadow-btn);
 }
-.btn--quiet { background: var(--color-white); color: var(--color-ink); box-shadow: var(--shadow-card); }
+:where(.btn--quiet) { background: var(--color-white); color: var(--color-ink); box-shadow: var(--shadow-card); }
 
 @media (hover: hover) {
-  .btn--primary:hover { background: linear-gradient(180deg, rgba(207, 207, 207, 0.22) 0%, rgba(207, 207, 207, 0.15) 100%), var(--btn-dark); }
-  .btn--quiet:hover { background: var(--color-well); }
+  :where(.btn--primary:hover) { background: linear-gradient(180deg, rgba(207, 207, 207, 0.22) 0%, rgba(207, 207, 207, 0.15) 100%), var(--btn-dark); }
+  :where(.btn--quiet:hover) { background: var(--color-well); }
 }
-.btn--primary:active { box-shadow: var(--shadow-btn-pressed); }
+:where(.btn--primary:active) { box-shadow: var(--shadow-btn-pressed); }
 
-.btn__icon {
+:where(.btn__icon) {
   width: 14px;
   height: 14px;
   flex: none;
   transition: transform var(--dur-base) var(--ease-out);
 }
 
-/* ---------- Logo (flat A-mark + wordmark) ---------- */
-.logo {
+
+:where(.logo) {
   display: inline-flex;
   align-items: center;
   gap: 12px;
   color: var(--color-ink);
 }
-.logo__mark { flex: none; width: 28px; height: auto; fill: currentColor; }
-/* The official wordmark, drawn (not typeset) */
-.logo__word { flex: none; width: auto; height: 13px; fill: currentColor; }
+:where(.logo__mark) { flex: none; width: 28px; height: auto; fill: currentColor; }
+
+:where(.logo__word) { flex: none; width: auto; height: 13px; fill: currentColor; }
 
 
-/* ---------- Formwork seam: a fine joint with a tie hole at each end ---------- */
-.seam {
+:where(.seam) {
   position: relative;
   height: 1px;
   background: rgba(43, 43, 43, 0.16);
   box-shadow: 0 1px 0 rgba(255, 255, 255, 0.45);
 }
-.seam__hole {
+:where(.seam__hole) {
   position: absolute;
   top: 50%;
   width: 9px;
@@ -319,8 +318,8 @@ export const BASE_CSS = `/* ---------- Base, scoped to Arcovia components ------
   background: rgba(0, 0, 0, 0.06);
   box-shadow: inset 1.5px 1.5px 2px rgba(0, 0, 0, 0.35), 1px 1px 0 rgba(255, 255, 255, 0.55);
 }
-.seam__hole--start { left: 0; transform: translate(-50%, -50%); }
-.seam__hole--end { right: 0; transform: translate(50%, -50%); }
+:where(.seam__hole--start) { left: 0; transform: translate(-50%, -50%); }
+:where(.seam__hole--end) { right: 0; transform: translate(50%, -50%); }
 
 
 /* ---------- Reduced motion ---------- */
