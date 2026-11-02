@@ -1,15 +1,16 @@
 /* ==========================================================================
-   Selected work: the heading parts, three books turn to face you
+   Selected work: the heading parts and goes, three books turn to face you
    After the template's "Before vs After" (the outer words part to either
-   side) and the user's book video. The section pins (sticky stage) while:
-     0.03–0.26  "Selected" and "work" part left and right, scrubbed by scroll
-     0.10–0.40  three book spines rise into the gap as it opens: the middle one
-                first, then the outer two (the closed state: spines facing you)
+   side, 600px, fading as they go) and the user's book video. The section
+   pins (sticky stage) while:
+     0.00–0.34  "Selected" and "work" part left and right and fade away,
+                scrubbed by scroll, exactly as in the template
+     0.10–0.40  three book spines rise into the middle as the words open: the
+                middle one first, then the outer two (spines facing you)
      0.47       a little more scroll and all three books turn at once to face
-                the front, while they spread into their row and the two words
-                move out to the corners as the heading. The turn plays on its
-                own once started (scrolling back above 0.42 turns them back),
-                so a book is never left standing half turned.
+                the front while they spread into their row. Only the books are
+                left. The turn plays on its own once started (scrolling back
+                above 0.42 turns them back), so a book is never left half turned.
      to 1.00    rest on the settled layout
    The settled layout is the real page (selected-work.css); this only adds
    transforms on top. At rest the covers face straight ahead with no
@@ -36,7 +37,8 @@
   var n = books.length;
   if (!stage || !inner || !title || words.length !== 2 || n < 1) return;
 
-  var PART = [0.03, 0.26];  // the words part
+  var PART = [0, 0.34];     // the words part and fade (linear, as in the template)
+  var SPREAD = 600;         // how far each word travels, px (the template's value)
   var RISE_AT = 0.1;        // the middle spine starts to rise
   var RISE = 0.22;          // each spine's rise
   var STAGGER = 0.08;       // then the outer two, together
@@ -59,6 +61,7 @@
 
   function clear() {
     words.concat(books, bodies).forEach(function (el) { el.style.transform = ""; });
+    words.forEach(function (el) { el.style.opacity = ""; });
     books.forEach(function (el) { el.style.opacity = ""; });
     covers.concat(spines).forEach(function (el) { el.style.removeProperty("--lit"); });
     if (more) more.style.opacity = "";
@@ -79,34 +82,26 @@
     var T = spines[0].offsetWidth || W * 0.19;
     var cy = b[0].y + b[0].h / 2;
 
-    // At the start the two words sit together in the middle, one space apart, level with the books
-    var space = parseFloat(getComputedStyle(title).fontSize) * 0.27;
-    var x0 = (vw - (w[0].w + space + w[1].w)) / 2;
-    var gap = x0 + w[0].w + space / 2;   // the spines rise into the gap between the words
+    // The two words sit together in the middle of the stage (CSS); bring them level with the books
+    var dy = cy - (w[0].y + w[0].h / 2);
     var spineGap = Math.max(20, T * 0.5);
     var group = n * T + (n - 1) * spineGap;
-    var flank = Math.max(40, T * 0.75);  // how far the parted words stay from the spines
-    w[0].sx = x0;
-    w[1].sx = x0 + w[0].w + space;
-    w[0].px = gap - group / 2 - flank - w[0].w;
-    w[1].px = gap + group / 2 + flank;
-    w.forEach(function (h) { h.sy = cy - h.h / 2; });
 
-    // Each book's centre: closed, in the gap; open, in its place in the row
+    // Each book's centre: closed, side by side in the middle; open, in its place in the row
     b.forEach(function (c, i) {
       c.cx = c.x + c.w / 2;
-      c.closed = gap - group / 2 + T / 2 + i * (T + spineGap);
+      c.closed = vw / 2 - group / 2 + T / 2 + i * (T + spineGap);
     });
 
     var ss = getComputedStyle(stage);
     var room = vh - parseFloat(ss.paddingTop) - parseFloat(ss.paddingBottom);
-    return { W: W, T: T, w: w, b: b, rise: vh * 0.32, fits: inner.offsetHeight <= room + 1 };
+    return { W: W, T: T, dy: dy, spread: Math.max(SPREAD, vw * 0.4), b: b, rise: vh * 0.32, fits: inner.offsetHeight <= room + 1 };
   }
 
   /* ---------- One frame, from the scroll progress p and the turn q ---------- */
   function draw() {
     var g = geo;
-    var part = easeInOut(ramp(PART[0], PART[1], p));
+    var part = ramp(PART[0], PART[1], p);
     var e = easeInOut(q);
     // The books spread a little ahead of the turn, so a widening cover never runs into
     // its neighbour
@@ -117,14 +112,10 @@
     sec.classList.toggle("is-open", open);
     sec.classList.toggle("is-flat", flat);
 
-    // The words part, then move out to the corners as the heading while the books turn.
-    // They rise ahead of the books' spread, so they never pass over the covers
-    var up = easeOut(ramp(0, 0.7, q));
+    // The words part to either side and fade away, as in the template; only the books stay
     words.forEach(function (el, i) {
-      var h = g.w[i];
-      var x = lerp(lerp(h.sx, h.px, part), h.x, e);
-      var y = lerp(h.sy, h.y, up);
-      el.style.transform = open ? "" : move(x - h.x, y - h.y);
+      el.style.transform = move((i ? 1 : -1) * g.spread * part, g.dy);
+      el.style.opacity = (1 - part).toFixed(3);
     });
 
     // The turn: 90° shows the spine, 0° the cover. The box turns about its own middle,

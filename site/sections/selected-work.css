@@ -3,9 +3,9 @@
    "Selected work": three cases as books on black, each a link to its case
    on the Track Record page. After the template's "Before vs After" and the
    user's book video, books.js pins the stage: "Selected" and "work" part
-   left and right while three spines rise into the gap; a little more
-   scroll turns all three at once to face the front while the two words
-   move out to the corners as the heading. Hover lifts a book.
+   left and right and fade away while three spines rise in the middle; a
+   little more scroll turns all three at once to face the front, and only
+   the books are left. Hover lifts a book.
    This file is the settled layout (the real page); books.js only adds
    transforms on top, and at rest the covers face the front with no
    transform at all, so their text stays crisp.
@@ -39,10 +39,12 @@
   gap: var(--space-8);
 }
 
-/* The heading, split across the grid: "Selected" left, "work" right */
+/* The heading. Pinned (books.js), it sits over the middle of the stage and
+   parts away; without motion it is a plain heading above the books */
 .work__title {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
+  gap: 0.27em;
   align-self: stretch;
   font-size: var(--work-fs);
   font-weight: var(--weight-book);
@@ -269,7 +271,13 @@
   width: 100%;
 }
 
-.work--staged .work__word { will-change: transform; }
+.work--staged .work__title {
+  position: absolute;
+  inset: 0;
+  align-items: center;
+  pointer-events: none;
+}
+.work--staged .work__word { will-change: transform, opacity; }
 
 /* Only the faces you can see take the pointer: a closed book's box is
    wider than its spine and would catch hovers meant for its neighbour */
