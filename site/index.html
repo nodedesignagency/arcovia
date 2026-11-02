@@ -17,6 +17,7 @@
   <link rel="stylesheet" href="sections/hero.css">
   <link rel="stylesheet" href="sections/statement.css">
   <link rel="stylesheet" href="sections/data.css">
+  <link rel="stylesheet" href="sections/selected-work.css">
   <link rel="stylesheet" href="sections/team.css">
   <link rel="stylesheet" href="sections/why-founders.css">
   <link rel="stylesheet" href="sections/map.css">
@@ -79,6 +80,30 @@
       <feMerge><feMergeNode in="floor"/><feMergeNode in="shade"/><feMergeNode in="light"/></feMerge>
     </filter>
     <symbol id="icon-linkedin" viewBox="0 0 24 24"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.13 1.45-2.13 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28ZM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13ZM7.12 20.45H3.56V9h3.56v11.45ZM22.23 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0h.01Z"/></symbol>
+    <!-- Deboss: a shape pressed into a surface lit from straight above (the A-mark on the book covers).
+         The floor of the recess is a little darker, the top walls fall into shade, the bottom walls catch
+         the light. Light from above, not the upper left, so both legs of the A shade alike (light from
+         the side put one leg in shadow and left the other bare). -light for pale boards, -dark for charcoal -->
+    <filter id="deboss-light" x="-15%" y="-15%" width="130%" height="130%" color-interpolation-filters="sRGB">
+      <feFlood flood-color="#000" flood-opacity="0.12"/><feComposite in2="SourceAlpha" operator="in" result="floor"/>
+      <feOffset in="SourceAlpha" dx="0" dy="1.3" result="o1"/><feGaussianBlur in="o1" stdDeviation="0.5" result="b1"/>
+      <feComposite in="SourceAlpha" in2="b1" operator="out" result="e1"/>
+      <feFlood flood-color="#000" flood-opacity="0.55"/><feComposite in2="e1" operator="in" result="shade"/>
+      <feOffset in="SourceAlpha" dx="0" dy="-1" result="o2"/><feGaussianBlur in="o2" stdDeviation="0.45" result="b2"/>
+      <feComposite in="SourceAlpha" in2="b2" operator="out" result="e2"/>
+      <feFlood flood-color="#fff" flood-opacity="0.75"/><feComposite in2="e2" operator="in" result="light"/>
+      <feMerge><feMergeNode in="floor"/><feMergeNode in="shade"/><feMergeNode in="light"/></feMerge>
+    </filter>
+    <filter id="deboss-dark" x="-15%" y="-15%" width="130%" height="130%" color-interpolation-filters="sRGB">
+      <feFlood flood-color="#000" flood-opacity="0.3"/><feComposite in2="SourceAlpha" operator="in" result="floor"/>
+      <feOffset in="SourceAlpha" dx="0" dy="1.3" result="o1"/><feGaussianBlur in="o1" stdDeviation="0.5" result="b1"/>
+      <feComposite in="SourceAlpha" in2="b1" operator="out" result="e1"/>
+      <feFlood flood-color="#000" flood-opacity="0.75"/><feComposite in2="e1" operator="in" result="shade"/>
+      <feOffset in="SourceAlpha" dx="0" dy="-1" result="o2"/><feGaussianBlur in="o2" stdDeviation="0.45" result="b2"/>
+      <feComposite in="SourceAlpha" in2="b2" operator="out" result="e2"/>
+      <feFlood flood-color="#fff" flood-opacity="0.16"/><feComposite in2="e2" operator="in" result="light"/>
+      <feMerge><feMergeNode in="floor"/><feMergeNode in="shade"/><feMergeNode in="light"/></feMerge>
+    </filter>
   </svg>
 
   <a class="visually-hidden" href="#main">Skip to content</a>
@@ -294,6 +319,111 @@
       </div>
     </section>
     <!-- SECTION:data END -->
+
+    <!-- SECTION:selected-work START · styles: sections/selected-work.css · scripts: books.js
+         Home, block 6 of the brief: three cases as books on black, each linking to its case
+         on the Track Record page. After the template's "Before vs After" (the outer words part
+         to either side) and the user's book video: "Selected" and "work" part left and right
+         while three book spines rise into the gap between them; a little more scroll turns all
+         three at once to face the front, and the two words move out to the corners as the
+         heading. Hover lifts a book. Without JS, with reduced motion or below 1200px it is the
+         settled layout: the heading split across the top, the three covers, the link.
+         Copy from the brief (section 6); figures from the deck. -->
+    <section class="work" id="selected-work" data-books data-header-theme="dark" aria-labelledby="work-title">
+      <div class="work__stage">
+        <div class="work__inner container">
+          <h2 class="work__title" id="work-title" aria-label="Selected work"><span class="work__word">Selected</span> <span class="work__word">work</span></h2>
+
+          <!-- Component: book (figure, title, line; spine for the closed state) -->
+          <ul class="work__books">
+            <li class="book book--concrete">
+              <a class="book__link" href="track-record.html#brazil-telecom-tower-raise">
+                <div class="book__lift">
+                  <div class="book__body">
+                    <div class="book__spine" aria-hidden="true">
+                      <p class="book__spine-text"><span class="book__spine-figure">$63M</span>Brazil Telecom Tower Raise</p>
+                      <svg class="book__spine-mark" viewBox="0 0 72 57"><use href="#a-mark"/></svg>
+                      <span class="book__hit"></span>
+                    </div>
+                    <span class="book__pages" aria-hidden="true"></span>
+                    <span class="book__leaf" style="--k:0.22" aria-hidden="true"></span>
+                    <span class="book__leaf" style="--k:0.44" aria-hidden="true"></span>
+                    <span class="book__leaf" style="--k:0.68" aria-hidden="true"></span>
+                    <div class="book__cover">
+                      <div class="book__top" aria-hidden="true">
+                        <svg class="book__mark" viewBox="0 0 72 57"><use href="#a-mark"/></svg>
+                        <span class="book__index">01</span>
+                      </div>
+                      <p class="book__figure">$63M</p>
+                      <h3 class="book__name">Brazil Telecom Tower Raise</h3>
+                      <p class="book__line">Equity and debt for a 1,360+ tower rollout.</p>
+                      <span class="book__hit" aria-hidden="true"></span>
+                    </div>
+                  </div>
+                </div>
+              </a>
+            </li>
+            <li class="book book--charcoal">
+              <a class="book__link" href="track-record.html#mandela-station">
+                <div class="book__lift">
+                  <div class="book__body">
+                    <div class="book__spine" aria-hidden="true">
+                      <p class="book__spine-text"><span class="book__spine-figure">$54M+</span>Mandela Station</p>
+                      <svg class="book__spine-mark" viewBox="0 0 72 57"><use href="#a-mark"/></svg>
+                      <span class="book__hit"></span>
+                    </div>
+                    <span class="book__pages" aria-hidden="true"></span>
+                    <span class="book__leaf" style="--k:0.22" aria-hidden="true"></span>
+                    <span class="book__leaf" style="--k:0.44" aria-hidden="true"></span>
+                    <span class="book__leaf" style="--k:0.68" aria-hidden="true"></span>
+                    <div class="book__cover">
+                      <div class="book__top" aria-hidden="true">
+                        <svg class="book__mark" viewBox="0 0 72 57"><use href="#a-mark"/></svg>
+                        <span class="book__index">02</span>
+                      </div>
+                      <p class="book__figure">$54M+</p>
+                      <h3 class="book__name">Mandela Station</h3>
+                      <p class="book__line">Debt and equity for a multi-asset portfolio, now a long-term capital relationship.</p>
+                      <span class="book__hit" aria-hidden="true"></span>
+                    </div>
+                  </div>
+                </div>
+              </a>
+            </li>
+            <li class="book book--paper">
+              <a class="book__link" href="track-record.html#valr-energy-growth-round">
+                <div class="book__lift">
+                  <div class="book__body">
+                    <div class="book__spine" aria-hidden="true">
+                      <p class="book__spine-text"><span class="book__spine-figure">$35M</span>VALR Energy Growth Round</p>
+                      <svg class="book__spine-mark" viewBox="0 0 72 57"><use href="#a-mark"/></svg>
+                      <span class="book__hit"></span>
+                    </div>
+                    <span class="book__pages" aria-hidden="true"></span>
+                    <span class="book__leaf" style="--k:0.22" aria-hidden="true"></span>
+                    <span class="book__leaf" style="--k:0.44" aria-hidden="true"></span>
+                    <span class="book__leaf" style="--k:0.68" aria-hidden="true"></span>
+                    <div class="book__cover">
+                      <div class="book__top" aria-hidden="true">
+                        <svg class="book__mark" viewBox="0 0 72 57"><use href="#a-mark"/></svg>
+                        <span class="book__index">03</span>
+                      </div>
+                      <p class="book__figure">$35M</p>
+                      <h3 class="book__name">VALR Energy Growth Round</h3>
+                      <p class="book__line">Growth capital to launch into a 50,000-store network.</p>
+                      <span class="book__hit" aria-hidden="true"></span>
+                    </div>
+                  </div>
+                </div>
+              </a>
+            </li>
+          </ul>
+
+          <a class="work__more" href="track-record.html">Full track record<svg class="work__arrow" aria-hidden="true"><use href="#icon-arrow"/></svg></a>
+        </div>
+      </div>
+    </section>
+    <!-- SECTION:selected-work END -->
 
     <!-- SECTION:team START · styles: sections/team.css · scripts: team.js
          Home: the people, after a reference the user sent. Names down the left,
@@ -693,6 +823,7 @@
   <script src="main.js"></script>
   <script src="zoom.js"></script>
   <script src="stack.js"></script>
+  <script src="books.js"></script>
   <script src="team.js"></script>
   <script src="founders.js"></script>
   <script src="assets/land-dots.js"></script>
