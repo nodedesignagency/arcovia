@@ -40,10 +40,6 @@
      their own strip texture (one loop of a marquee) and slid by setSlide(),
      wrapping round, with no repaint per frame. They are only shown inside
      the strip's [data-carve-clip] box and grow shallow towards its ends.
-   - setBars(): channels cast into the slab that open and close (the About
-     hero's band of bars, bars.js). Drawn straight in the shader from a
-     handful of uniforms, not painted into the height map, so they can move
-     every frame and stay crisp; they get the deep look of carved marks.
    - Pauses off-screen and in hidden tabs. With reduced motion it renders
      one still frame. Without WebGL the CSS fallback stays.
    ========================================================================== */
@@ -95,31 +91,12 @@
     "uniform vec4 uShade;",      // a soft shaded box where text sits (x0, y0, x1, y1, css px): the beam dims there
     "uniform vec2 uShadeP;",     // shade: feather (css px), strength (0–1)
     "uniform float uDust;",      // dust turning in the beam
-    "uniform float uBarsOn;",    // 1: carve the band of bars (setBars)
-    "uniform vec4 uBarsBox;",    // bars: band top, row height, inset at the top and bottom of each row (css px, slab), deep look (0–1)
-    "uniform vec4 uBars[9];",    // bars: three vec4s per row, two bars each (x0, x1, x0, x1: the open part, css px, slab)
     "uniform float uVignette;",  // darkening towards the edges  // the loop is folded into rows (wide textures fail on some GPUs): rows, css px per row, overlap
     "",
     "float hash(vec2 p){ p = fract(p * vec2(123.34, 456.21)); p += dot(p, p + 45.32); return fract(p.x * p.y); }",
     "float noise(vec2 p){ vec2 i = floor(p), f = fract(p); vec2 u = f*f*(3.0-2.0*f);",
     "  return mix(mix(hash(i), hash(i+vec2(1.0,0.0)), u.x), mix(hash(i+vec2(0.0,1.0)), hash(i+vec2(1.0,1.0)), u.x), u.y); }",
     "float fbm(vec2 p){ float v = 0.0, a = 0.5; for(int i = 0; i < 4; i++){ v += a*noise(p); p = p*2.03 + 17.1; a *= 0.5; } return v; }",
-    // Bars: distance (css px, negative inside) to the nearest open bar. Only rows near the point count.
-    "float barD(vec2 p){",
-    "  float ry = (p.y - uBarsBox.x) / uBarsBox.y;",
-    "  if (ry < -0.25 || ry > 3.25) return 1e4;",
-    "  float row = clamp(floor(ry), 0.0, 2.0);",
-    "  float d = 1e4;",
-    "  for (int i = 0; i < 9; i++) {",
-    "    float r = floor(float(i) / 3.0 + 0.01);",
-    "    if (abs(r - row) > 0.5) continue;",
-    "    float dy = max(uBarsBox.x + r * uBarsBox.y + uBarsBox.z - p.y, p.y - (uBarsBox.x + (r + 1.0) * uBarsBox.y - uBarsBox.z));",
-    "    vec4 b = uBars[i];",
-    "    d = min(d, max(max(b.x - p.x, p.x - b.y), dy));",
-    "    d = min(d, max(max(b.z - p.x, p.x - b.w), dy));",
-    "  }",
-    "  return d;",
-    "}",
     // Sharpen the softened height map so carved walls stay about 1.5 css px wide: crisp, never blurry
     "float H(vec2 uv){",
     "  float r = texture2D(uHeight, uv).r;",
@@ -139,7 +116,6 @@
     "      }",
     "    }",
     "  }",
-    "  if (uBarsOn > 0.5) r = min(r, smoothstep(-1.5, 1.5, barD(uOrigin + (uv * uRes / uScale - uShift) / uZoom)));",
     "  return smoothstep(0.2, 0.8, r);",
     "}",
     "",
@@ -194,7 +170,6 @@
     // Marks are painted with blue in the height map, so their depth can be pressed in on its own
     // (sharpened, so the mark's walls count as fully part of it: blurred, they would only be half pressed)
     "  float isMark = smoothstep(0.0, 0.2, texture2D(uHeight, uv).b);",
-    "  if (uBarsOn > 0.5) isMark = max(isMark, (1.0 - smoothstep(1.0, 2.5, barD(p))) * uBarsBox.w);",
     "  float dm = mix(1.0, uMarkDepth, isMark);",
     "  float detail = 1.0 + (t0 / 0.765 - 1.0) * mix(0.62, 0.3, inlay);",
     "  float albedo = mix(0.865, 0.37, inlay) * detail * mix(mott, 1.0, inlay);",
@@ -489,7 +464,6 @@
     this.markDepth = 1;   // 0–1: how far data-carve="mark" elements are pressed in (setMarkDepth)
     this.slide = null;    // the sliding strip ([data-carve-slide]), measured in layout()
     this.slideOff = 0;    // css px the strip has moved left (setSlide)
-    this.bars = null;     // the band of bars (setBars)
     this.visible = true;
     this.running = false;
     this.t0 = performance.now();
@@ -515,7 +489,7 @@
     gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
 
     this.u = {};
-    ["uRes", "uScale", "uTime", "uBand", "uMouse", "uMouseAmt", "uSun", "uCursor", "uTex", "uTexSize", "uHeight", "uHTexel", "uOrigin", "uShift", "uZoom", "uBurn", "uBurnP", "uBreak", "uBreakP", "uDrill", "uDrillP", "uDrillQ", "uMarkDepth", "uPlain", "uPlainAlbedo", "uSlide", "uSlideOn", "uSlideRect", "uSlideView", "uSlideFold", "uPhoto", "uPhotoMap", "uBeam", "uBeamRange", "uShade", "uShadeP", "uDust", "uVignette", "uBeamFade", "uBarsOn", "uBarsBox", "uBars"].forEach(function (n) {
+    ["uRes", "uScale", "uTime", "uBand", "uMouse", "uMouseAmt", "uSun", "uCursor", "uTex", "uTexSize", "uHeight", "uHTexel", "uOrigin", "uShift", "uZoom", "uBurn", "uBurnP", "uBreak", "uBreakP", "uDrill", "uDrillP", "uDrillQ", "uMarkDepth", "uPlain", "uPlainAlbedo", "uSlide", "uSlideOn", "uSlideRect", "uSlideView", "uSlideFold", "uPhoto", "uPhotoMap", "uBeam", "uBeamRange", "uShade", "uShadeP", "uDust", "uVignette", "uBeamFade"].forEach(function (n) {
       this.u[n] = gl.getUniformLocation(prog, n);
     }, this);
 
@@ -771,16 +745,6 @@
     this.kick();
   };
 
-  /* Carve a band of bars that open and close (bars.js). Cheap: uniforms, no repaint.
-     bars: { top, rowH, inset, deep, data } in css px, slab coordinates; data holds 36 numbers,
-     twelve per row (top row first): x0, x1 of the open part of up to six bars. A closed bar is
-     (-1e5, -1e5). null removes the band. */
-  ConcreteSurface.prototype.setBars = function (bars) {
-    this.bars = bars;
-    this.needsFrame = true;
-    this.kick();
-  };
-
   /* Measure the sliding strip: one loop of carvings (text and holes) inside [data-carve-slide],
      positioned relative to the strip itself, so it does not matter where the strip has moved to */
   ConcreteSurface.prototype.collectSlide = function () {
@@ -1008,10 +972,6 @@
     gl.uniform2f(u.uShadeP, o.shadeFeather, sb ? o.shadeStrength : 0);
     gl.uniform1f(u.uDust, o.dust);
     gl.uniform1f(u.uVignette, o.vignette);
-    var bb = this.bars;
-    gl.uniform1f(u.uBarsOn, bb ? 1 : 0);
-    gl.uniform4f(u.uBarsBox, bb ? bb.top : 0, bb ? bb.rowH : 1, bb ? bb.inset : 0, bb ? bb.deep : 0);
-    if (bb) gl.uniform4fv(u.uBars, bb.data);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
     this.needsFrame = false;
   };

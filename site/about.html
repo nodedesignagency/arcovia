@@ -106,29 +106,19 @@
 
   <main id="main">
 
-    <!-- The hero and the next section share one stack: the hero pins at the top
-         and the next section rides up over it (after the template's About page). -->
-    <div class="about-stack">
-
-    <!-- SECTION:about-hero START · styles: sections/about-hero.css · scripts: concrete.js, bars.js
-         About, block 1. After the user's Mahadeva template reference (AboutHero): a short opening,
-         about two thirds of the screen, a band of bars under the masthead that open and close in
-         turn, the headline low on the left and its line on the right, on the headline's baseline.
-         In our style: the home hero's live concrete, and the bars are channels cast into it
-         (concrete.js setBars). ?bars=tone shows them as flat monochrome bars instead.
-         The heading's lines wipe in with a white and an ink bar, as in the template. -->
-    <section class="about-hero" data-about-hero aria-labelledby="about-title">
-      <canvas class="about-hero__canvas" aria-hidden="true"></canvas>
-
-      <!-- Component: bar-band. Rows and bars are built by bars.js from a fixed seed -->
-      <div class="bars about-hero__bars" data-bars aria-hidden="true"></div>
+    <!-- SECTION:about-hero START · styles: sections/about-hero.css · scripts: concrete.js, main.js
+         About, block 1. Structure after the user's Mahadeva template (its About opening), layout
+         only: a short opening, the headline low on the left, its line on the right on the
+         headline's baseline. On the home hero's live concrete (main.js starts it via data-hero). -->
+    <section class="about-hero" data-hero aria-labelledby="about-title">
+      <canvas class="hero__canvas" aria-hidden="true"></canvas>
 
       <div class="about-hero__inner container">
         <div class="about-hero__heading">
-          <p class="chip about-hero__chip">About Arcovia</p>
+          <p class="chip">About Arcovia</p>
           <h1 class="about-hero__title" id="about-title">
-            <span class="about-hero__line" style="--line:0">Conviction builds companies.</span>
-            <span class="about-hero__line" style="--line:1">Capital accelerates them.</span>
+            <span class="about-hero__line">Conviction builds companies.</span>
+            <span class="about-hero__line">Capital accelerates them.</span>
           </h1>
         </div>
         <p class="about-hero__lede">Arcovia is an independent capital markets advisory. We help ambitious founders, funds and foundations raise from investors who understand what they are building and why it matters.</p>
@@ -137,11 +127,9 @@
     <!-- SECTION:about-hero END -->
 
     <!-- Draft placeholder: next section goes here -->
-    <section class="section-next about-next" data-header-theme="dark" aria-label="Next section, in progress">
+    <section class="section-next" data-header-theme="dark" aria-label="Next section, in progress">
       <p>02 · Our story — next section, in progress</p>
     </section>
-
-    </div>
 
   </main>
 
@@ -203,6 +191,5 @@
 
   <script src="concrete.js"></script>
   <script src="main.js"></script>
-  <script src="bars.js"></script>
 </body>
 </html>
