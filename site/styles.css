@@ -13,6 +13,7 @@
   --color-concrete-shade: #c2c2c2;
   --color-charcoal: #565656;
   --color-charcoal-deep: #3e3e3e;
+  --color-black: #0b0b0b;          /* black sections (why founders choose Arcovia) */
   /* Text: a deep ink so type doesn't sink into the concrete.
      The softer set we had before is kept below as data-ink="soft" (or ?ink=soft). */
   --color-ink: #151515;            /* headlines, nav */
