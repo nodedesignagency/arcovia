@@ -15,10 +15,11 @@ for k,v in art.items():
     css=css.replace(a, f'url("{v}")')
 css=re.sub(r'(\d+(?:\.\d+)?)vw\b', r'\1cqw', css)
 assert not re.search(r'\dvw\b', css)
-n=0
-for bp in ('1199px','1023px','809px'):
-    a=f'@media (max-width: {bp})'; n+=css.count(a); css=css.replace(a, f'@container arc (max-width: {bp})')
-assert n==3 and '@media (max-width' not in css
+# Width breakpoints (including ranges) answer to the component's width, as in the other
+# Arcovia components; hover and reduced-motion queries stay media queries
+css, n = re.subn(r'@media ((?:\((?:min|max)-width: [^)]*\)(?: and )?)+)', r'@container arc \1', css)
+assert n == 3, n
+assert not re.search(r'@media \((?:min|max)-width', css)
 old='  padding-block: calc(var(--mh-compact) + 8px) var(--space-7);'
 assert old in css
 css=css.replace(old,'  padding-block: calc(var(--mh-labels) + var(--mh-compact)) var(--space-5);')

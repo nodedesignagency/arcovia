@@ -400,14 +400,15 @@
   .work { --book-gap: 40px; }
 }
 
-/* ---------- Below 1024 (tablet portrait and phones): the books end on a shelf ----------
-   A row of three would leave the books too small, so they sit on a shelf you swipe:
+/* ---------- Tablet portrait (810–1023): the books end on a shelf ----------
+   A row of three would leave the books too small, so they end on a shelf you swipe:
    it runs edge to edge, lines up with the page's left edge and snaps book by book,
-   and the next book peeks in from the right (on a tablet two show whole). The whole
-   section still fits one screen, so the stage can pin. Before the books turn, the
-   shelf stays put (books.js also returns it to the first book whenever they turn
-   back). */
-@media (max-width: 1023px) {
+   two books whole and the third peeking in. The section still fits one screen, so
+   the stage can pin. Until the books have turned the shelf neither clips (the spines
+   rise from below and spread past its edge; the pinned stage clips them) nor scrolls
+   or snaps (snapping chased the moving books); books.js returns it to the first book
+   whenever they turn back. */
+@media (min-width: 810px) and (max-width: 1023px) {
   .work {
     --book-gap: 24px;
     --book-h: min(80svh, calc(min(44vw, 360px) / 0.72)); /* a whole book always fits the screen (landscape phones) */
@@ -426,16 +427,21 @@
   }
   .work__books::-webkit-scrollbar { display: none; }
   .book { scroll-snap-align: start; }
-  /* No swiping or snapping until the books have turned: snapping would chase the moving books */
-  .work--staged:not(.is-open) .work__books { overflow-x: hidden; scroll-snap-type: none; }
+  .work--staged:not(.is-open) .work__books { overflow: visible; scroll-snap-type: none; }
 }
 
-/* ---------- Phone (809 and below): one book at a time, the next peeking in ---------- */
+/* ---------- Phone (809 and below): no motion, the heading over a column of books ----------
+   The user asked for it simple: books.js leaves phones alone, so this is the page as
+   it stands: "Selected work" on top, the three books one under another, the link. */
 @media (max-width: 809px) {
   .work {
-    --book-gap: 20px;
-    --book-h: min(80svh, calc(min(72vw, 300px) / 0.72));
+    --book-gap: var(--space-6);
+    --book-h: calc(min(80vw, 330px) / 0.72);
   }
-  .work.work--staged { --book-h: min(48svh, calc(min(72vw, 300px) / 0.72)); }
-  .work__inner { gap: var(--space-6); }
+  .work__stage { padding-block: var(--space-9); }
+  .work__inner { gap: var(--space-7); }
+  .work__books {
+    flex-direction: column;
+    align-items: center;
+  }
 }

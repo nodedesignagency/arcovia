@@ -17,10 +17,11 @@
    transform at all, so their text stays crisp. Each book has its own
    perspective, centred on it, so the outer books never look skewed.
    ?books=angle rests them a little turned instead, a sliver of spine showing.
-   Every width: on a phone the books end on a shelf you swipe (CSS), which this
-   keeps on the first book until they have turned. Not with reduced motion, and
-   not when the settled layout is taller than the window: there the section is
-   simply the settled layout.
+   From 810px up: on a portrait tablet the books end on a shelf you swipe (CSS),
+   which this keeps on the first book until they have turned. Not on phones (the
+   user wants them simple: the heading over a column of books), not with reduced
+   motion, and not when the settled layout is taller than the window: there the
+   section is simply the settled layout.
    ========================================================================== */
 (function () {
   "use strict";
@@ -51,6 +52,7 @@
   var BACK_MS = 850;
   var REST = /[?&]books=angle\b/.test(location.search) ? 16 : 0; // resting angle, degrees
   var reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
+  var phone = window.matchMedia("(max-width: 809px)");
 
   var on = false, geo = null, p = 0, target = 0, q = 0, qTarget = 0, last = 0, raf = 0;
   var lastW = 0, lastH = 0;
@@ -73,7 +75,7 @@
   /* ---------- Where everything sits: start, parted and settled ---------- */
   function measure() {
     clear();
-    if (shelf) shelf.scrollLeft = 0; // measured from the first book (the phone shelf)
+    if (shelf) shelf.scrollLeft = 0; // measured from the first book (the tablet shelf)
     var s = stage.getBoundingClientRect();
     function rel(el) {
       var r = el.getBoundingClientRect();
@@ -115,7 +117,7 @@
     var flat = open && REST === 0;
     sec.classList.toggle("is-open", open);
     sec.classList.toggle("is-flat", flat);
-    // Until the books have turned, the phone shelf rests on the first book (they turn
+    // Until the books have turned, the tablet shelf rests on the first book (they turn
     // back from wherever it was swiped to)
     if (!open && shelf && shelf.scrollLeft) shelf.scrollLeft = 0;
 
@@ -191,7 +193,7 @@
   function setMode() {
     lastW = window.innerWidth;
     lastH = window.innerHeight;
-    var want = !reduced.matches;
+    var want = !reduced.matches && !phone.matches;
     sec.classList.toggle("work--staged", want);
     sec.classList.remove("is-open", "is-flat");
     geo = null;
@@ -224,6 +226,7 @@
   window.addEventListener("scroll", queue, { passive: true });
   window.addEventListener("resize", resized);
   if (reduced.addEventListener) reduced.addEventListener("change", setMode);
+  if (phone.addEventListener) phone.addEventListener("change", setMode);
   // The words are measured from the real font, so measure again once it's in
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(setMode);
   setMode();

@@ -21,12 +21,13 @@
  * #deboss-light and #deboss-dark filters (lit from straight above, so both legs
  * shade alike).
  *
- * Every width. Below 1024px (tablet portrait and phones) the books end on a shelf
- * you swipe, lined up with the page's left edge, snapping book by book with the
- * next one peeking in (two show whole on a tablet, one on a phone); the script
- * keeps the shelf on the first book until the books have turned. Not with reduced
- * motion, not when the settled layout is taller than the window (landscape
- * phones), and not on the Framer canvas: there it is simply the settled layout.
+ * From 810px up. On a portrait tablet (810–1023px) the books end on a shelf you
+ * swipe, lined up with the page's left edge, snapping book by book, two whole and
+ * the third peeking in; the script keeps the shelf on the first book until the
+ * books have turned. Phones get no motion (the user wants them simple): the heading
+ * on top and the three books one under another. Not with reduced motion, not when
+ * the settled layout is taller than the window (landscape phones), and not on the
+ * Framer canvas: there it is simply the settled layout.
  * Keeps data-header-theme="dark", so the header's type turns light over it. The
  * Framer layer holding it must not clip its content (the stage is sticky and the
  * section grows by 200vh).
@@ -438,14 +439,15 @@ const SELECTED_WORK_CSS = `/* ==================================================
   .work { --book-gap: 40px; }
 }
 
-/* ---------- Below 1024 (tablet portrait and phones): the books end on a shelf ----------
-   A row of three would leave the books too small, so they sit on a shelf you swipe:
+/* ---------- Tablet portrait (810–1023): the books end on a shelf ----------
+   A row of three would leave the books too small, so they end on a shelf you swipe:
    it runs edge to edge, lines up with the page's left edge and snaps book by book,
-   and the next book peeks in from the right (on a tablet two show whole). The whole
-   section still fits one screen, so the stage can pin. Before the books turn, the
-   shelf stays put (books.js also returns it to the first book whenever they turn
-   back). */
-@container arc (max-width: 1023px) {
+   two books whole and the third peeking in. The section still fits one screen, so
+   the stage can pin. Until the books have turned the shelf neither clips (the spines
+   rise from below and spread past its edge; the pinned stage clips them) nor scrolls
+   or snaps (snapping chased the moving books); books.js returns it to the first book
+   whenever they turn back. */
+@container arc (min-width: 810px) and (max-width: 1023px) {
   .work {
     --book-gap: 24px;
     --book-h: min(80svh, calc(min(44cqw, 360px) / 0.72)); /* a whole book always fits the screen (landscape phones) */
@@ -464,18 +466,23 @@ const SELECTED_WORK_CSS = `/* ==================================================
   }
   .work__books::-webkit-scrollbar { display: none; }
   .book { scroll-snap-align: start; }
-  /* No swiping or snapping until the books have turned: snapping would chase the moving books */
-  .work--staged:not(.is-open) .work__books { overflow-x: hidden; scroll-snap-type: none; }
+  .work--staged:not(.is-open) .work__books { overflow: visible; scroll-snap-type: none; }
 }
 
-/* ---------- Phone (809 and below): one book at a time, the next peeking in ---------- */
+/* ---------- Phone (809 and below): no motion, the heading over a column of books ----------
+   The user asked for it simple: books.js leaves phones alone, so this is the page as
+   it stands: "Selected work" on top, the three books one under another, the link. */
 @container arc (max-width: 809px) {
   .work {
-    --book-gap: 20px;
-    --book-h: min(80svh, calc(min(72cqw, 300px) / 0.72));
+    --book-gap: var(--space-6);
+    --book-h: calc(min(80cqw, 330px) / 0.72);
   }
-  .work.work--staged { --book-h: min(48svh, calc(min(72cqw, 300px) / 0.72)); }
-  .work__inner { gap: var(--space-6); }
+  .work__stage { padding-block: var(--space-9); }
+  .work__inner { gap: var(--space-7); }
+  .work__books {
+    flex-direction: column;
+    align-items: center;
+  }
 }
 `
 
@@ -629,10 +636,11 @@ export default function ArcoviaSelectedWork(incoming: Partial<Props>) {
    The settled layout is the real page (the CSS above); this only adds transforms
    on top. At rest the covers face straight ahead with no transform at all, so
    their text stays crisp. Each book has its own perspective, centred on it, so
-   the outer books never look skewed. Every width: on a phone or a portrait
-   tablet the books end on a shelf you swipe (CSS), which this keeps on the first
-   book until they have turned. Not with reduced motion, and not when the settled
-   layout is taller than the window: there the section is simply the settled layout.
+   the outer books never look skewed. From 810px up: on a portrait tablet the
+   books end on a shelf you swipe (CSS), which this keeps on the first book until
+   they have turned. Not on phones (the heading over a column of books), not with
+   reduced motion, and not when the settled layout is taller than the window: there
+   the section is simply the settled layout.
    ========================================================================== */
 const PART = [0, 0.34] // the words part and fade (linear, as in the template)
 const SPREAD = 600 // how far each word travels, px (the template's value)
@@ -696,6 +704,7 @@ function initBooks(root: HTMLElement, life: Life, angled: boolean) {
 
     const REST = angled || /[?&]books=angle\b/.test(location.search) ? 16 : 0 // resting angle, degrees
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)")
+    const phone = window.matchMedia("(max-width: 809px)")
 
     let on = false
     let geo: Geo | null = null
@@ -725,7 +734,7 @@ function initBooks(root: HTMLElement, life: Life, angled: boolean) {
     /* ---------- Where everything sits: start, parted and settled ---------- */
     function measure(): Geo {
         clear()
-        if (shelf) shelf.scrollLeft = 0 // measured from the first book (the shelf below 1024px)
+        if (shelf) shelf.scrollLeft = 0 // measured from the first book (the tablet shelf)
         const s = stage!.getBoundingClientRect()
         function rel(el: Element) {
             const r = el.getBoundingClientRect()
@@ -845,7 +854,7 @@ function initBooks(root: HTMLElement, life: Life, angled: boolean) {
         if (life.dead) return
         lastW = window.innerWidth
         lastH = window.innerHeight
-        let want = !reduced.matches
+        let want = !reduced.matches && !phone.matches
         sec!.classList.toggle("work--staged", want)
         sec!.classList.remove("is-open", "is-flat")
         geo = null
@@ -884,6 +893,7 @@ function initBooks(root: HTMLElement, life: Life, angled: boolean) {
     life.on(window, "resize", resized)
     // (older Safari has no addEventListener on media queries)
     if (typeof reduced.addEventListener === "function") life.on(reduced, "change", setMode)
+    if (typeof phone.addEventListener === "function") life.on(phone, "change", setMode)
     // The words are measured from the real font, so measure again once it's in. The
     // component can mount after the page has loaded, before its font has started
     // loading, so also listen for later font loads.

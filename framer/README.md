@@ -39,9 +39,9 @@ Framer, so changes are made here first, checked in the harness, then uploaded.
   front (timed turn), hover opens a cover on its hinge. Controls: the two words, three
   books (figure, title, line, link, binding: concrete / charcoal linen / white paper),
   the link label and URL, and Covers: Straight (default) or Angled. Fully responsive:
-  the sequence runs at every width; below 1024px the books end on a swipeable shelf
-  (see CLAUDE.md). Its CSS is generated from `site/sections/selected-work.css` (asset
-  URLs swapped, every `vw` to `cqw`, width `@media` to `@container arc`, the pinned
+  the sequence runs from 810px up (a swipeable shelf on portrait tablets); phones get the
+  heading over a column of books, no motion (see CLAUDE.md). Its CSS is generated from `site/sections/selected-work.css` (asset
+  URLs swapped, every `vw` to `cqw`, width `@media` queries (ranges too) to `@container arc`, the pinned
   stage's top padding as in the other pinned sections); regenerate rather than edit it
   by hand. Framer's type check reports "Cannot find module './ArcoviaBase.tsx'" on this
   file as on every Arcovia file: a false positive (without the extension the module does
