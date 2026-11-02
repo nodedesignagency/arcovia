@@ -1,11 +1,17 @@
 /* ==========================================================================
    Arcovia — sectors line (Home, block 9): a slow marquee.
-   Repeats the list until it fills the width and moves it left at a calm,
-   steady pace. Under the pointer it slows to a stop, so a sector can be
-   read; while the page scrolls it picks up a little, then settles back.
-   Pauses off-screen and in hidden tabs. With reduced motion it stands still.
-   Review switch: ?sectors=band shows the charcoal band instead of the
-   debossed line.
+   Moves the line left at a calm, steady pace. Under the pointer it slows to
+   a stop, so a sector can be read; while the page scrolls it picks up a
+   little, then settles back. Pauses off-screen and in hidden tabs. With
+   reduced motion it stands still.
+
+   carved (default): a ConcreteSurface with the plain material carves the
+   seams, tie holes and the line exactly like the hero. The line is carved
+   once into a strip (concrete.js, [data-carve-slide]) and only its offset
+   changes each frame; the DOM line stays still and transparent, for screen
+   readers and for measuring. Without WebGL the DOM line itself moves, with
+   copies to fill the width and the SVG deboss filter.
+   band (?sectors=band): the DOM line moves on a charcoal band.
    Built to become a Framer code component (props: speed, variant).
    ========================================================================== */
 (function () {
@@ -27,7 +33,7 @@
 
   var reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
   var SPEED = 44;            // css px per second at rest
-  var x = 0;                 // track offset, css px (0 … -loop)
+  var x = 0;                 // offset, css px (0 … -loop)
   var loop = 0;              // width of one list, separator included
   var speed = SPEED;
   var boost = 0;             // extra speed from scrolling, decays
@@ -35,21 +41,30 @@
   var visible = false;
   var running = false;
   var last = 0;
+  var surface = null;        // the live carving, once WebGL is up
 
   function build() {
     track.querySelectorAll("[data-clone]").forEach(function (n) { n.remove(); });
     var still = reduced.matches;
     root.classList.toggle("is-static", still);
+    // Standing still, the line wraps and is carved in place; moving, it is carved into the sliding strip
+    if (still) list.removeAttribute("data-carve-slide"); else list.setAttribute("data-carve-slide", "");
+    if (surface) surface.queueLayout();
     if (still) { track.style.transform = ""; stop(); return; }
-    // Fractional width, so the copy lines up to the sub-pixel when the loop wraps
+    // Fractional width, so the loop wraps to the sub-pixel
     loop = list.getBoundingClientRect().width;
     if (loop < 1) return;
-    var copies = Math.ceil(viewport.clientWidth / loop) + 1;
-    for (var i = 0; i < copies; i++) {
-      var c = list.cloneNode(true);
-      c.setAttribute("aria-hidden", "true");
-      c.setAttribute("data-clone", "");
-      track.appendChild(c);
+    if (!surface) {
+      // Without the live surface the DOM line moves, with copies to fill the width
+      var copies = Math.ceil(viewport.clientWidth / loop) + 1;
+      for (var i = 0; i < copies; i++) {
+        var c = list.cloneNode(true);
+        c.setAttribute("aria-hidden", "true");
+        c.setAttribute("data-clone", "");
+        c.removeAttribute("data-carve-slide");
+        c.querySelectorAll("[data-carve]").forEach(function (n) { n.removeAttribute("data-carve"); });
+        track.appendChild(c);
+      }
     }
     x = ((x % loop) - loop) % loop;
     paint();
@@ -57,7 +72,12 @@
   }
 
   function paint() {
-    track.style.transform = "translate3d(" + x.toFixed(2) + "px, 0, 0)";
+    if (surface) {
+      track.style.transform = "";
+      surface.setSlide(-x);
+    } else {
+      track.style.transform = "translate3d(" + x.toFixed(2) + "px, 0, 0)";
+    }
   }
 
   function frame(now) {
@@ -111,4 +131,22 @@
   if (reduced.addEventListener) reduced.addEventListener("change", rebuild);
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(rebuild);
   build();
+
+  // The carved version: carve it into a plain neutral surface, exactly like the hero
+  if (variant !== "band" && window.ConcreteSurface && root.querySelector(".sectors__canvas")) {
+    var s = new window.ConcreteSurface(root, {
+      canvas: ".sectors__canvas",
+      plain: true,
+      albedo: 1.21,   // the flat ground lands on --color-neutral (#efefee)
+      sun: 0,         // no drifting sunlight: the ground stays perfectly flat; the rims come from the sky light
+      cursor: 0.06    // a faint light that follows the pointer
+    });
+    window.arcoviaSectors = s;
+    s.init().then(function (ok) {
+      if (!ok) return;
+      surface = s;
+      root.classList.add("is-live");
+      build();
+    });
+  }
 })();

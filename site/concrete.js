@@ -27,6 +27,13 @@
      uses this to burn through the O of ARCOVIA and fly into the statement).
    - setMarkDepth() presses carved marks in (1) or lets them rise flush (0)
      without touching any other carving (the closing stamps its A-mark).
+   - opts.plain: a flat neutral material instead of concrete (no texture,
+     grain, mottling or vignette), lit and carved exactly the same way. The
+     sectors line uses it.
+   - A sliding strip: carvings inside [data-carve-slide] are drawn once into
+     their own strip texture (one loop of a marquee) and slid by setSlide(),
+     wrapping round, with no repaint per frame. They are only shown inside
+     the strip's [data-carve-clip] box and grow shallow towards its ends.
    - Pauses off-screen and in hidden tabs. With reduced motion it renders
      one still frame. Without WebGL the CSS fallback stays.
    ========================================================================== */
@@ -63,13 +70,39 @@
     "uniform vec4 uDrillP;",     // drill: camera distance (1 at the start, 0 at the face, -K at the back), depth drilled (0–K), light through (0–1), dust (0–1)
     "uniform vec4 uDrillQ;",     // drill: K (slab thickness / starting camera distance), bore radius (counter units), spin, thickness in counter radii
     "uniform float uMarkDepth;", // how far carved marks are pressed in: 0 flush, 1 fully carved (the closing presses its A-mark in)
+    "uniform float uPlain;",     // 1: flat neutral material instead of concrete (no texture, grain or vignette)
+    "uniform float uPlainAlbedo;",// the flat material's brightness
+    "uniform sampler2D uSlide;", // sliding strip: one loop of carvings (r: height, as uHeight)
+    "uniform float uSlideOn;",
+    "uniform vec4 uSlideRect;",  // strip: left, top, loop width, height (css px, screen)
+    "uniform vec4 uSlideView;",  // offset (px the strip has moved left), visible from x0 to x1 (css px), fade length at both ends
+    "uniform vec4 uSlideFold;",  // the loop is folded into rows (wide textures fail on some GPUs): rows, css px per row, overlap
     "",
     "float hash(vec2 p){ p = fract(p * vec2(123.34, 456.21)); p += dot(p, p + 45.32); return fract(p.x * p.y); }",
     "float noise(vec2 p){ vec2 i = floor(p), f = fract(p); vec2 u = f*f*(3.0-2.0*f);",
     "  return mix(mix(hash(i), hash(i+vec2(1.0,0.0)), u.x), mix(hash(i+vec2(0.0,1.0)), hash(i+vec2(1.0,1.0)), u.x), u.y); }",
     "float fbm(vec2 p){ float v = 0.0, a = 0.5; for(int i = 0; i < 4; i++){ v += a*noise(p); p = p*2.03 + 17.1; a *= 0.5; } return v; }",
     // Sharpen the softened height map so carved walls stay about 1.5 css px wide: crisp, never blurry
-    "float H(vec2 uv){ return smoothstep(0.2, 0.8, texture2D(uHeight, uv).r); }",
+    "float H(vec2 uv){",
+    "  float r = texture2D(uHeight, uv).r;",
+    "  if (uSlideOn > 0.5) {",
+    "    vec2 q = uv * uRes / uScale - uSlideRect.xy;",          // css px from the strip's top left
+    "    if (q.y > 0.0 && q.y < uSlideRect.w) {",
+    "      float x = q.x + uSlideRect.x;",
+    // only inside the visible box, growing shallow towards both ends (the line runs on under the surface)
+    "      float fade = smoothstep(uSlideView.y, uSlideView.y + uSlideView.w, x) * (1.0 - smoothstep(uSlideView.z - uSlideView.w, uSlideView.z, x));",
+    "      if (fade > 0.0) {",
+    "        float lx = mod(q.x + uSlideView.x, uSlideRect.z);",       // css px along the loop
+    "        float k = min(floor(lx / uSlideFold.y), uSlideFold.x - 1.0);",   // which row
+    "        float tu = (lx - k * uSlideFold.y + uSlideFold.z) / (uSlideFold.y + 2.0 * uSlideFold.z);",
+    "        float tv = (k + q.y / uSlideRect.w) / uSlideFold.x;",
+    "        float rs = texture2D(uSlide, vec2(tu, tv)).r;",
+    "        r = min(r, mix(1.0, rs, fade));",
+    "      }",
+    "    }",
+    "  }",
+    "  return smoothstep(0.2, 0.8, r);",
+    "}",
     "",
     // Shatter pattern: Voronoi cells in a polar-warped space around the O, so cracks run
     // out from the centre with rings between them, like an impact on a slab. Shards are
@@ -125,13 +158,14 @@
     "  float dm = mix(1.0, uMarkDepth, isMark);",
     "  float detail = 1.0 + (t0 / 0.765 - 1.0) * mix(0.62, 0.3, inlay);",
     "  float albedo = mix(0.865, 0.37, inlay) * detail * mix(mott, 1.0, inlay);",
+    "  albedo = mix(albedo, uPlainAlbedo, uPlain);",
     "",
     "  // Normal from the carve height map (slope per css px, so it looks the same at any pixel density)",
     "  vec2 e = uHTexel;",
     "  float hx = (H(uv + vec2(e.x, 0.0)) - H(uv - vec2(e.x, 0.0))) * uScale * 0.5;",
     "  float hy = (H(uv + vec2(0.0, e.y)) - H(uv - vec2(0.0, e.y))) * uScale * 0.5;",
     "  vec3 n = normalize(vec3(-hx * 2.2 * dm, -hy * 2.2 * dm, 1.0));",
-    "  n = normalize(n + vec3(-(tx - t0), -(ty - t0), 0.0) * mix(1.6, 0.6, inlay));",
+    "  n = normalize(n + vec3(-(tx - t0), -(ty - t0), 0.0) * mix(1.6, 0.6, inlay) * (1.0 - uPlain));",
     "",
     "  // Sun: low, from the upper left",
     "  vec3 Ls = normalize(vec3(-0.58, -0.62, 0.52));",
@@ -172,7 +206,7 @@
     "  float edge = max(dot(n, Ls) - Ls.z, 0.0) * (0.25 + band) * (1.0 - occ);",
     "",
     "  float c = albedo * light + (uSun * edge + uCursor * edgeC * 2.2) * mix(0.35, 0.7, inlay);",
-    "  c *= 1.0 - 0.07 * pow(length((uv - 0.5) * vec2(1.0, 1.2)), 2.0);",
+    "  c *= 1.0 - 0.07 * (1.0 - uPlain) * pow(length((uv - 0.5) * vec2(1.0, 1.2)), 2.0);",
     // Marks are cut deeper than text: a slightly darker floor and a wide soft shadow under the
     // upper-left wall. Applied after the light, so the recess still reads while the sun passes over it.
     "  if (isMark > 0.002) {",
@@ -354,12 +388,16 @@
       sun: opts.sun != null ? opts.sun : 0.2,
       cursor: opts.cursor != null ? opts.cursor : 0.22,
       staticBand: opts.staticBand != null ? opts.staticBand : 0.6,
-      burnWarmth: opts.burnWarmth != null ? opts.burnWarmth : 1      // 1: fire colours, 0: white heat only
+      burnWarmth: opts.burnWarmth != null ? opts.burnWarmth : 1,     // 1: fire colours, 0: white heat only
+      plain: opts.plain ? 1 : 0,                                     // flat neutral material instead of concrete
+      albedo: opts.albedo != null ? opts.albedo : 1.21               // its brightness (1.21 with no sun ≈ #efefee)
     };
     this.mouse = { x: -9999, y: -9999, tx: -9999, ty: -9999, amt: 0, tamt: 0 };
     this.view = { ox: 0, oy: 0, tx: 0, ty: 0, s: 1, burn: null, shatter: null, drill: null };
     this.carves = [];
     this.markDepth = 1;   // 0–1: how far data-carve="mark" elements are pressed in (setMarkDepth)
+    this.slide = null;    // the sliding strip ([data-carve-slide]), measured in layout()
+    this.slideOff = 0;    // css px the strip has moved left (setSlide)
     this.visible = true;
     this.running = false;
     this.t0 = performance.now();
@@ -385,7 +423,7 @@
     gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
 
     this.u = {};
-    ["uRes", "uScale", "uTime", "uBand", "uMouse", "uMouseAmt", "uSun", "uCursor", "uTex", "uTexSize", "uHeight", "uHTexel", "uOrigin", "uShift", "uZoom", "uBurn", "uBurnP", "uBreak", "uBreakP", "uDrill", "uDrillP", "uDrillQ", "uMarkDepth"].forEach(function (n) {
+    ["uRes", "uScale", "uTime", "uBand", "uMouse", "uMouseAmt", "uSun", "uCursor", "uTex", "uTexSize", "uHeight", "uHTexel", "uOrigin", "uShift", "uZoom", "uBurn", "uBurnP", "uBreak", "uBreakP", "uDrill", "uDrillP", "uDrillQ", "uMarkDepth", "uPlain", "uPlainAlbedo", "uSlide", "uSlideOn", "uSlideRect", "uSlideView", "uSlideFold"].forEach(function (n) {
       this.u[n] = gl.getUniformLocation(prog, n);
     }, this);
 
@@ -394,6 +432,15 @@
     this.heightTex = gl.createTexture();
     gl.activeTexture(gl.TEXTURE1);
     gl.bindTexture(gl.TEXTURE_2D, this.heightTex);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+
+    this.slideTex = gl.createTexture();
+    gl.activeTexture(gl.TEXTURE2);
+    gl.bindTexture(gl.TEXTURE_2D, this.slideTex);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([255, 0, 0, 255]));
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
@@ -471,6 +518,8 @@
     this.canvas.height = Math.round(h * dpr);
     gl.viewport(0, 0, this.canvas.width, this.canvas.height);
     this.carves = this.collect();
+    this.slide = this.collectSlide();
+    if (this.slide) this.paintSlide();
     this.heightDirty = true;
     this.needsFrame = true;
   };
@@ -480,7 +529,9 @@
     var origin = this.host.getBoundingClientRect();
     var out = [];
     var order = { panel: 0, seam: 1, hole: 2, mark: 3, text: 4 };
-    Array.prototype.slice.call(this.host.querySelectorAll("[data-carve]")).sort(function (a, b) {
+    Array.prototype.slice.call(this.host.querySelectorAll("[data-carve]")).filter(function (el) {
+      return !el.closest("[data-carve-slide]");   // drawn into the sliding strip instead
+    }).sort(function (a, b) {
       return order[a.getAttribute("data-carve")] - order[b.getAttribute("data-carve")];
     }).forEach(function (el) {
       var r = el.getBoundingClientRect();
@@ -607,6 +658,109 @@
     this.kick();
   };
 
+  /* Slide the strip: off is how far (css px) it has moved left; it wraps every loop. Cheap: a uniform. */
+  ConcreteSurface.prototype.setSlide = function (off) {
+    if (Math.abs(off - this.slideOff) < 0.001) return;
+    this.slideOff = off;
+    this.needsFrame = true;
+    this.kick();
+  };
+
+  /* Measure the sliding strip: one loop of carvings (text and holes) inside [data-carve-slide],
+     positioned relative to the strip itself, so it does not matter where the strip has moved to */
+  ConcreteSurface.prototype.collectSlide = function () {
+    var box = this.host.querySelector("[data-carve-slide]");
+    if (!box) return null;
+    var clip = box.closest("[data-carve-clip]") || box.parentNode;
+    var origin = this.host.getBoundingClientRect();
+    var r = box.getBoundingClientRect(), cr = clip.getBoundingClientRect();
+    if (r.width < 1 || r.height < 1) return null;
+    var pad = Math.ceil(r.height * 0.25);   // room for ascenders, descenders and the bevel
+    var items = [];
+    box.querySelectorAll("[data-carve]").forEach(function (el) {
+      var kind = el.getAttribute("data-carve");
+      if (kind === "text") {
+        var t = textGlyphs(el, { left: r.left, top: r.top - pad });
+        items.push(t);
+      } else if (kind === "hole") {
+        var e = el.getBoundingClientRect();
+        items.push({ kind: "hole", x: e.left - r.left, y: e.top - r.top + pad, w: e.width, h: e.height });
+      }
+    });
+    var fade = parseFloat(clip.getAttribute("data-carve-clip")) || 72;
+    return {
+      x: cr.left - origin.left,             // the strip starts at the left of its box when it has not moved
+      y: r.top - origin.top - pad,
+      w: r.width,                            // one loop
+      h: r.height + pad * 2,
+      x0: cr.left - origin.left,
+      x1: cr.right - origin.left,
+      fade: fade,
+      items: items
+    };
+  };
+
+  /* Paint the strip's height map once (and again on layout), bevelled like paintHeight.
+     A marquee loop is thousands of px long, more than a canvas or texture can safely be wide,
+     so it is folded into rows of at most 4096 device px, each overlapping the next a little
+     so the bevel and the texture filtering never show the join. */
+  ConcreteSurface.prototype.paintSlide = function () {
+    var gl = this.gl, sl = this.slide;
+    var maxW = Math.min(gl.getParameter(gl.MAX_TEXTURE_SIZE) || 4096, 4096);
+    var d = this.dpr;
+    var m = 8;                                           // overlap, css px
+    var seg = Math.floor(maxW / d - 2 * m);              // css px of the loop per row
+    var rows = Math.max(1, Math.ceil(sl.w / seg));
+    if (rows * sl.h * d > maxW) { d = maxW / (rows * sl.h); seg = Math.floor(maxW / d - 2 * m); rows = Math.ceil(sl.w / seg); }
+    sl.rows = rows; sl.seg = seg; sl.m = m;
+    var rowH = Math.round(sl.h * d);
+    var W = Math.round((seg + 2 * m) * d), Hh = rowH * rows;
+    var sharp = this.slideSharp || (this.slideSharp = document.createElement("canvas"));
+    var soft = this.slideSoft || (this.slideSoft = document.createElement("canvas"));
+    sharp.width = soft.width = W;
+    sharp.height = soft.height = Hh;
+    var ctx = sharp.getContext("2d");
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.fillStyle = "rgb(255,0,0)";
+    ctx.fillRect(0, 0, W, Hh);
+    for (var k = 0; k < rows; k++) {
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(0, k * rowH, W, rowH);
+      ctx.clip();
+      // this row shows the loop from k * seg - m to (k + 1) * seg + m
+      ctx.setTransform(d, 0, 0, d, (m - k * seg) * d, k * rowH);
+      ctx.fillStyle = "rgb(0,0,0)";
+      sl.items.forEach(function (c) {
+        if (c.kind === "text") {
+          ctx.font = c.font;
+          ctx.textBaseline = "alphabetic";
+          c.glyphs.forEach(function (g) { ctx.fillText(g.ch, g.x, g.y); });
+        } else if (c.kind === "hole") {
+          ctx.beginPath();
+          ctx.arc(c.x + c.w / 2, c.y + c.h / 2, c.w / 2, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      });
+      ctx.restore();
+    }
+    var sctx = soft.getContext("2d");
+    var blur = 0.9 * d;
+    sctx.setTransform(1, 0, 0, 1, 0, 0);
+    if (typeof sctx.filter === "string") {
+      sctx.filter = "blur(" + blur.toFixed(2) + "px)";
+      sctx.drawImage(sharp, 0, 0);
+      sctx.filter = "none";
+    } else {
+      sctx.globalAlpha = 1 / 9;
+      for (var dx = -1; dx <= 1; dx++) for (var dy = -1; dy <= 1; dy++) sctx.drawImage(sharp, dx * blur, dy * blur);
+      sctx.globalAlpha = 1;
+    }
+    gl.activeTexture(gl.TEXTURE2);
+    gl.bindTexture(gl.TEXTURE_2D, this.slideTex);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, soft);
+  };
+
   ConcreteSurface.prototype.bind = function () {
     var self = this;
 
@@ -713,6 +867,14 @@
     gl.uniform4f(u.uDrillP, dr ? dr.cam : 1, dr ? dr.depth : 0, dr ? dr.light : 0, dr ? dr.dust : 0);
     gl.uniform4f(u.uDrillQ, dr ? dr.k : 1, dr ? dr.r : 1, dr ? dr.spin : 0, dr ? dr.thick : 2);
     gl.uniform1f(u.uMarkDepth, this.markDepth);
+    gl.uniform1f(u.uPlain, o.plain);
+    gl.uniform1f(u.uPlainAlbedo, o.albedo);
+    gl.uniform1i(u.uSlide, 2);
+    var sl = this.slide;
+    gl.uniform1f(u.uSlideOn, sl ? 1 : 0);
+    gl.uniform4f(u.uSlideRect, sl ? sl.x : 0, sl ? sl.y : 0, sl ? sl.w : 1, sl ? sl.h : 1);
+    gl.uniform4f(u.uSlideView, sl ? this.slideOff % sl.w : 0, sl ? sl.x0 : 0, sl ? sl.x1 : 0, sl ? sl.fade : 1);
+    gl.uniform4f(u.uSlideFold, sl && sl.rows ? sl.rows : 1, sl && sl.seg ? sl.seg : 1, sl && sl.m != null ? sl.m : 0, 0);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
     this.needsFrame = false;
   };

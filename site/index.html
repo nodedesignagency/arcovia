@@ -549,42 +549,46 @@
          Home, block 9 (brief section 9): the sectors as one quiet line that runs across
          the page, after the user's marquee reference, on a flat neutral ground (after the
          user's Trove reference: no concrete photo, all the depth kept).
-         carved (default): debossed into the surface (SVG filter #deboss-soft) between two
-         formwork seams with tie holes, a tie hole between sectors.
+         carved (default): carved into a plain neutral surface exactly like the hero
+         (concrete.js with plain: the same light, rims and inner shadow, no concrete photo),
+         between two formwork seams with tie holes, a tie hole between sectors. The line is
+         carved once into a strip and slid in the shader. Without WebGL it falls back to the
+         SVG filter #deboss-soft and CSS seams.
          band (?sectors=band): a charcoal band, white type, the A-mark between sectors.
          sectors.js repeats the line to fill the width and moves it slowly to the left;
          it slows to a stop under the pointer and picks up a little while the page
          scrolls. With reduced motion the line stands still. -->
     <section class="sectors" data-sectors aria-labelledby="sectors-title">
+      <canvas class="sectors__canvas" aria-hidden="true"></canvas>
       <h2 class="visually-hidden" id="sectors-title">Sectors we work in</h2>
       <div class="sectors__band">
         <div class="sectors__frame container">
-          <div class="seam sectors__seam" aria-hidden="true">
-            <span class="seam__hole seam__hole--start"></span>
-            <span class="seam__hole seam__hole--end"></span>
+          <div class="seam sectors__seam" data-carve="seam" aria-hidden="true">
+            <span class="seam__hole seam__hole--start" data-carve="hole"></span>
+            <span class="seam__hole seam__hole--end" data-carve="hole"></span>
           </div>
-          <div class="sectors__viewport">
+          <div class="sectors__viewport" data-carve-clip="72">
             <!-- Component: marquee. The first list is the content; sectors.js adds copies (aria-hidden) to fill the width. -->
             <div class="sectors__track" data-sectors-track>
-              <ul class="sectors__list">
-                <li class="sectors__item">Technology &amp; AI</li>
-                <li class="sectors__sep" aria-hidden="true"><svg class="sectors__mark" viewBox="0 0 72 57"><use href="#a-mark"/></svg></li>
-                <li class="sectors__item">Energy &amp; Natural Resources</li>
-                <li class="sectors__sep" aria-hidden="true"><svg class="sectors__mark" viewBox="0 0 72 57"><use href="#a-mark"/></svg></li>
-                <li class="sectors__item">Infrastructure</li>
-                <li class="sectors__sep" aria-hidden="true"><svg class="sectors__mark" viewBox="0 0 72 57"><use href="#a-mark"/></svg></li>
-                <li class="sectors__item">Healthcare &amp; Life Sciences</li>
-                <li class="sectors__sep" aria-hidden="true"><svg class="sectors__mark" viewBox="0 0 72 57"><use href="#a-mark"/></svg></li>
-                <li class="sectors__item">Real Estate</li>
-                <li class="sectors__sep" aria-hidden="true"><svg class="sectors__mark" viewBox="0 0 72 57"><use href="#a-mark"/></svg></li>
-                <li class="sectors__item">Media &amp; Entertainment</li>
-                <li class="sectors__sep" aria-hidden="true"><svg class="sectors__mark" viewBox="0 0 72 57"><use href="#a-mark"/></svg></li>
+              <ul class="sectors__list" data-carve-slide>
+                <li class="sectors__item" data-carve="text">Technology &amp; AI</li>
+                <li class="sectors__sep" data-carve="hole" aria-hidden="true"><svg class="sectors__mark" viewBox="0 0 72 57"><use href="#a-mark"/></svg></li>
+                <li class="sectors__item" data-carve="text">Energy &amp; Natural Resources</li>
+                <li class="sectors__sep" data-carve="hole" aria-hidden="true"><svg class="sectors__mark" viewBox="0 0 72 57"><use href="#a-mark"/></svg></li>
+                <li class="sectors__item" data-carve="text">Infrastructure</li>
+                <li class="sectors__sep" data-carve="hole" aria-hidden="true"><svg class="sectors__mark" viewBox="0 0 72 57"><use href="#a-mark"/></svg></li>
+                <li class="sectors__item" data-carve="text">Healthcare &amp; Life Sciences</li>
+                <li class="sectors__sep" data-carve="hole" aria-hidden="true"><svg class="sectors__mark" viewBox="0 0 72 57"><use href="#a-mark"/></svg></li>
+                <li class="sectors__item" data-carve="text">Real Estate</li>
+                <li class="sectors__sep" data-carve="hole" aria-hidden="true"><svg class="sectors__mark" viewBox="0 0 72 57"><use href="#a-mark"/></svg></li>
+                <li class="sectors__item" data-carve="text">Media &amp; Entertainment</li>
+                <li class="sectors__sep" data-carve="hole" aria-hidden="true"><svg class="sectors__mark" viewBox="0 0 72 57"><use href="#a-mark"/></svg></li>
               </ul>
             </div>
           </div>
-          <div class="seam sectors__seam" aria-hidden="true">
-            <span class="seam__hole seam__hole--start"></span>
-            <span class="seam__hole seam__hole--end"></span>
+          <div class="seam sectors__seam" data-carve="seam" aria-hidden="true">
+            <span class="seam__hole seam__hole--start" data-carve="hole"></span>
+            <span class="seam__hole seam__hole--end" data-carve="hole"></span>
           </div>
         </div>
       </div>
