@@ -22,6 +22,10 @@
  *              (one link per legal page, so one or two fit).
  * The logo and the links' capitals sit 64px under the CTA box, the same space as
  * the box has above it under the sectors line.
+ * Tablet (810-1199): the desktop layout on fewer columns (logo top left, links and
+ * offices four columns each on the right), gaps 64px. Phone (809 and below): one
+ * column, all six links in one list (the two groups a small step apart), offices
+ * one under the other, gaps 32-48px. Breakpoints answer to the component's width.
  * LinkedIn URL [TO CONFIRM]; no email or phone yet ([COPY NEEDED] if the client
  * wants them). Privacy Policy and Terms point at the one Legal page for now.
  * Ported from sections/footer.css and the footer markup in index.html on main; the
@@ -167,21 +171,40 @@ const FOOTER_CSS = `/* =========================================================
   .site-footer__legal-link:hover { color: var(--color-ink); }
 }
 
-/* ---------- Tablet and phone (to refine once desktop is approved) ---------- */
+/* ---------- Tablet (810-1199): the desktop layout on fewer columns ----------
+   The logo keeps the top left; the links and the offices share the eight columns
+   on the right, four each, so "Track Record" stays on one line. The gaps step
+   down from 96px to 64px. */
 @container arc (max-width: 1199px) {
-  .site-footer__logo { grid-column: 1 / -1; margin-bottom: var(--space-8); }
-  .site-footer__col--site { grid-column: 1 / span 6; grid-row: 2; }
-  .site-footer__col--company { grid-column: 7 / span 6; grid-row: 2; }
-  .site-footer__offices { grid-column: 1 / -1; grid-row: 3; }
-  .site-footer__office:nth-child(1) { grid-column: 1 / span 6; }
-  .site-footer__office:nth-child(2) { grid-column: 7 / span 6; }
-  .site-footer__bar { grid-row: 4; }
+  .site-footer__col--site { grid-column: 5 / span 4; }
+  .site-footer__col--company { grid-column: 9 / span 4; }
+  .site-footer__offices { grid-column: 5 / -1; margin-top: var(--space-8); }
+  .site-footer__office:nth-child(1) { grid-column: 1 / span 4; }
+  .site-footer__office:nth-child(2) { grid-column: 5 / span 4; }
+  .site-footer__bar { margin-top: var(--space-8); }
 }
+
+/* ---------- Phone (809 and below): one column ----------
+   The logo, then all six links in one list (the two groups a small step apart),
+   the offices one under the other, then © and the legal pages. The gaps step
+   down to 32-48px. */
 @container arc (max-width: 809px) {
+  .site-footer__logo { grid-column: 1 / -1; margin-bottom: var(--space-6); }
+  .site-footer__col--site { grid-column: 1 / -1; grid-row: 2; }
+  .site-footer__col--company { grid-column: 1 / -1; grid-row: 3; margin-top: var(--space-4); }
   .site-footer__link { font-size: 26px; }
+  .site-footer__offices { grid-column: 1 / -1; grid-row: 4; row-gap: var(--space-5); margin-top: var(--space-7); }
   .site-footer__office:nth-child(n) { grid-column: 1 / -1; }
-  .site-footer__offices { row-gap: var(--space-6); }
-  .site-footer__bar { flex-direction: column; align-items: flex-start; justify-content: center; height: auto; padding-block: var(--space-5); }
+  .site-footer__bar {
+    grid-row: 5;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: var(--space-3);
+    height: auto;
+    margin-top: var(--space-7);
+    padding-block: var(--space-5);
+  }
 }`
 
 interface LinkItem {
