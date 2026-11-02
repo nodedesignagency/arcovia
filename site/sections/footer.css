@@ -22,19 +22,22 @@
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
   column-gap: var(--grid-gap);
-  padding-top: var(--space-6);
+  /* The logo and the links' capitals sit 64px under the CTA box, the same space as the box
+     has above it (under the sectors line): the capitals start about 10px into their line */
+  padding-top: calc(var(--space-8) - 10px);
 }
 
 /* ---------- The logo: small and horizontal ----------
-   The shared .logo (brandmark beside wordmark) in the proportions of the client's
-   horizontal logo: the mark about 1.8 times as wide as the wordmark is tall, a gap of
-   about 1.2 times, both centred on one line. */
+   The shared .logo (brandmark beside wordmark). The client's pack has no horizontal
+   lockup, so the spacing follows their stacked lockup: there the mark sits 0.46 times
+   the wordmark's height above it, so here it sits 0.46 times beside it (8px at a 17px
+   wordmark; the mark's SVG already carries about 3px of space on its right). */
 .site-footer__logo {
   grid-column: 1 / span 3;
   grid-row: 1;
   align-self: start;
   justify-self: start;
-  gap: 20px;
+  gap: 5px;
   margin-top: 10px;         /* centred on the first line of links */
 }
 .site-footer__logo .logo__mark { width: 30px; }
