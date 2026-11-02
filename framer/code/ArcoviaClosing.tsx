@@ -18,6 +18,8 @@
  * With reduced motion the beam stands still across the lockup, carved. Without
  * WebGL (and on the Framer canvas): the photo, a soft static beam and the lockup
  * debossed with the SVG filter #deboss.
+ * Tablet: a 44px heading. Phone: the lockup (150px) over the text, 64px top and
+ * bottom, a 36px heading so "Partner with us" stays on one line.
  * Ported from closing.js and sections/closing.css on main.
  */
 import * as React from "react"
@@ -138,18 +140,32 @@ const CLOSING_CSS = `/* ========================================================
   .closing__content { grid-column: 1 / span 7; }
 }
 
-/* ---------- Tablet and phone (to refine once desktop is approved) ---------- */
+/* ---------- Tablet (810-1199) ----------
+   44px heading, so "Partner with us" stays on one line in its seven columns. */
 @container arc (max-width: 1199px) {
   .closing__card { --card-pad: 64px; aspect-ratio: auto; min-height: 520px; }
   .closing__content { grid-column: 1 / span 7; }
   .closing__figure { grid-column: 8 / -1; }
-  .closing__title { font-size: 52px; }
+  .closing__title { font-size: 44px; }
 }
+
+/* ---------- Phone (809 and below) ----------
+   The lockup over the text. 64px top and bottom (the user found 96px too long),
+   and the lockup's area is exactly as tall as the lockup, so there is no empty
+   band above or below it. A 36px heading, so "Partner with us" stays on one
+   line down to 360px (balanced if it ever has to wrap). */
 @container arc (max-width: 809px) {
-  .closing__card { --card-pad: 28px; grid-template-rows: auto auto; row-gap: var(--space-6); padding-block: var(--space-9); }
-  .closing__figure { grid-column: 3 / span 8; grid-row: 1; height: 220px; }
+  .closing__card {
+    --card-pad: 24px;
+    grid-template-rows: auto auto;
+    row-gap: var(--space-7);
+    min-height: 0;
+    padding-block: var(--space-8);
+  }
+  .closing__figure { grid-column: 1 / -1; grid-row: 1; height: 150px; }
+  .closing__mark { height: 100%; }
   .closing__content { grid-column: 1 / -1; grid-row: 2; }
-  .closing__title { font-size: 40px; }
+  .closing__title { font-size: 36px; text-wrap: balance; }
 }`
 
 interface Props {
