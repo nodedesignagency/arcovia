@@ -1,101 +1,183 @@
 /* ==========================================================================
    SECTION: footer — every page (component: site-footer)
-   Short and simple, after the user's references, with no logo or big name
-   (the CTA above already carries the lockup). It mirrors the masthead, so
-   the page opens and closes on the same frame: the same columns on the
-   12-column grid, a labels row over a hairline, rows of links with hairlines
-   between them, and the short dash that draws in on hover.
-   labels: 1-2 Los Angeles · 3-4 San Juan · 8-10 Site map · 11-12 Company
-   main:   the offices' addresses and local time · link rows
-   bar:    copyright (1-4) · Privacy (under Site map) · Terms (under Company)
-   On the neutral ground, straight after the CTA.
-   Uses the masthead's sizes and line colour from styles.css.
+   Short and simple, after the user's references (Defiant above all, but not
+   a copy), with no logo or big name: the CTA above carries the lockup.
+   Two versions on one markup; main.js sets data-variant:
+   - A "Contents page" (default): the back page of a book, after the deck's
+     contents slide and the full-screen menu. The five pages set large and
+     numbered in pale (the number turns ink on hover), the bracket chip where
+     a logo would be, the two offices side by side over hairlines with their
+     live local time, then ©, the legal pages and LinkedIn, small.
+       chip 1-4 · pages 6-8 and 9-12 · offices 6-8 and 9-12 · © 1-4 · small links 6, 9, 12
+   - B "Two clocks" (?footer=b): two offices, one firm. The pages in one small
+     line; the offices' local time set large, side by side over hairlines,
+     with the addresses under them; the same bar.
+       pages 1-12 · offices 1-6 and 7-12 · © 1-4 · small links 7, 10, 12
+   On the neutral ground, straight after the CTA. A hairline across the top.
    ========================================================================== */
 
 .site-footer {
   --ft-line: rgba(21, 21, 21, 0.16);
-  --ft-row: 40px;
   background: var(--color-neutral);
   color: var(--color-text);
 }
 
-.site-footer__labels,
-.site-footer__main,
-.site-footer__bar {
+.site-footer__inner {
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
   column-gap: var(--grid-gap);
+  padding-top: var(--space-7);
+  padding-bottom: var(--space-6);
+  /* a hairline across the top, the width of the grid */
+  background: linear-gradient(var(--ft-line), var(--ft-line)) var(--gutter) 0 / calc(100% - 2 * var(--gutter)) 1px no-repeat;
 }
 
-/* ---------- Labels row, over a full-width hairline (as in the masthead) ---------- */
-.site-footer__labels {
-  align-items: end;
-  height: 48px;
-  padding-bottom: 11px;
-  border-bottom: 1px solid var(--ft-line);
-}
-.site-footer__label {
-  font-size: 12px;
-  font-weight: var(--weight-medium);
-  letter-spacing: 0.06em;
-  line-height: 16px;
-  text-transform: uppercase;
-  white-space: nowrap;
-  color: var(--color-text-muted);
-}
-.site-footer__label--la { grid-column: 1 / span 2; }
-.site-footer__label--sj { grid-column: 3 / span 2; }
-.site-footer__label--site { grid-column: 8 / span 3; }
-.site-footer__label--company { grid-column: 11 / span 2; }
-
-/* ---------- Main row ---------- */
-.site-footer__main {
-  align-items: start;
-  padding-top: 16px;
+/* ---------- A: Contents page (default) ---------- */
+.site-footer__chip {
+  grid-column: 1 / span 4;
+  grid-row: 1;
+  align-self: start;
+  margin-top: 14px;         /* level with the first page's capitals */
 }
 
-.site-footer__office {
-  font-style: normal;
-  font-size: 15px;
-  line-height: 22px;
-  padding-top: 9px;          /* first line sits level with the first link */
-  color: var(--color-text);
+.site-footer__nav {
+  grid-column: 6 / -1;
+  grid-row: 1;
+  display: grid;
+  grid-template-columns: subgrid;
 }
-.site-footer__office--la { grid-column: 1 / span 2; }
-.site-footer__office--sj { grid-column: 3 / span 3; }   /* takes the empty column beside it, so "San Juan, Puerto Rico 00901" stays on one line */
-/* Local time, as in the masthead's clock */
-.site-footer__time {
-  display: block;
-  margin-top: 10px;
-  font-size: 13px;
-  font-weight: var(--weight-semibold);
-  line-height: 16px;
-  font-variant-numeric: tabular-nums;
-  color: var(--color-ink);
+.site-footer__pages {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: subgrid;
 }
-.site-footer__time .office__tz { font-weight: var(--weight-medium); color: var(--color-text-muted); }
-
-.site-footer__nav--site { grid-column: 8 / span 3; }
-.site-footer__nav--company { grid-column: 11 / span 2; }
-
-/* Link rows with hairlines between them (the masthead's rows) */
-.site-footer__item {
-  height: var(--ft-row);
-  display: flex;
-  align-items: center;
-}
-.site-footer__item + .site-footer__item { border-top: 1px solid var(--ft-line); }
+/* 1–3 down the first column (6–8), 4–5 down the second (9–12) */
+.site-footer__page:nth-child(-n+3) { grid-column: 1 / span 3; }
+.site-footer__page:nth-child(n+4) { grid-column: 4 / span 4; }
+.site-footer__page:nth-child(1), .site-footer__page:nth-child(4) { grid-row: 1; }
+.site-footer__page:nth-child(2), .site-footer__page:nth-child(5) { grid-row: 2; }
+.site-footer__page:nth-child(3) { grid-row: 3; }
 
 .site-footer__link {
   display: inline-flex;
-  align-items: center;
+  align-items: baseline;
+  font-size: 36px;
+  font-weight: var(--weight-medium);
+  line-height: 1.3;
+  letter-spacing: -0.02em;
+  color: var(--color-ink);
+}
+/* Pale numbers, as in the full-screen menu (the deck's contents slide) */
+.site-footer__num {
+  min-width: 1.25em;
+  color: rgba(43, 43, 43, 0.3);
+  transition: color var(--dur-base) var(--ease-out);
+}
+@media (hover: hover) {
+  .site-footer__link:hover .site-footer__num { color: var(--color-ink); }
+}
+
+/* The offices, side by side over hairlines, under the pages */
+.site-footer__offices {
+  grid-column: 6 / -1;
+  grid-row: 2;
+  display: grid;
+  grid-template-columns: subgrid;
+  margin-top: var(--space-9);
+}
+.site-footer__office {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: baseline;
+  column-gap: var(--space-4);
+  row-gap: 6px;
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--ft-line);
+}
+.site-footer__office:nth-child(1) { grid-column: 1 / span 3; }
+.site-footer__office:nth-child(2) { grid-column: 4 / span 4; }
+.site-footer__city {
   font-size: 16px;
+  font-weight: var(--weight-medium);
+  line-height: 22px;
+  color: var(--color-ink);
+}
+/* Live local time (main.js), as in the masthead's clock */
+.site-footer__time {
+  font-size: 13px;
+  font-weight: var(--weight-semibold);
+  line-height: 22px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  color: var(--color-ink);
+}
+.site-footer__time .office__tz { font-weight: var(--weight-medium); color: var(--color-text-muted); }
+.site-footer__address {
+  grid-column: 1 / -1;
+  font-style: normal;
+  font-size: 15px;
+  line-height: 22px;
+  color: var(--color-text-muted);
+}
+
+/* Bar: ©, the legal pages and LinkedIn, small, on the same columns */
+.site-footer__bar {
+  grid-column: 1 / -1;
+  grid-row: 3;
+  display: grid;
+  grid-template-columns: subgrid;
+  align-items: baseline;
+  margin-top: var(--space-9);
+  font-size: 13px;
+  line-height: 16px;
+  color: var(--color-text-muted);
+}
+.site-footer__copy {
+  grid-column: 1 / span 4;
   font-weight: var(--weight-medium);
   color: var(--color-ink);
 }
-/* The short dash that draws in on hover, as in the masthead */
-.site-footer__link::before {
+.site-footer__small {
+  grid-column: 6 / -1;
+  display: grid;
+  grid-template-columns: subgrid;
+}
+.site-footer__small li:nth-child(1) { grid-column: 1 / span 3; }
+.site-footer__small li:nth-child(2) { grid-column: 4 / span 3; }
+.site-footer__small li:nth-child(3) { grid-column: 7; justify-self: end; }
+.site-footer__small-link {
+  display: inline-flex;
+  align-items: center;
+  transition: color var(--dur-fast) var(--ease-out);
+}
+@media (hover: hover) {
+  .site-footer__small-link:hover { color: var(--color-ink); }
+}
+/* Leaves the site */
+.site-footer__out {
+  width: 11px;
+  height: 11px;
+  margin-left: 5px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ---------- B: Two clocks (?footer=b) ---------- */
+.site-footer[data-variant="b"] .site-footer__chip { display: none; }
+
+/* The pages in one small line */
+.site-footer[data-variant="b"] .site-footer__nav { grid-column: 1 / -1; display: block; }
+.site-footer[data-variant="b"] .site-footer__pages { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-6); }
+.site-footer[data-variant="b"] .site-footer__page { grid-column: auto; grid-row: auto; }
+.site-footer[data-variant="b"] .site-footer__link { font-size: 16px; letter-spacing: 0; line-height: 24px; }
+.site-footer[data-variant="b"] .site-footer__num { display: none; }
+/* the masthead's dash draws in on hover */
+.site-footer[data-variant="b"] .site-footer__link::before {
   content: "";
+  align-self: center;
   width: 0;
   height: 1px;
   margin-right: 0;
@@ -103,62 +185,74 @@
   transition: width var(--dur-base) var(--ease-out), margin var(--dur-base) var(--ease-out);
 }
 @media (hover: hover) {
-  .site-footer__link:hover::before { width: 12px; margin-right: 8px; }
-}
-/* Leaves the site */
-.site-footer__out {
-  width: 12px;
-  height: 12px;
-  margin-left: 6px;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.5;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  color: var(--color-text-muted);
+  .site-footer[data-variant="b"] .site-footer__link:hover::before { width: 12px; margin-right: 8px; }
 }
 
-/* ---------- Bar: copyright and legal, on the same columns ---------- */
-.site-footer__bar {
-  align-items: center;
-  height: 64px;
-  margin-top: var(--space-8);
-  border-top: 1px solid var(--ft-line);
-  font-size: 13px;
+/* The offices: their time set large, side by side */
+.site-footer[data-variant="b"] .site-footer__offices { grid-column: 1 / -1; margin-top: var(--space-8); }
+.site-footer[data-variant="b"] .site-footer__office {
+  grid-template-columns: 1fr;
+  row-gap: 0;
+  padding-top: var(--space-4);
+}
+.site-footer[data-variant="b"] .site-footer__office:nth-child(1) { grid-column: 1 / span 6; }
+.site-footer[data-variant="b"] .site-footer__office:nth-child(2) { grid-column: 7 / span 6; }
+.site-footer[data-variant="b"] .site-footer__city {
+  font-size: 12px;
+  letter-spacing: 0.06em;
   line-height: 16px;
+  text-transform: uppercase;
   color: var(--color-text-muted);
 }
-.site-footer__copy { grid-column: 1 / span 4; }
-.site-footer__legal { transition: color var(--dur-fast) var(--ease-out); }
-.site-footer__legal--privacy { grid-column: 8 / span 3; justify-self: start; }
-.site-footer__legal--terms { grid-column: 11 / span 2; justify-self: start; }
-@media (hover: hover) {
-  .site-footer__legal:hover { color: var(--color-ink); }
+.site-footer[data-variant="b"] .site-footer__time {
+  margin-top: var(--space-5);
+  font-size: 96px;
+  font-weight: var(--weight-book);
+  line-height: 1;
+  letter-spacing: -0.04em;
 }
+/* AM / PM and the zone, small beside the hour (a flex row, so the spaces between them don't take the hour's size) */
+.site-footer[data-variant="b"] .site-footer__time [data-clock] {
+  display: inline-flex;
+  align-items: baseline;
+  column-gap: 8px;
+}
+.site-footer[data-variant="b"] .site-footer__time .office__period { margin-left: 4px; }
+.site-footer[data-variant="b"] .site-footer__time .office__period,
+.site-footer[data-variant="b"] .site-footer__time .office__tz {
+  font-size: 20px;
+  font-weight: var(--weight-medium);
+  letter-spacing: 0.02em;
+  color: var(--color-text-muted);
+}
+.site-footer[data-variant="b"] .site-footer__address { margin-top: var(--space-5); font-size: 16px; line-height: 24px; }
+
+.site-footer[data-variant="b"] .site-footer__bar { margin-top: var(--space-8); }
+.site-footer[data-variant="b"] .site-footer__small { grid-column: 7 / -1; }
+.site-footer[data-variant="b"] .site-footer__small li:nth-child(1) { grid-column: 1 / span 3; }
+.site-footer[data-variant="b"] .site-footer__small li:nth-child(2) { grid-column: 4 / span 2; }
+.site-footer[data-variant="b"] .site-footer__small li:nth-child(3) { grid-column: 6; justify-self: end; }
 
 /* ---------- Tablet and phone (to refine once desktop is approved) ---------- */
 @media (max-width: 1199px) {
-  .site-footer__label--la { grid-column: 1 / span 3; }
-  .site-footer__label--sj { grid-column: 4 / span 3; }
-  .site-footer__label--site { grid-column: 7 / span 3; }
-  .site-footer__label--company { grid-column: 10 / span 3; }
-  .site-footer__office--la { grid-column: 1 / span 3; }
-  .site-footer__office--sj { grid-column: 4 / span 3; }
-  .site-footer__nav--site { grid-column: 7 / span 3; }
-  .site-footer__nav--company { grid-column: 10 / span 3; }
-  .site-footer__copy { grid-column: 1 / span 6; }
-  .site-footer__legal--privacy { grid-column: 7 / span 3; }
-  .site-footer__legal--terms { grid-column: 10 / span 3; }
+  .site-footer__chip { grid-column: 1 / -1; margin-bottom: var(--space-6); }
+  .site-footer__nav, .site-footer__offices { grid-column: 1 / -1; }
+  .site-footer__nav { grid-row: 2; }
+  .site-footer__offices { grid-row: 3; }
+  .site-footer__bar { grid-row: 4; }
+  .site-footer__page:nth-child(-n+3) { grid-column: 1 / span 6; }
+  .site-footer__page:nth-child(n+4) { grid-column: 7 / span 6; }
+  .site-footer__office:nth-child(1) { grid-column: 1 / span 6; }
+  .site-footer__office:nth-child(2) { grid-column: 7 / span 6; }
+  .site-footer__copy { grid-column: 1 / -1; margin-bottom: var(--space-4); }
+  .site-footer__small { grid-column: 1 / -1; display: flex; gap: var(--space-6); }
+  .site-footer[data-variant="b"] .site-footer__time { font-size: 64px; }
 }
 @media (max-width: 809px) {
-  .site-footer__labels { display: none; }
-  .site-footer__main { row-gap: var(--space-6); }
-  .site-footer__office--la { grid-column: 1 / span 6; }
-  .site-footer__office--sj { grid-column: 7 / span 6; }
-  .site-footer__nav--site { grid-column: 1 / span 6; }
-  .site-footer__nav--company { grid-column: 7 / span 6; }
-  .site-footer__bar { height: auto; padding-block: var(--space-4); row-gap: var(--space-2); }
-  .site-footer__copy { grid-column: 1 / -1; }
-  .site-footer__legal--privacy { grid-column: 1 / span 6; }
-  .site-footer__legal--terms { grid-column: 7 / span 6; }
+  .site-footer__link { font-size: 28px; }
+  .site-footer__page:nth-child(n) { grid-column: 1 / -1; grid-row: auto; }
+  .site-footer__office:nth-child(n) { grid-column: 1 / -1; }
+  .site-footer__offices { row-gap: var(--space-6); }
+  .site-footer[data-variant="b"] .site-footer__office:nth-child(n) { grid-column: 1 / -1; }
+  .site-footer[data-variant="b"] .site-footer__time { font-size: 56px; }
 }

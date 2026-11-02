@@ -145,8 +145,13 @@
         try {
           // "7:02 AM" plus the zone ("PDT") in its own span, so phones can drop it
           var parts = new Intl.DateTimeFormat("en-US", { hour: "numeric", minute: "2-digit", timeZone: el.getAttribute("data-clock"), timeZoneName: "short" }).formatToParts(now);
+          // "7:02 AM" with AM in its own span (the footer's big clocks set it small), the zone after it
           var time = "", zone = "";
-          parts.forEach(function (p) { if (p.type === "timeZoneName") zone = p.value; else time += p.value; });
+          parts.forEach(function (p) {
+            if (p.type === "timeZoneName") zone = p.value;
+            else if (p.type === "dayPeriod") time += '<span class="office__period">' + p.value + "</span>";
+            else time += p.value;
+          });
           el.innerHTML = time.trim() + ' <span class="office__tz">' + zone + "</span>";
         } catch (e) { /* unknown zone: keep the fallback text */ }
       });
@@ -155,6 +160,12 @@
     // Line the updates up with the turn of the minute
     setTimeout(function () { tickClocks(); setInterval(tickClocks, 60000); }, 60000 - (Date.now() % 60000) + 50);
   }
+
+  /* ---------- Footer: two versions. A (default) "Contents page", B (?footer=b) "Two clocks" ---------- */
+  var footerVariant = (location.search.match(/[?&]footer=(\w+)/) || [])[1];
+  document.querySelectorAll("[data-footer]").forEach(function (f) {
+    f.setAttribute("data-variant", footerVariant === "b" ? "b" : "a");
+  });
 
   /* ---------- Hero ---------- */
   var hero = document.querySelector("[data-hero]");
