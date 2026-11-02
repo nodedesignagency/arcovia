@@ -37,6 +37,29 @@
     <symbol id="icon-chevron-right" viewBox="0 0 16 16"><path d="M6 3.5 10.5 8 6 12.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
     <symbol id="icon-arrow" viewBox="0 0 16 16"><path d="M2.5 8h11M9 3.5 13.5 8 9 12.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
     <symbol id="icon-linkedin" viewBox="0 0 24 24"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.13 1.45-2.13 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28ZM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13ZM7.12 20.45H3.56V9h3.56v11.45ZM22.23 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0h.01Z"/></symbol>
+    <!-- Deboss: a shape pressed into a surface lit from the upper left (the A-mark on the book covers).
+         The floor of the recess is a little darker, the top and left walls fall into shade, the bottom
+         and right walls catch the light. -light for pale boards, -dark for the charcoal one -->
+    <filter id="deboss-light" x="-15%" y="-15%" width="130%" height="130%" color-interpolation-filters="sRGB">
+      <feFlood flood-color="#000" flood-opacity="0.12"/><feComposite in2="SourceAlpha" operator="in" result="floor"/>
+      <feOffset in="SourceAlpha" dx="1.1" dy="1.5" result="o1"/><feGaussianBlur in="o1" stdDeviation="0.6" result="b1"/>
+      <feComposite in="SourceAlpha" in2="b1" operator="out" result="e1"/>
+      <feFlood flood-color="#000" flood-opacity="0.55"/><feComposite in2="e1" operator="in" result="shade"/>
+      <feOffset in="SourceAlpha" dx="-0.9" dy="-1.1" result="o2"/><feGaussianBlur in="o2" stdDeviation="0.5" result="b2"/>
+      <feComposite in="SourceAlpha" in2="b2" operator="out" result="e2"/>
+      <feFlood flood-color="#fff" flood-opacity="0.75"/><feComposite in2="e2" operator="in" result="light"/>
+      <feMerge><feMergeNode in="floor"/><feMergeNode in="shade"/><feMergeNode in="light"/></feMerge>
+    </filter>
+    <filter id="deboss-dark" x="-15%" y="-15%" width="130%" height="130%" color-interpolation-filters="sRGB">
+      <feFlood flood-color="#000" flood-opacity="0.3"/><feComposite in2="SourceAlpha" operator="in" result="floor"/>
+      <feOffset in="SourceAlpha" dx="1.1" dy="1.5" result="o1"/><feGaussianBlur in="o1" stdDeviation="0.6" result="b1"/>
+      <feComposite in="SourceAlpha" in2="b1" operator="out" result="e1"/>
+      <feFlood flood-color="#000" flood-opacity="0.75"/><feComposite in2="e1" operator="in" result="shade"/>
+      <feOffset in="SourceAlpha" dx="-0.9" dy="-1.1" result="o2"/><feGaussianBlur in="o2" stdDeviation="0.5" result="b2"/>
+      <feComposite in="SourceAlpha" in2="b2" operator="out" result="e2"/>
+      <feFlood flood-color="#fff" flood-opacity="0.16"/><feComposite in2="e2" operator="in" result="light"/>
+      <feMerge><feMergeNode in="floor"/><feMergeNode in="shade"/><feMergeNode in="light"/></feMerge>
+    </filter>
   </svg>
 
   <a class="visually-hidden" href="#main">Skip to content</a>
@@ -278,6 +301,10 @@
                       <svg class="book__spine-mark" viewBox="0 0 72 57"><use href="#a-mark"/></svg>
                       <span class="book__hit"></span>
                     </div>
+                    <span class="book__pages" aria-hidden="true"></span>
+                    <span class="book__leaf" style="--k:0.22" aria-hidden="true"></span>
+                    <span class="book__leaf" style="--k:0.44" aria-hidden="true"></span>
+                    <span class="book__leaf" style="--k:0.68" aria-hidden="true"></span>
                     <div class="book__cover">
                       <div class="book__top" aria-hidden="true">
                         <svg class="book__mark" viewBox="0 0 72 57"><use href="#a-mark"/></svg>
@@ -286,7 +313,6 @@
                       <p class="book__figure">$63M</p>
                       <h3 class="book__name">Brazil Telecom Tower Raise</h3>
                       <p class="book__line">Equity and debt for a 1,360+ tower rollout.</p>
-                      <svg class="book__arrow" aria-hidden="true"><use href="#icon-arrow"/></svg>
                       <span class="book__hit" aria-hidden="true"></span>
                     </div>
                   </div>
@@ -302,6 +328,10 @@
                       <svg class="book__spine-mark" viewBox="0 0 72 57"><use href="#a-mark"/></svg>
                       <span class="book__hit"></span>
                     </div>
+                    <span class="book__pages" aria-hidden="true"></span>
+                    <span class="book__leaf" style="--k:0.22" aria-hidden="true"></span>
+                    <span class="book__leaf" style="--k:0.44" aria-hidden="true"></span>
+                    <span class="book__leaf" style="--k:0.68" aria-hidden="true"></span>
                     <div class="book__cover">
                       <div class="book__top" aria-hidden="true">
                         <svg class="book__mark" viewBox="0 0 72 57"><use href="#a-mark"/></svg>
@@ -310,7 +340,6 @@
                       <p class="book__figure">$54M+</p>
                       <h3 class="book__name">Mandela Station</h3>
                       <p class="book__line">Debt and equity for a multi-asset portfolio, now a long-term capital relationship.</p>
-                      <svg class="book__arrow" aria-hidden="true"><use href="#icon-arrow"/></svg>
                       <span class="book__hit" aria-hidden="true"></span>
                     </div>
                   </div>
@@ -326,6 +355,10 @@
                       <svg class="book__spine-mark" viewBox="0 0 72 57"><use href="#a-mark"/></svg>
                       <span class="book__hit"></span>
                     </div>
+                    <span class="book__pages" aria-hidden="true"></span>
+                    <span class="book__leaf" style="--k:0.22" aria-hidden="true"></span>
+                    <span class="book__leaf" style="--k:0.44" aria-hidden="true"></span>
+                    <span class="book__leaf" style="--k:0.68" aria-hidden="true"></span>
                     <div class="book__cover">
                       <div class="book__top" aria-hidden="true">
                         <svg class="book__mark" viewBox="0 0 72 57"><use href="#a-mark"/></svg>
@@ -334,7 +367,6 @@
                       <p class="book__figure">$35M</p>
                       <h3 class="book__name">VALR Energy Growth Round</h3>
                       <p class="book__line">Growth capital to launch into a 50,000-store network.</p>
-                      <svg class="book__arrow" aria-hidden="true"><use href="#icon-arrow"/></svg>
                       <span class="book__hit" aria-hidden="true"></span>
                     </div>
                   </div>

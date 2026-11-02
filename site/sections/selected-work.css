@@ -19,7 +19,10 @@
   --book-h: min(52vh, 540px, calc((100vw - 2 * var(--gutter) - 2 * var(--book-gap)) / 3 / 0.72));
   --book-w: calc(var(--book-h) * 0.72);
   --book-t: calc(var(--book-w) * 0.24);   /* spine: the book's thickness (thick, as in the user's book video) */
-  --book-lift: 14px;                       /* hover */
+  --book-lift: 10px;                       /* hover: the book rises a little ... */
+  --book-open: -32deg;                     /* ... and its cover swings open on the hinge */
+  --book-persp: 1800px;
+  --book-paper: #f4f3ef;
   --book-radius: 2px 5px 5px 2px;          /* square at the spine, softer at the fore edge */
   /* The heading's size is a share of the grid's width, as in the statement */
   --work-fs: calc((min(100vw, var(--container-max)) - 2 * var(--gutter)) * 0.052);
@@ -79,20 +82,45 @@
   outline: none;
 }
 
-/* The hover lift lives on its own layer, so it never fights the turn */
+/* The hover lift lives on its own layer, so it never fights the turn. Each book has its
+   own perspective, centred on it, for the cover opening on hover (and the turn) */
 .book__lift {
   display: block;
   height: 100%;
-  transition: transform 520ms var(--ease-out);
+  perspective: var(--book-persp);
+  transition: transform 620ms var(--ease-out);
 }
-@media (hover: hover) {
-  .book__link:hover .book__lift { transform: translateY(calc(-1 * var(--book-lift))); }
-}
-.book__link:focus-visible .book__lift { transform: translateY(calc(-1 * var(--book-lift))); }
 
 .book__body {
   position: relative;
   height: 100%;
+  transform-style: preserve-3d;
+}
+
+/* Under the cover: the page block, and three leaves that fan out a little behind the cover
+   when it opens. The boards overhang the pages by a few pixels, as on a real hardcover */
+.book__pages,
+.book__leaf {
+  position: absolute;
+  top: 3px;
+  bottom: 3px;
+  left: 3px;
+  right: 5px;
+  border-radius: 0 2px 2px 0;
+  pointer-events: none;
+}
+.book__pages {
+  background: var(--book-paper);
+  /* the open cover throws a little shade into the gutter */
+  box-shadow: inset 10px 0 16px -8px rgba(0, 0, 0, 0.35);
+  transform: translateZ(-4px);
+}
+.book__leaf {
+  background: linear-gradient(to right, #e6e5e1, var(--book-paper) 35%, #fbfaf8);
+  box-shadow: inset -1px 0 0 rgba(0, 0, 0, 0.16); /* each leaf's fore-edge */
+  transform-origin: left center;
+  transform: translateZ(calc(-3px + var(--k) * 3px));
+  transition: transform 720ms var(--ease-out);
 }
 
 /* The front cover */
@@ -108,6 +136,27 @@
   background: var(--book-ink-bg) var(--book-cover) center / cover no-repeat;
   color: var(--book-ink);
   filter: brightness(var(--lit, 1));
+  transform-origin: left center; /* the hinge */
+  transition: transform 720ms var(--ease-out);
+}
+
+/* Hover (and keyboard focus): the book rises a little and its cover swings open on the
+   hinge, the top leaves fanning out behind it, so it reads as a book you can open.
+   Only once the books face the front */
+@media (prefers-reduced-motion: no-preference) {
+  .work:not(.work--staged) .book__link:is(:hover, :focus-visible) .book__lift,
+  .work--staged .book__link:is(:hover, :focus-visible) .book__lift { transform: translateY(calc(-1 * var(--book-lift))); }
+  .work:not(.work--staged) .book__link:is(:hover, :focus-visible) .book__cover,
+  .work--staged.is-open .book__link:is(:hover, :focus-visible) .book__cover { transform: rotateY(var(--book-open)); }
+  .work:not(.work--staged) .book__link:is(:hover, :focus-visible) .book__leaf,
+  .work--staged.is-open .book__link:is(:hover, :focus-visible) .book__leaf {
+    transform: translateZ(calc(-3px + var(--k) * 3px)) rotateY(calc(var(--book-open) * var(--k)));
+  }
+}
+@media (hover: none) {
+  .book__link:hover .book__lift,
+  .book__link:hover .book__cover,
+  .book__link:hover .book__leaf { transform: none; }
 }
 /* A hairline where the board's edge catches the light, so the darkest binding
    still lifts off the black */
@@ -125,12 +174,15 @@
   align-items: center;
   justify-content: space-between;
 }
-/* The A-mark debossed into the cover, as in the deck */
+/* The A-mark pressed into the board, as in the deck: an SVG filter in the sprite
+   (#deboss-light, #deboss-dark) darkens the floor of the recess, shades its top and
+   left walls and lights its bottom and right walls. The fill only gives the shape */
 .book__mark {
-  width: calc(var(--book-w) * 0.1);
+  width: calc(var(--book-w) * 0.12);
   height: auto;
-  fill: var(--book-deboss);
-  filter: drop-shadow(0 1px 0 var(--book-deboss-hi));
+  overflow: visible;
+  fill: #000;
+  filter: var(--book-deboss);
 }
 .book__index {
   font-size: 13px;
@@ -158,24 +210,10 @@
 }
 .book__line {
   margin-top: 10px;
-  padding-right: 28px; /* clear of the arrow */
   font-size: 14px;
   line-height: 1.45;
   color: var(--book-ink-muted);
 }
-.book__arrow {
-  position: absolute;
-  right: calc(var(--book-w) * 0.08);
-  bottom: calc(var(--book-w) * 0.08);
-  width: 16px;
-  height: 16px;
-  color: var(--book-ink);
-  transition: transform var(--dur-base) var(--ease-out);
-}
-@media (hover: hover) {
-  .book__link:hover .book__arrow { transform: translateX(3px); }
-}
-
 /* The spine: only seen while the books stand closed (books.js) */
 .book__spine,
 .book__hit {
@@ -190,8 +228,7 @@
   --book-ink: var(--color-ink);
   --book-ink-muted: var(--color-text-muted);
   --book-rim: rgba(255, 255, 255, 0.12);
-  --book-deboss: rgba(0, 0, 0, 0.16);
-  --book-deboss-hi: rgba(255, 255, 255, 0.55);
+  --book-deboss: url(#deboss-light);
 }
 .book--charcoal {
   --book-cover: url("../assets/books/cover-charcoal.jpg");
@@ -200,8 +237,7 @@
   --book-ink: var(--color-on-dark);
   --book-ink-muted: rgba(244, 244, 243, 0.74);
   --book-rim: rgba(255, 255, 255, 0.07);
-  --book-deboss: rgba(0, 0, 0, 0.42);
-  --book-deboss-hi: rgba(255, 255, 255, 0.10);
+  --book-deboss: url(#deboss-dark);
 }
 .book--paper {
   --book-cover: url("../assets/books/cover-paper.jpg");
@@ -210,8 +246,7 @@
   --book-ink: var(--color-ink);
   --book-ink-muted: var(--color-text-muted);
   --book-rim: rgba(255, 255, 255, 0.2);
-  --book-deboss: rgba(0, 0, 0, 0.09);
-  --book-deboss-hi: rgba(255, 255, 255, 0.9);
+  --book-deboss: url(#deboss-light);
 }
 
 /* ---------- Link to the full track record (outlined pill, as on the map) ---------- */
@@ -277,7 +312,9 @@
 .work--staged .book__lift,
 .work--staged .book__body { pointer-events: none; }
 .work--staged .book__cover,
-.work--staged .book__spine { pointer-events: auto; }
+.work--staged .book__spine,
+.work--staged .book__pages,
+.work--staged .book__leaf { pointer-events: auto; }
 /* A little extra reach below each face, so a lifted book stays under the cursor */
 .work--staged .book__hit {
   display: block;
@@ -289,12 +326,10 @@
 .work--staged .book__lift {
   perspective: var(--book-persp, 1800px);
 }
-.work--staged.is-flat .book__lift { perspective: none; }
 
 .work--staged .book__body {
   transform-style: preserve-3d;
 }
-.work--staged.is-flat .book__body { transform-style: flat; }
 
 .work--staged .book__cover { backface-visibility: hidden; }
 
