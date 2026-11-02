@@ -27,10 +27,14 @@
  * tile's centre is the screen's centre and each service's words pass through it.
  *
  * On the Framer canvas, and with reduced motion, it is the still layout with the
- * first service current. Below 810px there is no stage: each service shows its
- * own number and the words are all at full ink (desktop is what the client
- * reviews for now). The Framer layer holding it must not clip its content (the
- * stage is sticky).
+ * first service current. The Framer layer holding it must not clip its content
+ * (the stage is sticky).
+ *
+ * Tablet and phone follow the user's own reference (the "Our approach" grid
+ * their Harmon section was built from): no stage and no pinning. Each service is
+ * a block of its own: the faint number top left with its concrete tile beside it
+ * on the right, then the title and the line, all at full ink. Two columns on
+ * tablet (810–1199), one on phone. The head sits on the left there.
  */
 import * as React from "react"
 import { addPropertyControls, ControlType } from "framer"
@@ -67,10 +71,6 @@ const WHAT_WE_DO_CSS = `/* =====================================================
   text-align: center;
 }
 .wwd__title {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--space-1);
   font-size: var(--fs-h2);
   font-weight: var(--weight-medium);
   line-height: var(--lh-h2);
@@ -154,6 +154,8 @@ const WHAT_WE_DO_CSS = `/* =====================================================
   flex: none;
   width: var(--wwd-tile);
   height: var(--wwd-tile);
+}
+.wwd__tile, .wwd__mini {
   background-color: var(--color-concrete);
   background-image: url("${ASSETS.concrete}");
   background-size: 520px auto;
@@ -180,7 +182,7 @@ const WHAT_WE_DO_CSS = `/* =====================================================
   justify-content: center;
   min-height: 50svh;
 }
-.wwd__step-num { display: none; }
+.wwd__step-media { display: none; }
 .wwd__step-text {
   display: grid;
   gap: var(--space-4);
@@ -204,26 +206,57 @@ const WHAT_WE_DO_CSS = `/* =====================================================
   text-wrap: pretty;
 }
 
-/* ---------- Tablet: the same, a smaller tile ---------- */
+/* ---------- Tablet and phone, after the user's reference ----------
+   No stage, no pinning: each service is its own block (number top left, its
+   tile on the right, then title and line), two columns on tablet, one on phone. */
 @container arc (max-width: 1199px) {
-  .wwd__stage { gap: var(--space-6); padding-right: var(--space-6); }
-}
-
-/* ---------- Phone: no stage; each service carries its own number ---------- */
-@container arc (max-width: 809px) {
   .wwd { padding-block: var(--space-9); }
-  .wwd__body { display: block; margin-top: var(--space-7); }
+  .wwd__head { justify-items: start; text-align: left; }
+  .wwd__lede { text-wrap: pretty; }
+  .wwd__body { display: block; margin-top: var(--space-8); }
   .wwd__stage-cell { display: none; }
-  .wwd__step { min-height: 0; padding-block: var(--space-5); border-top: 1px solid var(--color-line); }
+  .wwd__steps {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: var(--space-7);
+    row-gap: var(--space-8);
+  }
+  .wwd__step {
+    min-height: 0;
+    justify-content: flex-start;
+    gap: var(--space-5);
+  }
+  .wwd__step-media {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-4);
+  }
   .wwd__step-num {
-    display: block;
-    margin-bottom: var(--space-3);
-    font-size: 32px;
+    font-size: var(--fs-h2);
+    font-weight: var(--weight-book);
     line-height: 1;
+    letter-spacing: -0.02em;
     font-variant-numeric: tabular-nums;
     color: var(--wwd-num-pale);
   }
-  .wwd__step-text { opacity: 1; }
+  .wwd__mini {
+    position: relative;
+    flex: none;
+    width: 58%;
+    aspect-ratio: 1;
+    overflow: hidden;
+  }
+  /* closer in than on the stage, so the drawing still reads at this size */
+  .wwd__mini .wwd__sheet { width: 104%; }
+  .wwd__step-text { opacity: 1; transition: none; }
+  .wwd__step-body { max-width: 34em; }
+}
+
+@container arc (max-width: 809px) {
+  .wwd__body { margin-top: var(--space-7); }
+  .wwd__steps { grid-template-columns: minmax(0, 1fr); row-gap: var(--space-8); }
+  .wwd__mini { width: 56%; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -545,6 +578,10 @@ const DEFAULTS: Props = {
     ],
 }
 
+function drawingFor(s: Service, i: number) {
+    return DRAWINGS[s.drawing] || DRAWINGS[DRAWING_KEYS[i % DRAWING_KEYS.length]]
+}
+
 function pad2(n: number) {
     return String(n).padStart(2, "0").slice(-2)
 }
@@ -621,7 +658,7 @@ export default function ArcoviaWhatWeDo(incoming: Partial<Props>) {
                                 <div className="wwd__frame">
                                     <div className="wwd__tiles">
                                         {services.map((s, i) => {
-                                            const D = DRAWINGS[s.drawing] || DRAWINGS[DRAWING_KEYS[i % DRAWING_KEYS.length]]
+                                            const D = drawingFor(s, i)
                                             return (
                                                 <div className="wwd__tile" key={i}>
                                                     <D />
@@ -633,13 +670,18 @@ export default function ArcoviaWhatWeDo(incoming: Partial<Props>) {
                             </div>
                         </div>
 
-                        {/* Component: service row (number on phone, title, line) */}
+                        {/* Component: service row (tablet and phone: number and tile; then title, line) */}
                         <ol className="wwd__steps">
-                            {services.map((s, i) => (
+                            {services.map((s, i) => {
+                                const D = drawingFor(s, i)
+                                return (
                                 <li className={"wwd__step" + (i === 0 ? " is-current" : "")} key={i}>
-                                    <span className="wwd__step-num" aria-hidden="true">
-                                        /{pad2(i + 1)}
-                                    </span>
+                                    <div className="wwd__step-media" aria-hidden="true">
+                                        <span className="wwd__step-num">/{pad2(i + 1)}</span>
+                                        <div className="wwd__mini">
+                                            <D />
+                                        </div>
+                                    </div>
                                     <div className="wwd__step-text">
                                         <h3 className="wwd__step-title">{s.title}</h3>
                                         <p className="wwd__step-body">
@@ -647,7 +689,8 @@ export default function ArcoviaWhatWeDo(incoming: Partial<Props>) {
                                         </p>
                                     </div>
                                 </li>
-                            ))}
+                                )
+                            })}
                         </ol>
                     </div>
                 </div>
