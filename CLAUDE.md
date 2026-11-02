@@ -90,6 +90,7 @@ Map: 15 points (Los Angeles, San Francisco, New York, Houston, San Juan, São Pa
 - Team profiles go in a CMS collection with one template page. The map and the concrete hero become code components.
 - Contact form: build it with the dropdown, and leave the GoHighLevel webhook as the last step (the user will give the URL).
 - Tell the user before anything destructive, like deleting pages or overwriting styles.
+- Framer branches are not in this project's plan. Sections the user has not approved go on a draft page (see `framer/README.md`), never on Home.
 
 ## Checking pages in the container
 

@@ -14,6 +14,9 @@ Framer, so changes are made here first, checked in the harness, then uploaded.
 - `code/ArcoviaHeader.tsx`: masthead, full-screen menu, office clock. Sits in the
   layout template as a fixed layer.
 - `code/Arcovia<Section>.tsx`: one per approved Home section.
+- `code/ArcoviaWhatWeDo.tsx`: exploration, not approved. "What we do" as a pinned
+  scroll after the Harmon Digital "How It Works" section the user sent. In Framer it
+  sits on the draft page `/what-we-do-draft` (with Team below it), not on Home.
 - `harness/`: bundles the components into a plain page with a stand-in `framer`
   module, for checking in Chromium next to the HTML original.
 
@@ -35,3 +38,10 @@ Framer, so changes are made here first, checked in the harness, then uploaded.
   (`./ArcoviaBase.tsx`).
 - Assets: `ASSETS` in the base (images uploaded to the Framer project).
 - Desktop first: the user reviews at 1440, and 1728 at 2x.
+
+## Unapproved work in Framer
+
+Branching is not included in this Framer project's plan (`createBranch` fails), so
+edits land on Framer's main. Put sections the user has not approved on a **draft
+page** (`draft: true`, layout template "Site"): drafts never publish and can be
+previewed in Framer. Move a section onto Home only once the user approves it.
