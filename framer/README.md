@@ -19,6 +19,8 @@ Framer, so changes are made here first, checked in the harness, then uploaded.
   the user does not use Harmon's two-bar wipe). On Home in Framer, after Data.
   Tablet and phone follow the user's "Our approach" reference instead of the pin:
   number top left with the tile on the right, then title and line; 2 columns / 1.
+  Review it locally with `./preview.sh <branch> previews/what-we-do/index.html`
+  (built by `node framer/harness/preview-what-we-do.mjs`; rebuild after every change).
 - `harness/`: bundles the components into a plain page with a stand-in `framer`
   module, for checking in Chromium next to the HTML original.
 
