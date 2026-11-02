@@ -22,6 +22,7 @@
   <link rel="stylesheet" href="sections/map.css">
   <link rel="stylesheet" href="sections/sectors.css">
   <link rel="stylesheet" href="sections/closing.css">
+  <link rel="stylesheet" href="sections/footer.css">
 </head>
 <body>
 
@@ -631,6 +632,58 @@
     <!-- SECTION:closing END -->
 
   </main>
+
+  <!-- SECTION:footer START · styles: sections/footer.css
+       Component: site-footer. Short and simple, after the user's references, with no logo
+       or big name (the CTA above already carries the lockup). It mirrors the masthead: the
+       same columns on the 12-column grid, a labels row over a hairline, then rows of links
+       with hairlines between them. The two offices show their address and local time (the
+       masthead's clocks: main.js keeps every [data-clock] live). A thin bar closes it:
+       copyright, Privacy and Terms. -->
+  <footer class="site-footer" aria-labelledby="footer-title">
+    <h2 class="visually-hidden" id="footer-title">Site footer</h2>
+    <div class="site-footer__inner container">
+      <div class="site-footer__labels" aria-hidden="true">
+        <p class="site-footer__label site-footer__label--la">Los Angeles</p>
+        <p class="site-footer__label site-footer__label--sj">San Juan</p>
+        <p class="site-footer__label site-footer__label--site">Site map</p>
+        <p class="site-footer__label site-footer__label--company">Company</p>
+      </div>
+
+      <div class="site-footer__main">
+        <address class="site-footer__office site-footer__office--la">
+          <span class="visually-hidden">Los Angeles office: </span>2029 Century Park East<br>Los Angeles, CA 90067
+          <span class="site-footer__time"><span class="visually-hidden">Local time </span><span data-clock="America/Los_Angeles">Pacific Time</span></span>
+        </address>
+        <address class="site-footer__office site-footer__office--sj">
+          <span class="visually-hidden">San Juan office: </span>450 Ave. 200<br>San Juan, Puerto Rico 00901
+          <span class="site-footer__time"><span class="visually-hidden">Local time </span><span data-clock="America/Puerto_Rico">Atlantic Time</span></span>
+        </address>
+
+        <nav class="site-footer__nav site-footer__nav--site" aria-label="Site map">
+          <ul class="site-footer__list">
+            <li class="site-footer__item"><a class="site-footer__link" href="services.html">What We Do</a></li>
+            <li class="site-footer__item"><a class="site-footer__link" href="track-record.html">Track Record</a></li>
+            <li class="site-footer__item"><a class="site-footer__link" href="team.html">Team</a></li>
+          </ul>
+        </nav>
+        <nav class="site-footer__nav site-footer__nav--company" aria-label="Company">
+          <ul class="site-footer__list">
+            <li class="site-footer__item"><a class="site-footer__link" href="about.html">About</a></li>
+            <li class="site-footer__item"><a class="site-footer__link" href="contact.html">Contact</a></li>
+            <li class="site-footer__item"><a class="site-footer__link" href="#" data-todo="LinkedIn company page URL [TO CONFIRM]">LinkedIn<svg class="site-footer__out" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 11 11 5M6 5h5v5"/></svg></a></li>
+          </ul>
+        </nav>
+      </div>
+
+      <div class="site-footer__bar">
+        <p class="site-footer__copy">© 2026 Arcovia. All rights reserved.</p>
+        <a class="site-footer__legal site-footer__legal--privacy" href="privacy.html">Privacy Policy</a>
+        <a class="site-footer__legal site-footer__legal--terms" href="terms.html">Terms</a>
+      </div>
+    </div>
+  </footer>
+  <!-- SECTION:footer END -->
 
   <script src="concrete.js"></script>
   <script src="main.js"></script>

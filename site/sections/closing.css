@@ -16,7 +16,7 @@
    ========================================================================== */
 
 .closing {
-  padding-bottom: var(--space-10);
+  padding-bottom: var(--space-9);   /* the footer follows */
   background: var(--color-neutral);
 }
 
