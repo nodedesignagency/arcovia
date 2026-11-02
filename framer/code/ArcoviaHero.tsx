@@ -521,7 +521,7 @@ export default function ArcoviaHero(incoming: Partial<Props>) {
                 Without the script (canvas) or with reduced motion they simply stack. */}
             <div className="zoom" data-zoom="">
                 <div className="zoom__stage">
-                    <section className="hero" data-hero="" data-header-bg="concrete" aria-labelledby={ids.title}>
+                    <section className="hero" data-hero="" data-header-bg="none" aria-labelledby={ids.title}>
                         <canvas className="hero__canvas" aria-hidden="true"></canvas>
                         <canvas className="hero__debris" aria-hidden="true"></canvas>
 

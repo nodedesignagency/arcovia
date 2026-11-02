@@ -42,8 +42,9 @@ const HEADER_CSS = `/* ---------- Header: a masthead that folds, hides and comes
 
 /* At the top of the page the masthead has no background. Mid-page the small bar takes
    the background of the section under it (set by the script as --header-fill: white
-   over the white sections, black over the black one, concrete over the hero), so it
-   reads as part of that section; it fades across when a new section comes under it.
+   over the white sections, black over the black one; clear over the hero, which asks for
+   no fill with data-header-bg="none"), so it reads as part of that section; it fades
+   across when a new section comes under it.
    (It replaces the earlier untinted blur, which the user found smeary, worst on black.) */
 .site-header::before {
   content: "";
@@ -56,7 +57,12 @@ const HEADER_CSS = `/* ---------- Header: a masthead that folds, hides and comes
   transition: opacity var(--dur-slow) var(--ease-out), background-color var(--dur-base) var(--ease-out);
 }
 .site-header.is-compact::before { opacity: 1; }
-.site-header[data-fill="concrete"]::before { background-image: var(--texture-concrete); }
+/* Desktop: the fill ends on the bar's bottom hairline (under "Menu +"), not 13px below it */
+@container arc (min-width: 1200px) {
+  .site-header.is-compact::before {
+    bottom: calc(var(--mh-compact) - (var(--mh-compact) - var(--mh-row)) / 2 - var(--mh-row) - 1px);
+  }
+}
 
 /* Over dark sections the type turns light */
 .site-header.is-on-dark {
@@ -572,7 +578,7 @@ function initHeader(host: HTMLElement, life: Life) {
 
     /* What is under the small bar: the first section (or page ground) with a background,
        read at the bar's bottom edge in the left margin, clear of the header's own links.
-       A section can name its fill with data-header-bg ("concrete" for the hero's slab). */
+       A section can name its fill with data-header-bg ("none" keeps the bar clear: the hero). */
     const rgb = (c: string) => {
         const m = c.match(/rgba?\(([^)]+)\)/)
         if (!m) return null
@@ -582,12 +588,16 @@ function initHeader(host: HTMLElement, life: Life) {
     const fillUnder = (): { fill: string; dark: boolean; concrete: boolean } | null => {
         const bar = host.querySelector<HTMLElement>("[data-header]")
         if (!bar || !document.elementsFromPoint) return null
-        const y = Math.max(0, Math.min(window.innerHeight - 1, bar.getBoundingClientRect().bottom - 2))
+        // The fill's bottom edge: the hairline under "Menu +" on desktop, else the bar's bottom
+        const rule = bar.querySelector<HTMLElement>(".masthead-rule")
+        const rr = rule ? rule.getBoundingClientRect() : null
+        const edge = rr && rr.height > 0 && rr.width > 0 ? rr.bottom : bar.getBoundingClientRect().bottom
+        const y = Math.max(0, Math.min(window.innerHeight - 1, edge - 2))
         const hit = document.elementsFromPoint(2, y).find((el) => !host.contains(el))
         let n: Element | null = hit || null
         while (n && n !== document.documentElement) {
             const named = n.getAttribute("data-header-bg")
-            if (named === "concrete") return { fill: "#d3d3d3", dark: false, concrete: true }
+            if (named === "none" || named === "transparent") return { fill: "transparent", dark: false, concrete: false }
             if (named) return { fill: named, dark: n.getAttribute("data-header-theme") === "dark", concrete: false }
             const c = rgb(getComputedStyle(n).backgroundColor)
             if (c && c.a > 0.5) {
