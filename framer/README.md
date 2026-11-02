@@ -38,7 +38,14 @@ Framer, so changes are made here first, checked in the harness, then uploaded.
   After"), three book spines rise, a little more scroll turns the books to face the
   front (timed turn), hover opens a cover on its hinge. Controls: the two words, three
   books (figure, title, line, link, binding: concrete / charcoal linen / white paper),
-  the link label and URL, and Covers: Straight (default) or Angled. The six book faces
+  the link label and URL, and Covers: Straight (default) or Angled. Fully responsive:
+  the sequence runs at every width; below 1024px the books end on a swipeable shelf
+  (see CLAUDE.md). Its CSS is generated from `site/sections/selected-work.css` (asset
+  URLs swapped, every `vw` to `cqw`, width `@media` to `@container arc`, the pinned
+  stage's top padding as in the other pinned sections); regenerate rather than edit it
+  by hand. Framer's type check reports "Cannot find module './ArcoviaBase.tsx'" on this
+  file as on every Arcovia file: a false positive (without the extension the module does
+  not resolve at all). The six book faces
   (generated with Magnific) are uploaded to the project; their URLs are in the
   component's CSS. Width rules answer to the component (`cqw`, `@container arc`); the
   book height follows the window only while pinned. Needs `#deboss-light` and

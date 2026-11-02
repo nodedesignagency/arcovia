@@ -12,11 +12,19 @@
    Asset paths start with ../assets/ (see CLAUDE.md).
    ========================================================================== */
 
+/* The book's size is worked out once, on the section, and handed down as a length.
+   Each cover is a size container of its own (its text answers to its width), so a
+   width unit left unresolved would measure the cover instead of the page there (the
+   Framer component uses container units). */
+@property --book-h { syntax: "<length>"; inherits: true; initial-value: 0px; }
+@property --book-w { syntax: "<length>"; inherits: true; initial-value: 0px; }
+@property --book-t { syntax: "<length>"; inherits: true; initial-value: 0px; }
+
 .work {
   /* Book size follows the window: tall enough to read as books, small
      enough that heading, books and link fit on one screen */
   --book-gap: 72px;
-  --book-h: min(52vh, 540px, calc((100vw - 2 * var(--gutter) - 2 * var(--book-gap)) / 3 / 0.72));
+  --book-h: min(540px, calc((100vw - 2 * var(--gutter) - 2 * var(--book-gap)) / 3 / 0.72));
   --book-w: calc(var(--book-h) * 0.72);
   --book-t: calc(var(--book-w) * 0.24);   /* spine: the book's thickness (thick, as in the user's book video) */
   --book-lift: 10px;                       /* hover: the book rises a little ... */
@@ -25,7 +33,7 @@
   --book-paper: #f4f3ef;
   --book-radius: 2px 5px 5px 2px;          /* square at the spine, softer at the fore edge */
   /* The heading's size is a share of the grid's width, as in the statement */
-  --work-fs: calc((min(100vw, var(--container-max)) - 2 * var(--gutter)) * 0.052);
+  --work-fs: max(40px, calc((min(100vw, var(--container-max)) - 2 * var(--gutter)) * 0.052));
   position: relative;
   background: var(--color-black);
   color: var(--color-on-dark);
@@ -127,6 +135,7 @@
 .book__cover {
   position: absolute;
   inset: 0;
+  container-type: inline-size; /* its text answers to the cover's own width */
   display: flex;
   flex-direction: column;
   padding: calc(var(--book-w) * 0.085) calc(var(--book-w) * 0.08) calc(var(--book-w) * 0.08) calc(var(--book-w) * 0.115);
@@ -203,16 +212,20 @@
 
 .book__name {
   margin-top: auto;
-  font-size: calc(var(--book-w) * 0.064);
+  font-size: max(13px, calc(var(--book-w) * 0.064));
   font-weight: var(--weight-medium);
   line-height: 1.2;
   letter-spacing: -0.01em;
 }
 .book__line {
   margin-top: 10px;
-  font-size: 14px;
+  font-size: clamp(12px, calc(var(--book-w) * 0.046), 14px);
   line-height: 1.45;
   color: var(--book-ink-muted);
+}
+/* measured inside the cover's padding: about a 185px-wide cover (landscape phones) */
+@container (max-width: 150px) {
+  .book__line { display: none; }
 }
 /* The spine: only seen while the books stand closed (books.js) */
 .book__spine,
@@ -276,11 +289,12 @@
 .work__more:focus-visible { outline: 2px solid var(--color-on-dark); outline-offset: 3px; }
 
 /* ==========================================================================
-   Staged (books.js, desktop, no reduced motion): the stage pins and the
+   Staged (books.js, every width, no reduced motion): the stage pins and the
    books become 3D: a cover at the front and a spine down its left edge,
    the box reaching back from the cover by the book's thickness.
    ========================================================================== */
-.work--staged {
+.work.work--staged {
+  --book-h: min(52vh, 540px, calc((100vw - 2 * var(--gutter) - 2 * var(--book-gap)) / 3 / 0.72));
   height: 300vh; /* 200vh of scroll: the words part and the spines rise (0–40%), a little more turns the books (47%), then a long rest */
 }
 .work--staged .work__stage {
@@ -360,7 +374,7 @@
   min-height: 0;
   overflow: hidden;
   writing-mode: vertical-rl;
-  font-size: calc(var(--book-t) * 0.25);
+  font-size: max(10px, calc(var(--book-t) * 0.25));
   font-weight: var(--weight-book);
   line-height: 1;
   letter-spacing: 0.01em;
@@ -381,14 +395,47 @@
 .book__link:focus-visible .book__cover { outline: 2px solid var(--color-on-dark); outline-offset: 4px; }
 .work--staged:not(.is-open) .book__link:focus-visible .book__spine { outline: 2px solid var(--color-on-dark); outline-offset: 4px; }
 
-/* ---------- Below desktop: a simple column (desktop only for now) ---------- */
+/* ---------- Tablet (810–1199): the same sequence, smaller books ---------- */
 @media (max-width: 1199px) {
-  .work {
-    --book-gap: 40px;
-    --book-h: min(460px, calc((100vw - 2 * var(--gutter) - 2 * var(--book-gap)) / 3 / 0.72));
-  }
+  .work { --book-gap: 40px; }
 }
+
+/* ---------- Below 1024 (tablet portrait and phones): the books end on a shelf ----------
+   A row of three would leave the books too small, so they sit on a shelf you swipe:
+   it runs edge to edge, lines up with the page's left edge and snaps book by book,
+   and the next book peeks in from the right (on a tablet two show whole). The whole
+   section still fits one screen, so the stage can pin. Before the books turn, the
+   shelf stays put (books.js also returns it to the first book whenever they turn
+   back). */
+@media (max-width: 1023px) {
+  .work {
+    --book-gap: 24px;
+    --book-h: min(80svh, calc(min(44vw, 360px) / 0.72)); /* a whole book always fits the screen (landscape phones) */
+  }
+  .work.work--staged { --book-h: min(52vh, calc(min(44vw, 360px) / 0.72)); }
+  .work__books {
+    align-self: stretch;
+    justify-content: flex-start;
+    margin-inline: calc(-1 * var(--gutter));
+    padding: 14px var(--gutter) 6px;
+    scroll-padding-inline: var(--gutter);
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+  }
+  .work__books::-webkit-scrollbar { display: none; }
+  .book { scroll-snap-align: start; }
+  /* No swiping or snapping until the books have turned: snapping would chase the moving books */
+  .work--staged:not(.is-open) .work__books { overflow-x: hidden; scroll-snap-type: none; }
+}
+
+/* ---------- Phone (809 and below): one book at a time, the next peeking in ---------- */
 @media (max-width: 809px) {
-  .work { --book-h: 420px; }
-  .work__books { flex-direction: column; align-items: center; }
+  .work {
+    --book-gap: 20px;
+    --book-h: min(80svh, calc(min(72vw, 300px) / 0.72));
+  }
+  .work.work--staged { --book-h: min(48svh, calc(min(72vw, 300px) / 0.72)); }
+  .work__inner { gap: var(--space-6); }
 }
