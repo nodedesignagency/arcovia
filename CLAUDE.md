@@ -84,6 +84,7 @@ Map: 8 points (Los Angeles, San Francisco, New York, San Juan, São Paulo, Londo
 - Team profiles go in a CMS collection with one template page. The map and the concrete hero become code components.
 - Contact form: build it with the dropdown, and leave the GoHighLevel webhook as the last step (the user will give the URL).
 - Tell the user before anything destructive, like deleting pages or overwriting styles.
+- Home in Framer has a changing background (`ArcoviaSurface.tsx`, after the Mahadeva template's BackgroundTransition; one instance on the page, under the hero). Sections below the hero declare `data-bg="white" | "black" | "neutral"` on their `<section>`; when one fills most of the screen, every declared section fades to that surface together (600ms, black counts at two thirds), and text on the section ground swaps ink in the middle of the fade. Parts with a surface of their own (concrete blocks, cards, books, the globe, buttons) are pinned in their section's CSS under `[data-surface]`. A new section needs both. The hero and statement are not declared (the zoom paints its own surfaces).
 
 ## Checking pages in the container
 
