@@ -57,12 +57,9 @@ const HEADER_CSS = `/* ---------- Header: a masthead that folds, hides and comes
   transition: opacity var(--dur-slow) var(--ease-out), background-color var(--dur-base) var(--ease-out);
 }
 .site-header.is-compact::before { opacity: 1; }
-/* Desktop: the fill ends on the bar's bottom hairline (under "Menu +"), not 13px below it */
-@container arc (min-width: 1200px) {
-  .site-header.is-compact::before {
-    bottom: calc(var(--mh-compact) - (var(--mh-compact) - var(--mh-row)) / 2 - var(--mh-row) - 1px);
-  }
-}
+/* The hairline under "Menu +" sits just under the bar's edge (so the gaps above and below
+   the text match to the pixel); the fill runs one pixel further to end on that line */
+.site-header.is-compact::before { bottom: -1px; }
 
 /* Over dark sections the type turns light */
 .site-header.is-on-dark {
@@ -188,7 +185,9 @@ const HEADER_CSS = `/* ---------- Header: a masthead that folds, hides and comes
   background: var(--mh-line);
   transition: top var(--mh-dur) var(--mh-ease), background-color var(--dur-slow) var(--ease-out);
 }
-.is-compact .masthead-rule { top: calc((var(--mh-compact) - var(--mh-row)) / 2 + var(--mh-row)); }
+/* In the small bar the line sits on the bar's bottom edge, so "Menu +" has the same room
+   above and below it (34px each side of its centre, from the labels' line to this one) */
+.is-compact .masthead-rule { top: var(--mh-compact); }
 
 /* Site map: two columns of three rows, on the page grid */
 .nav {
