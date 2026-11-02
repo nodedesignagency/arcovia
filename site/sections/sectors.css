@@ -1,0 +1,144 @@
+/* ==========================================================================
+   SECTION: sectors — Home, block 9 (brief section 9)
+   The sectors as one quiet line that runs across the page, after the user's
+   marquee reference (a solid band, large type, a mark between items).
+   Two versions on the same markup (sectors.js sets data-variant):
+   - band (default): a charcoal band inlaid in the concrete, white type and
+     the A-mark between sectors; a fine groove along both edges.
+   - carved (?sectors=carved): the line debossed into the concrete (SVG
+     filter #deboss in the sprite) between two formwork seams, a tie hole
+     between sectors, soft fades at both ends.
+   The track moves with a transform set by sectors.js; with reduced motion
+   (.is-static) the line stands still and wraps.
+   Uses shared tokens, the seam and the A-mark from styles.css / the sprite.
+   ========================================================================== */
+
+.sectors {
+  --sectors-fs: 56px;          /* sector names */
+  --sectors-gap: 0.95em;       /* space either side of a separator */
+  position: relative;
+  padding-top: var(--space-10);
+  overflow-x: clip;
+  /* No background: it sits on the closing's slab, or on the page's concrete without it */
+}
+
+/* ---------- The line ---------- */
+.sectors__viewport {
+  position: relative;
+  overflow: hidden;
+}
+.sectors__track {
+  display: flex;
+  width: max-content;
+  will-change: transform;
+}
+.sectors__list {
+  display: flex;
+  align-items: center;
+  flex: none;
+}
+.sectors__item {
+  flex: none;
+  font-size: var(--sectors-fs);
+  font-weight: var(--weight-medium);
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+}
+.sectors__sep {
+  flex: none;
+  display: grid;
+  place-items: center;
+  margin-inline: var(--sectors-gap);
+  font-size: var(--sectors-fs);
+}
+/* The official A-mark, about as tall as a capital */
+.sectors__mark {
+  width: 0.78em;
+  height: auto;
+  fill: currentColor;
+}
+
+/* The seams belong to the carved version */
+.sectors__seam { display: none; }
+
+/* ---------- Band (default) ----------
+   Charcoal, with the concrete's grain multiplied in so it reads as a
+   charcoal inlay, not a flat stripe. Edge to edge. */
+.sectors__band {
+  position: relative;
+  background-color: var(--color-charcoal);
+  background-image: url("../assets/concrete.jpg");
+  background-size: 1024px;
+  background-blend-mode: multiply;
+  color: var(--color-on-dark);
+  /* A fine groove where the inlay meets the concrete: in shade along the top, catching light along the bottom */
+  box-shadow:
+    0 -1px 0 rgba(0, 0, 0, 0.16),
+    0 1px 0 rgba(255, 255, 255, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.07),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.22);
+}
+/* The band runs edge to edge, so the frame lets go of the container's width */
+.sectors:not([data-variant="carved"]) .sectors__frame {
+  max-width: none;
+  padding-inline: 0;
+}
+.sectors:not([data-variant="carved"]) .sectors__viewport { padding-block: 30px; }
+.sectors:not([data-variant="carved"]) .sectors__mark { color: rgba(244, 244, 243, 0.55); }
+
+/* ---------- Carved (?sectors=carved) ---------- */
+.sectors[data-variant="carved"] {
+  --sectors-fs: 60px;
+  --sectors-gap: 0.8em;
+  padding-bottom: 0;
+}
+.sectors[data-variant="carved"] .sectors__band {
+  background: none;
+  box-shadow: none;
+  color: #000; /* only the shape counts: the filter turns it into a recess */
+}
+.sectors[data-variant="carved"] .sectors__seam { display: block; }
+.sectors[data-variant="carved"] .sectors__viewport {
+  padding-block: var(--space-7);
+  /* Soft ends, so the line seems to run on under the concrete */
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 72px, #000 calc(100% - 72px), transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 72px, #000 calc(100% - 72px), transparent);
+}
+/* The filter sits on each (still) list, the movement on the track, so the carving is drawn once and slides */
+.sectors[data-variant="carved"] .sectors__list { filter: url("#deboss"); }
+.sectors[data-variant="carved"] .sectors__item { letter-spacing: -0.01em; }
+/* A tie hole between sectors (the brief's "·"), the same circle as the head of the A */
+.sectors[data-variant="carved"] .sectors__mark { display: none; }
+.sectors[data-variant="carved"] .sectors__sep::before {
+  content: "";
+  width: 0.2em;
+  height: 0.2em;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+/* ---------- Standing still (reduced motion) ---------- */
+.sectors.is-static .sectors__track { width: auto; justify-content: center; }
+.sectors.is-static .sectors__list {
+  flex: auto;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.1em 0.9em;
+  padding-inline: var(--gutter);
+  font-size: calc(var(--sectors-fs) * 0.8);
+}
+.sectors.is-static .sectors__item { font-size: inherit; }
+/* Wrapped lines would start with a separator: drop them and let the spacing do the work */
+.sectors.is-static .sectors__sep { display: none; }
+
+/* ---------- Tablet and phone (to refine once desktop is approved) ---------- */
+@media (max-width: 1199px) {
+  .sectors { --sectors-fs: 44px; padding-top: var(--space-9); }
+  .sectors[data-variant="carved"] { --sectors-fs: 46px; }
+}
+@media (max-width: 809px) {
+  .sectors { --sectors-fs: 32px; padding-top: var(--space-8); }
+  .sectors[data-variant="carved"] { --sectors-fs: 34px; }
+  .sectors:not([data-variant="carved"]) .sectors__viewport { padding-block: 20px; }
+}

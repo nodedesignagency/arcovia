@@ -1,0 +1,111 @@
+/* ==========================================================================
+   SECTION: closing — Home, block 10 (brief section 10)
+   The deck's closing slide: live concrete (concrete.js) with the A-mark
+   debossed large on the right, pressed in like a seal as the section comes
+   up (closing.js). On the left: "Partner with us", one line and one button
+   to the contact page, sitting low like the hero's heading; the A stands on
+   the same line as the button.
+   The slab (.closing-wall) runs behind the sectors line too, so both sit on
+   one piece of concrete (no change of tone between them).
+   Without WebGL the mark is debossed with the SVG filter (#deboss) instead.
+   Uses shared tokens, the primary button and the arrow icon from styles.css.
+   ========================================================================== */
+
+/* ---------- The slab: one piece of live concrete under the sectors and the closing ---------- */
+.closing-wall {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  /* Static fallback: no JS, no WebGL. The same soft diagonal light as the hero. */
+  background-color: var(--color-concrete);
+  background-image:
+    linear-gradient(112deg, rgba(0, 0, 0, 0.05) 0%, rgba(0, 0, 0, 0.02) 38%, rgba(255, 255, 255, 0.2) 52%, rgba(255, 255, 255, 0.12) 66%, rgba(0, 0, 0, 0.04) 100%),
+    url("../assets/concrete.jpg");
+  background-size: auto, 1024px;
+}
+
+.closing-wall__canvas {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 900ms var(--ease-out);
+}
+.closing-wall.is-live .closing-wall__canvas { opacity: 1; }
+
+.closing {
+  position: relative;
+  min-height: 100vh;
+  min-height: 100svh;
+}
+
+/* ---------- Layout: on the page grid, text low on the left, the mark on the right ---------- */
+.closing__inner {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--grid-gap);
+  min-height: inherit;
+  padding-block: var(--space-10);
+}
+
+.closing__content {
+  grid-column: 1 / span 5;
+  grid-row: 1;
+  align-self: end;
+  display: grid;
+  justify-items: start;
+}
+
+.closing__title {
+  font-size: var(--fs-hero);
+  font-weight: var(--weight-medium);
+  line-height: var(--lh-hero);
+  letter-spacing: var(--ls-hero);
+  color: var(--color-ink);
+}
+.closing__body {
+  max-width: 25em;
+  margin-top: var(--space-6);
+  text-wrap: pretty;
+  font-size: var(--fs-lede);
+  line-height: var(--lh-lede);
+  color: var(--color-text);
+}
+.closing__btn { margin-top: var(--space-7); }
+@media (hover: hover) {
+  .closing__btn:hover .closing__arrow { transform: translateX(3px); }
+}
+
+/* The A-mark, large: from column 7 to the edge of the grid, its feet on the button's line */
+.closing__figure {
+  grid-column: 7 / -1;
+  grid-row: 1;
+  align-self: end;
+  display: grid;
+  justify-items: center;
+}
+.closing__mark {
+  width: 100%;
+  max-width: 640px;
+  /* never taller than the slab leaves room for */
+  max-height: calc(100vh - 2 * var(--space-10));
+  height: auto;
+  fill: currentColor;
+  color: #000;           /* only the shape counts: the filter turns it into a recess */
+  filter: url("#deboss");
+}
+/* With live concrete the mark is carved into the slab itself (concrete.js), so the SVG only marks the place */
+.closing-wall.is-live .closing__mark { opacity: 0; filter: none; }
+
+/* ---------- Tablet and phone (to refine once desktop is approved) ---------- */
+@media (max-width: 1199px) {
+  .closing__content { grid-column: 1 / span 7; }
+  .closing__figure { grid-column: 8 / -1; }
+}
+@media (max-width: 809px) {
+  .closing__inner { grid-template-rows: auto auto; row-gap: var(--space-8); padding-block: var(--space-9); }
+  .closing__figure { grid-column: 3 / span 8; grid-row: 1; }
+  .closing__content { grid-column: 1 / -1; grid-row: 2; }
+}

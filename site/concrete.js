@@ -25,6 +25,8 @@
      redrawn for each view, so carving stays crisp at any zoom; the hole is
      transparent, so whatever sits behind the canvas shows through (zoom.js
      uses this to burn through the O of ARCOVIA and fly into the statement).
+   - setMarkDepth() presses carved marks in (1) or lets them rise flush (0)
+     without touching any other carving (the closing stamps its A-mark).
    - Pauses off-screen and in hidden tabs. With reduced motion it renders
      one still frame. Without WebGL the CSS fallback stays.
    ========================================================================== */
@@ -60,6 +62,7 @@
     "uniform vec4 uDrill;",      // drill: centre x, y and the O's counter radii x, y (slab coordinates)
     "uniform vec4 uDrillP;",     // drill: camera distance (1 at the start, 0 at the face, -K at the back), depth drilled (0–K), light through (0–1), dust (0–1)
     "uniform vec4 uDrillQ;",     // drill: K (slab thickness / starting camera distance), bore radius (counter units), spin, thickness in counter radii
+    "uniform float uMarkDepth;", // how far carved marks are pressed in: 0 flush, 1 fully carved (the closing presses its A-mark in)
     "",
     "float hash(vec2 p){ p = fract(p * vec2(123.34, 456.21)); p += dot(p, p + 45.32); return fract(p.x * p.y); }",
     "float noise(vec2 p){ vec2 i = floor(p), f = fract(p); vec2 u = f*f*(3.0-2.0*f);",
@@ -116,6 +119,10 @@
     "  float mott = 0.955 + 0.09 * fbm(p / 520.0 + 3.7);",
     "  float inlay = texture2D(uHeight, uv).g;",
     "  float hc = H(uv);",
+    // Marks are painted with blue in the height map, so their depth can be pressed in on its own
+    // (sharpened, so the mark's walls count as fully part of it: blurred, they would only be half pressed)
+    "  float isMark = smoothstep(0.0, 0.2, texture2D(uHeight, uv).b);",
+    "  float dm = mix(1.0, uMarkDepth, isMark);",
     "  float detail = 1.0 + (t0 / 0.765 - 1.0) * mix(0.62, 0.3, inlay);",
     "  float albedo = mix(0.865, 0.37, inlay) * detail * mix(mott, 1.0, inlay);",
     "",
@@ -123,7 +130,7 @@
     "  vec2 e = uHTexel;",
     "  float hx = (H(uv + vec2(e.x, 0.0)) - H(uv - vec2(e.x, 0.0))) * uScale * 0.5;",
     "  float hy = (H(uv + vec2(0.0, e.y)) - H(uv - vec2(0.0, e.y))) * uScale * 0.5;",
-    "  vec3 n = normalize(vec3(-hx * 2.2, -hy * 2.2, 1.0));",
+    "  vec3 n = normalize(vec3(-hx * 2.2 * dm, -hy * 2.2 * dm, 1.0));",
     "  n = normalize(n + vec3(-(tx - t0), -(ty - t0), 0.0) * mix(1.6, 0.6, inlay));",
     "",
     "  // Sun: low, from the upper left",
@@ -139,16 +146,16 @@
     "",
     "  // Short cast shadow inside carvings, on the side facing away from the sun",
     "  vec2 ld = normalize(Ls.xy) * e * uScale;",
-    "  float occ = clamp((max(H(uv + ld * 1.2), H(uv + ld * 2.4)) - hc) * 1.4, 0.0, 1.0);",
+    "  float occ = clamp((max(H(uv + ld * 1.2), H(uv + ld * 2.4)) - hc) * 1.4, 0.0, 1.0) * dm;",
     "",
     "  // Sky light from the upper left: always draws a dark rim and a light rim on every carving",
     "  vec3 La = normalize(vec3(-0.45, -0.6, 0.66));",
     "  float amb = 0.86 + 0.36 * (dot(n, La) - La.z);",
-    "  float ao = mix(0.92, 1.0, hc);",
+    "  float ao = mix(1.0 - 0.08 * dm, 1.0, hc);",
     "  // ...and a soft inner shadow under the upper-left wall, so carvings read as recessed, not outlined",
     "  vec2 la = normalize(La.xy) * e * uScale;",
     "  float occA = clamp((max(H(uv + la * 2.0), H(uv + la * 4.5)) - hc) * 1.2, 0.0, 1.0);",
-    "  ao *= 1.0 - occA * 0.09;",
+    "  ao *= 1.0 - occA * 0.09 * dm;",
     "",
     "  float light = amb * ao * 0.9;",
     "  light += uSun * band * sunN * (1.0 - occ * 0.85);",
@@ -166,6 +173,13 @@
     "",
     "  float c = albedo * light + (uSun * edge + uCursor * edgeC * 2.2) * mix(0.35, 0.7, inlay);",
     "  c *= 1.0 - 0.07 * pow(length((uv - 0.5) * vec2(1.0, 1.2)), 2.0);",
+    // Marks are cut deeper than text: a slightly darker floor and a wide soft shadow under the
+    // upper-left wall. Applied after the light, so the recess still reads while the sun passes over it.
+    "  if (isMark > 0.002) {",
+    "    float hm = (H(uv + la * 2.5) + H(uv + la * 5.0) + H(uv + la * 8.0) + H(uv + la * 12.0) + H(uv + la * 17.0)) * 0.2;",
+    "    float occM = clamp(hm - hc, 0.0, 1.0);",
+    "    c *= 1.0 - isMark * uMarkDepth * ((1.0 - hc) * 0.05 + occM * 0.09);",
+    "  }",
     "  c += (hash(gl_FragCoord.xy + fract(uTime) * 61.0) - 0.5) * (2.0 / 255.0);",
     "",
     "  // The burn, like paper catching fire: an ember, then a ragged hole whose edge glows,",
@@ -345,6 +359,7 @@
     this.mouse = { x: -9999, y: -9999, tx: -9999, ty: -9999, amt: 0, tamt: 0 };
     this.view = { ox: 0, oy: 0, tx: 0, ty: 0, s: 1, burn: null, shatter: null, drill: null };
     this.carves = [];
+    this.markDepth = 1;   // 0–1: how far data-carve="mark" elements are pressed in (setMarkDepth)
     this.visible = true;
     this.running = false;
     this.t0 = performance.now();
@@ -370,7 +385,7 @@
     gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
 
     this.u = {};
-    ["uRes", "uScale", "uTime", "uBand", "uMouse", "uMouseAmt", "uSun", "uCursor", "uTex", "uTexSize", "uHeight", "uHTexel", "uOrigin", "uShift", "uZoom", "uBurn", "uBurnP", "uBreak", "uBreakP", "uDrill", "uDrillP", "uDrillQ"].forEach(function (n) {
+    ["uRes", "uScale", "uTime", "uBand", "uMouse", "uMouseAmt", "uSun", "uCursor", "uTex", "uTexSize", "uHeight", "uHTexel", "uOrigin", "uShift", "uZoom", "uBurn", "uBurnP", "uBreak", "uBreakP", "uDrill", "uDrillP", "uDrillQ", "uMarkDepth"].forEach(function (n) {
       this.u[n] = gl.getUniformLocation(prog, n);
     }, this);
 
@@ -521,7 +536,7 @@
         ctx.save();
         ctx.translate(c.x, c.y);
         ctx.scale(c.k, c.k);
-        ctx.fillStyle = "rgb(0,0,0)";
+        ctx.fillStyle = "rgb(0,0,255)";   // blue tags the mark, so markDepth can press it in on its own
         c.paths.forEach(function (p) { ctx.fill(p); });
         ctx.restore();
       } else if (c.kind === "text") {
@@ -581,6 +596,15 @@
       this.render((performance.now() - this.t0) / 1000, !this.running);
       this.last = performance.now();
     }
+  };
+
+  /* Press carved marks in (1) or let them rise flush with the surface (0). Cheap: a uniform, no repaint. */
+  ConcreteSurface.prototype.setMarkDepth = function (d) {
+    d = Math.max(0, Math.min(1, d));
+    if (Math.abs(d - this.markDepth) < 0.0005) return;
+    this.markDepth = d;
+    this.needsFrame = true;
+    this.kick();
   };
 
   ConcreteSurface.prototype.bind = function () {
@@ -688,6 +712,7 @@
     gl.uniform4f(u.uDrill, dr ? dr.cx : 0, dr ? dr.cy : 0, dr ? dr.rx : 0, dr ? dr.ry : 0);
     gl.uniform4f(u.uDrillP, dr ? dr.cam : 1, dr ? dr.depth : 0, dr ? dr.light : 0, dr ? dr.dust : 0);
     gl.uniform4f(u.uDrillQ, dr ? dr.k : 1, dr ? dr.r : 1, dr ? dr.spin : 0, dr ? dr.thick : 2);
+    gl.uniform1f(u.uMarkDepth, this.markDepth);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
     this.needsFrame = false;
   };
