@@ -1,8 +1,9 @@
 /* ==========================================================================
    SECTION: closing — Home, block 10 (brief section 10): the CTA
    After the user's own earlier design: on the neutral ground straight after
-   the sectors line, a rounded box with corner marks and ruler ticks, the text
-   on the left and the logo on the right.
+   the sectors line, a rounded box with the text on the left and the logo on
+   the right (no frame marks: the user's reference had corner marks and ruler
+   ticks, which were only part of the reference, not wanted here).
    The box is the client's sunrise wall (after the social assets she liked, a
    little lighter): a concrete photo (assets/cta-wall.jpg, made with Magnific)
    lit live by concrete.js (closing.js): a beam of sunlight sweeps across and
@@ -55,33 +56,6 @@
 }
 .closing__card.is-live .closing__canvas { opacity: 1; }
 
-/* ---------- Frame: corner marks and ruler ticks ---------- */
-.closing__corner {
-  position: absolute;
-  width: 30px;
-  height: 30px;
-  border: 0 solid rgba(255, 255, 255, 0.6);
-  pointer-events: none;
-}
-.closing__corner--tl { top: 28px; left: 28px; border-top-width: 1.5px; border-left-width: 1.5px; }
-.closing__corner--tr { top: 28px; right: 28px; border-top-width: 1.5px; border-right-width: 1.5px; }
-.closing__corner--bl { bottom: 28px; left: 28px; border-bottom-width: 1.5px; border-left-width: 1.5px; }
-.closing__corner--br { bottom: 28px; right: 28px; border-bottom-width: 1.5px; border-right-width: 1.5px; }
-
-/* Fine ticks down both sides, a longer one every fifth */
-.closing__ruler {
-  position: absolute;
-  top: 92px;
-  bottom: 92px;
-  width: 12px;
-  pointer-events: none;
-  background:
-    repeating-linear-gradient(to bottom, rgba(255, 255, 255, 0.34) 0 1px, transparent 1px 60px) 0 0 / 12px 100% no-repeat,
-    repeating-linear-gradient(to bottom, rgba(255, 255, 255, 0.2) 0 1px, transparent 1px 12px) 0 0 / 7px 100% no-repeat;
-}
-.closing__ruler--left { left: 29px; }
-.closing__ruler--right { right: 29px; transform: scaleX(-1); }
-
 /* ---------- Text ---------- */
 .closing__content {
   grid-column: 1 / span 6;
@@ -106,7 +80,7 @@
   line-height: var(--lh-lede);
   color: rgba(244, 244, 243, 0.88);
 }
-.closing__btn { margin-top: var(--space-7); text-shadow: none; }
+.closing__btn { margin-top: var(--space-6); text-shadow: none; }
 @media (hover: hover) {
   .closing__btn:hover .closing__arrow { transform: translateX(3px); }
 }
