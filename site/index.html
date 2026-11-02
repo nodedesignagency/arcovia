@@ -635,33 +635,33 @@
 
   <!-- SECTION:footer START · styles: sections/footer.css
        Component: site-footer. After the user's references: defiant.vc's footer (the main
-       inspiration, not a copy) and their own Native Foreign footer. The official lockup at a
-       moderate size top left (no giant wordmark: the CTA above carries the big one); two
-       columns of links set large under bracket-chip labels; the two offices side by side over
-       hairlines with their live local time (main.js keeps every [data-clock] live); then ©
-       on the left and the legal pages on the right. The legal pages are one link each, so
-       one or two of them fit without changes. -->
+       inspiration, not a copy) and their own Native Foreign footer. A small horizontal logo
+       top left (the official brandmark beside the wordmark, as in the client's horizontal
+       logo); two columns of links set large, no labels over them; the two offices side by
+       side over hairlines with their live local time (main.js keeps every [data-clock] live);
+       then © on the left and the legal pages on the right. The legal pages are one link each,
+       so one or two of them fit without changes. -->
   <footer class="site-footer" aria-labelledby="footer-title">
     <h2 class="visually-hidden" id="footer-title">Site footer</h2>
     <div class="site-footer__inner container">
-      <a class="site-footer__logo" href="index.html" aria-label="Arcovia, home">
-        <svg viewBox="0 0 72 72" aria-hidden="true"><use href="#lockup"/></svg>
+      <!-- Component: logo (the shared .logo: brandmark beside wordmark), sized for the footer -->
+      <a class="logo site-footer__logo" href="index.html" aria-label="Arcovia, home">
+        <svg class="logo__mark" viewBox="0 0 72 57" aria-hidden="true"><use href="#a-mark"/></svg>
+        <svg class="logo__word" viewBox="0 0 72 11" aria-hidden="true"><use href="#wordmark"/></svg>
       </a>
 
-      <nav class="site-footer__col site-footer__col--site" aria-labelledby="footer-site">
-        <p class="chip site-footer__label" id="footer-site">Site map</p>
+      <nav class="site-footer__col site-footer__col--site" aria-label="Site map">
         <ul class="site-footer__links">
           <li><a class="site-footer__link" href="services.html">What We Do</a></li>
           <li><a class="site-footer__link" href="track-record.html">Track Record</a></li>
           <li><a class="site-footer__link" href="team.html">Team</a></li>
         </ul>
       </nav>
-      <nav class="site-footer__col site-footer__col--company" aria-labelledby="footer-company">
-        <p class="chip site-footer__label" id="footer-company">Company</p>
+      <nav class="site-footer__col site-footer__col--company" aria-label="Company">
         <ul class="site-footer__links">
           <li><a class="site-footer__link" href="about.html">About</a></li>
           <li><a class="site-footer__link" href="contact.html">Contact</a></li>
-          <li><a class="site-footer__link" href="#" data-todo="LinkedIn company page URL [TO CONFIRM]">LinkedIn<svg class="site-footer__out" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 11 11 5M6 5h5v5"/></svg></a></li>
+          <li><a class="site-footer__link" href="#" data-todo="LinkedIn company page URL [TO CONFIRM]">LinkedIn</a></li>
         </ul>
       </nav>
 

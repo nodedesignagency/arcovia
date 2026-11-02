@@ -2,11 +2,11 @@
    SECTION: footer — every page (component: site-footer)
    After the user's references: defiant.vc's footer (the main inspiration,
    not a copy) and their own Native Foreign footer. On the neutral ground
-   straight after the CTA, a hairline across the top.
-     logo 1-2 (the official lockup at a moderate size; no giant wordmark,
-              the CTA above carries the big one)
-     Site map 6-8 · Company 9-12: bracket-chip labels, links set large,
-              the masthead's short dash drawing in on hover
+   straight after the CTA, no line across the top.
+     logo 1-3 (small and horizontal: the brandmark beside the wordmark, in
+              the proportions of the client's horizontal logo)
+     Site map 6-8 · Company 9-12: just the links, set large, no labels; the
+              masthead's short dash draws in on hover
      offices 6-8 · 9-12: side by side over hairlines, city, live local
               time (main.js), address
      bar: © on the left, the legal pages on the right, over a hairline
@@ -22,34 +22,27 @@
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
   column-gap: var(--grid-gap);
-  padding-top: var(--space-8);
-  /* a hairline across the top, the width of the grid */
-  background: linear-gradient(var(--ft-line), var(--ft-line)) var(--gutter) 0 / calc(100% - 2 * var(--gutter)) 1px no-repeat;
+  padding-top: var(--space-6);
 }
 
-/* ---------- The logo: the official lockup, moderate ---------- */
+/* ---------- The logo: small and horizontal ----------
+   The shared .logo (brandmark beside wordmark) in the proportions of the client's
+   horizontal logo: the mark about 1.8 times as wide as the wordmark is tall, a gap of
+   about 1.2 times, both centred on one line. */
 .site-footer__logo {
   grid-column: 1 / span 3;
   grid-row: 1;
   align-self: start;
   justify-self: start;
-  width: 132px;
-  margin-top: 6px;          /* its top level with the labels' capitals */
-  color: var(--color-ink);
+  gap: 20px;
+  margin-top: 10px;         /* centred on the first line of links */
 }
-.site-footer__logo svg { width: 100%; height: auto; fill: currentColor; }
+.site-footer__logo .logo__mark { width: 30px; }
+.site-footer__logo .logo__word { height: 17px; }
 
 /* ---------- Link columns ---------- */
 .site-footer__col--site { grid-column: 6 / span 3; grid-row: 1; }
 .site-footer__col--company { grid-column: 9 / span 4; grid-row: 1; }
-
-/* Bracket-chip labels (the shared .chip) */
-.site-footer__label {
-  display: block;
-  margin-bottom: var(--space-5);
-  font-size: 12px;
-  color: var(--color-text-muted);
-}
 
 .site-footer__links { display: grid; }
 .site-footer__link {
@@ -72,18 +65,6 @@
 }
 @media (hover: hover) {
   .site-footer__link:hover::before { width: 16px; margin-right: 10px; }
-}
-/* Leaves the site */
-.site-footer__out {
-  width: 16px;
-  height: 16px;
-  margin-left: 8px;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.5;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  color: var(--color-text-muted);
 }
 
 /* ---------- Offices, side by side over hairlines ---------- */
