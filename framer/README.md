@@ -21,11 +21,14 @@ Framer, so changes are made here first, checked in the harness, then uploaded.
   number top left with the tile on the right, then title and line; 2 columns / 1.
   Review it locally with `./preview.sh <branch> previews/what-we-do/index.html`
   (built by `node framer/harness/preview-what-we-do.mjs`; rebuild after every change).
-  Tile photos: the user chose silhouettes; two generated sets (Magnific, Nano Banana
-  2.1) are in `site/previews/what-we-do/img/` (`NN-name-a|b.jpg`), one scene per
-  service: presenting to investors, a diagram on the window, a corridor of meeting
-  rooms, a staircase through stacked floors, a handshake with cranes outside,
-  partners at a window. Same building, backlight and grain throughout.
+  Tile photos: the user chose silhouettes, generated in Magnific (Nano Banana 2.1),
+  one scene per service, in `site/previews/what-we-do/img/`: presenting to
+  investors, a diagram on the window, a corridor of meeting rooms, a staircase
+  through stacked floors, a handshake with cranes outside, partners at a window.
+  Same building, backlight and grain throughout. The user disliked the plain white
+  screen in 01: `01-narrative-slide-1|2` (a soft out-of-focus slide) and
+  `-window-1|2` (a window instead) are the options. "Photo frame" switches the
+  concrete window around the photo off (photo fills the tile).
 - `harness/`: bundles the components into a plain page with a stand-in `framer`
   module, for checking in Chromium next to the HTML original.
 

@@ -202,6 +202,10 @@ const WHAT_WE_DO_CSS = `/* =====================================================
     inset -1px -1px 0 rgba(255, 255, 255, 0.35);
 }
 
+/* No frame: the photo fills the whole tile */
+.wwd--bleed .wwd__photo { inset: 0; }
+.wwd--bleed .wwd__photo::after { box-shadow: none; }
+
 /* ---------- Services ---------- */
 .wwd__steps { grid-column: 7 / span 6; }
 .wwd__step {
@@ -568,6 +572,8 @@ interface Props {
     line2: string
     lede: string
     art: Art
+    /** photos sit in a window cut into the concrete (true) or fill the whole tile (false) */
+    frame: boolean
     services: Service[]
     style?: React.CSSProperties
 }
@@ -581,6 +587,7 @@ const DEFAULTS: Props = {
     lede: "Six disciplines, one senior team, from the first investor conversation to the close.",
     // What the tiles carry: the drawn sheets, or each service's photo (grayscale, in a window cut into the concrete)
     art: "drawings",
+    frame: true,
     services: [
         {
             title: "Investor Narrative & Positioning",
@@ -672,7 +679,7 @@ export default function ArcoviaWhatWeDo(incoming: Partial<Props>) {
         <div className="arc arc-what-we-do" ref={ref} style={p.style}>
             {baseStyle()}
             {cssTag("what-we-do", WHAT_WE_DO_CSS)}
-            <section className="wwd" data-wwd="" aria-labelledby="wwd-title">
+            <section className={"wwd" + (p.frame ? "" : " wwd--bleed")} data-wwd="" aria-labelledby="wwd-title">
                 <div className="container">
                     <div className="wwd__head">
                         <p className="chip">{p.chip}</p>
@@ -806,6 +813,14 @@ addPropertyControls(ArcoviaWhatWeDo, {
         optionTitles: ["Drawings", "Photos"],
         displaySegmentedControl: true,
         defaultValue: DEFAULTS.art,
+    },
+    frame: {
+        type: ControlType.Boolean,
+        title: "Photo frame",
+        enabledTitle: "Concrete",
+        disabledTitle: "None",
+        defaultValue: DEFAULTS.frame,
+        hidden: (props: Partial<Props>) => props.art !== "photos",
     },
     services: {
         type: ControlType.Array,
