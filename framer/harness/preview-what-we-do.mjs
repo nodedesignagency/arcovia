@@ -1,9 +1,9 @@
 // Builds a review page for the What we do code component into site/previews/what-we-do/,
 // so it opens with preview.sh like the HTML drafts:
-//   ./preview.sh <branch> previews/what-we-do/index.html          (or "...index.html?tiles=people")
+//   ./preview.sh <branch> previews/what-we-do/index.html          (or "...index.html?tiles=b" / "?tiles=drawings")
 // Rebuild after changing framer/code/ArcoviaWhatWeDo.tsx:
 //   node framer/harness/preview-what-we-do.mjs
-// The photo options are Magnific previews for choosing a style (watermarked, not licensed).
+// The photos are the generated silhouettes in site/previews/what-we-do/img (sets A and B).
 import { build } from "esbuild"
 import fs from "fs"
 import path from "path"
@@ -16,32 +16,12 @@ import * as React from "react"
 import { createRoot } from "react-dom/client"
 import WhatWeDo from ${JSON.stringify(path.resolve(here, "../code/ArcoviaWhatWeDo.tsx"))}
 
-const M = "https://img.magnific.com/free-photo/"
+// Silhouettes, generated in Magnific (Nano Banana 2.1), two versions per service
+const NAMES = ["narrative", "strategy", "equity", "debt", "mna", "fund"]
+const set = (v) => NAMES.map((n, i) => ["img/" + String(i + 1).padStart(2, "0") + "-" + n + "-" + v + ".jpg", "50% 50%"])
 const STYLES = {
-  people: { title: "People at work", photos: [
-    ["business-people-meeting_53876-94712.jpg", "40% 50%"],
-    ["business-people-meeting-design-ideas-concept_53876-14459.jpg", "50% 50%"],
-    ["people-meeting-brainstorming-project_53876-15381.jpg", "75% 50%"],
-    ["businesswoman-vision-strategy-way-forward-concept_53876-13814.jpg", "45% 50%"],
-    ["japanese-woman-business-meeting_53876-15011.jpg", "50% 50%"],
-    ["team-people-office-chatting_53876-147956.jpg", "50% 50%"],
-  ] },
-  silhouettes: { title: "Silhouettes", photos: [
-    ["silhouette-businessman-suit-standing-office-window-looking-out_1098-20161.jpg", "50% 50%"],
-    ["silhouette-person-city_23-2149211305.jpg", "60% 50%"],
-    ["co-workers-standing-close-windows_1098-1349.jpg", "75% 50%"],
-    ["silhouette-person-city_23-2149211271.jpg", "40% 50%"],
-    ["silhouette-person-city_23-2149211281.jpg", "62% 50%"],
-    ["businessman-using-smartphone-top-building_53876-15320.jpg", "50% 40%"],
-  ] },
-  hands: { title: "Hands and details", photos: [
-    ["hands-doing-explaining-gesture_53876-160066.jpg", "45% 50%"],
-    ["business-brainstorming-graph-chart-report-data-concept_53876-31216.jpg", "70% 50%"],
-    ["woman-going-through-notes-notebook_53876-30773.jpg", "60% 50%"],
-    ["man-checking_53876-15020.jpg", "55% 50%"],
-    ["business-people-shaking-hands-agreement_53876-20835.jpg", "45% 50%"],
-    ["close-up-people-s-hands-working-computers_53876-25274.jpg", "35% 50%"],
-  ] },
+  a: { title: "Silhouettes A", photos: set("a") },
+  b: { title: "Silhouettes B", photos: set("b") },
 }
 const SERVICES = [
   ["Investor Narrative & Positioning", "Memo, teaser and deck built as one positioning system, stress-tested against real investor objections.", "narrative"],
@@ -54,12 +34,12 @@ const SERVICES = [
 const OPTIONS = [["drawings", "Drawings"], ...Object.entries(STYLES).map(([k, v]) => [k, v.title])]
 
 function Page() {
-  const initial = (location.search.match(/[?&]tiles=(\\w+)/) || [])[1] || "drawings"
+  const initial = (location.search.match(/[?&]tiles=(\\w+)/) || [])[1] || "a"
   const [tiles, setTiles] = React.useState(initial in STYLES || initial === "drawings" ? initial : "drawings")
   const style = STYLES[tiles]
   const services = SERVICES.map(([title, text, drawing], i) => ({
     title, text, drawing,
-    photo: style ? M + style.photos[i][0] + "?w=1000" : undefined,
+    photo: style ? style.photos[i][0] : undefined,
     focus: style ? style.photos[i][1] : undefined,
   }))
   return <>
