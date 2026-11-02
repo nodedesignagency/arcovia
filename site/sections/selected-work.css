@@ -18,7 +18,7 @@
   --book-gap: 72px;
   --book-h: min(52vh, 540px, calc((100vw - 2 * var(--gutter) - 2 * var(--book-gap)) / 3 / 0.72));
   --book-w: calc(var(--book-h) * 0.72);
-  --book-t: calc(var(--book-w) * 0.19);   /* spine: the book's thickness */
+  --book-t: calc(var(--book-w) * 0.24);   /* spine: the book's thickness (thick, as in the user's book video) */
   --book-lift: 14px;                       /* hover */
   --book-radius: 2px 5px 5px 2px;          /* square at the spine, softer at the fore edge */
   /* The heading's size is a share of the grid's width, as in the statement */
@@ -103,35 +103,20 @@
   flex-direction: column;
   padding: calc(var(--book-w) * 0.085) calc(var(--book-w) * 0.08) calc(var(--book-w) * 0.08) calc(var(--book-w) * 0.115);
   border-radius: var(--book-radius);
-  background: var(--book-face);
+  /* A photographed blank hardcover (generated with Magnific): the material, the light and
+     the hinge groove come from the image; the copy is printed on top as real text */
+  background: var(--book-ink-bg) var(--book-cover) center / cover no-repeat;
   color: var(--book-ink);
   filter: brightness(var(--lit, 1));
-  box-shadow: inset 0 0 0 1px var(--book-rim);
 }
-/* The hinge: a little curvature at the spine edge and the groove where the
-   cover folds, so the cover reads as a book even straight on */
-.book__cover::before {
-  content: "";
-  position: absolute;
-  inset: 0 auto 0 0;
-  width: calc(var(--book-w) * 0.07);
-  border-radius: 2px 0 0 2px;
-  background: linear-gradient(to right,
-    rgba(0, 0, 0, 0.22) 0,
-    rgba(255, 255, 255, 0.10) 14%,
-    rgba(0, 0, 0, 0) 40%,
-    rgba(0, 0, 0, 0.18) 72%,
-    rgba(255, 255, 255, 0.16) 84%,
-    rgba(255, 255, 255, 0) 100%);
-  pointer-events: none;
-}
-/* A soft sheen from the upper left, as on a printed cover */
+/* A hairline where the board's edge catches the light, so the darkest binding
+   still lifts off the black */
 .book__cover::after {
   content: "";
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  background: linear-gradient(115deg, rgba(255, 255, 255, 0.10) 0%, rgba(255, 255, 255, 0) 38%, rgba(0, 0, 0, 0) 70%, rgba(0, 0, 0, 0.08) 100%);
+  box-shadow: inset 0 0 0 1px var(--book-rim);
   pointer-events: none;
 }
 
@@ -199,26 +184,32 @@
 
 /* ---------- The three bindings: monochrome, from the deck ---------- */
 .book--concrete {
-  --book-face: linear-gradient(rgba(214, 214, 212, 0.35), rgba(214, 214, 212, 0.35)), url("../assets/concrete.jpg") center / 420px;
+  --book-cover: url("../assets/books/cover-concrete.jpg");
+  --book-spine: url("../assets/books/spine-concrete.jpg");
+  --book-ink-bg: #c2c2c2;
   --book-ink: var(--color-ink);
   --book-ink-muted: var(--color-text-muted);
-  --book-rim: rgba(255, 255, 255, 0.18);
+  --book-rim: rgba(255, 255, 255, 0.12);
   --book-deboss: rgba(0, 0, 0, 0.16);
   --book-deboss-hi: rgba(255, 255, 255, 0.55);
 }
 .book--charcoal {
-  --book-face: linear-gradient(rgba(40, 40, 40, 0.86), rgba(40, 40, 40, 0.86)), url("../assets/concrete.jpg") center / 420px;
+  --book-cover: url("../assets/books/cover-charcoal.jpg");
+  --book-spine: url("../assets/books/spine-charcoal.jpg");
+  --book-ink-bg: #323232;
   --book-ink: var(--color-on-dark);
   --book-ink-muted: rgba(244, 244, 243, 0.74);
-  --book-rim: rgba(255, 255, 255, 0.08);
+  --book-rim: rgba(255, 255, 255, 0.07);
   --book-deboss: rgba(0, 0, 0, 0.42);
   --book-deboss-hi: rgba(255, 255, 255, 0.10);
 }
 .book--paper {
-  --book-face: linear-gradient(rgba(244, 244, 242, 0.86), rgba(244, 244, 242, 0.86)), url("../assets/concrete.jpg") center / 420px;
+  --book-cover: url("../assets/books/cover-paper.jpg");
+  --book-spine: url("../assets/books/spine-paper.jpg");
+  --book-ink-bg: #e2e2e2;
   --book-ink: var(--color-ink);
   --book-ink-muted: var(--color-text-muted);
-  --book-rim: rgba(255, 255, 255, 0.4);
+  --book-rim: rgba(255, 255, 255, 0.2);
   --book-deboss: rgba(0, 0, 0, 0.09);
   --book-deboss-hi: rgba(255, 255, 255, 0.9);
 }
@@ -317,10 +308,9 @@
   flex-direction: column;
   align-items: center;
   padding: calc(var(--book-t) * 0.42) 0 calc(var(--book-t) * 0.34);
-  border-radius: 2px;
-  background:
-    linear-gradient(to right, rgba(0, 0, 0, 0.24) 0, rgba(255, 255, 255, 0.07) 22%, rgba(255, 255, 255, 0.05) 62%, rgba(0, 0, 0, 0.2) 100%),
-    var(--book-face);
+  border-radius: 3px;
+  /* The photographed spine: its rounding and light come from the image */
+  background: var(--book-ink-bg) var(--book-spine) center / 100% 100% no-repeat;
   color: var(--book-ink);
   filter: brightness(var(--lit, 1));
   backface-visibility: hidden;
