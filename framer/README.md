@@ -29,6 +29,9 @@ Framer, so changes are made here first, checked in the harness, then uploaded.
   screen in 01: `01-narrative-slide-1|2` (a soft out-of-focus slide) and
   `-window-1|2` (a window instead) are the options. "Photo frame" switches the
   concrete window around the photo off (photo fills the tile).
+  Final (user's choice, live in Framer): 01 window-2, 02-06 as in the folder, no
+  frame. The six are uploaded to the Framer project (`PHOTOS` in the component) and
+  are the component's defaults; a service's own Photo control overrides its photo.
 - `harness/`: bundles the components into a plain page with a stand-in `framer`
   module, for checking in Chromium next to the HTML original.
 

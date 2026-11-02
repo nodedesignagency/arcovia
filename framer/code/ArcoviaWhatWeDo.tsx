@@ -8,10 +8,10 @@
  *
  * A centred head (chip, two-line headline, one line under it), then two halves.
  * On the left a stage holds still in the middle of the screen: the service's
- * number, large and faint, and a square concrete tile carrying a small white
- * drawing of what that service produces (a paper, drawn like a technical sheet:
- * hairlines, dashed construction lines running off its edges, a small square at
- * each corner). On the right the six services scroll past normally. Whichever
+ * number, large and faint, and a square tile with a photo of that service (black
+ * and white silhouettes in one concrete-and-glass building, generated in Magnific;
+ * "Tiles: Drawings" swaps in small white technical-sheet drawings on concrete
+ * instead, and "Photo frame: Concrete" sets the photo in a window cut into the slab). On the right the six services scroll past normally. Whichever
  * one holds the middle of the screen is the current one: its words at full ink,
  * the others a step back. When the next one takes over, the number rolls up to
  * it and the next tile pushes the current one up and out of the frame.
@@ -552,6 +552,17 @@ const DRAWINGS: Record<Drawing, () => React.ReactElement> = {
 }
 const DRAWING_KEYS = Object.keys(DRAWINGS) as Drawing[]
 
+/* The tiles' photos (chosen by the user): silhouettes generated in Magnific, one scene
+   per service, uploaded to this Framer project. A service's own Photo control wins. */
+const PHOTOS: Record<Drawing, string> = {
+    narrative: "https://framerusercontent.com/images/eJhkWRV6aFQWpZ1ejX1mwktxGHA.jpg", // presenting to investors, a window behind her
+    strategy: "https://framerusercontent.com/images/RbP6VqTs8dCwfThjOmwdCwryp4.jpg", // a diagram drawn on the window
+    equity: "https://framerusercontent.com/images/S9fl3rGiSw9CAhffwhz9lZPHQOI.jpg", // a corridor of meeting rooms
+    debt: "https://framerusercontent.com/images/UpdeLhdoHAjpVJyUeJwL2vvlOhI.jpg", // a staircase through stacked floors
+    mna: "https://framerusercontent.com/images/JHzelmqnFBMBDJpEdGxK5MVz4IQ.jpg", // a handshake, cranes outside
+    fund: "https://framerusercontent.com/images/FoUdWtF1hcwBbJfq6lJR1OCRPWA.jpg", // partners at a window
+}
+
 /* ========================================================================== */
 
 interface Service {
@@ -585,9 +596,10 @@ const DEFAULTS: Props = {
     line2: "built around conviction",
     // [COPY NEEDED] Draft line under the headline
     lede: "Six disciplines, one senior team, from the first investor conversation to the close.",
-    // What the tiles carry: the drawn sheets, or each service's photo (grayscale, in a window cut into the concrete)
-    art: "drawings",
-    frame: true,
+    // What the tiles carry: each service's photo (the user's choice), or the drawn sheets
+    art: "photos",
+    // No concrete frame: the photo fills the tile (the user's choice)
+    frame: false,
     services: [
         {
             title: "Investor Narrative & Positioning",
@@ -626,12 +638,13 @@ function drawingFor(s: Service, i: number) {
     return DRAWINGS[s.drawing] || DRAWINGS[DRAWING_KEYS[i % DRAWING_KEYS.length]]
 }
 
-/** A tile's contents: the service's photo when the art is "photos" (and it has one), else its drawing */
+/** A tile's contents: the service's photo (its own, else the default for its drawing) when the art is "photos", else its drawing */
 function TileArt({ s, i, art }: { s: Service; i: number; art: Art }) {
-    if (art === "photos" && s.photo) {
+    const photo = s.photo || PHOTOS[s.drawing] || PHOTOS[DRAWING_KEYS[i % DRAWING_KEYS.length]]
+    if (art === "photos" && photo) {
         return (
             <div className="wwd__photo">
-                <img src={s.photo} alt="" loading="lazy" decoding="async" style={s.focus ? { objectPosition: s.focus } : undefined} />
+                <img src={photo} alt="" loading="lazy" decoding="async" style={s.focus ? { objectPosition: s.focus } : undefined} />
             </div>
         )
     }

@@ -51,8 +51,8 @@ function Group({ label, options, value, onChange }) {
 
 function Page() {
   const [tiles, setTiles] = React.useState(param("tiles", "photos", ["photos", "drawings"]))
-  const [one, setOne] = React.useState(param("one", "slide-1", ONE.map((o) => o[0])))
-  const [frame, setFrame] = React.useState(param("frame", "concrete", ["concrete", "none"]))
+  const [one, setOne] = React.useState(param("one", "window-2", ONE.map((o) => o[0])))
+  const [frame, setFrame] = React.useState(param("frame", "none", ["concrete", "none"]))
   const services = SERVICES.map(([title, text, drawing], i) => ({
     title, text, drawing,
     photo: i === 0 && one !== "original" ? "img/01-narrative-" + one + ".jpg" : PHOTOS[i],
