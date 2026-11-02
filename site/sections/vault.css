@@ -1,0 +1,161 @@
+/* ==========================================================================
+   SECTION: vault — the opening (Home, before the hero)
+   After the client's ask: a wall with the logo splits open like a vault and
+   shows the page behind it. Short and quiet, the same on phones.
+   A flat charcoal door (#565656, the deck's charcoal panels) with the A-mark
+   debossed in it covers the page while it loads. A hairline joint runs down
+   the middle, through the centre of the mark's circle. Once the hero's
+   concrete is live, light catches in the joint and the two halves slide apart,
+   heavy at first: the left leg of the A leaves with the left door, the right
+   leg with the right, the circle splits between them. About 1.3 s in all.
+   Plays when the site is opened or reloaded, not when you come back to Home
+   from another page (?vault=on always plays, ?vault=off never). Reduced
+   motion: the door fades. Without JS it never shows: html.vault-on is set by
+   the inline script in the head, and vault.js opens it.
+   ========================================================================== */
+
+.vault { display: none; }
+
+.vault-on .vault {
+  --vault-open: 900ms;                            /* the doors' travel; vault.js reads it */
+  --vault-ease: cubic-bezier(0.76, 0, 0.24, 1);   /* heavy: slow to start, slow to stop */
+  --vault-mark: clamp(84px, 8.6vw, 132px);
+  display: block;
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  /* Failsafe: if vault.js never runs, the door steps aside after 5 s */
+  animation: vault-failsafe 1ms linear 5s forwards;
+}
+@keyframes vault-failsafe { to { visibility: hidden; pointer-events: none; } }
+
+/* Opening: the page underneath takes clicks straight away, and the failsafe stands down */
+.vault-open .vault { pointer-events: none; animation: none; }
+
+/* ---------- The doors ---------- */
+.vault__door {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 50%;
+  background: var(--color-charcoal);
+  will-change: transform;
+}
+.vault__door--left { left: 0; }
+.vault__door--right { right: 0; }
+/* The leading edges catch a little light once they part (under the joint while closed) */
+.vault__door--left { box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.1); }
+.vault__door--right { box-shadow: inset 1px 0 0 rgba(255, 255, 255, 0.1); }
+
+/* Each door holds the whole mark, cut at the joint by its face */
+.vault__face {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+.vault__mark {
+  position: absolute;
+  top: 48%;                       /* a touch above centre: the optical middle */
+  width: var(--vault-mark);
+  height: auto;
+  aspect-ratio: 72 / 57;
+  overflow: visible;
+  fill: #000;                     /* only the shape counts: #deboss-vault presses it in */
+  filter: url("#deboss-vault");
+  /* The joint runs through the circle's centre: x 36.2 of the mark's 72 */
+  transform: translate(-50.28%, -50%);
+}
+.vault__door--left .vault__mark { left: 100%; }
+.vault__door--right .vault__mark { left: 0; }
+
+/* The doors' shadow on the concrete as they slide (faded in once there is a gap, so it never
+   falls on the other door) */
+.vault__door::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 64px;
+  opacity: 0;
+  pointer-events: none;
+}
+.vault__door--left::after { left: 100%; background: linear-gradient(90deg, rgba(0, 0, 0, 0.26), rgba(0, 0, 0, 0)); }
+.vault__door--right::after { right: 100%; background: linear-gradient(270deg, rgba(0, 0, 0, 0.26), rgba(0, 0, 0, 0)); }
+
+/* The joint: a fine groove down the middle, dark on the left, a light lip on the right.
+   As the doors unlatch, light catches in it for a moment */
+.vault__joint {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 2px;
+  margin-left: -1px;
+  background: linear-gradient(90deg, rgba(0, 0, 0, 0.3) 50%, rgba(255, 255, 255, 0.08) 50%);
+  pointer-events: none;
+}
+.vault__joint::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.75);
+  opacity: 0;
+}
+
+/* Light pouring through the gap: under the doors, so it only ever brightens the concrete
+   between them (over the doors it read as grey haze); it widens with the gap, then goes */
+.vault__light {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 160px;
+  margin-left: -80px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.55) 50%, rgba(255, 255, 255, 0));
+  opacity: 0;
+  transform: scaleX(0.02);
+  pointer-events: none;
+}
+
+/* ---------- Opening (vault.js adds .vault-open) ---------- */
+.vault-open .vault__door--left { animation: vault-left var(--vault-open) var(--vault-ease) forwards; }
+.vault-open .vault__door--right { animation: vault-right var(--vault-open) var(--vault-ease) forwards; }
+.vault-open .vault__door::after { animation: vault-shade var(--vault-open) linear forwards; }
+.vault-open .vault__joint { animation: vault-joint 160ms linear forwards; }
+.vault-open .vault__joint::after { animation: vault-catch 160ms linear forwards; }
+.vault-open .vault__light { animation: vault-light var(--vault-open) var(--ease-out) forwards; }
+
+@keyframes vault-left { to { transform: translate3d(-100%, 0, 0); } }
+@keyframes vault-right { to { transform: translate3d(100%, 0, 0); } }
+@keyframes vault-shade {
+  0%, 30% { opacity: 0; }
+  50% { opacity: 1; }
+  85% { opacity: 0.5; }
+  100% { opacity: 0; }
+}
+@keyframes vault-joint { to { opacity: 0; } }   /* gone before the gap is wider than the joint */
+@keyframes vault-catch { 0% { opacity: 0; } 35% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes vault-light {
+  0% { opacity: 0; transform: scaleX(0.02); }
+  12% { opacity: 1; transform: scaleX(0.06); }
+  45% { opacity: 0.6; transform: scaleX(1); }
+  70%, 100% { opacity: 0; transform: scaleX(2.4); }
+}
+
+/* ---------- Behind the door ---------- */
+/* The hero's text waits, then rises as the doors part */
+.vault-on:not(.vault-open) .hero [data-rise] { animation-play-state: paused; }
+.vault-open .hero [data-rise] { animation-delay: calc(var(--rise, 0) * 90ms + 380ms); }
+/* The live concrete is there the moment the doors part (it fades in as usual if it comes later) */
+.vault-on:not(.vault-open) .hero__canvas { transition: none; }
+
+/* ---------- Reduced motion: no doors moving, the door fades ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .vault-open .vault__door--left,
+  .vault-open .vault__door--right,
+  .vault-open .vault__door::after,
+  .vault-open .vault__joint::after,
+  .vault-open .vault__light { animation: none; }
+  .vault-open .vault { animation: vault-fade 360ms var(--ease-out) forwards; }
+}
+@keyframes vault-fade { to { opacity: 0; } }
