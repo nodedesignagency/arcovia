@@ -72,6 +72,15 @@ const HERO_CSS = `/* ---------- Path picker: one button, three paths ---------- 
   transform: none;
   transition: opacity var(--dur-base) var(--ease-out), transform var(--dur-base) var(--ease-out), visibility 0s;
 }
+/* When there isn't room for the menu above the button (under the header), it opens below it
+   instead, so it never runs into the header's links (set by the script on opening) */
+.path-picker.opens-down .path-picker__panel {
+  bottom: auto;
+  top: calc(100% + 10px);
+  transform-origin: 28px 0;
+  transform: translateY(-6px) scale(0.97);
+}
+.path-picker.opens-down.is-open .path-picker__panel { transform: none; }
 
 .path-picker__title {
   /* A hairline under the title, inset to line up with the rows */
@@ -667,7 +676,20 @@ function initPicker(host: HTMLElement, life: Life) {
         if (!trigger || !panel) return
         const options = panel.querySelectorAll<HTMLElement>(".path-picker__option")
 
+        // Room for the menu above the button, below the header's bottom edge; if it doesn't fit
+        // there and there is more room below, it opens below the button
+        function placePanel() {
+            const tr = trigger!.getBoundingClientRect()
+            const ph = panel!.offsetHeight
+            const hdr = document.querySelector("[data-header]")
+            const ceiling = hdr ? Math.max(0, hdr.getBoundingClientRect().bottom) : 0
+            const above = tr.top - 14 - ceiling - 8
+            const below = window.innerHeight - tr.bottom - 10
+            picker.classList.toggle("opens-down", ph > above && below > above)
+        }
+
         function set(open: boolean, focusFirst?: boolean) {
+            if (open) placePanel()
             picker.classList.toggle("is-open", open)
             trigger!.setAttribute("aria-expanded", String(open))
             panel!.setAttribute("aria-hidden", String(!open))
