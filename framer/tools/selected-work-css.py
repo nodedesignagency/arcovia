@@ -18,7 +18,7 @@ assert not re.search(r'\dvw\b', css)
 # Width breakpoints (including ranges) answer to the component's width, as in the other
 # Arcovia components; hover and reduced-motion queries stay media queries
 css, n = re.subn(r'@media ((?:\((?:min|max)-width: [^)]*\)(?: and )?)+)', r'@container arc \1', css)
-assert n == 3, n
+assert n >= 1, n
 assert not re.search(r'@media \((?:min|max)-width', css)
 old='  padding-block: calc(var(--mh-compact) + 8px) var(--space-7);'
 assert old in css

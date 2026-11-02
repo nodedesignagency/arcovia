@@ -395,53 +395,25 @@
 .book__link:focus-visible .book__cover { outline: 2px solid var(--color-on-dark); outline-offset: 4px; }
 .work--staged:not(.is-open) .book__link:focus-visible .book__spine { outline: 2px solid var(--color-on-dark); outline-offset: 4px; }
 
-/* ---------- Tablet (810–1199): the same sequence, smaller books ---------- */
+/* ---------- Tablet and phone (1199 and below): no motion, the heading over a column of books ----------
+   The user asked for tablets and phones to stay simple: books.js leaves them alone,
+   so this is the page as it stands: "Selected work" on top, the three books one
+   under another, centred, then the link. */
 @media (max-width: 1199px) {
-  .work { --book-gap: 40px; }
-}
-
-/* ---------- Tablet portrait (810–1023): the books end on a shelf ----------
-   A row of three would leave the books too small, so they end on a shelf you swipe:
-   it runs edge to edge, lines up with the page's left edge and snaps book by book,
-   two books whole and the third peeking in. The section still fits one screen, so
-   the stage can pin. Until the books have turned the shelf neither clips (the spines
-   rise from below and spread past its edge; the pinned stage clips them) nor scrolls
-   or snaps (snapping chased the moving books); books.js returns it to the first book
-   whenever they turn back. */
-@media (min-width: 810px) and (max-width: 1023px) {
   .work {
-    --book-gap: 24px;
-    --book-h: min(80svh, calc(min(44vw, 360px) / 0.72)); /* a whole book always fits the screen (landscape phones) */
-  }
-  .work.work--staged { --book-h: min(52vh, calc(min(44vw, 360px) / 0.72)); }
-  .work__books {
-    align-self: stretch;
-    justify-content: flex-start;
-    margin-inline: calc(-1 * var(--gutter));
-    padding: 14px var(--gutter) 6px;
-    scroll-padding-inline: var(--gutter);
-    overflow-x: auto;
-    overscroll-behavior-x: contain;
-    scroll-snap-type: x mandatory;
-    scrollbar-width: none;
-  }
-  .work__books::-webkit-scrollbar { display: none; }
-  .book { scroll-snap-align: start; }
-  .work--staged:not(.is-open) .work__books { overflow: visible; scroll-snap-type: none; }
-}
-
-/* ---------- Phone (809 and below): no motion, the heading over a column of books ----------
-   The user asked for it simple: books.js leaves phones alone, so this is the page as
-   it stands: "Selected work" on top, the three books one under another, the link. */
-@media (max-width: 809px) {
-  .work {
-    --book-gap: var(--space-6);
-    --book-h: calc(min(80vw, 330px) / 0.72);
+    --book-gap: var(--space-7);
+    --book-h: calc(min(46vw, 360px) / 0.72);
   }
   .work__stage { padding-block: var(--space-9); }
   .work__inner { gap: var(--space-7); }
   .work__books {
     flex-direction: column;
     align-items: center;
+  }
+}
+@media (max-width: 809px) {
+  .work {
+    --book-gap: var(--space-6);
+    --book-h: calc(min(80vw, 330px) / 0.72);
   }
 }

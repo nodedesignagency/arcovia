@@ -17,11 +17,10 @@
    transform at all, so their text stays crisp. Each book has its own
    perspective, centred on it, so the outer books never look skewed.
    ?books=angle rests them a little turned instead, a sliver of spine showing.
-   From 810px up: on a portrait tablet the books end on a shelf you swipe (CSS),
-   which this keeps on the first book until they have turned. Not on phones (the
-   user wants them simple: the heading over a column of books), not with reduced
-   motion, and not when the settled layout is taller than the window: there the
-   section is simply the settled layout.
+   Desktop only (1200px and up): tablets and phones stay simple, as the user asked
+   (the heading over a column of books, CSS). Not with reduced motion either, and
+   not when the settled layout is taller than the window: there the section is
+   simply the settled layout.
    ========================================================================== */
 (function () {
   "use strict";
@@ -37,7 +36,6 @@
   var covers = books.map(function (b) { return b.querySelector(".book__cover"); });
   var spines = books.map(function (b) { return b.querySelector(".book__spine"); });
   var more = sec.querySelector(".work__more");
-  var shelf = sec.querySelector(".work__books");
   var n = books.length;
   if (!stage || !inner || !title || words.length !== 2 || n < 1) return;
 
@@ -52,10 +50,9 @@
   var BACK_MS = 850;
   var REST = /[?&]books=angle\b/.test(location.search) ? 16 : 0; // resting angle, degrees
   var reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
-  var phone = window.matchMedia("(max-width: 809px)");
+  var desktop = window.matchMedia("(min-width: 1200px)");
 
   var on = false, geo = null, p = 0, target = 0, q = 0, qTarget = 0, last = 0, raf = 0;
-  var lastW = 0, lastH = 0;
 
   function clamp(v, a, b) { return v < a ? a : v > b ? b : v; }
   function ramp(a, b, x) { return clamp((x - a) / (b - a), 0, 1); }
@@ -75,7 +72,6 @@
   /* ---------- Where everything sits: start, parted and settled ---------- */
   function measure() {
     clear();
-    if (shelf) shelf.scrollLeft = 0; // measured from the first book (the tablet shelf)
     var s = stage.getBoundingClientRect();
     function rel(el) {
       var r = el.getBoundingClientRect();
@@ -117,9 +113,6 @@
     var flat = open && REST === 0;
     sec.classList.toggle("is-open", open);
     sec.classList.toggle("is-flat", flat);
-    // Until the books have turned, the tablet shelf rests on the first book (they turn
-    // back from wherever it was swiped to)
-    if (!open && shelf && shelf.scrollLeft) shelf.scrollLeft = 0;
 
     // The words part to either side and fade away, as in the template; only the books stay
     words.forEach(function (el, i) {
@@ -191,9 +184,7 @@
   }
 
   function setMode() {
-    lastW = window.innerWidth;
-    lastH = window.innerHeight;
-    var want = !reduced.matches && !phone.matches;
+    var want = desktop.matches && !reduced.matches;
     sec.classList.toggle("work--staged", want);
     sec.classList.remove("is-open", "is-flat");
     geo = null;
@@ -216,17 +207,10 @@
     draw();
   }
 
-  // A phone's toolbar showing or hiding changes only the height a little: not worth
-  // measuring again mid-scroll (the sizes follow svh and vh, which stay put)
-  function resized() {
-    if (window.innerWidth === lastW && Math.abs(window.innerHeight - lastH) < 160) return;
-    setMode();
-  }
-
   window.addEventListener("scroll", queue, { passive: true });
-  window.addEventListener("resize", resized);
+  window.addEventListener("resize", setMode);
+  if (desktop.addEventListener) desktop.addEventListener("change", setMode);
   if (reduced.addEventListener) reduced.addEventListener("change", setMode);
-  if (phone.addEventListener) phone.addEventListener("change", setMode);
   // The words are measured from the real font, so measure again once it's in
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(setMode);
   setMode();
