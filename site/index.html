@@ -117,14 +117,15 @@
       <feFlood flood-color="#fff" flood-opacity="0.75"/><feComposite in2="e2" operator="in" result="light"/>
       <feMerge><feMergeNode in="floor"/><feMergeNode in="shade"/><feMergeNode in="light"/></feMerge>
     </filter>
-    <!-- The vault door's A-mark: the same light from above, scaled for the big mark on the flat
-         charcoal (#565656): a darker floor, a wider shade under the top walls, a clear light lip -->
-    <filter id="deboss-vault" x="-10%" y="-10%" width="120%" height="120%" color-interpolation-filters="sRGB">
+    <!-- The vault door's A-mark: light from above, in units of the mark's own box so the walls
+         scale with it (vault.js draws the same deboss on the canvas: floor 22%, shade 0.55 of a
+         mark unit down with 0.22 blur, light lip 0.32 up with 0.15 blur; the mark is 72 × 57 units) -->
+    <filter id="deboss-vault" x="-5%" y="-5%" width="110%" height="110%" primitiveUnits="objectBoundingBox" color-interpolation-filters="sRGB">
       <feFlood flood-color="#000" flood-opacity="0.22"/><feComposite in2="SourceAlpha" operator="in" result="floor"/>
-      <feOffset in="SourceAlpha" dx="0" dy="2" result="o1"/><feGaussianBlur in="o1" stdDeviation="0.8" result="b1"/>
+      <feOffset in="SourceAlpha" dx="0" dy="0.00965" result="o1"/><feGaussianBlur in="o1" stdDeviation="0.00306 0.00386" result="b1"/>
       <feComposite in="SourceAlpha" in2="b1" operator="out" result="e1"/>
       <feFlood flood-color="#000" flood-opacity="0.6"/><feComposite in2="e1" operator="in" result="shade"/>
-      <feOffset in="SourceAlpha" dx="0" dy="-1.4" result="o2"/><feGaussianBlur in="o2" stdDeviation="0.6" result="b2"/>
+      <feOffset in="SourceAlpha" dx="0" dy="-0.00561" result="o2"/><feGaussianBlur in="o2" stdDeviation="0.00208 0.00263" result="b2"/>
       <feComposite in="SourceAlpha" in2="b2" operator="out" result="e2"/>
       <feFlood flood-color="#fff" flood-opacity="0.22"/><feComposite in2="e2" operator="in" result="light"/>
       <feMerge><feMergeNode in="floor"/><feMergeNode in="shade"/><feMergeNode in="light"/></feMerge>
@@ -142,17 +143,13 @@
   </svg>
 
   <!-- SECTION:vault START · styles: sections/vault.css · scripts: vault.js, plus the inline script in the head
-       The opening: a flat charcoal door with the A-mark debossed in it splits down the middle,
-       through the mark, and slides apart onto the hero. Decorative: hidden from assistive tech. -->
+       The opening: the logo is the vault. The A-mark is debossed in a flat charcoal door; its circle
+       is the hinge and the dial, its legs are the doors. The CSS paints the closed door for the first
+       paint; vault.js draws the opening on the canvas. Decorative: hidden from assistive tech. -->
   <div class="vault" data-vault aria-hidden="true">
-    <span class="vault__light"></span>
-    <div class="vault__door vault__door--left">
-      <div class="vault__face"><svg class="vault__mark" viewBox="0 0 72 57"><use href="#a-mark"/></svg></div>
-    </div>
-    <div class="vault__door vault__door--right">
-      <div class="vault__face"><svg class="vault__mark" viewBox="0 0 72 57"><use href="#a-mark"/></svg></div>
-    </div>
+    <svg class="vault__mark" viewBox="0 0 72 57"><use href="#a-mark"/></svg>
     <span class="vault__joint"></span>
+    <canvas class="vault__canvas"></canvas>
   </div>
   <!-- SECTION:vault END -->
 
