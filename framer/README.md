@@ -14,9 +14,9 @@ Framer, so changes are made here first, checked in the harness, then uploaded.
 - `code/ArcoviaHeader.tsx`: masthead, full-screen menu, office clock. Sits in the
   layout template as a fixed layer.
 - `code/Arcovia<Section>.tsx`: one per approved Home section.
-- `code/ArcoviaWhatWeDo.tsx`: exploration, not approved. "What we do" as a pinned
-  scroll after the Harmon Digital "How It Works" section the user sent. In Framer it
-  sits on the draft page `/what-we-do-draft` (with Team below it), not on Home.
+- `code/ArcoviaWhatWeDo.tsx`: "What we do" as a pinned scroll after the Harmon
+  Digital "How It Works" section the user sent (no text animation on the headline:
+  the user does not use Harmon's two-bar wipe). On Home in Framer, after Data.
 - `harness/`: bundles the components into a plain page with a stand-in `framer`
   module, for checking in Chromium next to the HTML original.
 

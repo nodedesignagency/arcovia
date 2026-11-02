@@ -16,10 +16,7 @@
  * the others a step back. When the next one takes over, the number rolls up to
  * it and the next tile pushes the current one up and out of the frame.
  *
- * The headline arrives with Harmon's two-bar wipe: a concrete bar sweeps across
- * each line, an ink bar behind it, the words appear under cover, then the bars
- * sweep off the other way (260ms per sweep, 25ms held, lines 180ms apart). It
- * plays once, when the headline is 20% in view.
+ * The headline is still: no text animation (the user does not want Harmon's two-bar wipe).
  *
  * Timing as in the original: the tiles and the number move in 700ms on
  * cubic-bezier(0.8, 0, 0.2, 1); the words fade in 500ms.
@@ -80,16 +77,7 @@ const WHAT_WE_DO_CSS = `/* =====================================================
   letter-spacing: var(--ls-h2);
   color: var(--color-ink);
 }
-.wwd__line { position: relative; display: inline-block; }
-.wwd__word { transition: color 0.25s cubic-bezier(0.7, 0, 0.3, 1); }
-/* Armed by the script: the words wait, hidden, for the wipe to uncover them */
-.wwd[data-reveal="armed"] .wwd__line:not(.is-revealed) .wwd__word { color: transparent; }
-.wwd__bar {
-  position: absolute;
-  pointer-events: none;
-  transform: scaleX(0);
-  transform-origin: left center;
-}
+.wwd__line { display: block; }
 .wwd__lede {
   max-width: 34em;
   margin-top: var(--space-2);
@@ -518,7 +506,7 @@ interface Props {
 
 const DEFAULTS: Props = {
     chip: "What we do",
-    // The headline from the brief, in two lines that each get their own wipe
+    // The headline from the brief, in two lines
     line1: "Capital advisory",
     line2: "built around conviction",
     // [COPY NEEDED] Draft line under the headline
@@ -579,20 +567,6 @@ function Unbroken({ text }: { text: string }) {
     )
 }
 
-function Words({ text }: { text: string }) {
-    const words = text.split(" ").filter(Boolean)
-    return (
-        <>
-            {words.map((w, i) => (
-                <span className="wwd__word" data-word="" key={i}>
-                    {w}
-                    {i < words.length - 1 ? " " : ""}
-                </span>
-            ))}
-        </>
-    )
-}
-
 /**
  * @framerSupportedLayoutWidth any-prefer-fixed
  * @framerSupportedLayoutHeight auto
@@ -601,7 +575,7 @@ export default function ArcoviaWhatWeDo(incoming: Partial<Props>) {
     const p = { ...DEFAULTS, ...incoming }
     const services = p.services?.length ? p.services : DEFAULTS.services
     const ref = React.useRef<HTMLDivElement>(null)
-    const key = JSON.stringify([p.line1, p.line2, services.length])
+    const key = String(services.length)
     useArcoviaScript(ref, (root, life) => initWhatWeDo(root, life), [key])
 
     const first = pad2(1)
@@ -615,11 +589,12 @@ export default function ArcoviaWhatWeDo(incoming: Partial<Props>) {
                 <div className="container">
                     <div className="wwd__head">
                         <p className="chip">{p.chip}</p>
-                        <h2 className="wwd__title" id="wwd-title" aria-label={lines.join(" ")}>
+                        <h2 className="wwd__title" id="wwd-title">
                             {lines.map((line, i) => (
-                                <span className="wwd__line" aria-hidden="true" key={i}>
-                                    <Words text={line} />
-                                </span>
+                                <React.Fragment key={i}>
+                                    {i ? " " : null}
+                                    <span className="wwd__line">{line}</span>
+                                </React.Fragment>
                             ))}
                         </h2>
                         {p.lede ? <p className="wwd__lede">{p.lede}</p> : null}
@@ -685,15 +660,6 @@ export default function ArcoviaWhatWeDo(incoming: Partial<Props>) {
    Behaviour
    ========================================================================== */
 const THRESHOLDS = Array.from({ length: 21 }, (_, i) => i / 20)
-// The headline wipe (Harmon's section reveal)
-const WIPE = {
-    duration: 260,
-    pause: 25,
-    stagger: 180,
-    easing: "cubic-bezier(0.3, 0, 0.7, 1)",
-    bar1: "var(--color-concrete)",
-    bar2: "var(--color-ink)",
-}
 
 function initWhatWeDo(root: HTMLElement, life: Life) {
     const sec = root.querySelector<HTMLElement>("[data-wwd]")
@@ -737,95 +703,6 @@ function initWhatWeDo(root: HTMLElement, life: Life) {
         )
         rows.forEach((r) => io.observe(r))
     }
-
-    /* ---------- The headline: two bars sweep across each line, then off ---------- */
-    const title = sec.querySelector<HTMLElement>(".wwd__title")
-    const lines = title ? (Array.prototype.slice.call(title.querySelectorAll(".wwd__line")) as HTMLElement[]) : []
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches
-    if (!title || !lines.length || reduced || typeof (title as any).animate !== "function") return
-
-    const anims: Animation[] = []
-    sec.setAttribute("data-reveal", "armed")
-    life.add(() => {
-        anims.forEach((a) => a.cancel())
-        sec.querySelectorAll(".wwd__bar").forEach((b) => b.remove())
-        lines.forEach((l) => l.classList.remove("is-revealed"))
-        sec.removeAttribute("data-reveal")
-    })
-
-    // One rect per rendered row of a line (a line can wrap on a narrow screen)
-    function rowsOf(line: HTMLElement) {
-        const o = line.getBoundingClientRect()
-        const merged = new Map<number, { l: number; r: number; t: number; b: number }>()
-        line.querySelectorAll<HTMLElement>("[data-word]").forEach((w) => {
-            Array.prototype.forEach.call(w.getClientRects(), (rc: DOMRect) => {
-                if (rc.width < 1 || rc.height < 1) return
-                const k = Math.round(rc.top)
-                const m = merged.get(k)
-                if (m) {
-                    m.l = Math.min(m.l, rc.left)
-                    m.r = Math.max(m.r, rc.right)
-                    m.t = Math.min(m.t, rc.top)
-                    m.b = Math.max(m.b, rc.bottom)
-                } else merged.set(k, { l: rc.left, r: rc.right, t: rc.top, b: rc.bottom })
-            })
-        })
-        return Array.from(merged.values()).map((m) => ({ left: m.l - o.left, top: m.t - o.top, width: m.r - m.l, height: m.b - m.t }))
-    }
-
-    function play(line: HTMLElement) {
-        if (life.dead) return
-        const lh = parseFloat(getComputedStyle(line).lineHeight) || line.offsetHeight
-        const list = rowsOf(line)
-        const make = (color: string, z: number) =>
-            list.map((r) => {
-                const h = Math.min(r.height, lh)
-                const b = document.createElement("span")
-                b.className = "wwd__bar"
-                b.style.cssText = `left:${r.left}px;top:${r.top + (r.height - h) / 2}px;width:${r.width}px;height:${h}px;background:${color};z-index:${z}`
-                line.appendChild(b)
-                return b
-            })
-        const one = make(WIPE.bar1, 5)
-        const two = make(WIPE.bar2, 6)
-        const sweep = (bars: HTMLElement[], from: number, to: number, done: () => void) => {
-            const started = bars.map((b) => {
-                const a = b.animate([{ transform: `scaleX(${from})` }, { transform: `scaleX(${to})` }], { duration: WIPE.duration, easing: WIPE.easing, fill: "forwards" })
-                anims.push(a)
-                return a
-            })
-            if (!started.length) return done()
-            started[0].onfinish = () => {
-                if (!life.dead) done()
-            }
-        }
-        sweep(one, 0, 1, () =>
-            sweep(two, 0, 1, () => {
-                // fully covered: the words appear under the bars
-                line.classList.add("is-revealed")
-                one.concat(two).forEach((b) => (b.style.transformOrigin = "right center"))
-                life.timeout(
-                    () =>
-                        sweep(two, 1, 0, () =>
-                            sweep(one, 1, 0, () => one.concat(two).forEach((b) => b.remove()))
-                        ),
-                    WIPE.pause
-                )
-            })
-        )
-    }
-
-    const io = life.observe(
-        new IntersectionObserver(
-            (entries) => {
-                if (!entries.some((e) => e.isIntersecting)) return
-                io.disconnect()
-                lines.forEach((line, i) => life.timeout(() => play(line), i * WIPE.stagger))
-            },
-            { threshold: 0.2 }
-        )
-    )
-    io.observe(title)
 }
 
 addPropertyControls(ArcoviaWhatWeDo, {
