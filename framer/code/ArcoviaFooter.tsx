@@ -24,8 +24,9 @@
  * the box has above it under the sectors line.
  * Tablet (810-1199): the desktop layout on fewer columns (logo top left, links and
  * offices four columns each on the right), gaps 64px. Phone (809 and below): one
- * column, all six links in one list (the two groups a small step apart), offices
- * one under the other, gaps 32-48px. Breakpoints answer to the component's width.
+ * column after the user's reference: the six links as rows with a hairline above
+ * each (20px type, 48px rows), offices one under the other, every block 32px from
+ * the next and 16px under each hairline. Breakpoints answer to the component's width.
  * LinkedIn URL [TO CONFIRM]; no email or phone yet ([COPY NEEDED] if the client
  * wants them). Privacy Policy and Terms point at the one Legal page for now.
  * Ported from sections/footer.css and the footer markup in index.html on main; the
@@ -184,26 +185,36 @@ const FOOTER_CSS = `/* =========================================================
   .site-footer__bar { margin-top: var(--space-8); }
 }
 
-/* ---------- Phone (809 and below): one column ----------
-   The logo, then all six links in one list (the two groups a small step apart),
-   the offices one under the other, then © and the legal pages. The gaps step
-   down to 32-48px. */
+/* ---------- Phone (809 and below): one column, one rhythm ----------
+   After the user's reference: the six links as one list of rows, a hairline
+   above each (20px type, 48px rows, easy to tap), no label over it. Every block
+   (logo, links, each office, the © bar) is 32px from the next, and every block
+   that starts with a hairline has 16px under it. */
 @container arc (max-width: 809px) {
   .site-footer__logo { grid-column: 1 / -1; margin-bottom: var(--space-6); }
   .site-footer__col--site { grid-column: 1 / -1; grid-row: 2; }
-  .site-footer__col--company { grid-column: 1 / -1; grid-row: 3; margin-top: var(--space-4); }
-  .site-footer__link { font-size: 26px; }
-  .site-footer__offices { grid-column: 1 / -1; grid-row: 4; row-gap: var(--space-5); margin-top: var(--space-7); }
+  .site-footer__col--company { grid-column: 1 / -1; grid-row: 3; }
+  .site-footer__links li { border-top: 1px solid var(--ft-line); }
+  .site-footer__link {
+    display: flex;
+    padding-block: 12px;
+    font-size: 20px;
+    line-height: 24px;
+    letter-spacing: -0.01em;
+  }
+  /* 32px from the last link's text to the first office's hairline (the row has 12px under its text) */
+  .site-footer__offices { grid-column: 1 / -1; grid-row: 4; row-gap: var(--space-6); margin-top: 20px; }
   .site-footer__office:nth-child(n) { grid-column: 1 / -1; }
   .site-footer__bar {
     grid-row: 5;
     flex-direction: column;
     align-items: flex-start;
-    justify-content: center;
+    justify-content: flex-start;
     gap: var(--space-3);
     height: auto;
-    margin-top: var(--space-7);
-    padding-block: var(--space-5);
+    margin-top: var(--space-6);
+    padding-top: var(--space-4);
+    padding-bottom: var(--space-6);
   }
 }`
 
