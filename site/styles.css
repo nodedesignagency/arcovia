@@ -21,6 +21,7 @@
   --color-text-muted: #3a3a3a;     /* small text and labels */
   --color-white: #ffffff;          /* cards */
   --color-well: #f2f2f2;           /* inset number wells inside cards */
+  --color-neutral: #efefee;        /* flat neutral ground for quiet sections (the sectors line) */
   --color-line: rgba(43, 43, 43, 0.14);
   --color-on-dark: #f4f4f3;
   --color-on-dark-muted: rgba(244, 244, 243, 0.72);
@@ -244,10 +245,13 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   box-shadow: var(--shadow-btn);
 }
 .btn--quiet { background: var(--color-white); color: var(--color-ink); box-shadow: var(--shadow-card); }
+/* Light: plain white, for dark or photographic grounds (the CTA's sunrise wall). No shadow, ring or border. */
+.btn--light { background: var(--color-white); color: var(--color-ink); }
 
 @media (hover: hover) {
   .btn--primary:hover { background: linear-gradient(180deg, rgba(207, 207, 207, 0.22) 0%, rgba(207, 207, 207, 0.15) 100%), var(--btn-dark); }
   .btn--quiet:hover { background: var(--color-well); }
+  .btn--light:hover { background: var(--color-well); }
 }
 .btn--primary:active { box-shadow: var(--shadow-btn-pressed); }
 
