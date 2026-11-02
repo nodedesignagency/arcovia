@@ -24,9 +24,10 @@
  * the box has above it under the sectors line.
  * Tablet (810-1199): the desktop layout on fewer columns (logo top left, links and
  * offices four columns each on the right), gaps 64px. Phone (809 and below): one
- * column after the user's reference: the six links as rows with a hairline above
- * each (20px type, 48px rows), offices one under the other, every block 32px from
- * the next and 16px under each hairline. Breakpoints answer to the component's width.
+ * column after the user's reference: a small label ("/NAVIGATION", "/OFFICES"),
+ * then rows with a hairline above each (links: 20px type, 48px rows); the same space
+ * above and below the text at every hairline, 16px from each label to its first
+ * hairline, blocks 32px apart. Breakpoints answer to the component's width.
  * LinkedIn URL [TO CONFIRM]; no email or phone yet ([COPY NEEDED] if the client
  * wants them). Privacy Policy and Terms point at the one Legal page for now.
  * Ported from sections/footer.css and the footer markup in index.html on main; the
@@ -108,6 +109,11 @@ const FOOTER_CSS = `/* =========================================================
   .site-footer__link:hover::before { width: 16px; margin-right: 10px; }
 }
 
+/* ---------- Labels (phone only) ----------
+   After the user's reference: "/NAVIGATION" over the links and "/OFFICES" over
+   the offices, in the chip's small capitals with a slash instead of brackets. */
+.site-footer__label { display: none; }
+
 /* ---------- Offices, side by side over hairlines ---------- */
 .site-footer__offices {
   grid-column: 6 / -1;
@@ -186,14 +192,27 @@ const FOOTER_CSS = `/* =========================================================
 }
 
 /* ---------- Phone (809 and below): one column, one rhythm ----------
-   After the user's reference: the six links as one list of rows, a hairline
-   above each (20px type, 48px rows, easy to tap), no label over it. Every block
-   (logo, links, each office, the © bar) is 32px from the next, and every block
-   that starts with a hairline has 16px under it. */
+   After the user's reference: a small label, then the six links as one list of
+   rows with a hairline above each (20px type, 48px rows, easy to tap); the same
+   for the offices. Every hairline has the same space above and below its text
+   (12px in the link rows, 16px in the offices and the © bar), each label sits
+   16px over its first hairline, and blocks are 32px apart. */
 @container arc (max-width: 809px) {
   .site-footer__logo { grid-column: 1 / -1; margin-bottom: var(--space-6); }
-  .site-footer__col--site { grid-column: 1 / -1; grid-row: 2; }
-  .site-footer__col--company { grid-column: 1 / -1; grid-row: 3; }
+  .site-footer__label {
+    display: block;
+    grid-column: 1 / -1;
+    margin-bottom: var(--space-4);
+    font-size: 11px;
+    font-weight: var(--weight-medium);
+    letter-spacing: 0.08em;
+    line-height: 16px;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+  }
+  .site-footer__label--nav { grid-row: 2; }
+  .site-footer__col--site { grid-column: 1 / -1; grid-row: 3; }
+  .site-footer__col--company { grid-column: 1 / -1; grid-row: 4; }
   .site-footer__links li { border-top: 1px solid var(--ft-line); }
   .site-footer__link {
     display: flex;
@@ -202,17 +221,18 @@ const FOOTER_CSS = `/* =========================================================
     line-height: 24px;
     letter-spacing: -0.01em;
   }
-  /* 32px from the last link's text to the first office's hairline (the row has 12px under its text) */
-  .site-footer__offices { grid-column: 1 / -1; grid-row: 4; row-gap: var(--space-6); margin-top: 20px; }
-  .site-footer__office:nth-child(n) { grid-column: 1 / -1; }
+  /* 32px from the last link's text (its row has 12px under it) */
+  .site-footer__label--offices { grid-row: 5; margin-top: 20px; }
+  .site-footer__offices { grid-column: 1 / -1; grid-row: 6; row-gap: 0; margin-top: 0; }
+  .site-footer__office:nth-child(n) { grid-column: 1 / -1; padding-block: var(--space-4); }
   .site-footer__bar {
-    grid-row: 5;
+    grid-row: 7;
     flex-direction: column;
     align-items: flex-start;
     justify-content: flex-start;
     gap: var(--space-3);
     height: auto;
-    margin-top: var(--space-6);
+    margin-top: 0;
     padding-top: var(--space-4);
     padding-bottom: var(--space-6);
   }
@@ -233,6 +253,8 @@ interface Office {
 
 interface Props {
     homeLink: string
+    navLabel: string
+    officesLabel: string
     siteLinks: LinkItem[]
     companyLinks: LinkItem[]
     offices: Office[]
@@ -243,6 +265,8 @@ interface Props {
 
 const DEFAULTS: Props = {
     homeLink: "/",
+    navLabel: "Navigation", // phone only, shown as /NAVIGATION
+    officesLabel: "Offices", // phone only, shown as /OFFICES
     siteLinks: [
         { label: "What We Do", link: "/what-we-do" },
         { label: "Track Record", link: "/track-record" },
@@ -319,6 +343,13 @@ export default function ArcoviaFooter(incoming: Partial<Props>) {
                         </svg>
                     </a>
 
+                    {/* Phone only: small labels over the links and the offices, after the user's reference */}
+                    {p.navLabel ? (
+                        <p className="site-footer__label site-footer__label--nav">
+                            <span aria-hidden="true">/</span>
+                            {p.navLabel}
+                        </p>
+                    ) : null}
                     <nav className="site-footer__col site-footer__col--site" aria-label="Site map">
                         {linkList(siteLinks)}
                     </nav>
@@ -326,6 +357,12 @@ export default function ArcoviaFooter(incoming: Partial<Props>) {
                         {linkList(companyLinks)}
                     </nav>
 
+                    {p.officesLabel ? (
+                        <p className="site-footer__label site-footer__label--offices">
+                            <span aria-hidden="true">/</span>
+                            {p.officesLabel}
+                        </p>
+                    ) : null}
                     <div className="site-footer__offices">
                         {offices.map((o, i) => (
                             <div className="site-footer__office" key={i}>
@@ -409,6 +446,8 @@ const linkControl = {
 
 addPropertyControls(ArcoviaFooter, {
     homeLink: { type: ControlType.Link, title: "Home", defaultValue: DEFAULTS.homeLink },
+    navLabel: { type: ControlType.String, title: "Links label", description: "Phone only", defaultValue: DEFAULTS.navLabel },
+    officesLabel: { type: ControlType.String, title: "Offices label", description: "Phone only", defaultValue: DEFAULTS.officesLabel },
     siteLinks: { ...linkControl, title: "Site map", maxCount: 4, defaultValue: DEFAULTS.siteLinks },
     companyLinks: { ...linkControl, title: "Company", maxCount: 4, defaultValue: DEFAULTS.companyLinks },
     offices: {
