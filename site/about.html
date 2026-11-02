@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>About · Arcovia</title>
+  <meta name="description" content="Arcovia is an independent capital markets advisory. We help ambitious founders, funds and foundations raise from investors who understand what they are building and why it matters.">
+  <meta name="robots" content="noindex, nofollow"><!-- Draft: keep staging out of search -->
+  <meta name="theme-color" content="#d3d3d3">
+  <link rel="icon" href="assets/a-mark.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap">
+  <link rel="preload" href="assets/concrete.jpg" as="image">
+  <link rel="stylesheet" href="styles.css">
+  <!-- One stylesheet per section, so a section can be approved and moved to main on its own -->
+  <link rel="stylesheet" href="sections/about-hero.css">
+  <link rel="stylesheet" href="sections/footer.css">
+</head>
+<body>
+
+  <!-- Sprite: logo. One source for header, menu and footer -->
+  <svg class="sprite" aria-hidden="true" focusable="false">
+    <!-- Official Arcovia logo (site/assets/logo/, from the client): brandmark and wordmark -->
+    <symbol id="a-mark" viewBox="0 0 72 57"><path d="M12.0606 45.653L6.4043 56.272L9.58059 56.3005C11.096 56.3148 12.4458 56.3605 14.1267 56.2321L35.0366 17.4288C32.9219 16.7924 31.1725 15.7479 29.6286 14.4009L12.0606 45.653Z"/><path d="M62.5327 50.738L42.9184 14.1807C41.2461 15.8616 39.5509 16.9432 37.3164 17.1743L57.8439 56.243H65.3551C64.3192 54.3652 63.3831 52.7499 62.5327 50.738Z"/><path d="M36.201 16.0215C40.6267 16.0215 44.2145 12.4351 44.2145 8.0109C44.2145 3.58674 40.6267 0.000244141 36.201 0.000244141C31.7753 0.000244141 28.1875 3.58674 28.1875 8.0109C28.1875 12.4351 31.7753 16.0215 36.201 16.0215Z"/></symbol>
+    <symbol id="wordmark" viewBox="0 0 72 11"><path d="M60.8672 10.8151L65.4337 0.362549H67.1239L71.6903 10.8151H69.7629L68.7103 8.30942H63.8028L62.7353 10.8151H60.8672ZM64.47 6.69336H68.0431L66.2491 2.54201L64.47 6.69336Z"/><path d="M57.1562 10.8149V0.436523H58.9799V10.8149H57.1562Z"/><path d="M49.3426 10.889L45.043 0.436523H47.0593L50.1877 8.41305L53.3012 0.436523H55.2731L50.9735 10.889H49.3426Z"/><path d="M38.9389 10.993C35.7513 10.993 33.5273 8.57632 33.5273 5.65554V5.62589C33.5273 2.71995 35.7809 0.258789 38.9686 0.258789C42.1562 0.258789 44.3802 2.67547 44.3802 5.59624V5.62589C44.3802 8.53184 42.1266 10.993 38.9389 10.993ZM38.9686 9.3028C41.0294 9.3028 42.4676 7.67191 42.4676 5.65554V5.62589C42.4676 3.60952 41.0146 1.94898 38.9389 1.94898C36.8781 1.94898 35.4399 3.57987 35.4399 5.59624V5.62589C35.4399 7.64226 36.8929 9.3028 38.9686 9.3028Z"/><path d="M28.1356 10.993C25.111 10.993 22.8574 8.63562 22.8574 5.65554V5.62589C22.8574 2.67547 25.0665 0.258789 28.1949 0.258789C30.1223 0.258789 31.2787 0.92597 32.2721 1.87485L31.1008 3.22404C30.2557 2.45307 29.381 1.94898 28.18 1.94898C26.223 1.94898 24.77 3.56504 24.77 5.59624V5.62589C24.77 7.65709 26.2082 9.3028 28.1949 9.3028C29.4551 9.3028 30.2854 8.79871 31.1749 7.96844L32.3462 9.15454C31.2936 10.2962 30.063 10.993 28.1356 10.993Z"/><path d="M12.6016 10.8149V0.436523H17.2274C18.5321 0.436523 19.5551 0.822006 20.2223 1.47436C20.7708 2.05259 21.0822 2.80872 21.0822 3.71313V3.74278C21.0822 5.4478 20.0592 6.47081 18.621 6.88594L21.4232 10.8149H19.2585L16.7084 7.19729H14.4252V10.8149H12.6016ZM14.4252 5.58123H17.0939C18.3986 5.58123 19.2289 4.91405 19.2289 3.84656V3.81691C19.2289 2.69011 18.4431 2.09706 17.0791 2.09706H14.4252V5.58123Z"/><path d="M0 10.8151L4.56649 0.362549H6.25668L10.8232 10.8151H8.89575L7.84309 8.30942H2.9356L1.86811 10.8151H0ZM3.60278 6.69336H7.17591L5.38193 2.54201L3.60278 6.69336Z"/></symbol>
+  </svg>
+
+  <a class="visually-hidden" href="#main">Skip to content</a>
+
+  <!-- ===== Header (component: site-header) =====
+       Masthead after defiant.vc. At the top of the page: a labels row (the
+       two offices and one clock), the big A-mark, the wordmark, one line on
+       what we do, and the site map as rows. Scrolling down folds it into a
+       small bar and slides it away; scrolling up brings the small bar back
+       with the labels row; the top of the page opens it again. No
+       background: it sits straight on the page. Links are the V1 pages only
+       (Home is the logo), three and three; Legal fills the sixth row. -->
+  <header class="site-header" data-header>
+    <div class="site-header__inner container">
+      <div class="masthead-labels">
+        <span class="masthead-city masthead-city--la">Los Angeles</span>
+        <span class="masthead-city masthead-city--sj">San Juan</span>
+        <!-- One clock: Los Angeles time; hover San Juan to see its time -->
+        <p class="masthead-clock">
+          <span class="masthead-clock__time masthead-clock__time--la"><span class="visually-hidden">Los Angeles </span><span data-clock="America/Los_Angeles">Pacific Time</span></span>
+          <span class="masthead-clock__time masthead-clock__time--sj"><span class="visually-hidden">San Juan </span><span data-clock="America/Puerto_Rico">Atlantic Time</span></span>
+        </p>
+        <p class="masthead-label masthead-labels__site" aria-hidden="true">Site map</p>
+        <p class="masthead-label masthead-labels__company" aria-hidden="true">Company</p>
+      </div>
+
+      <div class="masthead-main">
+        <a class="masthead-mark" href="index.html" aria-label="Arcovia, home">
+          <svg viewBox="0 0 72 57" aria-hidden="true"><use href="#a-mark"/></svg>
+        </a>
+        <a class="masthead-word" href="index.html" tabindex="-1" aria-hidden="true"><svg viewBox="0 0 72 11"><use href="#wordmark"/></svg></a>
+        <!-- [COPY NEEDED] Draft line, to confirm with Lilla -->
+        <p class="masthead-note">We build investor conviction, then run the process that turns it into capital.</p>
+        <nav class="nav" aria-label="Main">
+          <ul class="nav__list nav__list--site">
+            <li class="nav__item" style="--i:0"><a class="nav__link" href="services.html">What We Do</a></li>
+            <li class="nav__item" style="--i:1"><a class="nav__link" href="track-record.html">Track Record</a></li>
+            <li class="nav__item" style="--i:2"><a class="nav__link" href="team.html">Team</a></li>
+          </ul>
+          <ul class="nav__list nav__list--company">
+            <li class="nav__item" style="--i:0"><a class="nav__link" href="about.html" aria-current="page">About</a></li>
+            <li class="nav__item" style="--i:1"><a class="nav__link" href="contact.html">Contact</a></li>
+            <li class="nav__item" style="--i:2"><a class="nav__link" href="legal.html">Legal</a></li>
+          </ul>
+          <button class="menu-btn" type="button" aria-expanded="false" aria-controls="menu" data-menu-open>
+            Menu
+            <span class="menu-btn__plus" aria-hidden="true"></span>
+          </button>
+        </nav>
+        <span class="masthead-rule" aria-hidden="true"></span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== Full-screen menu (component: menu) ===== -->
+  <div class="menu" id="menu" data-menu aria-hidden="true" role="dialog" aria-modal="true" aria-label="Menu">
+    <div class="menu__top container">
+      <a class="logo" href="index.html" aria-label="Arcovia, home">
+        <svg class="logo__mark" viewBox="0 0 72 57" aria-hidden="true"><use href="#a-mark"/></svg>
+        <svg class="logo__word" viewBox="0 0 72 11" aria-hidden="true"><use href="#wordmark"/></svg>
+      </a>
+      <button class="menu__close" type="button" data-menu-close>Close</button>
+    </div>
+    <div class="menu__body container">
+      <ol class="menu__list">
+        <li class="menu__item" style="--i:0"><a class="menu__link" href="services.html"><span class="menu__index">1.</span>What We Do</a></li>
+        <li class="menu__item" style="--i:1"><a class="menu__link" href="track-record.html"><span class="menu__index">2.</span>Track Record</a></li>
+        <li class="menu__item" style="--i:2"><a class="menu__link" href="team.html"><span class="menu__index">3.</span>Team</a></li>
+        <li class="menu__item" style="--i:3"><a class="menu__link" href="about.html" aria-current="page"><span class="menu__index">4.</span>About</a></li>
+        <li class="menu__item" style="--i:4"><a class="menu__link" href="contact.html"><span class="menu__index">5.</span>Contact</a></li>
+      </ol>
+      <div class="menu__foot">
+        <p><strong>Los Angeles</strong>2029 Century Park East, CA 90067</p>
+        <p><strong>San Juan</strong>450 Ave. 200, Puerto Rico 00901</p>
+        <p><a href="#" data-todo="LinkedIn company page URL [TO CONFIRM]">LinkedIn</a></p>
+        <a class="btn btn--primary" href="contact.html">Start a conversation</a>
+      </div>
+    </div>
+  </div>
+
+  <main id="main">
+
+    <!-- The hero and the next section share one stack: the hero pins at the top
+         and the next section rides up over it (after the template's About page). -->
+    <div class="about-stack">
+
+    <!-- SECTION:about-hero START · styles: sections/about-hero.css · scripts: concrete.js, bars.js
+         About, block 1. After the user's Mahadeva template reference (AboutHero): a short opening,
+         about two thirds of the screen, a band of bars under the masthead that open and close in
+         turn, the headline low on the left and its line on the right, on the headline's baseline.
+         In our style: the home hero's live concrete, and the bars are channels cast into it
+         (concrete.js setBars). ?bars=tone shows them as flat monochrome bars instead.
+         The heading's lines wipe in with a white and an ink bar, as in the template. -->
+    <section class="about-hero" data-about-hero aria-labelledby="about-title">
+      <canvas class="about-hero__canvas" aria-hidden="true"></canvas>
+
+      <!-- Component: bar-band. Rows and bars are built by bars.js from a fixed seed -->
+      <div class="bars about-hero__bars" data-bars aria-hidden="true"></div>
+
+      <div class="about-hero__inner container">
+        <div class="about-hero__heading">
+          <p class="chip about-hero__chip">About Arcovia</p>
+          <h1 class="about-hero__title" id="about-title">
+            <span class="about-hero__line" style="--line:0">Conviction builds companies.</span>
+            <span class="about-hero__line" style="--line:1">Capital accelerates them.</span>
+          </h1>
+        </div>
+        <p class="about-hero__lede">Arcovia is an independent capital markets advisory. We help ambitious founders, funds and foundations raise from investors who understand what they are building and why it matters.</p>
+      </div>
+    </section>
+    <!-- SECTION:about-hero END -->
+
+    <!-- Draft placeholder: next section goes here -->
+    <section class="section-next about-next" data-header-theme="dark" aria-label="Next section, in progress">
+      <p>02 · Our story — next section, in progress</p>
+    </section>
+
+    </div>
+
+  </main>
+
+  <!-- SECTION:footer START · styles: sections/footer.css
+       Component: site-footer. After the user's references: defiant.vc's footer (the main
+       inspiration, not a copy) and their own Native Foreign footer. A small horizontal logo
+       top left (the official brandmark beside the wordmark, as in the client's horizontal
+       logo); two columns of links set large, no labels over them; the two offices side by
+       side over hairlines with their live local time (main.js keeps every [data-clock] live);
+       then © on the left and the legal pages on the right. The legal pages are one link each,
+       so one or two of them fit without changes. -->
+  <footer class="site-footer" aria-labelledby="footer-title">
+    <h2 class="visually-hidden" id="footer-title">Site footer</h2>
+    <div class="site-footer__inner container">
+      <!-- Component: logo (the shared .logo: brandmark beside wordmark), sized for the footer -->
+      <a class="logo site-footer__logo" href="index.html" aria-label="Arcovia, home">
+        <svg class="logo__mark" viewBox="0 0 72 57" aria-hidden="true"><use href="#a-mark"/></svg>
+        <svg class="logo__word" viewBox="0 0 72 11" aria-hidden="true"><use href="#wordmark"/></svg>
+      </a>
+
+      <nav class="site-footer__col site-footer__col--site" aria-label="Site map">
+        <ul class="site-footer__links">
+          <li><a class="site-footer__link" href="services.html">What We Do</a></li>
+          <li><a class="site-footer__link" href="track-record.html">Track Record</a></li>
+          <li><a class="site-footer__link" href="team.html">Team</a></li>
+        </ul>
+      </nav>
+      <nav class="site-footer__col site-footer__col--company" aria-label="Company">
+        <ul class="site-footer__links">
+          <li><a class="site-footer__link" href="about.html">About</a></li>
+          <li><a class="site-footer__link" href="contact.html">Contact</a></li>
+          <li><a class="site-footer__link" href="#" data-todo="LinkedIn company page URL [TO CONFIRM]">LinkedIn</a></li>
+        </ul>
+      </nav>
+
+      <div class="site-footer__offices">
+        <div class="site-footer__office">
+          <p class="site-footer__city">Los Angeles</p>
+          <p class="site-footer__time"><span class="visually-hidden">Local time </span><span data-clock="America/Los_Angeles">Pacific Time</span></p>
+          <address class="site-footer__address">2029 Century Park East<br>Los Angeles, CA 90067</address>
+        </div>
+        <div class="site-footer__office">
+          <p class="site-footer__city">San Juan</p>
+          <p class="site-footer__time"><span class="visually-hidden">Local time </span><span data-clock="America/Puerto_Rico">Atlantic Time</span></p>
+          <address class="site-footer__address">450 Ave. 200<br>San Juan, Puerto Rico 00901</address>
+        </div>
+      </div>
+
+      <div class="site-footer__bar">
+        <p class="site-footer__copy">© 2026 Arcovia. All rights reserved.</p>
+        <ul class="site-footer__legal">
+          <li><a class="site-footer__legal-link" href="privacy.html">Privacy Policy</a></li>
+          <li><a class="site-footer__legal-link" href="terms.html">Terms</a></li>
+        </ul>
+      </div>
+    </div>
+  </footer>
+  <!-- SECTION:footer END -->
+
+  <script src="concrete.js"></script>
+  <script src="main.js"></script>
+  <script src="bars.js"></script>
+</body>
+</html>

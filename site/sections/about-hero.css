@@ -1,0 +1,194 @@
+/* ==========================================================================
+   SECTION: about-hero — About, block 1
+   After the user's Mahadeva template reference (its About opening): a short
+   opening (about two thirds of the screen) that pins while the next section
+   rides up over it; a band of three rows of bars under the masthead that open
+   and close in turn; the headline low on the left, its line on the right,
+   sitting on the headline's baseline.
+   In our style: the home hero's live concrete (concrete.js). The bars are
+   channels cast into it (default), or flat monochrome bars with ?bars=tone.
+   Uses shared tokens and components from styles.css (chip, container).
+   ========================================================================== */
+
+.about-stack { position: relative; }
+
+.about-hero {
+  /* The headline is a share of the grid width, so its lines break the same at every desktop width */
+  --about-fs: calc((min(100vw, var(--container-max)) - 2 * var(--gutter)) * 0.044);
+  --bar-h: 38px;          /* one row of bars, as in the template */
+  --bar-rows: 3;
+
+  position: sticky;
+  top: 0;
+  z-index: 0;
+  isolation: isolate;
+  display: grid;
+  /* band · at least 96px of air · heading */
+  grid-template-rows: auto minmax(var(--space-9), 1fr) auto;
+  min-height: 65vh;
+  min-height: 65svh;
+  padding-top: calc(var(--header-h) + var(--space-6));
+  padding-bottom: var(--space-8);
+  overflow: hidden;
+  /* Static fallback: no JS, no WebGL. The home hero's soft diagonal light band on concrete. */
+  background-color: var(--color-concrete);
+  background-image:
+    linear-gradient(112deg, rgba(0, 0, 0, 0.06) 0%, rgba(0, 0, 0, 0.02) 38%, rgba(255, 255, 255, 0.22) 52%, rgba(255, 255, 255, 0.14) 66%, rgba(0, 0, 0, 0.05) 100%),
+    url("../assets/concrete.jpg");
+  background-size: auto, 1024px;
+}
+
+.about-hero__canvas {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 900ms var(--ease-out);
+}
+.about-hero.hero--gl .about-hero__canvas { opacity: 1; }
+
+/* ---------- Component: bar-band ----------
+   Full bleed, three rows. Each row is a run of slots (flex weights from bars.js);
+   each slot holds one bar that grows from one end (transform-origin) and shrinks back. */
+.bars {
+  grid-row: 1;
+  display: flex;
+  flex-direction: column;
+  height: calc(var(--bar-h) * var(--bar-rows));
+  pointer-events: none;
+}
+.bars__row { display: flex; height: var(--bar-h); }
+.bars__slot { height: 100%; }
+.bars__bar {
+  display: block;
+  width: 100%;
+  height: 100%;
+  transform: scaleX(0);
+  will-change: transform;
+}
+
+/* Carved (default). With WebGL the shader carves the bars, so the DOM bars only measure.
+   Without it they fall back to a soft CSS recess. */
+.about-hero--carved .bars__row { padding-block: 3px; }   /* matches the inset bars.js hands the shader */
+.about-hero--carved .bars__bar {
+  background: rgba(0, 0, 0, 0.05);
+  box-shadow: inset 2px 2px 3px rgba(0, 0, 0, 0.28), inset -1px -1px 0 rgba(255, 255, 255, 0.5);
+}
+.about-hero--carved.hero--gl .bars__bar { visibility: hidden; }
+
+/* Tone (?bars=tone): flat bars in the deck's monochrome, colours set per bar by bars.js */
+.about-hero--tone .bars__bar { background: var(--bar-tone, var(--color-white)); }
+
+/* ---------- Heading and line ---------- */
+.about-hero__inner {
+  grid-row: 3;
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--grid-gap);
+  align-items: end;
+}
+
+.about-hero__heading {
+  grid-column: 1 / span 8;
+  display: grid;
+  justify-items: start;
+  gap: var(--space-6);
+}
+
+.about-hero__title {
+  display: grid;
+  justify-items: start;
+  font-size: var(--about-fs);
+  font-weight: var(--weight-medium);
+  line-height: 1.06;
+  letter-spacing: var(--ls-hero);
+  color: var(--color-ink);
+}
+/* One line each: the breaks are the design's (two sentences, two lines) */
+.about-hero__line {
+  position: relative;
+  display: block;
+  white-space: nowrap;
+}
+
+.about-hero__lede {
+  grid-column: 9 / span 4;
+  max-width: 24em;
+  font-size: var(--fs-lede);
+  line-height: var(--lh-lede);
+  color: var(--color-text);
+  /* Sit the last line on the headline's baseline, not the bottom of its line box:
+     the headline's baseline is ~0.18em above its box, the line's ~0.39em above its own */
+  margin-bottom: calc(var(--about-fs) * 0.18 - var(--fs-lede) * 0.39);
+}
+
+/* ---------- Load-in ----------
+   The template's heading wipe, in monochrome: per line a white bar sweeps across,
+   an ink bar follows, the words appear underneath, then the ink bar and the white
+   bar sweep off to the right. The chip and the line fade up. */
+@media (prefers-reduced-motion: no-preference) {
+  .about-hero__line {
+    --wipe: 1065ms;   /* 4 sweeps of 260ms and a 25ms hold, as in the template */
+    --wipe-delay: calc(240ms + var(--line, 0) * 180ms);
+    animation: about-wipe-text var(--wipe) linear var(--wipe-delay) both;
+  }
+  .about-hero__line::before,
+  .about-hero__line::after {
+    content: "";
+    position: absolute;
+    inset: 0.12em -0.04em -0.08em;   /* covers caps and descenders; a hair of space between the lines' bars */
+    pointer-events: none;
+    animation: var(--wipe) linear var(--wipe-delay) both;
+  }
+  .about-hero__line::before { background: var(--color-white); animation-name: about-wipe-1; }
+  .about-hero__line::after { background: var(--color-ink); animation-name: about-wipe-2; }
+
+  .about-hero__chip,
+  .about-hero__lede {
+    animation: about-rise 800ms var(--ease-out) backwards;
+  }
+  .about-hero__chip { animation-delay: 150ms; }
+  .about-hero__lede { animation-delay: 900ms; }
+}
+
+/* Timeline of one line (4 sweeps + hold): 0–24.4% white in · 24.4–48.8% ink in ·
+   hold to 51.2% · 51.2–75.6% ink out · 75.6–100% white out */
+@keyframes about-wipe-1 {
+  0%     { clip-path: inset(0 100% 0 0); animation-timing-function: cubic-bezier(0.3, 0, 0.7, 1); }
+  24.4%  { clip-path: inset(0 0 0 0); }
+  75.6%  { clip-path: inset(0 0 0 0); animation-timing-function: cubic-bezier(0.3, 0, 0.7, 1); }
+  100%   { clip-path: inset(0 0 0 100%); }
+}
+@keyframes about-wipe-2 {
+  0%, 24.4% { clip-path: inset(0 100% 0 0); animation-timing-function: cubic-bezier(0.3, 0, 0.7, 1); }
+  48.8%  { clip-path: inset(0 0 0 0); }
+  51.2%  { clip-path: inset(0 0 0 0); animation-timing-function: cubic-bezier(0.3, 0, 0.7, 1); }
+  75.6%, 100% { clip-path: inset(0 0 0 100%); }
+}
+@keyframes about-wipe-text {
+  0%, 48.7% { color: transparent; }
+  48.8%, 100% { color: var(--color-ink); }
+}
+@keyframes about-rise {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* ---------- The next section rides up over the pinned hero ---------- */
+.about-next { position: relative; z-index: 1; min-height: 100vh; }
+
+/* Tablet and phone: not reviewed yet (desktop first); keep it stacked and readable */
+@media (max-width: 1199px) {
+  .about-hero { --about-fs: 44px; }
+  .about-hero__heading { grid-column: 1 / -1; margin-bottom: var(--space-6); }
+  .about-hero__lede { grid-column: 1 / span 9; margin-bottom: 0; }
+  .about-hero__inner { align-items: start; }
+}
+@media (max-width: 809px) {
+  .about-hero { --about-fs: 30px; --bar-h: 18px; }
+  .about-hero__line { white-space: normal; }
+  .about-hero__lede { grid-column: 1 / -1; }
+}
