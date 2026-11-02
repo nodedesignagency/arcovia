@@ -218,8 +218,8 @@ export const BASE_CSS = `/* ---------- Base, scoped to Arcovia components ------
 .arc, :where(.arc) *, :where(.arc) *::before, :where(.arc) *::after { box-sizing: border-box; }
 /* Each component is a size container: its sections answer to their own width (@container arc),
    so the Framer canvas shows the Tablet and Phone frames correctly. The menu host is excluded:
-   the menu is fixed to the window and a container would trap it. */
-.arc:not(.arc-menu-host) { container: arc / inline-size; }
+   the menu and the path menu layer are fixed to the window, and a container would trap them. */
+.arc:not(.arc-menu-host):not(.arc-layer) { container: arc / inline-size; }
 :where(.arc) :is(h1, h2, h3, h4, p, ul, ol, figure) { margin: 0; }
 :where(.arc) :is(ul, ol) { padding: 0; list-style: none; }
 :where(.arc) a { color: inherit; text-decoration: none; }

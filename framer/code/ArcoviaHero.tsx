@@ -66,21 +66,22 @@ const HERO_CSS = `/* ---------- Path picker: one button, three paths ---------- 
   transform: translateY(6px) scale(0.97);
   transition: opacity var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out), visibility 0s linear var(--dur-fast);
 }
-.path-picker.is-open .path-picker__panel {
+.path-picker.is-open .path-picker__panel,
+.path-picker__panel.is-open {
   opacity: 1;
   visibility: visible;
   transform: none;
   transition: opacity var(--dur-base) var(--ease-out), transform var(--dur-base) var(--ease-out), visibility 0s;
 }
-/* When there isn't room for the menu above the button (under the header), it opens below it
-   instead, so it never runs into the header's links (set by the script on opening) */
-.path-picker.opens-down .path-picker__panel {
-  bottom: auto;
-  top: calc(100% + 10px);
-  transform-origin: 28px 0;
-  transform: translateY(-6px) scale(0.97);
+/* While it is open the menu lives in a layer on top of the page (set by the script), so it
+   opens above the button and sits over the header's links rather than under them */
+.arc-picker-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 55;              /* over the header (its layer is 10), under the full-screen menu (60) */
+  pointer-events: none;
 }
-.path-picker.opens-down.is-open .path-picker__panel { transform: none; }
+.arc-picker-layer .path-picker__panel { pointer-events: auto; }
 
 .path-picker__title {
   /* A hairline under the title, inset to line up with the rows */
@@ -148,11 +149,11 @@ const HERO_CSS = `/* ---------- Path picker: one button, three paths ---------- 
 }
 
 /* Without icons (?icons=none): title and line only */
-.path-picker[data-icons="none"] .path-picker__icon { display: none; }
-.path-picker[data-icons="none"] .path-picker__option { grid-template-columns: 1fr 16px; }
-.path-picker[data-icons="none"] .path-picker__label,
-.path-picker[data-icons="none"] .path-picker__meta { grid-column: 1; }
-.path-picker[data-icons="none"] .path-picker__arrow { grid-column: 2; }
+[data-icons="none"] .path-picker__icon { display: none; }
+[data-icons="none"] .path-picker__option { grid-template-columns: 1fr 16px; }
+[data-icons="none"] .path-picker__label,
+[data-icons="none"] .path-picker__meta { grid-column: 1; }
+[data-icons="none"] .path-picker__arrow { grid-column: 2; }
 
 @container arc (max-width: 809px) {
   /* Full-width panel on phones; the button keeps its own width */
@@ -676,37 +677,58 @@ function initPicker(host: HTMLElement, life: Life) {
         if (!trigger || !panel) return
         const options = panel.querySelectorAll<HTMLElement>(".path-picker__option")
 
-        // Room for the menu above the button, below the header's bottom edge; if it doesn't fit
-        // there and there is more room below, it opens below the button
-        function placePanel() {
-            const tr = trigger!.getBoundingClientRect()
-            const ph = panel!.offsetHeight
-            const hdr = document.querySelector("[data-header]")
-            const ceiling = hdr ? Math.max(0, hdr.getBoundingClientRect().bottom) : 0
-            const above = tr.top - 14 - ceiling - 8
-            const below = window.innerHeight - tr.bottom - 10
-            picker.classList.toggle("opens-down", ph > above && below > above)
+        // While open, the panel moves into a layer on top of the page (over the header) and is
+        // placed where it sits in the hero: its left edge on the picker's, its bottom 14px above
+        // the button, at the width it has there. It moves back once it has faded out.
+        const layer = document.createElement("div")
+        layer.className = "arc arc-layer arc-picker-layer"
+        if (pickerIcons) layer.setAttribute("data-icons", pickerIcons)
+        let homeTimer = 0
+        let openedAt = 0
+        const goHome = () => {
+            if (panel!.parentElement !== picker) picker.insertBefore(panel!, picker.firstChild)
+            panel!.style.removeProperty("left")
+            panel!.style.removeProperty("bottom")
+            panel!.style.removeProperty("width")
+            if (layer.parentElement) layer.remove()
+        }
+        const lift = () => {
+            if (homeTimer) {
+                life.clear(homeTimer)
+                homeTimer = 0
+            }
+            const w = panel!.offsetWidth
+            const pr = picker.getBoundingClientRect()
+            if (!layer.parentElement) document.body.appendChild(layer)
+            const lh = layer.getBoundingClientRect().height
+            panel!.style.width = w + "px"
+            panel!.style.left = pr.left + "px"
+            panel!.style.bottom = lh - pr.top + 14 + "px"
+            if (panel!.parentElement !== layer) layer.appendChild(panel!)
+            void panel!.offsetWidth // start the open transition from the closed state
         }
 
         function set(open: boolean, focusFirst?: boolean) {
-            if (open) placePanel()
+            const was = picker.classList.contains("is-open")
+            if (open) {
+                lift()
+                openedAt = window.scrollY
+            }
             picker.classList.toggle("is-open", open)
+            panel!.classList.toggle("is-open", open)
             trigger!.setAttribute("aria-expanded", String(open))
             panel!.setAttribute("aria-hidden", String(!open))
             options.forEach((a) => {
                 a.tabIndex = open ? 0 : -1
             })
             if (open && focusFirst && options[0]) options[0].focus()
+            if (!open && was && panel!.parentElement === layer) homeTimer = life.timeout(goHome, 220)
         }
 
-        life.on(trigger, "click", (e: MouseEvent) => {
-            // Keyboard and screen-reader users land on the first path; mouse users stay on the button
-            set(!picker.classList.contains("is-open"), e.detail === 0)
-        })
-        life.on(picker, "keydown", (e: KeyboardEvent) => {
+        const onKey = (e: KeyboardEvent) => {
             if (e.key === "Escape" && picker.classList.contains("is-open")) {
                 set(false)
-                trigger.focus()
+                trigger!.focus()
             }
             if (e.key === "ArrowDown" || e.key === "ArrowUp") {
                 if (!picker.classList.contains("is-open")) return
@@ -716,16 +738,34 @@ function initPicker(host: HTMLElement, life: Life) {
                 const next = e.key === "ArrowDown" ? (i + 1) % list.length : (i - 1 + list.length) % list.length
                 list[next].focus()
             }
+        }
+        const inside = (n: Node | null) => !!n && (picker.contains(n) || panel!.contains(n))
+        // The hero text lifts away as you scroll, so the menu closes when the page moves
+        life.on(window, "scroll", () => {
+            if (picker.classList.contains("is-open") && Math.abs(window.scrollY - openedAt) > 24) set(false)
+        }, { passive: true })
+        life.on(window, "resize", () => {
+            if (picker.classList.contains("is-open")) set(false)
         })
+
+        life.on(trigger, "click", (e: MouseEvent) => {
+            // Keyboard and screen-reader users land on the first path; mouse users stay on the button
+            set(!picker.classList.contains("is-open"), e.detail === 0)
+        })
+        life.on(picker, "keydown", onKey)
+        life.on(panel, "keydown", onKey)
         life.on(document, "pointerdown", (e: PointerEvent) => {
-            if (!picker.contains(e.target as Node)) set(false)
+            if (!inside(e.target as Node)) set(false)
         })
-        life.on(picker, "focusout", (e: FocusEvent) => {
-            if (e.relatedTarget && !picker.contains(e.relatedTarget as Node)) set(false)
-        })
+        const onFocusOut = (e: FocusEvent) => {
+            if (e.relatedTarget && !inside(e.relatedTarget as Node)) set(false)
+        }
+        life.on(picker, "focusout", onFocusOut)
+        life.on(panel, "focusout", onFocusOut)
         set(false)
         life.add(() => {
             set(false)
+            goHome()
             options.forEach((a) => a.removeAttribute("tabindex"))
             picker.removeAttribute("data-icons")
         })
