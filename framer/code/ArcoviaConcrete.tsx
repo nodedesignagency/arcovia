@@ -30,6 +30,10 @@
  *   uses this to drill through the O of ARCOVIA and fly into the statement).
  * - setMarkDepth() presses carved marks in (1) or lets them rise flush (0)
  *   without touching any other carving (the CTA presses its lockup in).
+ * - Marks keep their proportions at any size: a mark drawn smaller than
+ *   MARK_REF css px (the CTA lockup on the smallest desktop) gets a narrower
+ *   bevel and shorter shadows in step with its size, so the lockup on a phone
+ *   looks like the desktop one scaled down, not softer and rounder.
  * - opts.plain: a flat neutral material instead of concrete (no texture,
  *   grain, mottling or vignette), lit and carved exactly the same way. The
  *   sectors line uses it.
@@ -86,6 +90,7 @@ const FRAG = [
   "uniform vec4 uDrillP;",     // drill: camera distance (1 at the start, 0 at the face, -K at the back), depth drilled (0–K), light through (0–1), dust (0–1)
   "uniform vec4 uDrillQ;",     // drill: K (slab thickness / starting camera distance), bore radius (counter units), spin, thickness in counter radii
   "uniform float uMarkDepth;", // how far carved marks are pressed in: 0 flush, 1 fully carved (the closing presses its A-mark in)
+  "uniform float uMarkScale;", // marks smaller than MARK_REF: their bevel and shadows shrink by this much (1 at full size)
   "uniform float uPlain;",     // 1: flat neutral material instead of concrete (no texture, grain or vignette)
   "uniform float uPlainAlbedo;",// the flat material's brightness
   "uniform sampler2D uSlide;", // sliding strip: one loop of carvings (r: height, as uHeight)
@@ -225,10 +230,11 @@ const FRAG = [
   "",
   "  // Short cast shadow inside carvings, on the side facing away from the sun",
   "  vec2 ld = normalize(Ls.xy) * e * uScale;",
-  "  float occ = clamp((max(H(uv + ld * 1.2), H(uv + ld * 2.4)) - hc) * 1.4, 0.0, 1.0) * dm;",
+  "  vec2 ldm = ld * mix(1.0, uMarkScale, isMark);",           // on marks, shadows shrink with the mark
+  "  float occ = clamp((max(H(uv + ldm * 1.2), H(uv + ldm * 2.4)) - hc) * 1.4, 0.0, 1.0) * dm;",
   // Marks are cut deep: under a low sun their walls throw a long shadow across the floor of the cut
   "  if (isMark > 0.002) {",
-  "    float hl = max(max(H(uv + ld * 4.0), H(uv + ld * 7.0)), max(H(uv + ld * 10.5), H(uv + ld * 14.0)));",
+  "    float hl = max(max(H(uv + ldm * 4.0), H(uv + ldm * 7.0)), max(H(uv + ldm * 10.5), H(uv + ldm * 14.0)));",
   "    occ = max(occ, clamp((hl - hc) * 1.2, 0.0, 1.0) * isMark * uMarkDepth);",
   "  }",
   "",
@@ -238,7 +244,8 @@ const FRAG = [
   "  float ao = mix(1.0 - 0.08 * dm, 1.0, hc);",
   "  // ...and a soft inner shadow under the upper-left wall, so carvings read as recessed, not outlined",
   "  vec2 la = normalize(La.xy) * e * uScale;",
-  "  float occA = clamp((max(H(uv + la * 2.0), H(uv + la * 4.5)) - hc) * 1.2, 0.0, 1.0);",
+  "  vec2 lam = la * mix(1.0, uMarkScale, isMark);",
+  "  float occA = clamp((max(H(uv + lam * 2.0), H(uv + lam * 4.5)) - hc) * 1.2, 0.0, 1.0);",
   "  ao *= 1.0 - occA * 0.09 * dm;",
   "",
   "  float light = amb * ao * 0.9;",
@@ -278,7 +285,7 @@ const FRAG = [
   // Marks are cut deeper than text: a slightly darker floor and a wide soft shadow under the
   // upper-left wall. Applied after the light, so the recess still reads while the sun passes over it.
   "  if (isMark > 0.002) {",
-  "    float hm = (H(uv + la * 2.5) + H(uv + la * 5.0) + H(uv + la * 8.0) + H(uv + la * 12.0) + H(uv + la * 17.0)) * 0.2;",
+  "    float hm = (H(uv + lam * 2.5) + H(uv + lam * 5.0) + H(uv + lam * 8.0) + H(uv + lam * 12.0) + H(uv + lam * 17.0)) * 0.2;",
   "    float occM = clamp(hm - hc, 0.0, 1.0);",
   "    c *= 1.0 - isMark * uMarkDepth * ((1.0 - hc) * 0.05 + occM * 0.09);",
   "  }",
@@ -525,7 +532,11 @@ export interface ConcreteView {
     drill?: { cx: number; cy: number; rx: number; ry: number; cam: number; depth: number; light: number; dust: number; k: number; r: number; spin: number; thick: number } | null
 }
 
-const UNIFORMS = ["uRes", "uScale", "uTime", "uBand", "uMouse", "uMouseAmt", "uSun", "uCursor", "uTex", "uTexSize", "uHeight", "uHTexel", "uOrigin", "uShift", "uZoom", "uBurn", "uBurnP", "uBreak", "uBreakP", "uDrill", "uDrillP", "uDrillQ", "uMarkDepth", "uPlain", "uPlainAlbedo", "uSlide", "uSlideOn", "uSlideRect", "uSlideView", "uSlideFold", "uPhoto", "uPhotoMap", "uBeam", "uBeamRange", "uShade", "uShadeP", "uDust", "uVignette", "uBeamFade"]
+// Marks at least this big (css px, their longer side) are carved at full size: the CTA lockup on
+// the smallest desktop (1200) is 293px. Smaller marks get a bevel and shadows in step with their size.
+const MARK_REF = 293
+
+const UNIFORMS = ["uRes", "uScale", "uTime", "uBand", "uMouse", "uMouseAmt", "uSun", "uCursor", "uTex", "uTexSize", "uHeight", "uHTexel", "uOrigin", "uShift", "uZoom", "uBurn", "uBurnP", "uBreak", "uBreakP", "uDrill", "uDrillP", "uDrillQ", "uMarkDepth", "uMarkScale", "uPlain", "uPlainAlbedo", "uSlide", "uSlideOn", "uSlideRect", "uSlideView", "uSlideFold", "uPhoto", "uPhotoMap", "uBeam", "uBeamRange", "uShade", "uShadeP", "uDust", "uVignette", "uBeamFade"]
 
 export class ConcreteSurface {
     host: HTMLElement
@@ -537,6 +548,10 @@ export class ConcreteSurface {
     carves: any[] = []
     /** 0–1: how far data-carve="mark" elements are pressed in (setMarkDepth) */
     markDepth = 1
+    /** Marks smaller than MARK_REF: how far their bevel and shadows shrink (layout) */
+    markScale = 1
+    /** The height map's bevel: follows markScale when the marks are all there is to carve */
+    bevelScale = 1
     /** The sliding strip ([data-carve-slide]), measured in layout() */
     slide: any = null
     /** css px the strip has moved left (setSlide) */
@@ -746,6 +761,10 @@ export class ConcreteSurface {
         this.canvas.height = Math.round(h * dpr)
         gl.viewport(0, 0, this.canvas.width, this.canvas.height)
         this.carves = this.collect()
+        // Small marks keep the proportions of a full-size one: bevel and shadows shrink with them
+        const marks = this.carves.filter((c) => c.kind === "mark")
+        this.markScale = marks.length ? Math.max(0.25, Math.min(1, Math.min(...marks.map((c) => c.size)) / MARK_REF)) : 1
+        this.bevelScale = marks.length && marks.length === this.carves.length ? this.markScale : 1
         this.slide = this.collectSlide()
         if (this.slide) this.paintSlide()
         const sh = this.opts.shade && this.host.querySelector(this.opts.shade)
@@ -777,7 +796,7 @@ export class ConcreteSurface {
                     const paths = markPaths(el, scope)
                     const vb = (el.getAttribute("viewBox") || "0 0 72 57").split(/[\s,]+/).map(Number)
                     const k = Math.min(r.width / vb[2], r.height / vb[3])
-                    out.push({ kind: kind, paths: paths, x: x + (r.width - vb[2] * k) / 2, y: y + (r.height - vb[3] * k) / 2, k: k })
+                    out.push({ kind: kind, paths: paths, x: x + (r.width - vb[2] * k) / 2, y: y + (r.height - vb[3] * k) / 2, k: k, size: Math.max(vb[2], vb[3]) * k })
                 } else if (kind === "text") {
                     out.push(textGlyphs(el as HTMLElement, origin))
                 } else {
@@ -848,7 +867,7 @@ export class ConcreteSurface {
 
         // Soften every edge into a sloped wall (the bevel). The wall widens a little as you zoom in.
         const hctx = hc.getContext("2d")!
-        const blur = 0.9 * d * Math.min(v.s, 2.2)
+        const blur = 0.9 * d * Math.min(v.s, 2.2) * this.bevelScale
         hctx.setTransform(1, 0, 0, 1, 0, 0)
         if (typeof hctx.filter === "string") {
             hctx.filter = "blur(" + blur.toFixed(2) + "px)"
@@ -1160,6 +1179,7 @@ export class ConcreteSurface {
         gl.uniform4f(u.uDrillP, dr ? dr.cam : 1, dr ? dr.depth : 0, dr ? dr.light : 0, dr ? dr.dust : 0)
         gl.uniform4f(u.uDrillQ, dr ? dr.k : 1, dr ? dr.r : 1, dr ? dr.spin : 0, dr ? dr.thick : 2)
         gl.uniform1f(u.uMarkDepth, this.markDepth)
+        gl.uniform1f(u.uMarkScale, this.markScale)
         gl.uniform1f(u.uPlain, o.plain)
         gl.uniform1f(u.uPlainAlbedo, o.albedo)
         gl.uniform1i(u.uSlide, 2)
