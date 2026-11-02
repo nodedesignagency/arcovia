@@ -20,12 +20,12 @@ const frame = Number((typeof location !== "undefined" && (location.search.match(
 function Page() {
   if (frame) return <div style={{ width: frame, margin: "0 auto", position: "relative", background: "#d3d3d3", outline: "1px solid red" }}>
     ${names.map((n) => n === "Header"
-      ? `<div style={{ position: "absolute", top: 0, left: 0, right: 0, zIndex: 50 }}><C_Header style={{ width: "100%" }} /></div>`
+      ? `<div style={{ position: "absolute", top: 0, left: 0, right: 0, zIndex: 50, pointerEvents: "none" }}><C_Header style={{ width: "100%" }} /></div>`
       : `<C_${n} style={{ width: "100%" }} />`).join("\n    ")}
   </div>
   return <>
     ${names.map((n) => n === "Header"
-      ? `<div style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 50 }}><C_Header style={{ width: "100%" }} /></div>`
+      ? `<div style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 50, pointerEvents: "none" }}><C_Header style={{ width: "100%" }} /></div>`
       : `<C_${n} style={{ width: "100%" }} />`).join("\n    ")}
   </>
 }

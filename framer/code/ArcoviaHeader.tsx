@@ -40,22 +40,23 @@ const HEADER_CSS = `/* ---------- Header: a masthead that folds, hides and comes
 .masthead-city { pointer-events: auto; }
 .site-header.is-hidden { transform: translateY(-100%); }
 
-/* No background colour. Mid-page, a clear blur (no tint) sits behind the bar
-   and fades out at its bottom edge, so text scrolling underneath softens
-   instead of colliding with the header. Delete this rule for no blur at all. */
+/* At the top of the page the masthead has no background. Mid-page the small bar takes
+   the background of the section under it (set by the script as --header-fill: white
+   over the white sections, black over the black one, concrete over the hero), so it
+   reads as part of that section; it fades across when a new section comes under it.
+   (It replaces the earlier untinted blur, which the user found smeary, worst on black.) */
 .site-header::before {
   content: "";
   position: absolute;
-  inset: 0 0 -24px;
+  inset: 0;
   z-index: -1;
-  -webkit-backdrop-filter: blur(22px);
-  backdrop-filter: blur(22px);
-  -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 40px), transparent);
-  mask-image: linear-gradient(to bottom, #000 calc(100% - 40px), transparent);
+  background-color: var(--header-fill, transparent);
+  background-size: 1024px;
   opacity: 0;
-  transition: opacity var(--dur-slow) var(--ease-out);
+  transition: opacity var(--dur-slow) var(--ease-out), background-color var(--dur-base) var(--ease-out);
 }
 .site-header.is-compact::before { opacity: 1; }
+.site-header[data-fill="concrete"]::before { background-image: var(--texture-concrete); }
 
 /* Over dark sections the type turns light */
 .site-header.is-on-dark {
@@ -569,6 +570,35 @@ function initHeader(host: HTMLElement, life: Life) {
         if (ink) root.setAttribute("data-ink", ink)
     } catch (e) {}
 
+    /* What is under the small bar: the first section (or page ground) with a background,
+       read at the bar's bottom edge in the left margin, clear of the header's own links.
+       A section can name its fill with data-header-bg ("concrete" for the hero's slab). */
+    const rgb = (c: string) => {
+        const m = c.match(/rgba?\(([^)]+)\)/)
+        if (!m) return null
+        const v = m[1].split(/[\s,\/]+/).filter(Boolean).map(parseFloat)
+        return { r: v[0], g: v[1], b: v[2], a: v.length > 3 ? v[3] : 1 }
+    }
+    const fillUnder = (): { fill: string; dark: boolean; concrete: boolean } | null => {
+        const bar = host.querySelector<HTMLElement>("[data-header]")
+        if (!bar || !document.elementsFromPoint) return null
+        const y = Math.max(0, Math.min(window.innerHeight - 1, bar.getBoundingClientRect().bottom - 2))
+        const hit = document.elementsFromPoint(2, y).find((el) => !host.contains(el))
+        let n: Element | null = hit || null
+        while (n && n !== document.documentElement) {
+            const named = n.getAttribute("data-header-bg")
+            if (named === "concrete") return { fill: "#d3d3d3", dark: false, concrete: true }
+            if (named) return { fill: named, dark: n.getAttribute("data-header-theme") === "dark", concrete: false }
+            const c = rgb(getComputedStyle(n).backgroundColor)
+            if (c && c.a > 0.5) {
+                const lum = (0.2126 * c.r + 0.7152 * c.g + 0.0722 * c.b) / 255
+                return { fill: "rgb(" + c.r + ", " + c.g + ", " + c.b + ")", dark: lum < 0.4, concrete: false }
+            }
+            n = n.parentElement
+        }
+        return null
+    }
+
     /* Header: fold on leaving the top, hide going down, return going up */
     const header = host.querySelector<HTMLElement>("[data-header]")
     if (header) {
@@ -587,13 +617,25 @@ function initHeader(host: HTMLElement, life: Life) {
             }
             if (atTop || Math.abs(dy) > 6) lastY = y
 
-            // Light type while the bar sits over a dark section (queried each time: sections can change)
-            const probe = 40
+            // The bar's fill: the background of the section under it
+            const under = fillUnder()
+            if (under) {
+                header.style.setProperty("--header-fill", under.fill)
+                if (under.concrete) header.setAttribute("data-fill", "concrete")
+                else header.removeAttribute("data-fill")
+            }
+
+            // Light type while the bar sits over a dark section: read at the same point as the
+            // fill, so type and fill always change together (marked sections are the fallback)
             let onDark = false
-            document.querySelectorAll("[data-header-theme='dark']").forEach((sec) => {
-                const r = sec.getBoundingClientRect()
-                if (r.top <= probe && r.bottom >= probe) onDark = true
-            })
+            if (under) onDark = under.dark
+            else {
+                const probe = 40
+                document.querySelectorAll("[data-header-theme='dark']").forEach((sec) => {
+                    const r = sec.getBoundingClientRect()
+                    if (r.top <= probe && r.bottom >= probe) onDark = true
+                })
+            }
             header.classList.toggle("is-on-dark", onDark)
             ticking = false
         }

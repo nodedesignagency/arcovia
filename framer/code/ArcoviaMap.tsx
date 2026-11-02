@@ -223,7 +223,6 @@ const MAP_CSS = `/* ============================================================
   grid-auto-flow: column;
   column-gap: var(--grid-gap);
   max-width: 30em;
-  border-bottom: 1px solid var(--color-line);
 }
 .map__city {
   display: flex;
@@ -237,6 +236,10 @@ const MAP_CSS = `/* ============================================================
   transition: background-color var(--dur-fast) var(--ease-out);
 }
 .map__city.is-active { background: var(--color-well); }
+/* Each column closes with its own line (the columns fill eight rows each), so the last
+   line never runs across both columns and a short last column still ends on a line */
+.map__city:nth-child(8n),
+.map__city:last-child { border-bottom: 1px solid var(--color-line); }
 .map__city-name {
   display: flex;
   align-items: center;

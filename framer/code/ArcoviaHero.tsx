@@ -298,10 +298,11 @@ const HERO_CSS = `/* ---------- Path picker: one button, three paths ---------- 
 
 @container arc (max-width: 1199px) {
   .hero__inner { grid-template-rows: 1fr auto auto; }
-  .hero__heading { grid-column: 1 / span 11; align-self: end; margin-bottom: var(--space-7); }
-  .hero__aside { grid-column: 6 / span 7; grid-row: 2; align-self: start; padding-top: 0; margin-bottom: var(--space-8); }
-  /* The path menu stays as wide as this column, which spans 7 columns here (4 on desktop) */
-  .hero__aside { --picker-w: calc((min(100cqw, var(--container-max)) - 2 * var(--gutter) - 11 * var(--grid-gap)) / 12 * 7 + 6 * var(--grid-gap)); }
+  /* Tablet as on phones (the user's call): chip, headline, line and button in one column */
+  .hero__heading { grid-column: 1 / -1; align-self: end; gap: var(--space-5); margin-bottom: var(--space-5); }
+  .hero__aside { grid-column: 1 / -1; grid-row: 2; align-self: start; gap: var(--space-5); padding-top: 0; margin-bottom: var(--space-7); }
+  /* The path menu keeps its desktop width here (phones make it full width) */
+  .hero__aside { --picker-w: 440px; }
   .hero__inner > .hero__seam { grid-row: 3; }
 }
 
@@ -520,7 +521,7 @@ export default function ArcoviaHero(incoming: Partial<Props>) {
                 Without the script (canvas) or with reduced motion they simply stack. */}
             <div className="zoom" data-zoom="">
                 <div className="zoom__stage">
-                    <section className="hero" data-hero="" aria-labelledby={ids.title}>
+                    <section className="hero" data-hero="" data-header-bg="concrete" aria-labelledby={ids.title}>
                         <canvas className="hero__canvas" aria-hidden="true"></canvas>
                         <canvas className="hero__debris" aria-hidden="true"></canvas>
 
