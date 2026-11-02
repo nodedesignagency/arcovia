@@ -174,6 +174,34 @@ const WHAT_WE_DO_CSS = `/* =====================================================
   font-family: var(--font-sans);
 }
 
+/* A photo in place of the drawing: grayscale, seen through a window cut into the
+   concrete (as the team cards are), shadow on the upper and left walls, light on
+   the lower lip. */
+.wwd__photo {
+  position: absolute;
+  inset: 7%;
+  overflow: hidden;
+  background: var(--color-charcoal-deep);
+}
+.wwd__photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+  filter: grayscale(1) contrast(1.04);
+}
+.wwd__photo::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  box-shadow:
+    inset 0 0 0 1px rgba(0, 0, 0, 0.22),
+    inset 3px 4px 7px rgba(0, 0, 0, 0.42),
+    inset -1px -1px 0 rgba(255, 255, 255, 0.35);
+}
+
 /* ---------- Services ---------- */
 .wwd__steps { grid-column: 7 / span 6; }
 .wwd__step {
@@ -526,13 +554,20 @@ interface Service {
     title: string
     text: string
     drawing: Drawing
+    /** a photo for the tile, used when the section's art is "photos" */
+    photo?: string
+    /** where the photo's crop centres, as CSS object-position ("50% 30%") */
+    focus?: string
 }
+
+type Art = "drawings" | "photos"
 
 interface Props {
     chip: string
     line1: string
     line2: string
     lede: string
+    art: Art
     services: Service[]
     style?: React.CSSProperties
 }
@@ -544,6 +579,8 @@ const DEFAULTS: Props = {
     line2: "built around conviction",
     // [COPY NEEDED] Draft line under the headline
     lede: "Six disciplines, one senior team, from the first investor conversation to the close.",
+    // What the tiles carry: the drawn sheets, or each service's photo (grayscale, in a window cut into the concrete)
+    art: "drawings",
     services: [
         {
             title: "Investor Narrative & Positioning",
@@ -580,6 +617,19 @@ const DEFAULTS: Props = {
 
 function drawingFor(s: Service, i: number) {
     return DRAWINGS[s.drawing] || DRAWINGS[DRAWING_KEYS[i % DRAWING_KEYS.length]]
+}
+
+/** A tile's contents: the service's photo when the art is "photos" (and it has one), else its drawing */
+function TileArt({ s, i, art }: { s: Service; i: number; art: Art }) {
+    if (art === "photos" && s.photo) {
+        return (
+            <div className="wwd__photo">
+                <img src={s.photo} alt="" loading="lazy" decoding="async" style={s.focus ? { objectPosition: s.focus } : undefined} />
+            </div>
+        )
+    }
+    const D = drawingFor(s, i)
+    return <D />
 }
 
 function pad2(n: number) {
@@ -657,14 +707,11 @@ export default function ArcoviaWhatWeDo(incoming: Partial<Props>) {
                                 </div>
                                 <div className="wwd__frame">
                                     <div className="wwd__tiles">
-                                        {services.map((s, i) => {
-                                            const D = drawingFor(s, i)
-                                            return (
-                                                <div className="wwd__tile" key={i}>
-                                                    <D />
-                                                </div>
-                                            )
-                                        })}
+                                        {services.map((s, i) => (
+                                            <div className="wwd__tile" key={i}>
+                                                <TileArt s={s} i={i} art={p.art} />
+                                            </div>
+                                        ))}
                                     </div>
                                 </div>
                             </div>
@@ -673,13 +720,12 @@ export default function ArcoviaWhatWeDo(incoming: Partial<Props>) {
                         {/* Component: service row (tablet and phone: number and tile; then title, line) */}
                         <ol className="wwd__steps">
                             {services.map((s, i) => {
-                                const D = drawingFor(s, i)
                                 return (
                                 <li className={"wwd__step" + (i === 0 ? " is-current" : "")} key={i}>
                                     <div className="wwd__step-media" aria-hidden="true">
                                         <span className="wwd__step-num">/{pad2(i + 1)}</span>
                                         <div className="wwd__mini">
-                                            <D />
+                                            <TileArt s={s} i={i} art={p.art} />
                                         </div>
                                     </div>
                                     <div className="wwd__step-text">
@@ -753,6 +799,14 @@ addPropertyControls(ArcoviaWhatWeDo, {
     line1: { type: ControlType.String, title: "Headline 1", defaultValue: DEFAULTS.line1 },
     line2: { type: ControlType.String, title: "Headline 2", defaultValue: DEFAULTS.line2 },
     lede: { type: ControlType.String, title: "Line", displayTextArea: true, defaultValue: DEFAULTS.lede },
+    art: {
+        type: ControlType.Enum,
+        title: "Tiles",
+        options: ["drawings", "photos"],
+        optionTitles: ["Drawings", "Photos"],
+        displaySegmentedControl: true,
+        defaultValue: DEFAULTS.art,
+    },
     services: {
         type: ControlType.Array,
         title: "Services",
@@ -769,6 +823,8 @@ addPropertyControls(ArcoviaWhatWeDo, {
                     optionTitles: ["Narrative", "Strategy", "Equity", "Debt", "M&A", "Fund"],
                     defaultValue: "narrative",
                 },
+                photo: { type: ControlType.Image, title: "Photo" },
+                focus: { type: ControlType.String, title: "Photo focus", placeholder: "50% 50%" },
             },
         },
         defaultValue: DEFAULTS.services,
