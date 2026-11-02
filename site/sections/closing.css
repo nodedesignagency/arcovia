@@ -1,111 +1,146 @@
 /* ==========================================================================
-   SECTION: closing — Home, block 10 (brief section 10)
-   The deck's closing slide: live concrete (concrete.js) with the A-mark
-   debossed large on the right, pressed in like a seal as the section comes
-   up (closing.js). On the left: "Partner with us", one line and one button
-   to the contact page, sitting low like the hero's heading; the A stands on
-   the same line as the button.
-   The slab (.closing-wall) runs behind the sectors line too, so both sit on
-   one piece of concrete (no change of tone between them).
-   Without WebGL the mark is debossed with the SVG filter (#deboss) instead.
-   Uses shared tokens, the primary button and the arrow icon from styles.css.
+   SECTION: closing — Home, block 10 (brief section 10): the CTA
+   After the user's own earlier design: on the neutral ground straight after
+   the sectors line, a rounded box with corner marks and ruler ticks, the text
+   on the left and the logo on the right.
+   The box is the client's sunrise wall (after the social assets she liked, a
+   little lighter): a concrete photo (assets/cta-wall.jpg, made with Magnific)
+   lit live by concrete.js (closing.js): a beam of sunlight sweeps across and
+   back every 18 s with fine dust turning in it, and the official lockup is
+   carved into the wall, so the beam catches its walls as it passes. The beam
+   dims behind the text, which keeps its contrast.
+   Without WebGL the photo shows with a soft static beam and the lockup is
+   debossed with the SVG filter (#deboss).
+   Uses shared tokens, the light button and the arrow icon from styles.css.
    ========================================================================== */
 
-/* ---------- The slab: one piece of live concrete under the sectors and the closing ---------- */
-.closing-wall {
+.closing {
+  padding-bottom: var(--space-10);
+  background: var(--color-neutral);
+}
+
+/* ---------- The box ---------- */
+.closing__card {
+  --card-pad: 96px;          /* text and logo inset from the box's edge */
   position: relative;
   isolation: isolate;
   overflow: hidden;
-  /* Static fallback: no JS, no WebGL. The same soft diagonal light as the hero. */
-  background-color: var(--color-concrete);
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--grid-gap);
+  align-items: center;
+  aspect-ratio: 11 / 5;
+  min-height: 560px;
+  padding-inline: var(--card-pad);
+  border-radius: var(--radius-l);
+  color: var(--color-on-dark);
+  /* Static fallback: the wall, a soft beam and the shade behind the text */
+  background-color: #5d5d5d;
   background-image:
-    linear-gradient(112deg, rgba(0, 0, 0, 0.05) 0%, rgba(0, 0, 0, 0.02) 38%, rgba(255, 255, 255, 0.2) 52%, rgba(255, 255, 255, 0.12) 66%, rgba(0, 0, 0, 0.04) 100%),
-    url("../assets/concrete.jpg");
-  background-size: auto, 1024px;
+    linear-gradient(90deg, rgba(0, 0, 0, 0.32) 0%, rgba(0, 0, 0, 0.12) 45%, rgba(0, 0, 0, 0) 60%),
+    linear-gradient(158deg, transparent 38%, rgba(255, 255, 255, 0.34) 46%, rgba(255, 255, 255, 0.34) 54%, transparent 62%),
+    url("../assets/cta-wall.jpg");
+  background-size: auto, auto, cover;
+  background-position: center;
 }
 
-.closing-wall__canvas {
+.closing__canvas {
   position: absolute;
   inset: 0;
   z-index: -1;
   width: 100%;
   height: 100%;
   opacity: 0;
-  transition: opacity 900ms var(--ease-out);
+  transition: opacity 700ms var(--ease-out);
 }
-.closing-wall.is-live .closing-wall__canvas { opacity: 1; }
+.closing__card.is-live .closing__canvas { opacity: 1; }
 
-.closing {
-  position: relative;
-  min-height: 100vh;
-  min-height: 100svh;
+/* ---------- Frame: corner marks and ruler ticks ---------- */
+.closing__corner {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  border: 0 solid rgba(255, 255, 255, 0.6);
+  pointer-events: none;
 }
+.closing__corner--tl { top: 28px; left: 28px; border-top-width: 1.5px; border-left-width: 1.5px; }
+.closing__corner--tr { top: 28px; right: 28px; border-top-width: 1.5px; border-right-width: 1.5px; }
+.closing__corner--bl { bottom: 28px; left: 28px; border-bottom-width: 1.5px; border-left-width: 1.5px; }
+.closing__corner--br { bottom: 28px; right: 28px; border-bottom-width: 1.5px; border-right-width: 1.5px; }
 
-/* ---------- Layout: on the page grid, text low on the left, the mark on the right ---------- */
-.closing__inner {
-  display: grid;
-  grid-template-columns: repeat(12, minmax(0, 1fr));
-  column-gap: var(--grid-gap);
-  min-height: inherit;
-  padding-block: var(--space-10);
+/* Fine ticks down both sides, a longer one every fifth */
+.closing__ruler {
+  position: absolute;
+  top: 92px;
+  bottom: 92px;
+  width: 12px;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(to bottom, rgba(255, 255, 255, 0.34) 0 1px, transparent 1px 60px) 0 0 / 12px 100% no-repeat,
+    repeating-linear-gradient(to bottom, rgba(255, 255, 255, 0.2) 0 1px, transparent 1px 12px) 0 0 / 7px 100% no-repeat;
 }
+.closing__ruler--left { left: 29px; }
+.closing__ruler--right { right: 29px; transform: scaleX(-1); }
 
+/* ---------- Text ---------- */
 .closing__content {
-  grid-column: 1 / span 5;
+  grid-column: 1 / span 6;
   grid-row: 1;
-  align-self: end;
   display: grid;
   justify-items: start;
+  /* keeps it legible wherever the light falls */
+  text-shadow: 0 1px 18px rgba(0, 0, 0, 0.18);
 }
-
 .closing__title {
-  font-size: var(--fs-hero);
+  font-size: 64px;
   font-weight: var(--weight-medium);
-  line-height: var(--lh-hero);
-  letter-spacing: var(--ls-hero);
-  color: var(--color-ink);
+  line-height: 1.05;
+  letter-spacing: -0.026em;
+  color: var(--color-on-dark);
 }
 .closing__body {
-  max-width: 25em;
-  margin-top: var(--space-6);
+  max-width: 27em;
+  margin-top: var(--space-5);
   text-wrap: pretty;
   font-size: var(--fs-lede);
   line-height: var(--lh-lede);
-  color: var(--color-text);
+  color: rgba(244, 244, 243, 0.88);
 }
-.closing__btn { margin-top: var(--space-7); }
+.closing__btn { margin-top: var(--space-7); text-shadow: none; }
 @media (hover: hover) {
   .closing__btn:hover .closing__arrow { transform: translateX(3px); }
 }
 
-/* The A-mark, large: from column 7 to the edge of the grid, its feet on the button's line */
+/* ---------- The lockup, carved into the wall ---------- */
 .closing__figure {
-  grid-column: 7 / -1;
+  grid-column: 8 / span 4;
   grid-row: 1;
-  align-self: end;
   display: grid;
-  justify-items: center;
+  place-items: center;
+  height: 100%;
 }
 .closing__mark {
-  width: 100%;
-  max-width: 640px;
-  /* never taller than the slab leaves room for */
-  max-height: calc(100vh - 2 * var(--space-10));
-  height: auto;
+  width: auto;
+  height: 64%;
+  max-width: 100%;
+  aspect-ratio: 1;
   fill: currentColor;
   color: #000;           /* only the shape counts: the filter turns it into a recess */
   filter: url("#deboss");
 }
-/* With live concrete the mark is carved into the slab itself (concrete.js), so the SVG only marks the place */
-.closing-wall.is-live .closing__mark { opacity: 0; filter: none; }
+/* With live light the lockup is carved into the wall itself (concrete.js); the SVG only marks the place */
+.closing__card.is-live .closing__mark { opacity: 0; filter: none; }
 
 /* ---------- Tablet and phone (to refine once desktop is approved) ---------- */
 @media (max-width: 1199px) {
+  .closing__card { --card-pad: 64px; aspect-ratio: auto; min-height: 520px; }
   .closing__content { grid-column: 1 / span 7; }
   .closing__figure { grid-column: 8 / -1; }
+  .closing__title { font-size: 52px; }
 }
 @media (max-width: 809px) {
-  .closing__inner { grid-template-rows: auto auto; row-gap: var(--space-8); padding-block: var(--space-9); }
-  .closing__figure { grid-column: 3 / span 8; grid-row: 1; }
+  .closing__card { --card-pad: 28px; grid-template-rows: auto auto; row-gap: var(--space-6); padding-block: var(--space-9); }
+  .closing__figure { grid-column: 3 / span 8; grid-row: 1; height: 220px; }
   .closing__content { grid-column: 1 / -1; grid-row: 2; }
+  .closing__title { font-size: 40px; }
 }

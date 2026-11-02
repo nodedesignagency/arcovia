@@ -245,10 +245,21 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   box-shadow: var(--shadow-btn);
 }
 .btn--quiet { background: var(--color-white); color: var(--color-ink); box-shadow: var(--shadow-card); }
+/* Light: the primary's mirror for dark or photographic grounds (the CTA's sunrise wall).
+   White with a faint cool sheen, a fine ring, a soft drop shadow and a light grey rim along the bottom. */
+.btn--light {
+  color: var(--color-ink);
+  background: linear-gradient(180deg, #ffffff 0%, #f3f3f2 100%);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.5),
+    0 6px 18px -6px rgba(0, 0, 0, 0.35),
+    inset 0 -2px 0 rgba(0, 0, 0, 0.06);
+}
 
 @media (hover: hover) {
   .btn--primary:hover { background: linear-gradient(180deg, rgba(207, 207, 207, 0.22) 0%, rgba(207, 207, 207, 0.15) 100%), var(--btn-dark); }
   .btn--quiet:hover { background: var(--color-well); }
+  .btn--light:hover { background: linear-gradient(180deg, #ffffff 0%, #ebebea 100%); }
 }
 .btn--primary:active { box-shadow: var(--shadow-btn-pressed); }
 

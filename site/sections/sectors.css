@@ -22,7 +22,8 @@
   --sectors-gap: 0.8em;        /* space either side of a separator */
   position: relative;
   isolation: isolate;
-  padding-block: var(--space-10);
+  /* Less below: the CTA box follows straight after, as in the user's design */
+  padding-block: var(--space-10) var(--space-8);
   background: var(--color-neutral);
   overflow-x: clip;
 }

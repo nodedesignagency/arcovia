@@ -30,6 +30,12 @@
    - opts.plain: a flat neutral material instead of concrete (no texture,
      grain, mottling or vignette), lit and carved exactly the same way. The
      sectors line uses it.
+   - opts.photo: a photograph mapped once over the whole slab (cover fit)
+     instead of tiled concrete, lit and carved the same way (the CTA wall).
+   - opts.beam: a crisp beam of sunlight instead of the soft band, sweeping
+     across and back (opts.period), with a faint glow either side, fine dust
+     turning in it (opts.dust) and a soft shade (opts.shade, a selector) where
+     text sits, so the beam dims there and the text keeps its contrast.
    - A sliding strip: carvings inside [data-carve-slide] are drawn once into
      their own strip texture (one loop of a marquee) and slid by setSlide(),
      wrapping round, with no repaint per frame. They are only shown inside
@@ -76,7 +82,16 @@
     "uniform float uSlideOn;",
     "uniform vec4 uSlideRect;",  // strip: left, top, loop width, height (css px, screen)
     "uniform vec4 uSlideView;",  // offset (px the strip has moved left), visible from x0 to x1 (css px), fade length at both ends
-    "uniform vec4 uSlideFold;",  // the loop is folded into rows (wide textures fail on some GPUs): rows, css px per row, overlap
+    "uniform vec4 uSlideFold;",
+    "uniform float uPhoto;",     // 1: the texture is a photo mapped once over the slab (cover), not tiled concrete
+    "uniform vec4 uPhotoMap;",   // photo: its size once it covers the slab (w, h, css px) and its offset (x, y)
+    "uniform vec4 uBeam;",       // beam: on, angle (radians, rising to the right), half width, edge softness (css px)
+    "uniform vec2 uBeamRange;",  // beam: where its centre travels, offsets from the slab's centre across the beam (css px)
+    "uniform vec2 uBeamFade;",   // beam: it fades in along its length, from nothing at x to full at y (css px from the centre, along the beam)
+    "uniform vec4 uShade;",      // a soft shaded box where text sits (x0, y0, x1, y1, css px): the beam dims there
+    "uniform vec2 uShadeP;",     // shade: feather (css px), strength (0–1)
+    "uniform float uDust;",      // dust turning in the beam
+    "uniform float uVignette;",  // darkening towards the edges  // the loop is folded into rows (wide textures fail on some GPUs): rows, css px per row, overlap
     "",
     "float hash(vec2 p){ p = fract(p * vec2(123.34, 456.21)); p += dot(p, p + 45.32); return fract(p.x * p.y); }",
     "float noise(vec2 p){ vec2 i = floor(p), f = fract(p); vec2 u = f*f*(3.0-2.0*f);",
@@ -144,11 +159,11 @@
     "  vec2 p = uOrigin + (sp - uShift) / uZoom;",                         // the same point on the slab
     "",
     "  // Concrete: seamless texture for pores and grain, fbm for large soft mottling",
-    "  vec2 tuv = p / uTexSize;",
-    "  float tpx = 1.0 / uTexSize;",
+    "  vec2 tuv = mix(p / uTexSize, (p + uPhotoMap.zw) / uPhotoMap.xy, uPhoto);",
+    "  vec2 tpx = mix(vec2(1.0 / uTexSize), 1.0 / uPhotoMap.xy, uPhoto);",
     "  float t0 = texture2D(uTex, tuv).r;",
-    "  float tx = texture2D(uTex, tuv + vec2(tpx, 0.0)).r;",
-    "  float ty = texture2D(uTex, tuv + vec2(0.0, tpx)).r;",
+    "  float tx = texture2D(uTex, tuv + vec2(tpx.x, 0.0)).r;",
+    "  float ty = texture2D(uTex, tuv + vec2(0.0, tpx.y)).r;",
     "  float mott = 0.955 + 0.09 * fbm(p / 520.0 + 3.7);",
     "  float inlay = texture2D(uHeight, uv).g;",
     "  float hc = H(uv);",
@@ -159,6 +174,7 @@
     "  float detail = 1.0 + (t0 / 0.765 - 1.0) * mix(0.62, 0.3, inlay);",
     "  float albedo = mix(0.865, 0.37, inlay) * detail * mix(mott, 1.0, inlay);",
     "  albedo = mix(albedo, uPlainAlbedo, uPlain);",
+    "  albedo = mix(albedo, t0 * uPlainAlbedo, uPhoto);",       // the photo is the wall's colour
     "",
     "  // Normal from the carve height map (slope per css px, so it looks the same at any pixel density)",
     "  vec2 e = uHTexel;",
@@ -177,10 +193,34 @@
     "  b += (fbm(p / 260.0 + uTime * 0.01) - 0.5) * 0.05;",
     "  float w = 0.2, soft = 0.17;",
     "  float band = smoothstep(uBand - w - soft, uBand - w + soft, b) * (1.0 - smoothstep(uBand + w - soft * 0.7, uBand + w + soft * 0.7, b));",
+    "  float glow = 0.0;",
+    "  if (uBeam.x > 0.5) {",
+    // A crisp beam, like sun through a narrow opening: direction vectors, not angles, across the slab
+    "    vec2 dir = vec2(cos(uBeam.y), -sin(uBeam.y));",
+    "    vec2 nrm = vec2(-dir.y, dir.x);",
+    "    float dp = dot(p - res * 0.5, nrm) - mix(uBeamRange.x, uBeamRange.y, uBand);",
+    "    dp += (fbm(p / 240.0 + vec2(uTime * 0.02, 0.0)) - 0.5) * 16.0;",   // edges waver a little, never ruler-straight
+    "    float ad = abs(dp);",
+    "    float along = smoothstep(uBeamFade.x, uBeamFade.y, dot(p - res * 0.5, dir));",   // light from a high opening on the right
+    "    band = (1.0 - smoothstep(uBeam.z - uBeam.w, uBeam.z + uBeam.w, ad)) * along;",
+    "    glow = (exp(-ad / (uBeam.z * 1.4)) * 0.2 + exp(-ad / (uBeam.z * 4.5)) * 0.07) * along;",
+    "  }",
+    "  float shade = 0.0;",
+    "  if (uShadeP.y > 0.0) {",
+    "    vec2 sd = max(max(uShade.xy - p, p - uShade.zw), 0.0);",
+    "    shade = (1.0 - smoothstep(0.0, uShadeP.x, length(sd))) * uShadeP.y;",
+    "    band *= 1.0 - shade;",
+    "    glow *= 1.0 - shade;",
+    "  }",
     "",
     "  // Short cast shadow inside carvings, on the side facing away from the sun",
     "  vec2 ld = normalize(Ls.xy) * e * uScale;",
     "  float occ = clamp((max(H(uv + ld * 1.2), H(uv + ld * 2.4)) - hc) * 1.4, 0.0, 1.0) * dm;",
+    // Marks are cut deep: under a low sun their walls throw a long shadow across the floor of the cut
+    "  if (isMark > 0.002) {",
+    "    float hl = max(max(H(uv + ld * 4.0), H(uv + ld * 7.0)), max(H(uv + ld * 10.5), H(uv + ld * 14.0)));",
+    "    occ = max(occ, clamp((hl - hc) * 1.2, 0.0, 1.0) * isMark * uMarkDepth);",
+    "  }",
     "",
     "  // Sky light from the upper left: always draws a dark rim and a light rim on every carving",
     "  vec3 La = normalize(vec3(-0.45, -0.6, 0.66));",
@@ -193,6 +233,7 @@
     "",
     "  float light = amb * ao * 0.9;",
     "  light += uSun * band * sunN * (1.0 - occ * 0.85);",
+    "  light += uSun * glow;",
     "",
     "  // Cursor: a dim, soft point light hovering above the surface",
     "  vec3 lc = vec3(uMouse - sp, 150.0);",
@@ -206,7 +247,24 @@
     "  float edge = max(dot(n, Ls) - Ls.z, 0.0) * (0.25 + band) * (1.0 - occ);",
     "",
     "  float c = albedo * light + (uSun * edge + uCursor * edgeC * 2.2) * mix(0.35, 0.7, inlay);",
-    "  c *= 1.0 - 0.07 * (1.0 - uPlain) * pow(length((uv - 0.5) * vec2(1.0, 1.2)), 2.0);",
+    "  c *= 1.0 - uVignette * pow(length((uv - 0.5) * vec2(1.0, 1.2)), 2.0);",
+    "  c *= 1.0 - shade * 0.22;",                                  // a little darker behind the text
+    // Dust turning in the beam: specks of light in the air, only where the beam is
+    "  if (uDust > 0.0 && band + glow > 0.01) {",
+    "    float ds = 0.0;",
+    "    for (int i = 0; i < 2; i++) {",
+    "      float fi = float(i);",
+    "      float sc = 23.0 + fi * 19.0;",
+    "      vec2 q = p / sc + vec2(uTime * (0.06 + fi * 0.05), -uTime * (0.09 + fi * 0.04));",
+    "      vec2 id = floor(q);",
+    "      vec2 o = 0.2 + 0.6 * hash2(id + fi * 13.0);",
+    "      float r = length(fract(q) - o) * sc;",
+    "      float on = step(0.9, hash(id * 1.7 + fi + 3.0));",
+    "      float tw = 0.5 + 0.5 * sin(uTime * (0.7 + fi * 0.5) + hash(id + 9.0) * 6.2831);",
+    "      ds += on * tw * (1.0 - smoothstep(0.2, 1.0 + fi * 0.5, r));",
+    "    }",
+    "    c += ds * band * uDust;",                                   // only inside the beam itself
+    "  }",
     // Marks are cut deeper than text: a slightly darker floor and a wide soft shadow under the
     // upper-left wall. Applied after the light, so the recess still reads while the sun passes over it.
     "  if (isMark > 0.002) {",
@@ -390,7 +448,15 @@
       staticBand: opts.staticBand != null ? opts.staticBand : 0.6,
       burnWarmth: opts.burnWarmth != null ? opts.burnWarmth : 1,     // 1: fire colours, 0: white heat only
       plain: opts.plain ? 1 : 0,                                     // flat neutral material instead of concrete
-      albedo: opts.albedo != null ? opts.albedo : 1.21               // its brightness (1.21 with no sun ≈ #efefee)
+      photo: opts.photo ? 1 : 0,                                     // the texture is a photo mapped once over the slab
+      albedo: opts.albedo != null ? opts.albedo : (opts.photo ? 1 : 1.21), // plain: its brightness (1.21 ≈ #efefee); photo: a gain
+      vignette: opts.vignette != null ? opts.vignette : (opts.plain ? 0 : 0.07),
+      beam: opts.beam || null,                                       // { angle (deg), width, soft, from, to } css px
+      dust: opts.dust || 0,
+      shade: opts.shade || null,                                     // selector of the text box the beam should dim behind
+      shadeStrength: opts.shadeStrength != null ? opts.shadeStrength : 0.75,
+      shadeFeather: opts.shadeFeather != null ? opts.shadeFeather : 90,
+      smooth: !!opts.smooth                                          // render every frame (a moving beam), not 30 fps when idle
     };
     this.mouse = { x: -9999, y: -9999, tx: -9999, ty: -9999, amt: 0, tamt: 0 };
     this.view = { ox: 0, oy: 0, tx: 0, ty: 0, s: 1, burn: null, shatter: null, drill: null };
@@ -423,7 +489,7 @@
     gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
 
     this.u = {};
-    ["uRes", "uScale", "uTime", "uBand", "uMouse", "uMouseAmt", "uSun", "uCursor", "uTex", "uTexSize", "uHeight", "uHTexel", "uOrigin", "uShift", "uZoom", "uBurn", "uBurnP", "uBreak", "uBreakP", "uDrill", "uDrillP", "uDrillQ", "uMarkDepth", "uPlain", "uPlainAlbedo", "uSlide", "uSlideOn", "uSlideRect", "uSlideView", "uSlideFold"].forEach(function (n) {
+    ["uRes", "uScale", "uTime", "uBand", "uMouse", "uMouseAmt", "uSun", "uCursor", "uTex", "uTexSize", "uHeight", "uHTexel", "uOrigin", "uShift", "uZoom", "uBurn", "uBurnP", "uBreak", "uBreakP", "uDrill", "uDrillP", "uDrillQ", "uMarkDepth", "uPlain", "uPlainAlbedo", "uSlide", "uSlideOn", "uSlideRect", "uSlideView", "uSlideFold", "uPhoto", "uPhotoMap", "uBeam", "uBeamRange", "uShade", "uShadeP", "uDust", "uVignette", "uBeamFade"].forEach(function (n) {
       this.u[n] = gl.getUniformLocation(prog, n);
     }, this);
 
@@ -481,20 +547,28 @@
     var gl = this.gl, src = this.opts.texture;
     // From disk, browsers refuse to hand local images to WebGL; use the inlined copy instead
     var needInline = location.protocol === "file:";
-    var ready = needInline ? loadScript(src.replace(/\.jpg$/, "-texture.js")).then(function () { return window.ARCOVIA_CONCRETE_DATA; }) : Promise.resolve(src);
+    var self = this;
+    var ready = needInline ? loadScript(src.replace(/\.jpg$/, "-texture.js")).then(function () {
+      return (window.ARCOVIA_TEXTURES || {})[src] || window.ARCOVIA_CONCRETE_DATA;
+    }) : Promise.resolve(src);
     return ready.then(function (url) {
       return new Promise(function (resolve, reject) {
         var img = new Image();
         img.onload = function () {
+          self.texW = img.naturalWidth;
+          self.texH = img.naturalHeight;
           var tex = gl.createTexture();
           gl.activeTexture(gl.TEXTURE0);
           gl.bindTexture(gl.TEXTURE_2D, tex);
           gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
-          gl.generateMipmap(gl.TEXTURE_2D);
-          gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+          // Tiled concrete (power-of-two): mipmaps and repeat. A photo of any size: shown near its
+          // own size, so plain linear filtering and clamped edges (WebGL 1 allows that for any size).
+          var pot = !(img.naturalWidth & (img.naturalWidth - 1)) && !(img.naturalHeight & (img.naturalHeight - 1));
+          if (pot) gl.generateMipmap(gl.TEXTURE_2D);
+          gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, pot ? gl.LINEAR_MIPMAP_LINEAR : gl.LINEAR);
           gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-          gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
-          gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
+          gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, pot ? gl.REPEAT : gl.CLAMP_TO_EDGE);
+          gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, pot ? gl.REPEAT : gl.CLAMP_TO_EDGE);
           resolve();
         };
         img.onerror = reject;
@@ -520,6 +594,11 @@
     this.carves = this.collect();
     this.slide = this.collectSlide();
     if (this.slide) this.paintSlide();
+    var sh = this.opts.shade && this.host.querySelector(this.opts.shade);
+    if (sh) {
+      var hr = this.host.getBoundingClientRect(), r = sh.getBoundingClientRect();
+      this.shadeBox = [r.left - hr.left, r.top - hr.top, r.right - hr.left, r.bottom - hr.top];
+    } else this.shadeBox = null;
     this.heightDirty = true;
     this.needsFrame = true;
   };
@@ -830,7 +909,7 @@
 
     // The sun moves slowly; without the cursor, 30 fps is plenty
     var idle = m.amt < 0.01 && m.tamt === 0;
-    if (!idle || now - this.last > 32 || this.needsFrame) {
+    if (!idle || this.opts.smooth || now - this.last > 32 || this.needsFrame) {
       this.render((now - this.t0) / 1000, false);
       this.last = now;
     }
@@ -840,7 +919,9 @@
   ConcreteSurface.prototype.render = function (t, still) {
     var gl = this.gl, u = this.u, o = this.opts, v = this.view;
     if (this.heightDirty) this.paintHeight();
-    var band = still && this.reduced.matches ? o.staticBand : 0.55 + 0.45 * Math.sin((t / o.period) * Math.PI * 2 + 0.2);
+    var band = still && this.reduced.matches ? o.staticBand
+      : o.beam ? 0.5 - 0.5 * Math.cos((t / o.period) * Math.PI * 2)       // across and back, easing at both ends
+      : 0.55 + 0.45 * Math.sin((t / o.period) * Math.PI * 2 + 0.2);
     gl.uniform2f(u.uRes, this.canvas.width, this.canvas.height);
     gl.uniform1f(u.uScale, this.dpr);
     gl.uniform1f(u.uTime, t);
@@ -875,6 +956,22 @@
     gl.uniform4f(u.uSlideRect, sl ? sl.x : 0, sl ? sl.y : 0, sl ? sl.w : 1, sl ? sl.h : 1);
     gl.uniform4f(u.uSlideView, sl ? this.slideOff % sl.w : 0, sl ? sl.x0 : 0, sl ? sl.x1 : 0, sl ? sl.fade : 1);
     gl.uniform4f(u.uSlideFold, sl && sl.rows ? sl.rows : 1, sl && sl.seg ? sl.seg : 1, sl && sl.m != null ? sl.m : 0, 0);
+    gl.uniform1f(u.uPhoto, o.photo);
+    if (o.photo && this.texW) {
+      // cover: the photo fills the slab, centred, cropping the longer side
+      var cs = Math.max(this.w / this.texW, this.h / this.texH);
+      var cw = this.texW * cs, ch = this.texH * cs;
+      gl.uniform4f(u.uPhotoMap, cw, ch, (cw - this.w) / 2, (ch - this.h) / 2);
+    } else gl.uniform4f(u.uPhotoMap, 1, 1, 0, 0);
+    var bm = o.beam;
+    gl.uniform4f(u.uBeam, bm ? 1 : 0, bm ? (bm.angle || 22) * Math.PI / 180 : 0, bm ? bm.width || 90 : 1, bm ? bm.soft || 24 : 1);
+    gl.uniform2f(u.uBeamRange, bm ? bm.from || -300 : 0, bm ? bm.to || 300 : 0);
+    gl.uniform2f(u.uBeamFade, bm && bm.fadeFrom != null ? bm.fadeFrom : -1e5, bm && bm.fadeTo != null ? bm.fadeTo : -1e5 + 1);
+    var sb = this.shadeBox;
+    gl.uniform4f(u.uShade, sb ? sb[0] : 0, sb ? sb[1] : 0, sb ? sb[2] : 0, sb ? sb[3] : 0);
+    gl.uniform2f(u.uShadeP, o.shadeFeather, sb ? o.shadeStrength : 0);
+    gl.uniform1f(u.uDust, o.dust);
+    gl.uniform1f(u.uVignette, o.vignette);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
     this.needsFrame = false;
   };
