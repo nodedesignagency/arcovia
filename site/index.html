@@ -17,6 +17,7 @@
   <link rel="stylesheet" href="sections/hero.css">
   <link rel="stylesheet" href="sections/statement.css">
   <link rel="stylesheet" href="sections/data.css">
+  <link rel="stylesheet" href="sections/selected-work.css">
   <link rel="stylesheet" href="sections/team.css">
   <link rel="stylesheet" href="sections/why-founders.css">
   <link rel="stylesheet" href="sections/map.css">
@@ -251,6 +252,102 @@
       </div>
     </section>
     <!-- SECTION:data END -->
+
+    <!-- SECTION:selected-work START · styles: sections/selected-work.css · scripts: books.js
+         Home, block 6 of the brief: three cases as books on black, each linking to its case
+         on the Track Record page. After the template's "Before vs After" (the outer words part
+         to either side) and the user's book video: "Selected" and "work" part left and right
+         while three book spines rise into the gap between them; a little more scroll turns all
+         three at once to face the front, and the two words move out to the corners as the
+         heading. Hover lifts a book. Without JS, with reduced motion or below 1200px it is the
+         settled layout: the heading split across the top, the three covers, the link.
+         Copy from the brief (section 6); figures from the deck. -->
+    <section class="work" id="selected-work" data-books data-header-theme="dark" aria-labelledby="work-title">
+      <div class="work__stage">
+        <div class="work__inner container">
+          <h2 class="work__title" id="work-title" aria-label="Selected work"><span class="work__word">Selected</span> <span class="work__word">work</span></h2>
+
+          <!-- Component: book (figure, title, line; spine for the closed state) -->
+          <ul class="work__books">
+            <li class="book book--concrete">
+              <a class="book__link" href="track-record.html#brazil-telecom-tower-raise">
+                <div class="book__lift">
+                  <div class="book__body">
+                    <div class="book__spine" aria-hidden="true">
+                      <p class="book__spine-text"><span class="book__spine-figure">$63M</span>Brazil Telecom Tower Raise</p>
+                      <svg class="book__spine-mark" viewBox="0 0 72 57"><use href="#a-mark"/></svg>
+                      <span class="book__hit"></span>
+                    </div>
+                    <div class="book__cover">
+                      <div class="book__top" aria-hidden="true">
+                        <svg class="book__mark" viewBox="0 0 72 57"><use href="#a-mark"/></svg>
+                        <span class="book__index">01</span>
+                      </div>
+                      <p class="book__figure">$63M</p>
+                      <h3 class="book__name">Brazil Telecom Tower Raise</h3>
+                      <p class="book__line">Equity and debt for a 1,360+ tower rollout.</p>
+                      <svg class="book__arrow" aria-hidden="true"><use href="#icon-arrow"/></svg>
+                      <span class="book__hit" aria-hidden="true"></span>
+                    </div>
+                  </div>
+                </div>
+              </a>
+            </li>
+            <li class="book book--charcoal">
+              <a class="book__link" href="track-record.html#mandela-station">
+                <div class="book__lift">
+                  <div class="book__body">
+                    <div class="book__spine" aria-hidden="true">
+                      <p class="book__spine-text"><span class="book__spine-figure">$54M+</span>Mandela Station</p>
+                      <svg class="book__spine-mark" viewBox="0 0 72 57"><use href="#a-mark"/></svg>
+                      <span class="book__hit"></span>
+                    </div>
+                    <div class="book__cover">
+                      <div class="book__top" aria-hidden="true">
+                        <svg class="book__mark" viewBox="0 0 72 57"><use href="#a-mark"/></svg>
+                        <span class="book__index">02</span>
+                      </div>
+                      <p class="book__figure">$54M+</p>
+                      <h3 class="book__name">Mandela Station</h3>
+                      <p class="book__line">Debt and equity for a multi-asset portfolio, now a long-term capital relationship.</p>
+                      <svg class="book__arrow" aria-hidden="true"><use href="#icon-arrow"/></svg>
+                      <span class="book__hit" aria-hidden="true"></span>
+                    </div>
+                  </div>
+                </div>
+              </a>
+            </li>
+            <li class="book book--paper">
+              <a class="book__link" href="track-record.html#valr-energy-growth-round">
+                <div class="book__lift">
+                  <div class="book__body">
+                    <div class="book__spine" aria-hidden="true">
+                      <p class="book__spine-text"><span class="book__spine-figure">$35M</span>VALR Energy Growth Round</p>
+                      <svg class="book__spine-mark" viewBox="0 0 72 57"><use href="#a-mark"/></svg>
+                      <span class="book__hit"></span>
+                    </div>
+                    <div class="book__cover">
+                      <div class="book__top" aria-hidden="true">
+                        <svg class="book__mark" viewBox="0 0 72 57"><use href="#a-mark"/></svg>
+                        <span class="book__index">03</span>
+                      </div>
+                      <p class="book__figure">$35M</p>
+                      <h3 class="book__name">VALR Energy Growth Round</h3>
+                      <p class="book__line">Growth capital to launch into a 50,000-store network.</p>
+                      <svg class="book__arrow" aria-hidden="true"><use href="#icon-arrow"/></svg>
+                      <span class="book__hit" aria-hidden="true"></span>
+                    </div>
+                  </div>
+                </div>
+              </a>
+            </li>
+          </ul>
+
+          <a class="work__more" href="track-record.html">Full track record<svg class="work__arrow" aria-hidden="true"><use href="#icon-arrow"/></svg></a>
+        </div>
+      </div>
+    </section>
+    <!-- SECTION:selected-work END -->
 
     <!-- SECTION:team START · styles: sections/team.css · scripts: team.js
          Home: the people, after a reference the user sent. Names down the left,
@@ -511,6 +608,7 @@
   <script src="main.js"></script>
   <script src="zoom.js"></script>
   <script src="stack.js"></script>
+  <script src="books.js"></script>
   <script src="team.js"></script>
   <script src="founders.js"></script>
   <script src="assets/land-dots.js"></script>
