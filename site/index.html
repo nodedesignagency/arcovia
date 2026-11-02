@@ -633,29 +633,36 @@
 
   </main>
 
-  <!-- SECTION:footer START · styles: sections/footer.css · scripts: main.js (version switch, clocks)
-       Component: site-footer, two versions on one markup (main.js sets data-variant):
-       A "Contents page" (default): the back page of a book, after the deck's contents slide
-       and the full-screen menu. The five pages set large and numbered; the bracket chip
-       where a logo would be; the two offices side by side with their live local time; ©,
-       the legal pages and LinkedIn small.
-       B "Two clocks" (?footer=b): two offices, one firm. The pages in one small line; the
-       offices' local time set large, side by side, with the addresses under them.
-       No logo or big name in either (the CTA above carries the lockup). The legal pages
-       are one link each, so one or two of them fit without changes. -->
-  <footer class="site-footer" data-footer aria-labelledby="footer-title">
+  <!-- SECTION:footer START · styles: sections/footer.css
+       Component: site-footer. After the user's references: defiant.vc's footer (the main
+       inspiration, not a copy) and their own Native Foreign footer. The official lockup at a
+       moderate size top left (no giant wordmark: the CTA above carries the big one); two
+       columns of links set large under bracket-chip labels; the two offices side by side over
+       hairlines with their live local time (main.js keeps every [data-clock] live); then ©
+       on the left and the legal pages on the right. The legal pages are one link each, so
+       one or two of them fit without changes. -->
+  <footer class="site-footer" aria-labelledby="footer-title">
     <h2 class="visually-hidden" id="footer-title">Site footer</h2>
     <div class="site-footer__inner container">
-      <p class="chip site-footer__chip">Independent capital markets advisory</p>
+      <a class="site-footer__logo" href="index.html" aria-label="Arcovia, home">
+        <svg viewBox="0 0 72 72" aria-hidden="true"><use href="#lockup"/></svg>
+      </a>
 
-      <nav class="site-footer__nav" aria-label="Footer">
-        <ol class="site-footer__pages">
-          <li class="site-footer__page"><a class="site-footer__link" href="services.html"><span class="site-footer__num" aria-hidden="true">1.</span>What We Do</a></li>
-          <li class="site-footer__page"><a class="site-footer__link" href="track-record.html"><span class="site-footer__num" aria-hidden="true">2.</span>Track Record</a></li>
-          <li class="site-footer__page"><a class="site-footer__link" href="team.html"><span class="site-footer__num" aria-hidden="true">3.</span>Team</a></li>
-          <li class="site-footer__page"><a class="site-footer__link" href="about.html"><span class="site-footer__num" aria-hidden="true">4.</span>About</a></li>
-          <li class="site-footer__page"><a class="site-footer__link" href="contact.html"><span class="site-footer__num" aria-hidden="true">5.</span>Contact</a></li>
-        </ol>
+      <nav class="site-footer__col site-footer__col--site" aria-labelledby="footer-site">
+        <p class="chip site-footer__label" id="footer-site">Site map</p>
+        <ul class="site-footer__links">
+          <li><a class="site-footer__link" href="services.html">What We Do</a></li>
+          <li><a class="site-footer__link" href="track-record.html">Track Record</a></li>
+          <li><a class="site-footer__link" href="team.html">Team</a></li>
+        </ul>
+      </nav>
+      <nav class="site-footer__col site-footer__col--company" aria-labelledby="footer-company">
+        <p class="chip site-footer__label" id="footer-company">Company</p>
+        <ul class="site-footer__links">
+          <li><a class="site-footer__link" href="about.html">About</a></li>
+          <li><a class="site-footer__link" href="contact.html">Contact</a></li>
+          <li><a class="site-footer__link" href="#" data-todo="LinkedIn company page URL [TO CONFIRM]">LinkedIn<svg class="site-footer__out" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 11 11 5M6 5h5v5"/></svg></a></li>
+        </ul>
       </nav>
 
       <div class="site-footer__offices">
@@ -672,11 +679,10 @@
       </div>
 
       <div class="site-footer__bar">
-        <p class="site-footer__copy">© 2026 Arcovia</p>
-        <ul class="site-footer__small">
-          <li><a class="site-footer__small-link" href="privacy.html">Privacy Policy</a></li>
-          <li><a class="site-footer__small-link" href="terms.html">Terms</a></li>
-          <li><a class="site-footer__small-link" href="#" data-todo="LinkedIn company page URL [TO CONFIRM]">LinkedIn<svg class="site-footer__out" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 11 11 5M6 5h5v5"/></svg></a></li>
+        <p class="site-footer__copy">© 2026 Arcovia. All rights reserved.</p>
+        <ul class="site-footer__legal">
+          <li><a class="site-footer__legal-link" href="privacy.html">Privacy Policy</a></li>
+          <li><a class="site-footer__legal-link" href="terms.html">Terms</a></li>
         </ul>
       </div>
     </div>

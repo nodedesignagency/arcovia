@@ -1,19 +1,15 @@
 /* ==========================================================================
    SECTION: footer — every page (component: site-footer)
-   Short and simple, after the user's references (Defiant above all, but not
-   a copy), with no logo or big name: the CTA above carries the lockup.
-   Two versions on one markup; main.js sets data-variant:
-   - A "Contents page" (default): the back page of a book, after the deck's
-     contents slide and the full-screen menu. The five pages set large and
-     numbered in pale (the number turns ink on hover), the bracket chip where
-     a logo would be, the two offices side by side over hairlines with their
-     live local time, then ©, the legal pages and LinkedIn, small.
-       chip 1-4 · pages 6-8 and 9-12 · offices 6-8 and 9-12 · © 1-4 · small links 6, 9, 12
-   - B "Two clocks" (?footer=b): two offices, one firm. The pages in one small
-     line; the offices' local time set large, side by side over hairlines,
-     with the addresses under them; the same bar.
-       pages 1-12 · offices 1-6 and 7-12 · © 1-4 · small links 7, 10, 12
-   On the neutral ground, straight after the CTA. A hairline across the top.
+   After the user's references: defiant.vc's footer (the main inspiration,
+   not a copy) and their own Native Foreign footer. On the neutral ground
+   straight after the CTA, a hairline across the top.
+     logo 1-2 (the official lockup at a moderate size; no giant wordmark,
+              the CTA above carries the big one)
+     Site map 6-8 · Company 9-12: bracket-chip labels, links set large,
+              the masthead's short dash drawing in on hover
+     offices 6-8 · 9-12: side by side over hairlines, city, live local
+              time (main.js), address
+     bar: © on the left, the legal pages on the right, over a hairline
    ========================================================================== */
 
 .site-footer {
@@ -26,58 +22,71 @@
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
   column-gap: var(--grid-gap);
-  padding-top: var(--space-7);
-  padding-bottom: var(--space-6);
+  padding-top: var(--space-8);
   /* a hairline across the top, the width of the grid */
   background: linear-gradient(var(--ft-line), var(--ft-line)) var(--gutter) 0 / calc(100% - 2 * var(--gutter)) 1px no-repeat;
 }
 
-/* ---------- A: Contents page (default) ---------- */
-.site-footer__chip {
-  grid-column: 1 / span 4;
+/* ---------- The logo: the official lockup, moderate ---------- */
+.site-footer__logo {
+  grid-column: 1 / span 3;
   grid-row: 1;
   align-self: start;
-  margin-top: 14px;         /* level with the first page's capitals */
-}
-
-.site-footer__nav {
-  grid-column: 6 / -1;
-  grid-row: 1;
-  display: grid;
-  grid-template-columns: subgrid;
-}
-.site-footer__pages {
-  grid-column: 1 / -1;
-  display: grid;
-  grid-template-columns: subgrid;
-}
-/* 1–3 down the first column (6–8), 4–5 down the second (9–12) */
-.site-footer__page:nth-child(-n+3) { grid-column: 1 / span 3; }
-.site-footer__page:nth-child(n+4) { grid-column: 4 / span 4; }
-.site-footer__page:nth-child(1), .site-footer__page:nth-child(4) { grid-row: 1; }
-.site-footer__page:nth-child(2), .site-footer__page:nth-child(5) { grid-row: 2; }
-.site-footer__page:nth-child(3) { grid-row: 3; }
-
-.site-footer__link {
-  display: inline-flex;
-  align-items: baseline;
-  font-size: 36px;
-  font-weight: var(--weight-medium);
-  line-height: 1.3;
-  letter-spacing: -0.02em;
+  justify-self: start;
+  width: 132px;
+  margin-top: 6px;          /* its top level with the labels' capitals */
   color: var(--color-ink);
 }
-/* Pale numbers, as in the full-screen menu (the deck's contents slide) */
-.site-footer__num {
-  min-width: 1.25em;
-  color: rgba(43, 43, 43, 0.3);
-  transition: color var(--dur-base) var(--ease-out);
-}
-@media (hover: hover) {
-  .site-footer__link:hover .site-footer__num { color: var(--color-ink); }
+.site-footer__logo svg { width: 100%; height: auto; fill: currentColor; }
+
+/* ---------- Link columns ---------- */
+.site-footer__col--site { grid-column: 6 / span 3; grid-row: 1; }
+.site-footer__col--company { grid-column: 9 / span 4; grid-row: 1; }
+
+/* Bracket-chip labels (the shared .chip) */
+.site-footer__label {
+  display: block;
+  margin-bottom: var(--space-5);
+  font-size: 12px;
+  color: var(--color-text-muted);
 }
 
-/* The offices, side by side over hairlines, under the pages */
+.site-footer__links { display: grid; }
+.site-footer__link {
+  display: inline-flex;
+  align-items: center;
+  font-size: 32px;
+  font-weight: var(--weight-medium);
+  line-height: 1.34;
+  letter-spacing: -0.018em;
+  color: var(--color-ink);
+}
+/* The masthead's short dash, drawing in on hover */
+.site-footer__link::before {
+  content: "";
+  width: 0;
+  height: 1.5px;
+  margin-right: 0;
+  background: currentColor;
+  transition: width var(--dur-base) var(--ease-out), margin var(--dur-base) var(--ease-out);
+}
+@media (hover: hover) {
+  .site-footer__link:hover::before { width: 16px; margin-right: 10px; }
+}
+/* Leaves the site */
+.site-footer__out {
+  width: 16px;
+  height: 16px;
+  margin-left: 8px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  color: var(--color-text-muted);
+}
+
+/* ---------- Offices, side by side over hairlines ---------- */
 .site-footer__offices {
   grid-column: 6 / -1;
   grid-row: 2;
@@ -102,7 +111,7 @@
   line-height: 22px;
   color: var(--color-ink);
 }
-/* Live local time (main.js), as in the masthead's clock */
+/* Live local time, as in the masthead's clock */
 .site-footer__time {
   font-size: 13px;
   font-weight: var(--weight-semibold);
@@ -120,139 +129,40 @@
   color: var(--color-text-muted);
 }
 
-/* Bar: ©, the legal pages and LinkedIn, small, on the same columns */
+/* ---------- Bar: © left, legal right ---------- */
 .site-footer__bar {
   grid-column: 1 / -1;
   grid-row: 3;
-  display: grid;
-  grid-template-columns: subgrid;
-  align-items: baseline;
-  margin-top: var(--space-9);
-  font-size: 13px;
-  line-height: 16px;
-  color: var(--color-text-muted);
-}
-.site-footer__copy {
-  grid-column: 1 / span 4;
-  font-weight: var(--weight-medium);
-  color: var(--color-ink);
-}
-.site-footer__small {
-  grid-column: 6 / -1;
-  display: grid;
-  grid-template-columns: subgrid;
-}
-.site-footer__small li:nth-child(1) { grid-column: 1 / span 3; }
-.site-footer__small li:nth-child(2) { grid-column: 4 / span 3; }
-.site-footer__small li:nth-child(3) { grid-column: 7; justify-self: end; }
-.site-footer__small-link {
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  transition: color var(--dur-fast) var(--ease-out);
-}
-@media (hover: hover) {
-  .site-footer__small-link:hover { color: var(--color-ink); }
-}
-/* Leaves the site */
-.site-footer__out {
-  width: 11px;
-  height: 11px;
-  margin-left: 5px;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.5;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-/* ---------- B: Two clocks (?footer=b) ---------- */
-.site-footer[data-variant="b"] .site-footer__chip { display: none; }
-
-/* The pages in one small line */
-.site-footer[data-variant="b"] .site-footer__nav { grid-column: 1 / -1; display: block; }
-.site-footer[data-variant="b"] .site-footer__pages { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-6); }
-.site-footer[data-variant="b"] .site-footer__page { grid-column: auto; grid-row: auto; }
-.site-footer[data-variant="b"] .site-footer__link { font-size: 16px; letter-spacing: 0; line-height: 24px; }
-.site-footer[data-variant="b"] .site-footer__num { display: none; }
-/* the masthead's dash draws in on hover */
-.site-footer[data-variant="b"] .site-footer__link::before {
-  content: "";
-  align-self: center;
-  width: 0;
-  height: 1px;
-  margin-right: 0;
-  background: currentColor;
-  transition: width var(--dur-base) var(--ease-out), margin var(--dur-base) var(--ease-out);
-}
-@media (hover: hover) {
-  .site-footer[data-variant="b"] .site-footer__link:hover::before { width: 12px; margin-right: 8px; }
-}
-
-/* The offices: their time set large, side by side */
-.site-footer[data-variant="b"] .site-footer__offices { grid-column: 1 / -1; margin-top: var(--space-8); }
-.site-footer[data-variant="b"] .site-footer__office {
-  grid-template-columns: 1fr;
-  row-gap: 0;
-  padding-top: var(--space-4);
-}
-.site-footer[data-variant="b"] .site-footer__office:nth-child(1) { grid-column: 1 / span 6; }
-.site-footer[data-variant="b"] .site-footer__office:nth-child(2) { grid-column: 7 / span 6; }
-.site-footer[data-variant="b"] .site-footer__city {
-  font-size: 12px;
-  letter-spacing: 0.06em;
-  line-height: 16px;
-  text-transform: uppercase;
+  justify-content: space-between;
+  gap: var(--space-5);
+  height: 72px;
+  margin-top: var(--space-9);
+  border-top: 1px solid var(--ft-line);
+  font-size: 14px;
+  line-height: 20px;
   color: var(--color-text-muted);
 }
-.site-footer[data-variant="b"] .site-footer__time {
-  margin-top: var(--space-5);
-  font-size: 96px;
-  font-weight: var(--weight-book);
-  line-height: 1;
-  letter-spacing: -0.04em;
+.site-footer__legal { display: flex; gap: var(--space-6); }
+.site-footer__legal-link { transition: color var(--dur-fast) var(--ease-out); }
+@media (hover: hover) {
+  .site-footer__legal-link:hover { color: var(--color-ink); }
 }
-/* AM / PM and the zone, small beside the hour (a flex row, so the spaces between them don't take the hour's size) */
-.site-footer[data-variant="b"] .site-footer__time [data-clock] {
-  display: inline-flex;
-  align-items: baseline;
-  column-gap: 8px;
-}
-.site-footer[data-variant="b"] .site-footer__time .office__period { margin-left: 4px; }
-.site-footer[data-variant="b"] .site-footer__time .office__period,
-.site-footer[data-variant="b"] .site-footer__time .office__tz {
-  font-size: 20px;
-  font-weight: var(--weight-medium);
-  letter-spacing: 0.02em;
-  color: var(--color-text-muted);
-}
-.site-footer[data-variant="b"] .site-footer__address { margin-top: var(--space-5); font-size: 16px; line-height: 24px; }
-
-.site-footer[data-variant="b"] .site-footer__bar { margin-top: var(--space-8); }
-.site-footer[data-variant="b"] .site-footer__small { grid-column: 7 / -1; }
-.site-footer[data-variant="b"] .site-footer__small li:nth-child(1) { grid-column: 1 / span 3; }
-.site-footer[data-variant="b"] .site-footer__small li:nth-child(2) { grid-column: 4 / span 2; }
-.site-footer[data-variant="b"] .site-footer__small li:nth-child(3) { grid-column: 6; justify-self: end; }
 
 /* ---------- Tablet and phone (to refine once desktop is approved) ---------- */
 @media (max-width: 1199px) {
-  .site-footer__chip { grid-column: 1 / -1; margin-bottom: var(--space-6); }
-  .site-footer__nav, .site-footer__offices { grid-column: 1 / -1; }
-  .site-footer__nav { grid-row: 2; }
-  .site-footer__offices { grid-row: 3; }
-  .site-footer__bar { grid-row: 4; }
-  .site-footer__page:nth-child(-n+3) { grid-column: 1 / span 6; }
-  .site-footer__page:nth-child(n+4) { grid-column: 7 / span 6; }
+  .site-footer__logo { grid-column: 1 / -1; margin-bottom: var(--space-8); }
+  .site-footer__col--site { grid-column: 1 / span 6; grid-row: 2; }
+  .site-footer__col--company { grid-column: 7 / span 6; grid-row: 2; }
+  .site-footer__offices { grid-column: 1 / -1; grid-row: 3; }
   .site-footer__office:nth-child(1) { grid-column: 1 / span 6; }
   .site-footer__office:nth-child(2) { grid-column: 7 / span 6; }
-  .site-footer__copy { grid-column: 1 / -1; margin-bottom: var(--space-4); }
-  .site-footer__small { grid-column: 1 / -1; display: flex; gap: var(--space-6); }
-  .site-footer[data-variant="b"] .site-footer__time { font-size: 64px; }
+  .site-footer__bar { grid-row: 4; }
 }
 @media (max-width: 809px) {
-  .site-footer__link { font-size: 28px; }
-  .site-footer__page:nth-child(n) { grid-column: 1 / -1; grid-row: auto; }
+  .site-footer__link { font-size: 26px; }
   .site-footer__office:nth-child(n) { grid-column: 1 / -1; }
   .site-footer__offices { row-gap: var(--space-6); }
-  .site-footer[data-variant="b"] .site-footer__office:nth-child(n) { grid-column: 1 / -1; }
-  .site-footer[data-variant="b"] .site-footer__time { font-size: 56px; }
+  .site-footer__bar { flex-direction: column; align-items: flex-start; justify-content: center; height: auto; padding-block: var(--space-5); }
 }
