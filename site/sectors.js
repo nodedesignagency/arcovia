@@ -4,7 +4,8 @@
    steady pace. Under the pointer it slows to a stop, so a sector can be
    read; while the page scrolls it picks up a little, then settles back.
    Pauses off-screen and in hidden tabs. With reduced motion it stands still.
-   Review switch: ?sectors=carved shows the debossed version.
+   Review switch: ?sectors=band shows the charcoal band instead of the
+   debossed line.
    Built to become a Framer code component (props: speed, variant).
    ========================================================================== */
 (function () {
@@ -13,11 +14,11 @@
   var root = document.querySelector("[data-sectors]");
   if (!root) return;
 
-  var variant = (location.search.match(/[?&]sectors=(\w+)/) || [])[1] || root.getAttribute("data-variant") || "band";
+  var variant = (location.search.match(/[?&]sectors=(\w+)/) || [])[1] || root.getAttribute("data-variant") || "carved";
   root.setAttribute("data-variant", variant);
   // Only the charcoal band is dark under the header
   var band = root.querySelector(".sectors__band");
-  if (variant !== "band" && band) band.removeAttribute("data-header-theme");
+  if (variant === "band" && band) band.setAttribute("data-header-theme", "dark");
 
   var viewport = root.querySelector(".sectors__viewport");
   var track = root.querySelector("[data-sectors-track]");

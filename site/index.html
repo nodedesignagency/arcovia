@@ -56,6 +56,25 @@
       <feComposite in2="lightMask" operator="in" result="light"/>
       <feMerge><feMergeNode in="floor"/><feMergeNode in="shade"/><feMergeNode in="light"/></feMerge>
     </filter>
+    <!-- Soft deboss for flat light grounds (the sectors line, after the user's Trove reference):
+         a slightly deeper floor, a wide soft shadow under the upper-left wall and a crisp white
+         lip along the lower-right wall, so the type reads as pressed in, clean and quiet. -->
+    <filter id="deboss-soft" x="-2%" y="-12%" width="104%" height="124%" color-interpolation-filters="sRGB">
+      <feFlood flood-color="#000" flood-opacity="0.12"/>
+      <feComposite in2="SourceAlpha" operator="in" result="floor"/>
+      <feComponentTransfer in="SourceAlpha" result="outside"><feFuncA type="table" tableValues="1 0"/></feComponentTransfer>
+      <feOffset in="outside" dx="1.4" dy="2.2"/>
+      <feGaussianBlur stdDeviation="2.2"/>
+      <feComposite in2="SourceAlpha" operator="in" result="shadeMask"/>
+      <feFlood flood-color="#000" flood-opacity="0.42"/>
+      <feComposite in2="shadeMask" operator="in" result="shade"/>
+      <feOffset in="outside" dx="-0.9" dy="-1.3"/>
+      <feGaussianBlur stdDeviation="0.35"/>
+      <feComposite in2="SourceAlpha" operator="in" result="lightMask"/>
+      <feFlood flood-color="#fff" flood-opacity="1"/>
+      <feComposite in2="lightMask" operator="in" result="light"/>
+      <feMerge><feMergeNode in="floor"/><feMergeNode in="shade"/><feMergeNode in="light"/></feMerge>
+    </filter>
     <symbol id="icon-linkedin" viewBox="0 0 24 24"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.13 1.45-2.13 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28ZM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13ZM7.12 20.45H3.56V9h3.56v11.45ZM22.23 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0h.01Z"/></symbol>
   </svg>
 
@@ -526,61 +545,61 @@
     </section>
     <!-- SECTION:map END -->
 
+    <!-- SECTION:sectors START · styles: sections/sectors.css · scripts: sectors.js
+         Home, block 9 (brief section 9): the sectors as one quiet line that runs across
+         the page, after the user's marquee reference, on a flat neutral ground (after the
+         user's Trove reference: no concrete photo, all the depth kept).
+         carved (default): debossed into the surface (SVG filter #deboss-soft) between two
+         formwork seams with tie holes, a tie hole between sectors.
+         band (?sectors=band): a charcoal band, white type, the A-mark between sectors.
+         sectors.js repeats the line to fill the width and moves it slowly to the left;
+         it slows to a stop under the pointer and picks up a little while the page
+         scrolls. With reduced motion the line stands still. -->
+    <section class="sectors" data-sectors aria-labelledby="sectors-title">
+      <h2 class="visually-hidden" id="sectors-title">Sectors we work in</h2>
+      <div class="sectors__band">
+        <div class="sectors__frame container">
+          <div class="seam sectors__seam" aria-hidden="true">
+            <span class="seam__hole seam__hole--start"></span>
+            <span class="seam__hole seam__hole--end"></span>
+          </div>
+          <div class="sectors__viewport">
+            <!-- Component: marquee. The first list is the content; sectors.js adds copies (aria-hidden) to fill the width. -->
+            <div class="sectors__track" data-sectors-track>
+              <ul class="sectors__list">
+                <li class="sectors__item">Technology &amp; AI</li>
+                <li class="sectors__sep" aria-hidden="true"><svg class="sectors__mark" viewBox="0 0 72 57"><use href="#a-mark"/></svg></li>
+                <li class="sectors__item">Energy &amp; Natural Resources</li>
+                <li class="sectors__sep" aria-hidden="true"><svg class="sectors__mark" viewBox="0 0 72 57"><use href="#a-mark"/></svg></li>
+                <li class="sectors__item">Infrastructure</li>
+                <li class="sectors__sep" aria-hidden="true"><svg class="sectors__mark" viewBox="0 0 72 57"><use href="#a-mark"/></svg></li>
+                <li class="sectors__item">Healthcare &amp; Life Sciences</li>
+                <li class="sectors__sep" aria-hidden="true"><svg class="sectors__mark" viewBox="0 0 72 57"><use href="#a-mark"/></svg></li>
+                <li class="sectors__item">Real Estate</li>
+                <li class="sectors__sep" aria-hidden="true"><svg class="sectors__mark" viewBox="0 0 72 57"><use href="#a-mark"/></svg></li>
+                <li class="sectors__item">Media &amp; Entertainment</li>
+                <li class="sectors__sep" aria-hidden="true"><svg class="sectors__mark" viewBox="0 0 72 57"><use href="#a-mark"/></svg></li>
+              </ul>
+            </div>
+          </div>
+          <div class="seam sectors__seam" aria-hidden="true">
+            <span class="seam__hole seam__hole--start"></span>
+            <span class="seam__hole seam__hole--end"></span>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- SECTION:sectors END -->
+
     <!-- SECTION:closing START · styles: sections/closing.css · scripts: concrete.js, closing.js
          Home, block 10 (brief section 10), after the deck's closing slide: live concrete
          with the A-mark debossed large. As the section comes up the mark is pressed into
          the slab like a seal (scroll-linked, so it lifts back out if you scroll up).
          Headline, one line and one button to the contact page.
-         The slab (.closing-wall) also runs behind the sectors line, so both sit on one
-         piece of concrete; the sectors keep their own markers and work on plain concrete
-         without it. Without WebGL the mark is debossed with the SVG filter instead. -->
+         The live concrete is drawn on .closing-wall. Without WebGL the mark is debossed
+         with the SVG filter instead. -->
     <div class="closing-wall" data-closing>
       <canvas class="closing-wall__canvas" aria-hidden="true"></canvas>
-
-      <!-- SECTION:sectors START · styles: sections/sectors.css · scripts: sectors.js
-           Home, block 9 (brief section 9): the sectors as one quiet line that runs across
-           the page, after the user's marquee reference. Two versions, same markup:
-           band (default): a charcoal band inlaid in the concrete, white type, the A-mark
-           between sectors. carved (?sectors=carved): debossed into the concrete between
-           two formwork seams, a tie hole between sectors.
-           sectors.js repeats the line to fill the width and moves it slowly to the left;
-           it slows to a stop under the pointer and picks up a little while the page
-           scrolls. With reduced motion the line stands still. -->
-      <section class="sectors" data-sectors aria-labelledby="sectors-title">
-        <h2 class="visually-hidden" id="sectors-title">Sectors we work in</h2>
-        <div class="sectors__band" data-header-theme="dark">
-          <div class="sectors__frame container">
-            <div class="seam sectors__seam" aria-hidden="true">
-              <span class="seam__hole seam__hole--start"></span>
-              <span class="seam__hole seam__hole--end"></span>
-            </div>
-            <div class="sectors__viewport">
-              <!-- Component: marquee. The first list is the content; sectors.js adds copies (aria-hidden) to fill the width. -->
-              <div class="sectors__track" data-sectors-track>
-                <ul class="sectors__list">
-                  <li class="sectors__item">Technology &amp; AI</li>
-                  <li class="sectors__sep" aria-hidden="true"><svg class="sectors__mark" viewBox="0 0 72 57"><use href="#a-mark"/></svg></li>
-                  <li class="sectors__item">Energy &amp; Natural Resources</li>
-                  <li class="sectors__sep" aria-hidden="true"><svg class="sectors__mark" viewBox="0 0 72 57"><use href="#a-mark"/></svg></li>
-                  <li class="sectors__item">Infrastructure</li>
-                  <li class="sectors__sep" aria-hidden="true"><svg class="sectors__mark" viewBox="0 0 72 57"><use href="#a-mark"/></svg></li>
-                  <li class="sectors__item">Healthcare &amp; Life Sciences</li>
-                  <li class="sectors__sep" aria-hidden="true"><svg class="sectors__mark" viewBox="0 0 72 57"><use href="#a-mark"/></svg></li>
-                  <li class="sectors__item">Real Estate</li>
-                  <li class="sectors__sep" aria-hidden="true"><svg class="sectors__mark" viewBox="0 0 72 57"><use href="#a-mark"/></svg></li>
-                  <li class="sectors__item">Media &amp; Entertainment</li>
-                  <li class="sectors__sep" aria-hidden="true"><svg class="sectors__mark" viewBox="0 0 72 57"><use href="#a-mark"/></svg></li>
-                </ul>
-              </div>
-            </div>
-            <div class="seam sectors__seam" aria-hidden="true">
-              <span class="seam__hole seam__hole--start"></span>
-              <span class="seam__hole seam__hole--end"></span>
-            </div>
-          </div>
-        </div>
-      </section>
-      <!-- SECTION:sectors END -->
 
       <section class="closing" aria-labelledby="closing-title">
         <div class="closing__inner container">

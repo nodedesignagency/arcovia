@@ -21,6 +21,7 @@
   --color-text-muted: #3a3a3a;     /* small text and labels */
   --color-white: #ffffff;          /* cards */
   --color-well: #f2f2f2;           /* inset number wells inside cards */
+  --color-neutral: #efefee;        /* flat neutral ground for quiet sections (the sectors line) */
   --color-line: rgba(43, 43, 43, 0.14);
   --color-on-dark: #f4f4f3;
   --color-on-dark-muted: rgba(244, 244, 243, 0.72);
