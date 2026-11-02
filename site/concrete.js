@@ -43,7 +43,11 @@
    - A sliding strip: carvings inside [data-carve-slide] are drawn once into
      their own strip texture (one loop of a marquee) and slid by setSlide(),
      wrapping round, with no repaint per frame. They are only shown inside
-     the strip's [data-carve-clip] box and grow shallow towards its ends.
+     the strip's [data-carve-clip] box and grow shallow towards its ends
+     (the fade length is the CSS custom property --carve-fade on that box if it
+     has one, so it can change per breakpoint, else the attribute's value).
+     Strip text smaller than TEXT_REF gets a narrower bevel in step with its
+     size, so a small line carves as crisply as the 60px desktop one.
    - Pauses off-screen and in hidden tabs. With reduced motion it renders
      one still frame. Without WebGL the CSS fallback stays.
    ========================================================================== */
@@ -53,6 +57,8 @@
   // Marks at least this big (css px, their longer side) are carved at full size: the CTA lockup on
   // the smallest desktop (1200) is 293px. Smaller marks get a bevel and shadows in step with their size.
   var MARK_REF = 293;
+  // Strip text at least this big (font size, css px: the sectors line on desktop) is bevelled at full width
+  var TEXT_REF = 60;
 
   var VERT = [
     "attribute vec2 aPos;",
@@ -783,7 +789,10 @@
         items.push({ kind: "hole", x: e.left - r.left, y: e.top - r.top + pad, w: e.width, h: e.height });
       }
     });
-    var fade = parseFloat(clip.getAttribute("data-carve-clip")) || 72;
+    var fade = parseFloat(getComputedStyle(clip).getPropertyValue("--carve-fade")) || parseFloat(clip.getAttribute("data-carve-clip")) || 72;
+    // Small text keeps the proportions of the full-size line: a narrower bevel in step with its size
+    var sizes = items.filter(function (c) { return c.kind === "text" && c.size; }).map(function (c) { return c.size; });
+    var bevel = sizes.length ? Math.max(0.4, Math.min(1, Math.min.apply(null, sizes) / TEXT_REF)) : 1;
     return {
       x: cr.left - origin.left,             // the strip starts at the left of its box when it has not moved
       y: r.top - origin.top - pad,
@@ -792,6 +801,7 @@
       x0: cr.left - origin.left,
       x1: cr.right - origin.left,
       fade: fade,
+      bevel: bevel,
       items: items
     };
   };
@@ -841,7 +851,7 @@
       ctx.restore();
     }
     var sctx = soft.getContext("2d");
-    var blur = 0.9 * d;
+    var blur = 0.9 * d * (sl.bevel || 1);
     sctx.setTransform(1, 0, 0, 1, 0, 0);
     if (typeof sctx.filter === "string") {
       sctx.filter = "blur(" + blur.toFixed(2) + "px)";
@@ -1015,6 +1025,7 @@
     var cs = getComputedStyle(el);
     var size = parseFloat(cs.fontSize);
     out.font = cs.fontWeight + " " + size + "px " + cs.fontFamily;
+    out.size = size;
     var ctx = document.createElement("canvas").getContext("2d");
     ctx.font = out.font;
     var m = ctx.measureText(node.data);

@@ -32,7 +32,8 @@
   if (!viewport || !list) return;
 
   var reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
-  var SPEED = 44;            // css px per second at rest
+  var SPEED_BASE = 44;       // css px per second at rest, for the 60px desktop line
+  var SPEED = SPEED_BASE;    // in step with the type size (build), so it feels as calm at any size
   var x = 0;                 // offset, css px (0 … -loop)
   var loop = 0;              // width of one list, separator included
   var speed = SPEED;
@@ -51,6 +52,10 @@
     if (still) list.removeAttribute("data-carve-slide"); else list.setAttribute("data-carve-slide", "");
     if (surface) surface.queueLayout();
     if (still) { track.style.transform = ""; stop(); return; }
+    // The pace follows the type size: 44 px/s at 60px, about 23 px/s for the 32px phone line
+    var item = list.querySelector(".sectors__item");
+    var fs = item ? parseFloat(getComputedStyle(item).fontSize) : 60;
+    SPEED = SPEED_BASE * Math.max(0.5, Math.min(1, (fs || 60) / 60));
     // Fractional width, so the loop wraps to the sub-pixel
     loop = list.getBoundingClientRect().width;
     if (loop < 1) return;

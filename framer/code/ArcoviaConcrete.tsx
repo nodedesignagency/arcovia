@@ -46,7 +46,11 @@
  * - A sliding strip: carvings inside [data-carve-slide] are drawn once into
  *   their own strip texture (one loop of a marquee) and slid by setSlide(),
  *   wrapping round, with no repaint per frame. They are only shown inside
- *   the strip's [data-carve-clip] box and grow shallow towards its ends.
+ *   the strip's [data-carve-clip] box and grow shallow towards its ends
+ *   (the fade length is the CSS custom property --carve-fade on that box if it
+ *   has one, so it can change per breakpoint, else the attribute's value).
+ *   Strip text smaller than TEXT_REF gets a narrower bevel in step with its
+ *   size, so a small line carves as crisply as the 60px desktop one.
  * - Pauses off-screen and in hidden tabs. With reduced motion it renders
  *   one still frame. Without WebGL the CSS fallback stays.
  *
@@ -535,6 +539,8 @@ export interface ConcreteView {
 // Marks at least this big (css px, their longer side) are carved at full size: the CTA lockup on
 // the smallest desktop (1200) is 293px. Smaller marks get a bevel and shadows in step with their size.
 const MARK_REF = 293
+// Strip text at least this big (font size, css px: the sectors line on desktop) is bevelled at full width
+const TEXT_REF = 60
 
 const UNIFORMS = ["uRes", "uScale", "uTime", "uBand", "uMouse", "uMouseAmt", "uSun", "uCursor", "uTex", "uTexSize", "uHeight", "uHTexel", "uOrigin", "uShift", "uZoom", "uBurn", "uBurnP", "uBreak", "uBreakP", "uDrill", "uDrillP", "uDrillQ", "uMarkDepth", "uMarkScale", "uPlain", "uPlainAlbedo", "uSlide", "uSlideOn", "uSlideRect", "uSlideView", "uSlideFold", "uPhoto", "uPhotoMap", "uBeam", "uBeamRange", "uShade", "uShadeP", "uDust", "uVignette", "uBeamFade"]
 
@@ -956,7 +962,10 @@ export class ConcreteSurface {
                 items.push({ kind: "hole", x: e.left - r.left, y: e.top - r.top + pad, w: e.width, h: e.height })
             }
         })
-        const fade = parseFloat(clip.getAttribute("data-carve-clip") || "") || 72
+        const fade = parseFloat(getComputedStyle(clip).getPropertyValue("--carve-fade")) || parseFloat(clip.getAttribute("data-carve-clip") || "") || 72
+        // Small text keeps the proportions of the full-size line: a narrower bevel in step with its size
+        const sizes = items.filter((c) => c.kind === "text" && c.size).map((c) => c.size as number)
+        const bevel = sizes.length ? Math.max(0.4, Math.min(1, Math.min(...sizes) / TEXT_REF)) : 1
         return {
             x: cr.left - origin.left, // the strip starts at the left of its box when it has not moved
             y: r.top - origin.top - pad,
@@ -965,6 +974,7 @@ export class ConcreteSurface {
             x0: cr.left - origin.left,
             x1: cr.right - origin.left,
             fade: fade,
+            bevel: bevel,
             items: items,
             rows: 1,
             seg: 1,
@@ -1027,7 +1037,7 @@ export class ConcreteSurface {
             ctx.restore()
         }
         const sctx = soft.getContext("2d")!
-        const blur = 0.9 * d
+        const blur = 0.9 * d * (sl.bevel || 1)
         sctx.setTransform(1, 0, 0, 1, 0, 0)
         if (typeof sctx.filter === "string") {
             sctx.filter = "blur(" + blur.toFixed(2) + "px)"
@@ -1278,12 +1288,13 @@ function markPaths(svg: Element, scope: ParentNode) {
 
 // Where the browser laid out each glyph of an element's text, so the carving matches it exactly
 function textGlyphs(el: HTMLElement, origin: DOMRect) {
-    const out = { kind: "text", font: "", glyphs: [] as { ch: string; x: number; y: number }[] }
+    const out = { kind: "text", font: "", size: 0, glyphs: [] as { ch: string; x: number; y: number }[] }
     const node = el.firstChild as Text | null
     if (!node || node.nodeType !== 3) return out
     const cs = getComputedStyle(el)
     const size = parseFloat(cs.fontSize)
     out.font = cs.fontWeight + " " + size + "px " + cs.fontFamily
+    out.size = size
     const ctx = document.createElement("canvas").getContext("2d")!
     ctx.font = out.font
     const m = ctx.measureText(node.data)

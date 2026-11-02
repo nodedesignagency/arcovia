@@ -17,6 +17,9 @@
  * It moves at a calm pace (44 px/s), slows to a stop under the pointer, picks
  * up a little while the page scrolls, pauses off-screen and in hidden tabs, and
  * stands still (wrapped, carved in place) with reduced motion.
+ * Tablet: 46px, 64px above and below. Phone: 32px, tighter seams (24px), 28px
+ * soft ends, 48px above and 64px below; the carving's bevel and the pace follow
+ * the type size, so the small line carves as crisply and moves as calmly.
  *
  * On the Framer canvas there is no script: the line stands still, debossed with
  * the SVG filter, cropped at the right with the soft ends.
@@ -80,8 +83,9 @@ const SECTORS_CSS = `/* ========================================================
   overflow: hidden;
   padding-block: var(--space-7);
   /* Soft ends, so the line seems to run on under the surface */
-  -webkit-mask-image: linear-gradient(90deg, transparent, #000 72px, #000 calc(100% - 72px), transparent);
-  mask-image: linear-gradient(90deg, transparent, #000 72px, #000 calc(100% - 72px), transparent);
+  --carve-fade: 72px;          /* soft ends; concrete.js reads it, so the carved line fades the same */
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 var(--carve-fade), #000 calc(100% - var(--carve-fade)), transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 var(--carve-fade), #000 calc(100% - var(--carve-fade)), transparent);
 }
 .sectors__track {
   display: flex;
@@ -167,14 +171,23 @@ const SECTORS_CSS = `/* ========================================================
 /* Wrapped lines would start with a separator: drop them and let the spacing do the work */
 .sectors.is-static .sectors__sep { display: none; }
 
-/* ---------- Tablet and phone (to refine once desktop is approved) ---------- */
+/* ---------- Tablet (810-1199) ----------
+   46px type, 64px above and below, 32px between the seams and the line, 48px soft ends. */
 @container arc (max-width: 1199px) {
-  .sectors { --sectors-fs: 46px; padding-block: var(--space-9); }
+  .sectors { --sectors-fs: 46px; padding-block: var(--space-8); }
+  .sectors__viewport { --carve-fade: 48px; padding-block: var(--space-6); }
   .sectors[data-variant="band"] { --sectors-fs: 44px; }
 }
+
+/* ---------- Phone (809 and below) ----------
+   32px type, 24px between the seams and the line, 28px soft ends (72px would hide
+   half the line), 48px above, and 64px below: the same space as the CTA box has
+   under it. The carving's bevel and the pace follow the type size (concrete.js,
+   sectors.js), so the line carves as crisply and moves as calmly as on desktop. */
 @container arc (max-width: 809px) {
-  .sectors { --sectors-fs: 34px; padding-block: var(--space-8); }
-  .sectors[data-variant="band"] { --sectors-fs: 32px; }
+  .sectors { --sectors-fs: 32px; padding-block: var(--space-7) var(--space-8); }
+  .sectors__viewport { --carve-fade: 28px; padding-block: var(--space-5); }
+  .sectors[data-variant="band"] { --sectors-fs: 30px; }
   .sectors[data-variant="band"] .sectors__viewport { padding-block: 20px; }
 }`
 
@@ -268,7 +281,7 @@ export default function ArcoviaSectors(incoming: Partial<Props>) {
    holes and the line exactly like the hero; the line is carved once into a
    strip ([data-carve-slide]) and only its offset changes each frame.
    ========================================================================== */
-function initSectors(host: HTMLElement, life: Life, SPEED: number) {
+function initSectors(host: HTMLElement, life: Life, SPEED_BASE: number) {
     const root = host.querySelector<HTMLElement>("[data-sectors]")
     if (!root) return
 
@@ -288,6 +301,8 @@ function initSectors(host: HTMLElement, life: Life, SPEED: number) {
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)")
     let x = 0 // offset, css px (0 … -loop)
     let loop = 0 // width of one list, separator included
+    // The pace follows the type size (build): the Speed control is for the 60px desktop line
+    let SPEED = SPEED_BASE
     let speed = SPEED
     let boost = 0 // extra speed from scrolling, decays
     let hover = false
@@ -311,6 +326,10 @@ function initSectors(host: HTMLElement, life: Life, SPEED: number) {
             stop()
             return
         }
+        // The pace follows the type size: 44 px/s at 60px, about 23 px/s for the 32px phone line
+        const item = list!.querySelector(".sectors__item")
+        const fs = item ? parseFloat(getComputedStyle(item).fontSize) : 60
+        SPEED = SPEED_BASE * Math.max(0.5, Math.min(1, (fs || 60) / 60))
         // Fractional width, so the loop wraps to the sub-pixel
         loop = list!.getBoundingClientRect().width
         if (loop < 1) return
@@ -471,5 +490,5 @@ addPropertyControls(ArcoviaSectors, {
         optionTitles: ["Carved", "Band"],
         defaultValue: DEFAULTS.variant,
     },
-    speed: { type: ControlType.Number, title: "Speed", min: 10, max: 160, step: 1, unit: "px/s", defaultValue: DEFAULTS.speed },
+    speed: { type: ControlType.Number, title: "Speed", description: "For the 60px desktop line; smaller type moves slower in step", min: 10, max: 160, step: 1, unit: "px/s", defaultValue: DEFAULTS.speed },
 })
