@@ -142,6 +142,117 @@
   to { opacity: 1; transform: none; }
 }
 
+/* ---------- Version "paths" (client feedback): the choice in the centre ----------
+   ?hero=paths (data-hero-version on the root, set before the first paint).
+   Chip, headline and lede centred; the "Choose your path" button gives way to the three
+   paths shown straight away, across the grid (four columns each), as rows like the
+   masthead's links: hairlines, medium type in ink, an arrow at the end. Hover draws the
+   masthead's short dash in before the label, inks the line under the row and nudges the
+   arrow on. (A stacked list like the reference was tried: at 1440 × 900 it ran into the
+   masthead and the seam.) */
+.path-rows { display: none; }
+
+:root[data-hero-version="paths"] .hero__content { align-self: center; align-items: start; }
+:root[data-hero-version="paths"] .hero__heading {
+  grid-column: 1 / -1;
+  grid-row: 1;
+  justify-items: center;
+  gap: var(--space-5);
+  text-align: center;
+}
+:root[data-hero-version="paths"] .hero__aside {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  justify-items: center;
+  margin: var(--space-5) 0 0;
+}
+:root[data-hero-version="paths"] .hero__lede { max-width: none; text-align: center; }
+:root[data-hero-version="paths"] .path-picker { display: none; }
+:root[data-hero-version="paths"] .path-rows {
+  display: grid;
+  grid-column: 1 / -1;
+  grid-row: 3;
+  margin-top: var(--space-8);
+}
+
+.path-rows__title {
+  justify-self: center;
+  margin-bottom: var(--space-4);
+  font-size: 16px;
+  line-height: 1.4;
+  color: var(--color-text-muted);
+}
+.path-rows__list {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.path-rows__option {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  height: 72px;
+  border-top: 1px solid var(--mh-line);
+  border-bottom: 1px solid var(--mh-line);
+  font-size: 22px;
+  font-weight: var(--weight-medium);
+  letter-spacing: -0.005em;
+  color: var(--color-ink);
+  outline-offset: 4px;
+}
+/* The line under the row inks in from the left on hover */
+.path-rows__option::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 1px;
+  background: var(--color-ink);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--dur-slow) var(--ease-out);
+}
+.path-rows__label { display: inline-flex; align-items: center; }
+/* The masthead's short dash */
+.path-rows__label::before {
+  content: "";
+  width: 0;
+  height: 1.5px;
+  margin-right: 0;
+  background: currentColor;
+  transition: width var(--dur-base) var(--ease-out), margin var(--dur-base) var(--ease-out);
+}
+.path-rows__arrow {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  margin-left: auto;
+  transition: transform var(--dur-base) var(--ease-out);
+}
+@media (hover: hover) {
+  .path-rows__option:hover::after { transform: scaleX(1); }
+  .path-rows__option:hover .path-rows__label::before { width: 14px; margin-right: 10px; }
+  .path-rows__option:hover .path-rows__arrow { transform: translateX(4px); }
+}
+.path-rows__option:focus-visible::after { transform: scaleX(1); }
+
+/* Three across the grid, four columns each */
+:root[data-hero-version="paths"] .path-rows__list {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  column-gap: var(--grid-gap);
+}
+
+/* Below desktop (to refine once desktop is approved): stacked, one hairline between rows */
+@media (max-width: 1199px) {
+  :root[data-hero-version="paths"] .path-rows__list { grid-template-columns: 1fr; }
+  :root[data-hero-version="paths"] .path-rows__option { height: 60px; border-top: 0; }
+  :root[data-hero-version="paths"] .path-rows__list li:first-child .path-rows__option { border-top: 1px solid var(--mh-line); }
+  :root[data-hero-version="paths"] .hero__heading { margin-bottom: 0; }
+}
+
 @media (max-width: 1199px) {
   .hero__inner { grid-template-rows: 1fr auto auto; }
   .hero__heading { grid-column: 1 / span 11; align-self: end; margin-bottom: var(--space-7); }

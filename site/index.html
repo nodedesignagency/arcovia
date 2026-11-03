@@ -13,6 +13,9 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap">
   <link rel="preload" href="assets/concrete.jpg" as="image">
   <link rel="stylesheet" href="styles.css">
+  <!-- Review switch, set before the first paint: ?hero=paths shows the hero version with the three
+       paths straight away, centred under the headline -->
+  <script>(function () { var m = location.search.match(/[?&]hero=(\w+)/); if (m) document.documentElement.setAttribute("data-hero-version", m[1]); })();</script>
   <!-- One stylesheet per section, so a section can be approved and moved to main on its own -->
   <link rel="stylesheet" href="sections/hero.css">
   <link rel="stylesheet" href="sections/statement.css">
@@ -188,7 +191,8 @@
 
     <!-- SECTION:hero START · styles: sections/hero.css · scripts: concrete.js, zoom.js
          Version B "Carved": live concrete, chip over the headline, one path button,
-         a carved seam and ARCOVIA carved across the bottom.
+         a carved seam and ARCOVIA carved across the bottom. Client feedback version:
+         ?hero=paths (everything centred, the three paths straight away across the hero).
          Hero and statement share one scroll stage (zoom.js): scrolling down opens the
          O of ARCOVIA into a hole through the concrete and flies through it into the
          statement. Without JS or with reduced motion they simply stack. -->
@@ -239,6 +243,19 @@
                     <svg class="btn__icon path-picker__chevrons" viewBox="0 0 16 16" aria-hidden="true"><path class="path-picker__chev path-picker__chev--up" d="M5 6.25 8 3.25l3 3"/><path class="path-picker__chev path-picker__chev--down" d="M5 9.75l3 3 3-3"/></svg>
                   </button>
                 </div>
+              </div>
+
+              <!-- Component: path-rows (hero version ?hero=paths). The client asked for the
+                   "Who are you?" choice in the centre, shown straight away as three clear buttons: rows like
+                   the masthead's links (hairlines, medium type), each with an arrow. Hidden in the default
+                   version, which keeps the one "Choose your path" button. -->
+              <div class="path-rows" role="group" aria-labelledby="path-rows-title" data-rise data-zoom-fade style="--rise:2">
+                <p class="path-rows__title" id="path-rows-title">Who are you?</p>
+                <ul class="path-rows__list">
+                  <li><a class="path-rows__option" href="services.html#founders"><span class="path-rows__label">I’m raising capital</span><svg class="path-rows__arrow" aria-hidden="true"><use href="#icon-arrow"/></svg></a></li>
+                  <li><a class="path-rows__option" href="services.html#investors"><span class="path-rows__label">I’m an investor</span><svg class="path-rows__arrow" aria-hidden="true"><use href="#icon-arrow"/></svg></a></li>
+                  <li><a class="path-rows__option" href="services.html#institutions"><span class="path-rows__label">I represent an institution</span><svg class="path-rows__arrow" aria-hidden="true"><use href="#icon-arrow"/></svg></a></li>
+                </ul>
               </div>
             </div>
 
