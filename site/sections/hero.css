@@ -144,17 +144,25 @@
 
 /* ---------- Version "paths" (client feedback): the three paths straight away ----------
    ?hero=paths (data-hero-version on the root, set before the first paint).
-   The default layout stays (headline on the left; lede on the right, its bottom on the
-   headline's baseline), but the "Choose your path" button gives way to the three paths,
-   stacked under the lede in the right-hand column as rows like the masthead's links
+   The default layout, with two changes the user asked for: the lede moves under the
+   headline, and the "Choose your path" button gives way to the three paths, stacked in
+   the right-hand column as rows like the masthead's links
    (the user's reference): hairlines above, between and below, medium type in ink, an arrow
    at the end. Hover draws the masthead's short dash in before the label, inks the line under
    the row and nudges the arrow on. (Tried first and set aside: everything centred with the
    paths three across, commit 7fc639f.) */
 .path-rows { display: none; }
+.hero__lede--under { display: none; }
 
-:root[data-hero-version="paths"] .path-picker { display: none; }
+:root[data-hero-version="paths"] .path-picker,
+:root[data-hero-version="paths"] .hero__lede--aside { display: none; }
+:root[data-hero-version="paths"] .hero__lede--under { display: block; }
 :root[data-hero-version="paths"] .path-rows { display: block; width: 100%; }
+/* The last row's line sits on the lede's last baseline (0.4em above its line box) */
+:root[data-hero-version="paths"] .hero__aside { margin-bottom: calc(var(--fs-lede) * 0.4); }
+@media (max-width: 1199px) {
+  :root[data-hero-version="paths"] .hero__aside { margin-bottom: var(--space-8); }
+}
 
 .path-rows__list {
   display: grid;

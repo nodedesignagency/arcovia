@@ -192,7 +192,7 @@
     <!-- SECTION:hero START · styles: sections/hero.css · scripts: concrete.js, zoom.js
          Version B "Carved": live concrete, chip over the headline, one path button,
          a carved seam and ARCOVIA carved across the bottom. Client feedback version:
-         ?hero=paths (the same layout, the three paths stacked in place of the button).
+         ?hero=paths (the lede under the headline, the three paths stacked on the right in place of the button).
          Hero and statement share one scroll stage (zoom.js): scrolling down opens the
          O of ARCOVIA into a hole through the concrete and flies through it into the
          statement. Without JS or with reduced motion they simply stack. -->
@@ -208,10 +208,12 @@
               <div class="hero__heading" data-rise data-zoom-fade style="--rise:0">
                 <p class="chip">Independent capital markets advisory</p>
                 <h1 class="hero__title" id="hero-title">Where Capital<br> Meets Conviction</h1>
+                <!-- Version ?hero=paths: the lede sits under the headline (the user moved it there); hidden otherwise -->
+                <p class="hero__lede hero__lede--under">For growth-stage founders, funds and foundations raising <span class="nowrap">$5M–$500M+</span>.</p>
               </div>
 
               <div class="hero__aside" data-rise data-zoom-fade style="--rise:1">
-                <p class="hero__lede">For growth-stage founders, funds and foundations raising <span class="nowrap">$5M–$500M+</span>.</p>
+                <p class="hero__lede hero__lede--aside">For growth-stage founders, funds and foundations raising <span class="nowrap">$5M–$500M+</span>.</p>
 
                 <!-- Component: path-picker. One button; the three paths open above it, each with
                      an icon tile, a title, one line and a chevron. ?icons=none previews it without icons. -->
