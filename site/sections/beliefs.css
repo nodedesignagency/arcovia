@@ -3,9 +3,10 @@
    Layout after the user's reference: the heading, then four columns, each
    behind a vertical hairline: a small number, a fine line drawing, a title
    and one line. In our language: Montserrat, ink on white (between the
-   neutral "Our story" and the neutral footer), the drawings built from our
-   own geometry (the round of the A-mark, the formwork tie holes), drawn in
-   ink with a fine, even stroke. Number, drawing, title and text line up
+   neutral "Our story" and the neutral footer), the drawings in the
+   reference's style (fine lines, loops, overlapping rounds, an arrow with
+   depth, a network) in our colours: ink lines, charcoal fills, concrete
+   sides. Number, drawing, title and text line up
    across the four columns (subgrid). Still: no motion.
    Uses shared tokens from styles.css (container).
    ========================================================================== */
@@ -52,7 +53,7 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* The drawing: a fine ink line that stays 1.25px at any size */
+/* The drawing: a fine ink line that stays 1px at any size, as fine as the reference's */
 .belief__art {
   width: 160px;
   height: 120px;
@@ -60,15 +61,14 @@
   overflow: visible;
   fill: none;
   stroke: var(--color-ink);
-  stroke-width: 1.25;
+  stroke-width: 1;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
 .belief__art * { vector-effect: non-scaling-stroke; }
-.belief__art .belief__fill { fill: var(--color-ink); stroke: none; }
-.belief__art .belief__dash { stroke-dasharray: 3 5; }
-.belief__art .belief__hatch { fill: url(#belief-hatch); stroke: none; }
-.belief__art pattern path { stroke: var(--color-ink); stroke-width: 0.9; }
+.belief__art .belief__fill { fill: var(--color-charcoal); }                     /* the one filled part, in charcoal */
+.belief__art .belief__face { fill: var(--color-concrete); }                    /* sides with depth, in concrete */
+.belief__art .belief__front { fill: var(--color-white); }                      /* faces that cover what is behind */
 
 .belief__name {
   margin-top: var(--space-8);
