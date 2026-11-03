@@ -58,7 +58,7 @@ Six pages plus legal: Home (with the world map), About, What We Do (Founders, In
 
 Out of scope: Gatherings, Journal, Press. Never link to them. The brief lists 12 pages; ignore that, V1 is only the six above plus legal. Navigation links only to these pages (Home is the logo); Founders, Investors and Institutions are anchors on What We Do, never nav items.
 
-Map: 15 points (Los Angeles, San Francisco, New York, Houston, San Juan, São Paulo, London, Paris, Geneva, Zurich, Milan, Monaco, Budapest, Dubai, Abu Dhabi; the user added Milan, Budapest, Geneva, Houston, Dubai, Monaco and Zurich to the original eight). Offices: Los Angeles and San Juan. Hover shows the city label. Arcs drawn out from Los Angeles. No filters.
+Map: 19 points (Los Angeles, San Francisco, New York, Houston, San Juan, São Paulo, Singapore, Hong Kong, Bangkok, Tokyo, London, Paris, Geneva, Zurich, Milan, Monaco, Budapest, Dubai, Abu Dhabi; the user added Milan, Budapest, Geneva, Houston, Dubai, Monaco and Zurich to the original eight, then the client added Singapore, Hong Kong, Bangkok and Tokyo). Offices: Los Angeles and San Juan. The city index is two columns of ten rows: the offices, the Americas and Asia-Pacific, then Europe and the Middle East. The home view stays on the Americas and Europe, so the Asian cities sit on the far side: their arcs leave Los Angeles over the top of the globe, and picking one in the index turns the globe to it. Hover shows the city label. Arcs drawn out from Los Angeles. No filters.
 
 ## Design direction
 
