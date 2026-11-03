@@ -90,11 +90,41 @@
 
   /* ---------- ?vault=doors: the sliding-door variant (all CSS, sections/vault.css) ----------
      Two flat doors; the joint rounds the wheel, so the circle leaves whole with the left door.
-     This only waits for the hero and starts it (.is-sliding), then clears it away. */
+     First the circle unlocks like a vault lock (a dial turning through its combination).
+     This draws the dial's graduations, waits for the hero, starts it (.is-opening) and
+     clears it away. */
   if (root.classList.contains("vault-doors")) {
     var css = getComputedStyle(vault);
-    var SLIDE = (parseFloat(css.getPropertyValue("--vault-open")) || 900) +
-                (parseFloat(css.getPropertyValue("--vault-delay")) || 0);
+    var SLIDE = (parseFloat(css.getPropertyValue("--vault-unlock")) || 0) +
+                (parseFloat(css.getPropertyValue("--vault-delay")) || 0) +
+                (parseFloat(css.getPropertyValue("--vault-open")) || 900);
+
+    // The dial, in mark units round the wheel's centre: 60 ticks (every fifth longer) just
+    // inside the rim, a zero mark at the top (under the seam once it clicks home), a small hub
+    var dial = vault.querySelector("[data-vault-dial]");
+    if (dial) {
+      var NS = "http://www.w3.org/2000/svg", CX = 36.201, CY = 8.0109;
+      var ticks = { minor: "", major: "", zero: "" };
+      for (var i = 0; i < 60; i++) {
+        var ang = (i / 60) * Math.PI * 2, sx = Math.sin(ang), sy = -Math.cos(ang); // 0 at the top, clockwise
+        var kind = i === 0 ? "zero" : i % 5 === 0 ? "major" : "minor";
+        var r0 = kind === "zero" ? 5.5 : kind === "major" ? 6.25 : 6.85, r1 = 7.45;
+        ticks[kind] += "M" + (CX + sx * r0).toFixed(3) + " " + (CY + sy * r0).toFixed(3) +
+                       "L" + (CX + sx * r1).toFixed(3) + " " + (CY + sy * r1).toFixed(3);
+      }
+      var addTicks = function (cls, d, tag) {
+        var el = document.createElementNS(NS, tag || "path");
+        el.setAttribute("class", "vault__ticks vault__ticks--" + cls);
+        el.setAttribute("vector-effect", "non-scaling-stroke");
+        if (tag === "circle") { el.setAttribute("cx", CX); el.setAttribute("cy", CY); el.setAttribute("r", d); }
+        else el.setAttribute("d", d);
+        dial.appendChild(el);
+      };
+      addTicks("minor", ticks.minor);
+      addTicks("major", ticks.major);
+      addTicks("zero", ticks.zero);
+      addTicks("hub", 1.05, "circle");
+    }
     var slid = false;
     var keys = ["wheel", "touchstart", "keydown", "pointerdown"];
     var slide = function () {
@@ -104,7 +134,7 @@
       root.classList.add("vault-open");
       restoreTint();
       // Reduced motion: nothing slides, the doors fade
-      vault.classList.add(reduce ? "is-fading" : "is-sliding");
+      vault.classList.add(reduce ? "is-fading" : "is-opening");
       window.setTimeout(function () {
         root.classList.add("vault-done");
         remove();

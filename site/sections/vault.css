@@ -91,9 +91,13 @@
    (the logo's own gap) and runs on down between the legs. So the whole circle
    leaves with the left door, with the left leg; the right leg goes right, and
    the right door has a round notch where the wheel sat.
-   Sequence (vault.js adds .is-sliding): light catches in the joint and traces
-   the half ring; the doors slide apart, heavy at first; light pours through
-   the gap; the doors cast a soft shadow on the hero as they go. About 1.2 s.
+   Sequence (vault.js adds .is-opening): the circle unlocks; light catches in
+   the joint and traces the half ring; the doors slide apart, heavy at first; light pours through
+   the gap; the doors cast a soft shadow on the hero as they go. About 2.3 s.
+   Before that the circle unlocks like a vault lock: fine graduations come up
+   on it, it turns through a combination (right, left, right) with a click at
+   each stop, and on the last turn its zero mark comes round to the seam and
+   clicks home; only then does the light catch in the joint.
    All CSS: the closed doors are the first paint, and the motion is compositor
    transforms and opacity. The leaves are SVG in mark units (the sprite's
    #vault-shape-left/right, #vault-joint), placed over the same box as the 3D
@@ -102,12 +106,15 @@
 
 .vault__doors { display: none; }
 
-.vault-doors .vault {
-  --vault-open: 900ms;                            /* the doors' travel; vault.js reads it */
-  --vault-delay: 180ms;                           /* the light catches in the joint first */
+.vault-doors {
+  /* On the root so the hero's text can time itself by them too; vault.js reads them */
+  --vault-unlock: 1100ms;                         /* the circle turns through its combination */
+  --vault-delay: 180ms;                           /* then the light catches in the joint */
+  --vault-open: 900ms;                            /* then the doors travel */
+  --vault-start: calc(var(--vault-unlock) + var(--vault-delay));
   --vault-ease: cubic-bezier(0.76, 0, 0.24, 1);   /* heavy: slow to start, slow to stop */
-  background: none;
 }
+.vault-doors .vault { background: none; }
 .vault-doors .vault > .vault__mark,
 .vault-doors .vault > .vault__joint,
 .vault-doors .vault__canvas { display: none; }
@@ -129,7 +136,7 @@
   inset: 0;
   background: var(--color-charcoal);
 }
-.vault.is-sliding .vault__backing { animation: vault-joint 1ms linear var(--vault-delay) forwards; }
+.vault.is-opening .vault__backing { animation: vault-joint 1ms linear var(--vault-start) forwards; }
 
 /* A leaf: an SVG over the mark's box (wheel centre on the middle, mark centre 48% down),
    painting its door shape far beyond it */
@@ -170,6 +177,72 @@
 .vault__glow--3 { stroke-width: 3.5px; stroke-opacity: 0.28; }
 .vault__glow--core { stroke-width: 1.4px; stroke-opacity: 0.9; }
 
+/* ---------- The lock: the circle is the dial ----------
+   An SVG over the wheel (viewBox = the circle's box in mark units, so it lines up exactly),
+   inside the left door so it leaves with it, on its own layer so it turns on the compositor.
+   vault.js draws the graduations: 60 fine ticks, every fifth longer, and a zero mark that
+   comes to rest under the seam. Hidden until the unlock, so the closed door is the plain logo */
+.vault__dial {
+  position: absolute;
+  left: 50%;
+  top: calc(48% - var(--vault-h) * 0.359458);     /* the wheel's centre: y 8.0109 of 57 */
+  width: calc(var(--vault-h) * 0.281179);         /* its diameter: 16.027 of 57 */
+  height: calc(var(--vault-h) * 0.281179);
+  overflow: visible;
+  opacity: 0;
+  transform: translate(-50%, -50%) rotate(-200deg);
+  will-change: transform, opacity;
+}
+.vault__ticks { fill: none; stroke: #fff; }
+.vault__ticks--minor { stroke-width: 1px; stroke-opacity: 0.16; }
+.vault__ticks--major { stroke-width: 1.25px; stroke-opacity: 0.3; }
+.vault__ticks--zero { stroke-width: 2px; stroke-opacity: 0.62; }
+.vault__ticks--hub { stroke-width: 1px; stroke-opacity: 0.16; }
+
+/* The click at each stop: a small glint where the dial's top meets the seam (the index) */
+.vault__glint {
+  position: absolute;
+  left: 50%;
+  top: calc(48% - var(--vault-h) * 0.5047);       /* y -0.27 of 57: between the dial and the seam */
+  width: 28px;
+  height: 28px;
+  margin: -14px 0 0 -14px;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.22) 38%, rgba(255, 255, 255, 0));
+  opacity: 0;
+  will-change: opacity;
+}
+
+.vault.is-opening .vault__dial {
+  animation: vault-dial var(--vault-unlock) linear forwards,
+             vault-dial-in 220ms var(--ease-out) forwards;
+}
+.vault.is-opening .vault__glint {
+  animation: vault-click var(--vault-unlock) linear forwards,
+             vault-click-out 420ms var(--ease-out) var(--vault-unlock) forwards;
+}
+/* The combination: right, left, then right to zero. Each turn eases in and out like a heavy
+   dial; each stop overshoots a hair and settles back (the detent), and clicks */
+@keyframes vault-dial {
+  0% { transform: translate(-50%, -50%) rotate(-200deg); animation-timing-function: cubic-bezier(0.55, 0, 0.3, 1); }
+  42% { transform: translate(-50%, -50%) rotate(93deg); animation-timing-function: ease-out; }
+  46%, 50% { transform: translate(-50%, -50%) rotate(90deg); animation-timing-function: cubic-bezier(0.55, 0, 0.3, 1); }
+  73% { transform: translate(-50%, -50%) rotate(-62.5deg); animation-timing-function: ease-out; }
+  76%, 80% { transform: translate(-50%, -50%) rotate(-60deg); animation-timing-function: cubic-bezier(0.45, 0, 0.25, 1); }
+  95% { transform: translate(-50%, -50%) rotate(1.5deg); animation-timing-function: ease-out; }
+  100% { transform: translate(-50%, -50%) rotate(0deg); }
+}
+@keyframes vault-dial-in { to { opacity: 1; } }
+@keyframes vault-click {
+  0%, 41% { opacity: 0; }
+  43% { opacity: 0.45; }
+  49%, 72% { opacity: 0; }
+  74% { opacity: 0.45; }
+  80%, 94% { opacity: 0; }
+  96%, 100% { opacity: 1; }
+}
+@keyframes vault-click-out { from { opacity: 1; } to { opacity: 0; } }
+
 /* The doors' shadow on the hero: each door's silhouette, blurred, under both doors (so it only
    shows in the gap); taller than the screen so the blur has no edge at the top or bottom */
 .vault__cast {
@@ -196,20 +269,20 @@
   transform: scaleX(0.02);
 }
 
-/* ---------- Opening (vault.js adds .is-sliding) ---------- */
-.vault.is-sliding .vault__door--left { animation: vault-left var(--vault-open) var(--vault-ease) var(--vault-delay) forwards; }
-.vault.is-sliding .vault__door--right { animation: vault-right var(--vault-open) var(--vault-ease) var(--vault-delay) forwards; }
-.vault.is-sliding .vault__cast--left {
-  animation: vault-left var(--vault-open) var(--vault-ease) var(--vault-delay) forwards,
-             vault-shade var(--vault-open) linear var(--vault-delay) forwards;
+/* ---------- Opening (vault.js adds .is-opening) ---------- */
+.vault.is-opening .vault__door--left { animation: vault-left var(--vault-open) var(--vault-ease) var(--vault-start) forwards; }
+.vault.is-opening .vault__door--right { animation: vault-right var(--vault-open) var(--vault-ease) var(--vault-start) forwards; }
+.vault.is-opening .vault__cast--left {
+  animation: vault-left var(--vault-open) var(--vault-ease) var(--vault-start) forwards,
+             vault-shade var(--vault-open) linear var(--vault-start) forwards;
 }
-.vault.is-sliding .vault__cast--right {
-  animation: vault-right var(--vault-open) var(--vault-ease) var(--vault-delay) forwards,
-             vault-shade var(--vault-open) linear var(--vault-delay) forwards;
+.vault.is-opening .vault__cast--right {
+  animation: vault-right var(--vault-open) var(--vault-ease) var(--vault-start) forwards,
+             vault-shade var(--vault-open) linear var(--vault-start) forwards;
 }
-.vault.is-sliding .vault__cut { animation: vault-joint 120ms linear 140ms forwards; }
-.vault.is-sliding .vault__catch { animation: vault-catch 460ms linear forwards; }
-.vault.is-sliding .vault__light { animation: vault-light var(--vault-open) var(--ease-out) var(--vault-delay) forwards; }
+.vault.is-opening .vault__cut { animation: vault-joint 120ms linear calc(var(--vault-unlock) + 140ms) forwards; }
+.vault.is-opening .vault__catch { animation: vault-catch 460ms linear var(--vault-unlock) forwards; }
+.vault.is-opening .vault__light { animation: vault-light var(--vault-open) var(--ease-out) var(--vault-start) forwards; }
 
 @keyframes vault-left { to { transform: translate3d(calc(-1 * var(--vault-travel)), 0, 0); } }
 @keyframes vault-right { to { transform: translate3d(var(--vault-travel), 0, 0); } }
@@ -229,4 +302,4 @@
 }
 
 /* The hero's text rises as the doors part */
-.vault-doors.vault-open .hero [data-rise] { animation-delay: calc(var(--rise, 0) * 90ms + 560ms); }
+.vault-doors.vault-open .hero [data-rise] { animation-delay: calc(var(--rise, 0) * 90ms + var(--vault-unlock) + 560ms); }
