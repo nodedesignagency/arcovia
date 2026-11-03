@@ -2,9 +2,9 @@
    Our story: the pinned photo that turns over (component: story-card)
    Layout after the user's process-section reference video, where a big step
    number turned on its vertical axis whenever the next step arrived. Here the
-   photo does, for every point of the story: once a point crosses the middle
-   of the screen, the card turns over (front: the photo shown now, back: the
-   point's photo), and that point is set in full ink while the others recede.
+   photo does: once a step crosses the middle of the screen, the card turns
+   over (front: the photo shown now, back: the step's photo). Four steps, four
+   photos.
    Scrolling back turns it back the other way. Timed, not scrubbed, so the
    card never rests half turned; if several steps go by during one turn, it
    turns again to catch up. After each turn the new photo moves to the front
@@ -19,7 +19,7 @@
   var card = root && root.querySelector("[data-story-card]");
   if (!root || !card) return;
 
-  var steps = Array.prototype.slice.call(root.querySelectorAll("[data-story-point]"));
+  var steps = Array.prototype.slice.call(root.querySelectorAll("[data-story-step]"));
   var srcs = steps.map(function (s) { return s.getAttribute("data-image"); });
   var front = card.querySelector(".story__face--front img");
   var back = card.querySelector(".story__face--back img");
@@ -30,7 +30,7 @@
 
   var shown = 0, target = 0, turning = false, turningTo = 0;
 
-  // The point whose top last crossed the middle of the screen
+  // The step whose top last crossed the middle of the screen
   function activeStep() {
     var mid = window.innerHeight * 0.5, k = 0;
     steps.forEach(function (s, i) { if (s.getBoundingClientRect().top < mid) k = i; });
@@ -75,10 +75,8 @@
   function update() {
     queued = false;
     target = activeStep();
-    steps.forEach(function (s, i) { s.classList.toggle("is-active", i === target); });
     turn();
   }
-  root.classList.add("story--live");
   window.addEventListener("scroll", function () {
     if (!queued) { queued = true; requestAnimationFrame(update); }
   }, { passive: true });

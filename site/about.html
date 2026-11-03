@@ -143,9 +143,8 @@
     <!-- SECTION:story START · styles: sections/story.css · scripts: story.js
          About, block 2 ("Our story"). Layout after the user's process-section reference video:
          the story scrolls on the left in four steps of three points; on the right one photo stays
-         pinned and turns over to the next photo as each point crosses the middle of the screen
-         (in the video a big number turned). Every point has its own photo and its own stretch of
-         scroll; the point in the middle is set in full ink, the others recede.
+         pinned and turns over to the next step's photo as each step crosses the middle of the
+         screen (in the video a big number turned): four steps, four photos.
          Copy is the user's "Our story", set into four steps; every fact and figure is theirs.
          Photos are stand-ins made with Magnific: [IMAGE NEEDED] real LPP Media and Arcovia photos. -->
     <section class="story" data-story aria-labelledby="story-title">
@@ -156,92 +155,92 @@
         </header>
 
         <ol class="story__steps">
-          <li class="story-step">
+          <li class="story-step" data-story-step data-image="assets/story/studio.jpg">
             <div class="story-step__head">
               <h3 class="story-step__title">A studio in Los Angeles</h3>
               <p class="story-step__meta">LPP Media · founded by Colin Pham</p>
             </div>
             <ul class="story-step__points">
-              <li class="story-point" data-story-point data-image="assets/story/studio.jpg">
+              <li class="story-point">
                 <svg class="story-point__icon" aria-hidden="true"><use href="#icon-story-camera"/></svg>
                 <h4 class="story-point__title">The studio</h4>
                 <p class="story-point__text">Arcovia began here as LPP Media, a creative studio.</p>
               </li>
-              <li class="story-point" data-story-point data-image="assets/story/audience.jpg">
+              <li class="story-point">
                 <svg class="story-point__icon" aria-hidden="true"><use href="#icon-story-views"/></svg>
                 <h4 class="story-point__title">600M+ organic views</h4>
                 <p class="story-point__text">The studio’s work for Google, Microsoft, PepsiCo and Mercedes-Benz.</p>
               </li>
-              <li class="story-point" data-story-point data-image="assets/story/crew.jpg">
+              <li class="story-point">
                 <svg class="story-point__icon" aria-hidden="true"><use href="#icon-story-lesson"/></svg>
                 <h4 class="story-point__title">The lesson</h4>
                 <p class="story-point__text">Something most agencies never learn: attention is not the product. Belief is.</p>
               </li>
             </ul>
           </li>
-          <li class="story-step">
+          <li class="story-step" data-story-step data-image="assets/story/screening.jpg">
             <div class="story-step__head">
               <h3 class="story-step__title">A story moves capital</h3>
               <p class="story-step__meta">From LPP Media to Arcovia</p>
             </div>
             <ul class="story-step__points">
-              <li class="story-point" data-story-point data-image="assets/story/screening.jpg">
+              <li class="story-point">
                 <svg class="story-point__icon" aria-hidden="true"><use href="#icon-story-turn"/></svg>
                 <h4 class="story-point__title">The turn</h4>
                 <p class="story-point__text">We watched a story move capital the way it moves an audience.</p>
               </li>
-              <li class="story-point" data-story-point data-image="assets/story/studio-wide.jpg">
+              <li class="story-point">
                 <svg class="story-point__icon" aria-hidden="true"><use href="#icon-story-outgrow"/></svg>
                 <h4 class="story-point__title">Outgrowing the studio</h4>
                 <p class="story-point__text">The capital work outgrew the studio.</p>
               </li>
-              <li class="story-point" data-story-point data-image="assets/story/meeting-room.jpg">
+              <li class="story-point">
                 <svg class="story-point__icon" aria-hidden="true"><use href="#icon-story-firm"/></svg>
                 <h4 class="story-point__title">Arcovia</h4>
                 <p class="story-point__text">LPP Media evolved into Arcovia, an independent capital markets advisory.</p>
               </li>
             </ul>
           </li>
-          <li class="story-step">
+          <li class="story-step" data-story-step data-image="assets/story/table.jpg">
             <div class="story-step__head">
               <h3 class="story-step__title">Arcovia today</h3>
               <p class="story-step__meta">24 transactions closed · $330M+ raised</p>
             </div>
             <ul class="story-step__points">
-              <li class="story-point" data-story-point data-image="assets/story/table.jpg">
+              <li class="story-point">
                 <svg class="story-point__icon" aria-hidden="true"><use href="#icon-story-point"/></svg>
                 <h4 class="story-point__title">Where we work</h4>
                 <p class="story-point__text">The point where investor judgment and narrative meet.</p>
               </li>
-              <li class="story-point" data-story-point data-image="assets/story/preparation.jpg">
+              <li class="story-point">
                 <svg class="story-point__icon" aria-hidden="true"><use href="#icon-story-map"/></svg>
                 <h4 class="story-point__title">The preparation</h4>
                 <p class="story-point__text">We prepare the story, the evidence and the investor map.</p>
               </li>
-              <li class="story-point" data-story-point data-image="assets/story/handshake.jpg">
+              <li class="story-point">
                 <svg class="story-point__icon" aria-hidden="true"><use href="#icon-story-process"/></svg>
                 <h4 class="story-point__title">The process</h4>
                 <p class="story-point__text">Then we run the process through to close.</p>
               </li>
             </ul>
           </li>
-          <li class="story-step">
+          <li class="story-step" data-story-step data-image="assets/story/edit.jpg">
             <div class="story-step__head">
               <h3 class="story-step__title">Two houses</h3>
               <p class="story-step__meta">Arcovia and LPP Media</p>
             </div>
             <ul class="story-step__points">
-              <li class="story-point" data-story-point data-image="assets/story/signing.jpg">
+              <li class="story-point">
                 <svg class="story-point__icon" aria-hidden="true"><use href="#icon-story-money"/></svg>
                 <h4 class="story-point__title">If it moves money</h4>
                 <p class="story-point__text">It is Arcovia.</p>
               </li>
-              <li class="story-point" data-story-point data-image="assets/story/edit.jpg">
+              <li class="story-point">
                 <svg class="story-point__icon" aria-hidden="true"><use href="#icon-story-people"/></svg>
                 <h4 class="story-point__title">If it moves people</h4>
                 <p class="story-point__text">It is LPP Media, the creative house of Arcovia, which makes the films, brands and motion behind our work.</p>
               </li>
-              <li class="story-point" data-story-point data-image="assets/story/door.jpg">
+              <li class="story-point">
                 <svg class="story-point__icon" aria-hidden="true"><use href="#icon-story-door"/></svg>
                 <h4 class="story-point__title">Next</h4>
                 <p class="story-point__text">LPP Media will open its own doors soon.</p>
@@ -250,7 +249,7 @@
           </li>
         </ol>
 
-        <!-- Component: story-card. One photo, pinned; story.js turns it over to each point's photo.
+        <!-- Component: story-card. One photo, pinned; story.js turns it over to each step's photo.
              Decorative here: the text carries the story on its own. -->
         <div class="story__media" aria-hidden="true">
           <div class="story__card" data-story-card>

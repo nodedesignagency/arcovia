@@ -4,9 +4,8 @@
    editorial page: a large heading, then the story in four steps on the left
    (cols 1-6), each a title and a short line over a hairline, and three points,
    every point an icon, a heading and a paragraph. One photo stays
-   pinned on the right (cols 7-12) and turns over to each point's photo as
-   the point crosses the middle of the screen (story.js). The point in the
-   middle is set in full ink; the others recede.
+   pinned on the right (cols 7-12) and turns over to each step's photo as
+   the step crosses the middle of the screen (story.js): four photos.
    On the flat neutral ground, like the footer that follows.
    Uses shared tokens and components from styles.css (chip, container).
    ========================================================================== */
@@ -17,7 +16,7 @@
   --story-fs: calc((min(100vw, var(--container-max)) - 2 * var(--gutter)) * 0.04);
   background: var(--color-neutral);
   padding-top: var(--space-10);
-  padding-bottom: var(--space-8);   /* the last point already leaves room below it (see the end of the steps) */
+  padding-bottom: var(--space-10);
 }
 
 .story__inner {
@@ -81,9 +80,7 @@
   display: grid;
   grid-template-columns: 32px minmax(0, 1fr);
   column-gap: var(--space-5);
-  align-content: start;   /* the last point is taller than its text: keep the text together at the top */
   padding-top: var(--space-7);
-  transition: opacity var(--dur-slow) var(--ease-out);
 }
 .story-point__icon {
   grid-row: 1 / span 2;
@@ -107,12 +104,6 @@
   line-height: var(--lh-lede);
   color: var(--color-text);
 }
-/* The point whose photo is showing is in full ink; the others recede (story.js sets this) */
-.story--live .story-point { opacity: 0.3; }
-.story--live .story-point.is-active { opacity: 1; }
-/* The last point keeps a little room below it, so it reaches the middle of the screen (and gets
-   its photo) while the card is still pinned */
-.story-step:last-child .story-point:last-child { min-height: calc(var(--story-card-h) * 0.5); }
 
 /* ---------- The pinned photo (component: story-card) ---------- */
 .story__media {
@@ -165,6 +156,4 @@
   .story__steps { grid-column: 1 / -1; grid-row: 3; }
   .story__media { grid-column: 1 / -1; grid-row: 2; margin-bottom: var(--space-7); }
   .story__card { position: relative; top: 0; height: auto; width: 100%; }
-  .story-point { min-height: 0; }
-  .story--live .story-point { opacity: 1; }
 }
