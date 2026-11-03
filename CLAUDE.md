@@ -33,7 +33,7 @@ cd ~/Desktop/arcovia-preview && ./preview.sh <branch>
 
 ## Files
 
-- `site/index.html`: one HTML file per page (Home; `about.html` is in progress on `claude/sharp-edison-fu03po`, see "Where we are"). Sections are wrapped in `SECTION:name START/END` markers. Every page carries the same masthead, menu and footer markup (copy them from `index.html`) and marks its own nav link with `aria-current="page"`.
+- `site/index.html`, `site/about.html`: one HTML file per page (Home and About so far; The mark is only on this branch, see "Where we are"). Sections are wrapped in `SECTION:name START/END` markers. Every page carries the same masthead, menu and footer markup (copy them from `index.html`) and marks its own nav link with `aria-current="page"`.
 - `site/styles.css`: **all tokens** (colour, type scale, spacing, radius, shadows, motion) plus shared components: buttons, logo, header, menu, path picker, seam.
 - `site/sections/<name>.css`: one stylesheet per section. Asset paths in these files start with `../assets/` (don't use `var(--texture-concrete)` here: its URL resolves relative to the section file and breaks).
 - `site/main.js`: small shared JS (header, menu, path picker, office clocks, wordmark fit).
@@ -56,11 +56,11 @@ cd ~/Desktop/arcovia-preview && ./preview.sh <branch>
 
 Use the same class names everywhere. Reusable parts (nav, footer, buttons, section header, team card, track record row, map) must be built the way Framer will need them.
 
-## Where we are (handover, About page)
+## Where we are
 
-- The **About page** (`site/about.html`) is being built on branch **`claude/sharp-edison-fu03po`**. None of it is approved or on `main` yet. A new chat continuing the About page must first merge that branch into its own: `git fetch origin claude/sharp-edison-fu03po && git merge origin/claude/sharp-edison-fu03po` (also merge `origin/main` for approved Home work).
-- Built so far, in page order (details under Design direction): About hero (`about-hero`), Our story (`story`), What we believe (`beliefs`), How we work (`process`), The mark (`mark`, built on `claude/about-page-the-mark-pcb3e0`, which merged `claude/sharp-edison-fu03po`), then the footer.
-- **Next:** ask the user for any About sections after the mark (the brief numbers them; the mark is section 5).
+- **On `main` (approved):** all of Home, and the About page: About hero (`about-hero`), Our story (`story`), What we believe (`beliefs`), How we work (`process`), then the footer (approved by the user: "apart from this section move everything to main"; promoted from this branch, `claude/about-page-the-mark-pcb3e0`, which carries the About work from `claude/sharp-edison-fu03po`).
+- **Not approved:** About block 5, "The mark" (`SECTION:mark`, `site/sections/mark.css`, `site/mark.js`, and the `concrete.js` options it needs: `window`, `tone`, `bevel`, a second `shade` box). It lives on this branch only; keep it off `main` until the user approves it.
+- **Next:** Phase 2, Framer (the user said to move the approved work to Framer), following the Phase 2 rules below. Then any About sections after the mark (the brief numbers them; the mark is section 5).
 - How the user works: they send a screenshot of the brief's copy and a reference (image or screen recording; recordings arrive as uploads under `/root/.claude/uploads/...`, read them with `ffmpeg` frames). Take the reference's **layout** and the specific effect they point at, nothing more (they reacted strongly when the Mahadeva bars and heading wipe were added unasked). They review at 1440 and 1728 @2x on a Retina Mac; send screenshots, and test scroll effects (including fast scrolling) in the browser before handing over. Magnific (image generation) costs credits: say so before generating.
 
 ## Scope (V1)
