@@ -1,0 +1,100 @@
+/* ==========================================================================
+   SECTION: beliefs — About, block 3 ("What we believe")
+   Layout after the user's reference: the heading, then four columns, each
+   behind a vertical hairline: a small number, a fine line drawing, a title
+   and one line. In our language: Montserrat, ink on white (between the
+   neutral "Our story" and the neutral footer), the drawings built from our
+   own geometry (the round of the A-mark, the formwork tie holes), drawn in
+   ink with a fine, even stroke. Number, drawing, title and text line up
+   across the four columns (subgrid). Still: no motion.
+   Uses shared tokens from styles.css (container).
+   ========================================================================== */
+
+.beliefs {
+  --beliefs-line: rgba(21, 21, 21, 0.16);
+  --beliefs-fs: calc((min(100vw, var(--container-max)) - 2 * var(--gutter)) * 0.04);
+  background: var(--color-white);
+  padding-block: var(--space-10);
+}
+
+.beliefs__title {
+  font-size: var(--beliefs-fs);
+  font-weight: var(--weight-medium);
+  line-height: 1.08;
+  letter-spacing: var(--ls-h2);
+  color: var(--color-ink);
+  margin-bottom: var(--space-9);
+}
+
+/* Four columns on the 12-column grid (three each); rows shared so the parts line up */
+.beliefs__list {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-rows: repeat(4, auto);
+  column-gap: var(--grid-gap);
+  list-style: none;
+}
+
+.belief {
+  grid-row: span 4;
+  display: grid;
+  grid-template-rows: subgrid;
+  padding: 0 var(--space-5) var(--space-2);
+  border-left: 1px solid var(--beliefs-line);
+}
+
+.belief__num {
+  font-size: 13px;
+  font-weight: var(--weight-medium);
+  letter-spacing: 0.08em;
+  line-height: 18px;
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* The drawing: a fine ink line that stays 1.25px at any size */
+.belief__art {
+  width: 160px;
+  height: 120px;
+  margin-top: var(--space-8);
+  overflow: visible;
+  fill: none;
+  stroke: var(--color-ink);
+  stroke-width: 1.25;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.belief__art * { vector-effect: non-scaling-stroke; }
+.belief__art .belief__fill { fill: var(--color-ink); stroke: none; }
+.belief__art .belief__dash { stroke-dasharray: 3 5; }
+.belief__art .belief__hatch { fill: url(#belief-hatch); stroke: none; }
+.belief__art pattern path { stroke: var(--color-ink); stroke-width: 0.9; }
+
+.belief__name {
+  margin-top: var(--space-8);
+  font-size: var(--fs-h3);
+  font-weight: var(--weight-medium);
+  line-height: var(--lh-h3);
+  letter-spacing: var(--ls-h3);
+  color: var(--color-ink);
+  text-wrap: balance;
+}
+
+.belief__text {
+  margin-top: var(--space-3);
+  max-width: 22em;
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--color-text);
+  text-wrap: pretty;
+}
+
+/* Tablet and phone: not reviewed yet (desktop first) */
+@media (max-width: 1199px) {
+  .beliefs { --beliefs-fs: 40px; }
+  .beliefs__list { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: var(--space-8); }
+}
+@media (max-width: 809px) {
+  .beliefs { --beliefs-fs: 30px; }
+  .beliefs__list { grid-template-columns: minmax(0, 1fr); }
+}

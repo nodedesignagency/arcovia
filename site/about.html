@@ -16,6 +16,7 @@
   <!-- One stylesheet per section, so a section can be approved and moved to main on its own -->
   <link rel="stylesheet" href="sections/about-hero.css">
   <link rel="stylesheet" href="sections/story.css">
+  <link rel="stylesheet" href="sections/beliefs.css">
   <link rel="stylesheet" href="sections/footer.css">
 </head>
 <body>
@@ -260,6 +261,73 @@
       </div>
     </section>
     <!-- SECTION:story END -->
+
+    <!-- SECTION:beliefs START · styles: sections/beliefs.css
+         About, block 3 ("What we believe"). Layout after the user's reference (four columns
+         between vertical hairlines, each a small number, a fine line drawing, a title and one
+         line), in our language: Montserrat, ink on white, and drawings made from our own
+         geometry, the round of the A-mark and the formwork tie holes. Still: no motion.
+         Copy is the user's: four principles, 01–04, each with one line. -->
+    <section class="beliefs" aria-labelledby="beliefs-title">
+      <div class="beliefs__inner container">
+        <h2 class="beliefs__title" id="beliefs-title">What we believe</h2>
+
+        <ol class="beliefs__list">
+          <li class="belief">
+            <p class="belief__num" aria-hidden="true">01</p>
+            <!-- Four lines (positioning, timing, evidence, belief) meet in one point -->
+            <svg class="belief__art" viewBox="0 0 160 120" aria-hidden="true">
+              <circle cx="18" cy="18" r="3.5"/><circle cx="18" cy="46" r="3.5"/><circle cx="18" cy="74" r="3.5"/><circle cx="18" cy="102" r="3.5"/>
+              <path d="M21.5 18C72 18 80 60 117 60"/><path d="M21.5 46C70 46 86 60 117 60"/><path d="M21.5 74C70 74 86 60 117 60"/><path d="M21.5 102C72 102 80 60 117 60"/>
+              <circle cx="128" cy="60" r="11"/><circle class="belief__fill" cx="128" cy="60" r="4.5"/>
+            </svg>
+            <h3 class="belief__name">Capital follows conviction</h3>
+            <p class="belief__text">Access alone does not close a round. Investors move when positioning, timing, evidence and belief reinforce one another.</p>
+          </li>
+          <li class="belief">
+            <p class="belief__num" aria-hidden="true">02</p>
+            <!-- Two rounds on one axis: the shared ground between them shaded -->
+            <svg class="belief__art" viewBox="0 0 160 120" aria-hidden="true">
+              <defs>
+                <pattern id="belief-hatch" width="4" height="4" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><path d="M0 0V4"/></pattern>
+                <clipPath id="belief-lens"><circle cx="98" cy="60" r="36"/></clipPath>
+              </defs>
+              <circle class="belief__hatch" cx="62" cy="60" r="36" clip-path="url(#belief-lens)"/>
+              <circle cx="62" cy="60" r="36"/><circle cx="98" cy="60" r="36"/>
+              <path d="M6 60H154"/>
+              <circle class="belief__fill" cx="62" cy="60" r="2.5"/><circle class="belief__fill" cx="98" cy="60" r="2.5"/>
+            </svg>
+            <h3 class="belief__name">Alignment before transaction</h3>
+            <p class="belief__text">The strongest capital relationships begin with shared understanding. The right investor, not just any cheque.</p>
+          </li>
+          <li class="belief">
+            <p class="belief__num" aria-hidden="true">03</p>
+            <!-- The founder's line runs straight to its point; other agendas branch off, dashed -->
+            <svg class="belief__art" viewBox="0 0 160 120" aria-hidden="true">
+              <circle cx="18" cy="60" r="7"/>
+              <path d="M25 60H139"/>
+              <path class="belief__dash" d="M62 60C88 60 102 42 116 20"/><path class="belief__dash" d="M62 60C88 60 102 78 116 100"/>
+              <circle cx="118.5" cy="16.5" r="3.5"/><circle cx="118.5" cy="103.5" r="3.5"/>
+              <circle class="belief__fill" cx="144" cy="60" r="5"/>
+            </svg>
+            <h3 class="belief__name">Founders keep their vision</h3>
+            <p class="belief__text">Capital should accelerate a company’s mission, not replace it with someone else’s agenda.</p>
+          </li>
+          <li class="belief">
+            <p class="belief__num" aria-hidden="true">04</p>
+            <!-- Rounds that grow, each resting on the last: trust compounding -->
+            <svg class="belief__art" viewBox="0 0 160 120" aria-hidden="true">
+              <path d="M4 108H156"/>
+              <circle cx="12" cy="102" r="6"/><circle cx="29" cy="97" r="11"/><circle cx="59" cy="89" r="19"/><circle cx="110" cy="76" r="32"/>
+              <circle class="belief__fill" cx="12" cy="102" r="1.8"/><circle class="belief__fill" cx="29" cy="97" r="2.2"/><circle class="belief__fill" cx="59" cy="89" r="2.6"/><circle class="belief__fill" cx="110" cy="76" r="3"/>
+            </svg>
+            <h3 class="belief__name">Trust compounds</h3>
+            <p class="belief__text">Useful introductions, accurate follow-up and kept commitments build relationships that outlast a single deal.</p>
+          </li>
+        </ol>
+      </div>
+    </section>
+    <!-- SECTION:beliefs END -->
 
   </main>
 
