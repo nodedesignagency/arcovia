@@ -133,11 +133,8 @@
   max-width: 100%;
   margin-left: auto;   /* flush with the grid's right edge */
 }
-/* 3D only while it turns: at rest there is no transform, so the photo stays crisp */
-.story__card.is-turning {
-  transform-style: preserve-3d;
-  transition: transform 700ms cubic-bezier(0.65, 0, 0.35, 1);
-}
+/* 3D only while it turns (story.js animates it): at rest there is no transform, so the photo stays crisp */
+.story__card.is-turning { transform-style: preserve-3d; }
 
 .story__face {
   position: absolute;

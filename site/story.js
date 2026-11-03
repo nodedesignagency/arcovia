@@ -9,7 +9,7 @@
    (story.css), so one step sits beside the photo at a time.
    Scrolling back turns it back the other way. Timed, not scrubbed, so the
    card never rests half turned; if several steps go by during one turn, it
-   turns again to catch up. After each turn the new photo moves to the front
+   turns again to catch up (fast scrolling included: see turn()). After each turn the new photo moves to the front
    and the card drops its transform, so at rest the photo stays crisp.
    Reduced motion: the photo simply changes. Built to become a Framer code
    component.
@@ -30,7 +30,8 @@
   // Load every photo up front, so a turn never shows a blank face
   srcs.forEach(function (src) { var i = new Image(); i.src = src; });
 
-  var shown = 0, target = 0, turning = false, turningTo = 0;
+  var shown = 0, target = 0, turning = false, token = 0, anim = null;
+  var TURN_MS = 700, EASE = "cubic-bezier(0.65, 0, 0.35, 1)";
 
   // The last step whose content has reached the photo's centre. The card is pinned in the
   // middle of the screen, so that is the screen's middle; each step's content is centred in
@@ -44,39 +45,51 @@
     return k;
   }
 
-  function settle(next) {
+  // Resolves once the photo can be drawn (or after a short wait, never later)
+  function ready(img) {
+    return new Promise(function (resolve) {
+      var t = setTimeout(resolve, 250);
+      var done = function () { clearTimeout(t); resolve(); };
+      if (img.decode) img.decode().then(done, done); else done();
+    });
+  }
+
+  /* The turn is a self-timed animation (Web Animations), not a CSS transition: a transition
+     that gets interrupted never reports that it ended, and when you scrolled fast the card
+     waited for that report forever and stopped turning. Each turn has a token, and a timer
+     backs up the animation's own end, so a turn always finishes, exactly once. */
+  function settle(t, next) {
+    if (t !== token || !turning) return;
+    token++;
     front.src = srcs[next];
-    var done = function () {
+    ready(front).then(function () {
+      if (anim) { anim.cancel(); anim = null; }   // drop the transform: the new photo is in front now
       card.classList.remove("is-turning");
-      card.style.transform = "";
       shown = next;
       turning = false;
-      turn();
-    };
-    if (front.decode) front.decode().then(done, done); else done();
+      turn();                                     // catch up if the reader has moved on meanwhile
+    });
   }
 
   function turn() {
     if (turning || target === shown) return;
     var next = target;
-    if (reduced.matches) { front.src = srcs[next]; shown = next; return; }
+    if (reduced.matches || !card.animate) { front.src = srcs[next]; shown = next; return; }
     turning = true;
-    turningTo = next;
+    var t = token;
     back.src = srcs[next];
-    var go = function () {
+    ready(back).then(function () {
+      if (t !== token) return;
       card.classList.add("is-turning");
       // forwards turns to the left, backwards to the right
-      requestAnimationFrame(function () {
-        card.style.transform = "rotateY(" + (next > shown ? -180 : 180) + "deg)";
-      });
-    };
-    if (back.decode) back.decode().then(go, go); else go();
+      anim = card.animate(
+        [{ transform: "rotateY(0deg)" }, { transform: "rotateY(" + (next > shown ? -180 : 180) + "deg)" }],
+        { duration: TURN_MS, easing: EASE, fill: "forwards" }
+      );
+      anim.finished.then(function () { settle(t, next); }, function () { settle(t, next); });
+      setTimeout(function () { settle(t, next); }, TURN_MS + 400);
+    });
   }
-
-  card.addEventListener("transitionend", function (e) {
-    if (e.target !== card || e.propertyName !== "transform" || !turning) return;
-    settle(turningTo);
-  });
 
   var queued = false;
   function update() {
