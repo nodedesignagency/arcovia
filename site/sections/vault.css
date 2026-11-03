@@ -82,3 +82,151 @@
 .vault-open .hero [data-rise] { animation-delay: calc(var(--rise, 0) * 90ms + 60ms); }
 /* The live concrete is there the moment the doors part (it fades in as usual if it comes later) */
 .vault-on:not(.vault-open) .hero__canvas { transition: none; }
+
+/* ==========================================================================
+   ?vault=doors — the sliding-door variant, to compare with the 3D vault
+   After the earlier sliding doors (flat charcoal halves sliding apart), but the
+   joint no longer splits the circle: it runs down the middle, rounds the
+   wheel's right side on the ring between the wheel and the tops of the legs
+   (the logo's own gap) and runs on down between the legs. So the whole circle
+   leaves with the left door, with the left leg; the right leg goes right, and
+   the right door has a round notch where the wheel sat.
+   Sequence (vault.js adds .is-sliding): light catches in the joint and traces
+   the half ring; the doors slide apart, heavy at first; light pours through
+   the gap; the doors cast a soft shadow on the hero as they go. About 1.2 s.
+   All CSS: the closed doors are the first paint, and the motion is compositor
+   transforms and opacity. The leaves are SVG in mark units (the sprite's
+   #vault-shape-left/right, #vault-joint), placed over the same box as the 3D
+   door's mark, so the cut and the deboss are exact at any size.
+   ========================================================================== */
+
+.vault__doors { display: none; }
+
+.vault-doors .vault {
+  --vault-open: 900ms;                            /* the doors' travel; vault.js reads it */
+  --vault-delay: 180ms;                           /* the light catches in the joint first */
+  --vault-ease: cubic-bezier(0.76, 0, 0.24, 1);   /* heavy: slow to start, slow to stop */
+  background: none;
+}
+.vault-doors .vault > .vault__mark,
+.vault-doors .vault > .vault__joint,
+.vault-doors .vault__canvas { display: none; }
+
+.vault-doors .vault__doors {
+  --vault-h: min(50cqh, calc(70cqw * 57 / 72));   /* as the 3D door: half the height, at most 70% wide */
+  /* each door travels its half plus the wheel's tab, so the tab clears the edge too */
+  --vault-travel: calc(50cqw + var(--vault-h) * 0.150088 + 2px);
+  display: block;
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+/* Charcoal behind the closed doors: where the two leaves meet on an anti-aliased edge, the hero
+   would show through as a light hairline. It goes as the doors start to move */
+.vault__backing {
+  position: absolute;
+  inset: 0;
+  background: var(--color-charcoal);
+}
+.vault.is-sliding .vault__backing { animation: vault-joint 1ms linear var(--vault-delay) forwards; }
+
+/* A leaf: an SVG over the mark's box (wheel centre on the middle, mark centre 48% down),
+   painting its door shape far beyond it */
+.vault__leaf {
+  position: absolute;
+  left: 50%;
+  top: 48%;
+  height: var(--vault-h);
+  width: auto;
+  aspect-ratio: 72 / 57;
+  overflow: visible;
+  transform: translate(-50.28%, -50%);
+  pointer-events: none;
+}
+
+.vault__door {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;               /* the leaf's shape is cut to the screen */
+  will-change: transform;
+}
+.vault__face { fill: var(--color-charcoal); }
+.vault__deboss { fill: #000; color: #000; }       /* only the shape counts: #deboss-vault presses it in */
+/* Each door's leading edge catches a little light (under the joint while closed) */
+.vault__lip { fill: none; stroke: rgba(255, 255, 255, 0.1); stroke-width: 2px; }
+
+/* The joint while closed: a fine groove, dark on the left door's side, a light lip on the right
+   door's (a 2px line cut by each door's shape: 1px on each side) */
+.vault__groove { fill: none; stroke-width: 2px; }
+.vault__groove--dark { stroke: rgba(0, 0, 0, 0.3); }
+.vault__groove--light { stroke: rgba(255, 255, 255, 0.08); }
+
+/* Light catching in the joint as the doors unlatch: a bright core in a soft glow */
+.vault__catch { opacity: 0; }
+.vault__glow { fill: none; stroke: #fff; stroke-linejoin: round; }
+.vault__glow--1 { stroke-width: 16px; stroke-opacity: 0.05; }
+.vault__glow--2 { stroke-width: 8px; stroke-opacity: 0.1; }
+.vault__glow--3 { stroke-width: 3.5px; stroke-opacity: 0.28; }
+.vault__glow--core { stroke-width: 1.4px; stroke-opacity: 0.9; }
+
+/* The doors' shadow on the hero: each door's silhouette, blurred, under both doors (so it only
+   shows in the gap); taller than the screen so the blur has no edge at the top or bottom */
+.vault__cast {
+  position: absolute;
+  inset: -80px 0;
+  overflow: hidden;
+  filter: drop-shadow(0 0 30px rgba(0, 0, 0, 0.55));
+  opacity: 0;
+  will-change: transform, opacity;
+}
+.vault__cast .vault__leaf { top: calc(48cqh + 80px); fill: #000; }
+
+/* Light pouring through the gap: under the doors, so it only brightens the hero between them;
+   it widens with the gap, then goes */
+.vault-doors .vault__light {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 160px;
+  margin-left: -80px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.55) 50%, rgba(255, 255, 255, 0));
+  opacity: 0;
+  transform: scaleX(0.02);
+}
+
+/* ---------- Opening (vault.js adds .is-sliding) ---------- */
+.vault.is-sliding .vault__door--left { animation: vault-left var(--vault-open) var(--vault-ease) var(--vault-delay) forwards; }
+.vault.is-sliding .vault__door--right { animation: vault-right var(--vault-open) var(--vault-ease) var(--vault-delay) forwards; }
+.vault.is-sliding .vault__cast--left {
+  animation: vault-left var(--vault-open) var(--vault-ease) var(--vault-delay) forwards,
+             vault-shade var(--vault-open) linear var(--vault-delay) forwards;
+}
+.vault.is-sliding .vault__cast--right {
+  animation: vault-right var(--vault-open) var(--vault-ease) var(--vault-delay) forwards,
+             vault-shade var(--vault-open) linear var(--vault-delay) forwards;
+}
+.vault.is-sliding .vault__cut { animation: vault-joint 120ms linear 140ms forwards; }
+.vault.is-sliding .vault__catch { animation: vault-catch 460ms linear forwards; }
+.vault.is-sliding .vault__light { animation: vault-light var(--vault-open) var(--ease-out) var(--vault-delay) forwards; }
+
+@keyframes vault-left { to { transform: translate3d(calc(-1 * var(--vault-travel)), 0, 0); } }
+@keyframes vault-right { to { transform: translate3d(var(--vault-travel), 0, 0); } }
+@keyframes vault-shade {
+  0%, 30% { opacity: 0; }
+  50% { opacity: 1; }
+  85% { opacity: 0.5; }
+  100% { opacity: 0; }
+}
+@keyframes vault-joint { to { opacity: 0; } }   /* gone before the gap is wider than the joint */
+@keyframes vault-catch { 0% { opacity: 0; } 30%, 40% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes vault-light {
+  0% { opacity: 0; transform: scaleX(0.02); }
+  12% { opacity: 1; transform: scaleX(0.06); }
+  45% { opacity: 0.6; transform: scaleX(1); }
+  70%, 100% { opacity: 0; transform: scaleX(2.4); }
+}
+
+/* The hero's text rises as the doors part */
+.vault-doors.vault-open .hero [data-rise] { animation-delay: calc(var(--rise, 0) * 90ms + 560ms); }

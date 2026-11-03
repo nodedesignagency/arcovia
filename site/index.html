@@ -27,7 +27,8 @@
   <link rel="stylesheet" href="sections/vault.css">
   <!-- SECTION:vault (head part): decide before the first paint whether the opening plays.
        It plays when the site is opened or reloaded, not when you come back to Home from another
-       page of the site; ?vault=on always plays, ?vault=off never. vault.js opens it. -->
+       page of the site; ?vault=on always plays, ?vault=off never, ?vault=doors always plays the
+       sliding-door variant. vault.js opens it. -->
   <script>
     (function () {
       var d = document.documentElement;
@@ -39,8 +40,11 @@
         var fromSite = false;
         try { fromSite = location.origin !== "null" && !!document.referrer && new URL(document.referrer).origin === location.origin; } catch (e) {}
         var again = type === "navigate" && fromSite && sessionStorage.getItem("arc-vault") === "1";
-        if (!/[?&]vault=on\b/.test(q) && (type === "back_forward" || again)) return;
+        // ?vault=doors: the sliding-door variant instead of the 3D vault; always plays, to compare
+        var doors = /[?&]vault=doors\b/.test(q);
+        if (!doors && !/[?&]vault=on\b/.test(q) && (type === "back_forward" || again)) return;
         d.classList.add("vault-on");
+        if (doors) d.classList.add("vault-doors");
         // The browser's toolbar takes the door's charcoal while it is closed
         var meta = document.querySelector('meta[name="theme-color"]');
         if (meta) { meta.setAttribute("data-base", meta.getAttribute("content")); meta.setAttribute("content", "#565656"); }
@@ -140,6 +144,18 @@
       <feFlood flood-color="#fff" flood-opacity="0.16"/><feComposite in2="e2" operator="in" result="light"/>
       <feMerge><feMergeNode in="floor"/><feMergeNode in="shade"/><feMergeNode in="light"/></feMerge>
     </filter>
+    <!-- ?vault=doors: the sliding doors' joint keeps the wheel whole. In mark units (72 × 57): it runs
+         down the middle (x 36.201, the wheel's centre), rounds the wheel's right side on a ring of
+         radius 8.555 (half-way between the wheel, r 8.014, and the tops of the legs, 9.10 from its
+         centre: the logo's own gap) and runs on down between the legs. Left of it the left door,
+         with the wheel and the left leg; right of it the right door, with the right leg -->
+    <defs>
+      <path id="vault-joint" d="M36.201 -2000V-0.544A8.555 8.555 0 0 1 36.201 16.566V2000" vector-effect="non-scaling-stroke"/>
+      <path id="vault-shape-left" d="M-2000 -2000H36.201V-0.544A8.555 8.555 0 0 1 36.201 16.566V2000H-2000Z"/>
+      <path id="vault-shape-right" d="M2000 -2000H36.201V-0.544A8.555 8.555 0 0 1 36.201 16.566V2000H2000Z"/>
+      <clipPath id="vault-clip-left"><use href="#vault-shape-left"/></clipPath>
+      <clipPath id="vault-clip-right"><use href="#vault-shape-right"/></clipPath>
+    </defs>
   </svg>
 
   <!-- SECTION:vault START · styles: sections/vault.css · scripts: vault.js, plus the inline script in the head
@@ -150,6 +166,43 @@
     <svg class="vault__mark" viewBox="0 0 72 57"><use href="#a-mark"/></svg>
     <span class="vault__joint"></span>
     <canvas class="vault__canvas"></canvas>
+    <!-- ?vault=doors: two flat charcoal doors slide apart; the joint rounds the wheel, so the whole
+         circle leaves with the left door (with the left leg) and the right leg with the right door.
+         Each leaf is drawn in mark units (the sprite's #vault-shape-*), so the cut stays exact -->
+    <div class="vault__doors">
+      <span class="vault__backing"></span>
+      <span class="vault__light"></span>
+      <div class="vault__cast vault__cast--left"><svg class="vault__leaf" viewBox="0 0 72 57"><use href="#vault-shape-left"/></svg></div>
+      <div class="vault__cast vault__cast--right"><svg class="vault__leaf" viewBox="0 0 72 57"><use href="#vault-shape-right"/></svg></div>
+      <div class="vault__door vault__door--left">
+        <svg class="vault__leaf" viewBox="0 0 72 57">
+          <use class="vault__face" href="#vault-shape-left"/>
+          <g clip-path="url(#vault-clip-left)">
+            <g class="vault__deboss" filter="url(#deboss-vault)"><rect width="72" height="57" fill="none"/><use href="#a-mark" width="72" height="57"/></g>
+            <use class="vault__lip" href="#vault-joint"/>
+          </g>
+        </svg>
+      </div>
+      <div class="vault__door vault__door--right">
+        <svg class="vault__leaf" viewBox="0 0 72 57">
+          <use class="vault__face" href="#vault-shape-right"/>
+          <g clip-path="url(#vault-clip-right)">
+            <g class="vault__deboss" filter="url(#deboss-vault)"><rect width="72" height="57" fill="none"/><use href="#a-mark" width="72" height="57"/></g>
+            <use class="vault__lip" href="#vault-joint"/>
+          </g>
+        </svg>
+      </div>
+      <svg class="vault__leaf vault__cut" viewBox="0 0 72 57">
+        <use class="vault__groove vault__groove--dark" href="#vault-joint" clip-path="url(#vault-clip-left)"/>
+        <use class="vault__groove vault__groove--light" href="#vault-joint" clip-path="url(#vault-clip-right)"/>
+      </svg>
+      <svg class="vault__leaf vault__catch" viewBox="0 0 72 57">
+        <use class="vault__glow vault__glow--1" href="#vault-joint"/>
+        <use class="vault__glow vault__glow--2" href="#vault-joint"/>
+        <use class="vault__glow vault__glow--3" href="#vault-joint"/>
+        <use class="vault__glow vault__glow--core" href="#vault-joint"/>
+      </svg>
+    </div>
   </div>
   <!-- SECTION:vault END -->
 

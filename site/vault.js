@@ -16,7 +16,9 @@
       lands on the hero.
    Lit from above like the deboss; drawn at device resolution so edges stay crisp.
    The deboss is the same SVG filter as the CSS door (#deboss-vault), rasterised
-   once into a texture. Removes itself (and frees its GL context) when done. */
+   once into a texture. Removes itself (and frees its GL context) when done.
+   ?vault=doors (html.vault-doors, set by the head script) plays the sliding-door
+   variant instead: all CSS (sections/vault.css), this only starts and clears it. */
 (function () {
   "use strict";
 
@@ -85,6 +87,38 @@
   }
 
   var reduce = !!window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* ---------- ?vault=doors: the sliding-door variant (all CSS, sections/vault.css) ----------
+     Two flat doors; the joint rounds the wheel, so the circle leaves whole with the left door.
+     This only waits for the hero and starts it (.is-sliding), then clears it away. */
+  if (root.classList.contains("vault-doors")) {
+    var css = getComputedStyle(vault);
+    var SLIDE = (parseFloat(css.getPropertyValue("--vault-open")) || 900) +
+                (parseFloat(css.getPropertyValue("--vault-delay")) || 0);
+    var slid = false;
+    var keys = ["wheel", "touchstart", "keydown", "pointerdown"];
+    var slide = function () {
+      if (slid) return;
+      slid = true;
+      keys.forEach(function (type) { window.removeEventListener(type, slide, true); });
+      root.classList.add("vault-open");
+      restoreTint();
+      // Reduced motion: nothing slides, the doors fade
+      vault.classList.add(reduce ? "is-fading" : "is-sliding");
+      window.setTimeout(function () {
+        root.classList.add("vault-done");
+        remove();
+      }, reduce ? 420 : SLIDE + 120);
+    };
+    keys.forEach(function (type) { window.addEventListener(type, slide, { capture: true, passive: true }); });
+    (function waitDoors() {
+      if (slid) return;
+      var waited = performance.now() - t0;
+      if ((waited >= MIN_HOLD && (!hero || hero.classList.contains("hero--gl"))) || waited >= MAX_WAIT) slide();
+      else requestAnimationFrame(waitDoors);
+    })();
+    return;
+  }
   var canvas = vault.querySelector(".vault__canvas");
   var gl = null;
   if (!reduce && canvas) {
