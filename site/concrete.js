@@ -36,6 +36,11 @@
      across and back (opts.period), with a faint glow either side, fine dust
      turning in it (opts.dust) and a soft shade (opts.shade, a selector) where
      text sits, so the beam dims there and the text keeps its contrast.
+   - opts.window: a patch of window light instead (soft parallel bars, as sun
+     through a window or blinds), travelling along a path (from, to) across
+     and back over opts.period; the About page's mark uses it.
+   - opts.tone darkens (or lightens) the tiled concrete; opts.bevel widens
+     the carved walls (a very large mark reads as a deeper cut).
    - A sliding strip: carvings inside [data-carve-slide] are drawn once into
      their own strip texture (one loop of a marquee) and slid by setSlide(),
      wrapping round, with no repaint per frame. They are only shown inside
@@ -91,7 +96,12 @@
     "uniform vec4 uShade;",      // a soft shaded box where text sits (x0, y0, x1, y1, css px): the beam dims there
     "uniform vec2 uShadeP;",     // shade: feather (css px), strength (0–1)
     "uniform float uDust;",      // dust turning in the beam
-    "uniform float uVignette;",  // darkening towards the edges  // the loop is folded into rows (wide textures fail on some GPUs): rows, css px per row, overlap
+    "uniform float uVignette;",
+    "uniform float uTone;",      // the tiled concrete's brightness (1 as photographed)
+    "uniform vec4 uShade2;",     // a second shaded box (x0, y0, x1, y1); empty when x1 <= x0
+    "uniform vec4 uWin;",        // window light: on, angle of the bars (radians, rising to the right), patch half width across the bars, half length along them (css px)
+    "uniform vec4 uWinP;",       // window light: edge softness (css px), bar period (css px), lit share of each bar (0–1), bar edge softness
+    "uniform vec4 uWinPath;",    // window light: the patch's centre travels from (x, y) to (z, w) (css px, slab)  // darkening towards the edges  // the loop is folded into rows (wide textures fail on some GPUs): rows, css px per row, overlap
     "",
     "float hash(vec2 p){ p = fract(p * vec2(123.34, 456.21)); p += dot(p, p + 45.32); return fract(p.x * p.y); }",
     "float noise(vec2 p){ vec2 i = floor(p), f = fract(p); vec2 u = f*f*(3.0-2.0*f);",
@@ -175,6 +185,7 @@
     "  float albedo = mix(0.865, 0.37, inlay) * detail * mix(mott, 1.0, inlay);",
     "  albedo = mix(albedo, uPlainAlbedo, uPlain);",
     "  albedo = mix(albedo, t0 * uPlainAlbedo, uPhoto);",       // the photo is the wall's colour
+    "  albedo *= uTone;",
     "",
     "  // Normal from the carve height map (slope per css px, so it looks the same at any pixel density)",
     "  vec2 e = uHTexel;",
@@ -205,10 +216,37 @@
     "    band = (1.0 - smoothstep(uBeam.z - uBeam.w, uBeam.z + uBeam.w, ad)) * along;",
     "    glow = (exp(-ad / (uBeam.z * 1.4)) * 0.2 + exp(-ad / (uBeam.z * 4.5)) * 0.07) * along;",
     "  }",
+    "  if (uWin.x > 0.5) {",
+    // Sun through a window: a soft pool of light striped with parallel bars, brightest in its
+    // middle and fading out towards its ends. The bars waver a little and differ from one
+    // another in width and brightness (never ruler-straight or even, like blinds). Direction
+    // vectors, not angles, across the slab.
+    "    vec2 wc = mix(uWinPath.xy, uWinPath.zw, uBand);",
+    "    vec2 wd = vec2(cos(uWin.y), -sin(uWin.y));",
+    "    vec2 wn = vec2(-wd.y, wd.x);",
+    "    vec2 wr = p - wc;",
+    "    float wu = dot(wr, wd), wv = dot(wr, wn);",
+    "    float ws = uWinP.x;",
+    "    float fu = 1.0 - smoothstep(uWin.w - ws * 2.5, uWin.w + ws, abs(wu));",
+    "    float fv = 1.0 - smoothstep(uWin.z - ws, uWin.z + ws, abs(wv));",
+    "    float pool = fu * fv * (0.72 + 0.28 * exp(-dot(wr, wr) / (uWin.w * uWin.w * 0.5)));",
+    "    float bv = wv / uWinP.y + (fbm(p / 320.0 + vec2(uTime * 0.012, 3.0)) - 0.5) * 0.5;",
+    "    float bi = floor(bv + 0.5);",                                    // which bar
+    "    float lit = uWinP.z * (0.6 + 0.8 * hash(vec2(bi, 7.3)));",
+    "    float sb = 0.5 + 0.5 * cos(6.2831853 * bv);",
+    "    float bar = smoothstep(1.0 - lit - uWinP.w, 1.0 - lit + uWinP.w, sb) * (0.62 + 0.38 * hash(vec2(bi, 1.9)));",
+    "    band = pool * mix(0.36, 1.0, bar);",
+    "    float wo = length(max(vec2(abs(wu) - uWin.w, abs(wv) - uWin.z), 0.0));",
+    "    glow = (exp(-wo / (uWin.z * 0.8)) * 0.08 + exp(-wo / (uWin.z * 3.0)) * 0.04) * (0.6 + 0.4 * fu);",
+    "  }",
     "  float shade = 0.0;",
     "  if (uShadeP.y > 0.0) {",
     "    vec2 sd = max(max(uShade.xy - p, p - uShade.zw), 0.0);",
     "    shade = (1.0 - smoothstep(0.0, uShadeP.x, length(sd))) * uShadeP.y;",
+    "    if (uShade2.z > uShade2.x) {",
+    "      vec2 sd2 = max(max(uShade2.xy - p, p - uShade2.zw), 0.0);",
+    "      shade = max(shade, (1.0 - smoothstep(0.0, uShadeP.x, length(sd2))) * uShadeP.y);",
+    "    }",
     "    band *= 1.0 - shade;",
     "    glow *= 1.0 - shade;",
     "  }",
@@ -456,6 +494,9 @@
       shade: opts.shade || null,                                     // selector of the text box the beam should dim behind
       shadeStrength: opts.shadeStrength != null ? opts.shadeStrength : 0.75,
       shadeFeather: opts.shadeFeather != null ? opts.shadeFeather : 90,
+      window: opts.window || null,                                   // { angle (deg), width, length, soft, bar, lit, barSoft, from: [x, y], to: [x, y] } css px
+      tone: opts.tone != null ? opts.tone : 1,                       // the tiled concrete's brightness
+      bevel: opts.bevel || 1,                                        // how wide carved walls are (1: about 1.5 css px)
       smooth: !!opts.smooth                                          // render every frame (a moving beam), not 30 fps when idle
     };
     this.mouse = { x: -9999, y: -9999, tx: -9999, ty: -9999, amt: 0, tamt: 0 };
@@ -489,7 +530,7 @@
     gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
 
     this.u = {};
-    ["uRes", "uScale", "uTime", "uBand", "uMouse", "uMouseAmt", "uSun", "uCursor", "uTex", "uTexSize", "uHeight", "uHTexel", "uOrigin", "uShift", "uZoom", "uBurn", "uBurnP", "uBreak", "uBreakP", "uDrill", "uDrillP", "uDrillQ", "uMarkDepth", "uPlain", "uPlainAlbedo", "uSlide", "uSlideOn", "uSlideRect", "uSlideView", "uSlideFold", "uPhoto", "uPhotoMap", "uBeam", "uBeamRange", "uShade", "uShadeP", "uDust", "uVignette", "uBeamFade"].forEach(function (n) {
+    ["uRes", "uScale", "uTime", "uBand", "uMouse", "uMouseAmt", "uSun", "uCursor", "uTex", "uTexSize", "uHeight", "uHTexel", "uOrigin", "uShift", "uZoom", "uBurn", "uBurnP", "uBreak", "uBreakP", "uDrill", "uDrillP", "uDrillQ", "uMarkDepth", "uPlain", "uPlainAlbedo", "uSlide", "uSlideOn", "uSlideRect", "uSlideView", "uSlideFold", "uPhoto", "uPhotoMap", "uBeam", "uBeamRange", "uShade", "uShadeP", "uDust", "uVignette", "uBeamFade", "uTone", "uShade2", "uWin", "uWinP", "uWinPath"].forEach(function (n) {
       this.u[n] = gl.getUniformLocation(prog, n);
     }, this);
 
@@ -594,11 +635,14 @@
     this.carves = this.collect();
     this.slide = this.collectSlide();
     if (this.slide) this.paintSlide();
-    var sh = this.opts.shade && this.host.querySelector(this.opts.shade);
-    if (sh) {
-      var hr = this.host.getBoundingClientRect(), r = sh.getBoundingClientRect();
-      this.shadeBox = [r.left - hr.left, r.top - hr.top, r.right - hr.left, r.bottom - hr.top];
-    } else this.shadeBox = null;
+    // Up to two shaded boxes (every element the selector matches, the first two)
+    var hr = this.host.getBoundingClientRect();
+    var boxes = this.opts.shade ? Array.prototype.slice.call(this.host.querySelectorAll(this.opts.shade), 0, 2).map(function (el) {
+      var r = el.getBoundingClientRect();
+      return [r.left - hr.left, r.top - hr.top, r.right - hr.left, r.bottom - hr.top];
+    }) : [];
+    this.shadeBox = boxes[0] || null;
+    this.shadeBox2 = boxes[1] || null;
     this.heightDirty = true;
     this.needsFrame = true;
   };
@@ -679,7 +723,7 @@
 
     // Soften every edge into a sloped wall (the bevel). The wall widens a little as you zoom in.
     var hctx = hc.getContext("2d");
-    var blur = 0.9 * d * Math.min(v.s, 2.2);
+    var blur = 0.9 * d * Math.min(v.s, 2.2) * this.opts.bevel;
     hctx.setTransform(1, 0, 0, 1, 0, 0);
     if (typeof hctx.filter === "string") {
       hctx.filter = "blur(" + blur.toFixed(2) + "px)";
@@ -920,7 +964,7 @@
     var gl = this.gl, u = this.u, o = this.opts, v = this.view;
     if (this.heightDirty) this.paintHeight();
     var band = still && this.reduced.matches ? o.staticBand
-      : o.beam ? 0.5 - 0.5 * Math.cos((t / o.period) * Math.PI * 2)       // across and back, easing at both ends
+      : o.beam || o.window ? 0.5 - 0.5 * Math.cos((t / o.period) * Math.PI * 2)       // across and back, easing at both ends
       : 0.55 + 0.45 * Math.sin((t / o.period) * Math.PI * 2 + 0.2);
     gl.uniform2f(u.uRes, this.canvas.width, this.canvas.height);
     gl.uniform1f(u.uScale, this.dpr);
@@ -972,6 +1016,14 @@
     gl.uniform2f(u.uShadeP, o.shadeFeather, sb ? o.shadeStrength : 0);
     gl.uniform1f(u.uDust, o.dust);
     gl.uniform1f(u.uVignette, o.vignette);
+    gl.uniform1f(u.uTone, o.tone);
+    var sb2 = this.shadeBox2;
+    gl.uniform4f(u.uShade2, sb2 ? sb2[0] : 0, sb2 ? sb2[1] : 0, sb2 ? sb2[2] : 0, sb2 ? sb2[3] : 0);
+    var wi = o.window;
+    gl.uniform4f(u.uWin, wi ? 1 : 0, wi ? (wi.angle || 30) * Math.PI / 180 : 0, wi ? wi.width || 200 : 1, wi ? wi.length || 400 : 1);
+    gl.uniform4f(u.uWinP, wi ? (wi.soft != null ? wi.soft : 60) : 1, wi ? wi.bar || 60 : 1, wi ? (wi.lit != null ? wi.lit : 0.5) : 0.5, wi ? (wi.barSoft != null ? wi.barSoft : 0.25) : 0.25);
+    var wf = wi && wi.from || [0, 0], wt = wi && wi.to || [0, 0];
+    gl.uniform4f(u.uWinPath, wf[0], wf[1], wt[0], wt[1]);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
     this.needsFrame = false;
   };

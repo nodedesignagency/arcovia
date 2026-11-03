@@ -1,0 +1,159 @@
+/* ==========================================================================
+   SECTION: mark — About, block 5 ("The mark")
+   One screen tall (100vh). Layout after the user's reference: a dark
+   concrete wall, the A-mark large in the middle and cut deep, window light
+   drifting slowly across it and back (mark.js with concrete.js, the way the
+   CTA carves its lockup). Capital sits beside the left line and Creative
+   beside the right, their headings level with the point where the two lines
+   meet; from that point a fine line drops to "Joined by one idea" under the
+   mark, set between two hairlines.
+   Without WebGL: the concrete darkened with a soft still patch of light, and
+   the mark debossed with the SVG filter (#deboss).
+   Uses shared tokens and the chip from styles.css (container, chip).
+   ========================================================================== */
+
+.mark {
+  /* The mark: at most 66% of the screen tall and 55% of the grid wide (72 × 57) */
+  --mark-h: min(66vh, (min(100vw, var(--container-max)) - 2 * var(--gutter)) * 0.55 * 57 / 72);
+  --mark-w: calc(var(--mark-h) * 72 / 57);
+  --mark-gap: clamp(40px, 6.5vh, 80px);     /* from the mark's feet to the label */
+  --mark-label: 20px;                       /* the label's line */
+  /* the mark and its label, centred on the screen together */
+  --mark-top: calc(50vh - (var(--mark-h) + var(--mark-gap) + var(--mark-label)) / 2);
+  /* the point where the two lines meet, just under the circle (in the mark's 72 × 57 box) */
+  --point-x: 36.2;
+  --point-y: 20.5;
+  --mark-fs: calc((min(100vw, var(--container-max)) - 2 * var(--gutter)) * 0.04);   /* as the other About headings */
+  --mark-line: rgba(244, 244, 243, 0.42);
+
+  position: relative;
+  isolation: isolate;
+  height: 100vh;
+  overflow: hidden;
+  color: var(--color-on-dark);
+  /* Static fallback: no JS, no WebGL. The concrete darkened, a soft patch of light upper left. */
+  background-color: #4b4b4b;
+  background-image:
+    radial-gradient(60% 55% at 30% 18%, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0) 70%),
+    url("../assets/concrete.jpg");
+  background-size: auto, 1024px;
+  background-blend-mode: normal, multiply;
+}
+
+.mark__canvas {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 900ms var(--ease-out);
+}
+.mark.is-live .mark__canvas { opacity: 1; }
+
+.mark__inner {
+  position: relative;
+  height: 100%;
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--grid-gap);
+  align-items: start;
+}
+
+/* ---------- The mark, in the middle ---------- */
+.mark__figure {
+  position: absolute;
+  top: var(--mark-top);
+  left: calc(50% - var(--mark-w) / 2);
+  width: var(--mark-w);
+  height: var(--mark-h);
+}
+.mark__symbol {
+  display: block;
+  width: 100%;
+  height: 100%;
+  fill: currentColor;
+  color: #000;           /* only the shape counts: the filter turns it into a recess */
+  filter: url("#deboss");
+}
+/* With live light the mark is carved into the wall itself (concrete.js); the SVG only marks the place */
+.mark.is-live .mark__symbol { opacity: 0; filter: none; }
+
+/* The meeting point: a small dot, and a fine line from it down to just above the label */
+.mark__point {
+  position: absolute;
+  left: calc(var(--point-x) / 72 * 100%);
+  top: calc(var(--point-y) / 57 * 100%);
+  width: 1px;
+  height: calc(var(--mark-h) * (57 - var(--point-y)) / 57 + var(--mark-gap) - 14px);
+  background: var(--mark-line);
+}
+.mark__point::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 5px;
+  height: 5px;
+  margin: -2.5px 0 0 -2.5px;
+  border-radius: 50%;
+  background: var(--color-on-dark);
+}
+
+/* ---------- Capital (cols 1-3) and Creative (cols 10-12), level with the meeting point ---------- */
+.mark__side {
+  grid-row: 1;
+  /* the heading's capitals start level with the dot */
+  margin-top: calc(var(--mark-top) + var(--mark-h) * var(--point-y) / 57 - var(--mark-fs) * 0.2);
+  max-width: 19em;
+}
+.mark__side--capital { grid-column: 1 / span 3; }
+.mark__side--creative { grid-column: 10 / span 3; }
+
+.mark__name {
+  font-size: var(--mark-fs);
+  font-weight: var(--weight-book);
+  line-height: 1.08;
+  letter-spacing: var(--ls-h2);
+  color: var(--color-on-dark);
+}
+.mark__text {
+  margin-top: var(--space-5);
+  font-size: 18px;
+  line-height: 1.55;
+  color: var(--color-on-dark-muted);
+  text-wrap: pretty;
+}
+
+/* ---------- "Joined by one idea", under the mark between two hairlines ---------- */
+.mark__joined {
+  position: absolute;
+  top: calc(var(--mark-top) + var(--mark-h) + var(--mark-gap));
+  /* spans the mark's feet */
+  left: calc(50% - var(--mark-w) * 0.41);
+  width: calc(var(--mark-w) * 0.82);
+  height: var(--mark-label);
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+}
+.mark__joined::before,
+.mark__joined::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--mark-line);
+}
+.mark__chip { color: var(--color-on-dark); }
+
+/* ---------- Tablet and phone: not reviewed yet (desktop first); keep it readable ---------- */
+@media (max-width: 1199px) {
+  .mark { --mark-fs: 36px; --mark-h: min(46vh, 60vw * 57 / 72); --mark-top: 30vh; }
+  .mark__side { margin-top: var(--space-8); }
+  .mark__side--capital { grid-column: 1 / span 6; }
+  .mark__side--creative { grid-column: 7 / span 6; }
+  .mark__text { font-size: 16px; }
+}
+@media (max-width: 809px) {
+  .mark { --mark-h: min(34vh, 80vw * 57 / 72); --mark-top: 36vh; }
+}
