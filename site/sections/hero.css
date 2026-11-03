@@ -142,61 +142,35 @@
   to { opacity: 1; transform: none; }
 }
 
-/* ---------- Version "paths" (client feedback): the choice in the centre ----------
+/* ---------- Version "paths" (client feedback): the three paths straight away ----------
    ?hero=paths (data-hero-version on the root, set before the first paint).
-   Chip, headline and lede centred; the "Choose your path" button gives way to the three
-   paths shown straight away, across the grid (four columns each), as rows like the
-   masthead's links: hairlines, medium type in ink, an arrow at the end. Hover draws the
-   masthead's short dash in before the label, inks the line under the row and nudges the
-   arrow on. (A stacked list like the reference was tried: at 1440 × 900 it ran into the
-   masthead and the seam.) */
+   The default layout stays (headline on the left; lede on the right, its bottom on the
+   headline's baseline), but the "Choose your path" button gives way to the three paths,
+   stacked under the lede in the right-hand column as rows like the masthead's links
+   (the user's reference): hairlines above, between and below, medium type in ink, an arrow
+   at the end. Hover draws the masthead's short dash in before the label, inks the line under
+   the row and nudges the arrow on. (Tried first and set aside: everything centred with the
+   paths three across, commit 7fc639f.) */
 .path-rows { display: none; }
 
-:root[data-hero-version="paths"] .hero__content { align-self: center; align-items: start; }
-:root[data-hero-version="paths"] .hero__heading {
-  grid-column: 1 / -1;
-  grid-row: 1;
-  justify-items: center;
-  gap: var(--space-5);
-  text-align: center;
-}
-:root[data-hero-version="paths"] .hero__aside {
-  grid-column: 1 / -1;
-  grid-row: 2;
-  justify-items: center;
-  margin: var(--space-5) 0 0;
-}
-:root[data-hero-version="paths"] .hero__lede { max-width: none; text-align: center; }
 :root[data-hero-version="paths"] .path-picker { display: none; }
-:root[data-hero-version="paths"] .path-rows {
-  display: grid;
-  grid-column: 1 / -1;
-  grid-row: 3;
-  margin-top: var(--space-8);
-}
+:root[data-hero-version="paths"] .path-rows { display: block; width: 100%; }
 
-.path-rows__title {
-  justify-self: center;
-  margin-bottom: var(--space-4);
-  font-size: 16px;
-  line-height: 1.4;
-  color: var(--color-text-muted);
-}
 .path-rows__list {
   display: grid;
   margin: 0;
   padding: 0;
   list-style: none;
+  border-top: 1px solid var(--mh-line);
 }
 .path-rows__option {
   position: relative;
   display: flex;
   align-items: center;
   gap: var(--space-4);
-  height: 72px;
-  border-top: 1px solid var(--mh-line);
+  height: 56px;
   border-bottom: 1px solid var(--mh-line);
-  font-size: 22px;
+  font-size: 20px;
   font-weight: var(--weight-medium);
   letter-spacing: -0.005em;
   color: var(--color-ink);
@@ -227,31 +201,17 @@
 }
 .path-rows__arrow {
   flex: none;
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   margin-left: auto;
   transition: transform var(--dur-base) var(--ease-out);
 }
 @media (hover: hover) {
   .path-rows__option:hover::after { transform: scaleX(1); }
-  .path-rows__option:hover .path-rows__label::before { width: 14px; margin-right: 10px; }
+  .path-rows__option:hover .path-rows__label::before { width: 12px; margin-right: 8px; }
   .path-rows__option:hover .path-rows__arrow { transform: translateX(4px); }
 }
 .path-rows__option:focus-visible::after { transform: scaleX(1); }
-
-/* Three across the grid, four columns each */
-:root[data-hero-version="paths"] .path-rows__list {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  column-gap: var(--grid-gap);
-}
-
-/* Below desktop (to refine once desktop is approved): stacked, one hairline between rows */
-@media (max-width: 1199px) {
-  :root[data-hero-version="paths"] .path-rows__list { grid-template-columns: 1fr; }
-  :root[data-hero-version="paths"] .path-rows__option { height: 60px; border-top: 0; }
-  :root[data-hero-version="paths"] .path-rows__list li:first-child .path-rows__option { border-top: 1px solid var(--mh-line); }
-  :root[data-hero-version="paths"] .hero__heading { margin-bottom: 0; }
-}
 
 @media (max-width: 1199px) {
   .hero__inner { grid-template-rows: 1fr auto auto; }
