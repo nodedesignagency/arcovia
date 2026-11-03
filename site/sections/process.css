@@ -1,12 +1,13 @@
 /* ==========================================================================
    SECTION: process — About, block 4 ("How we work")
    After the user's reference video (a stacking process list): the heading,
-   then four rows. Each row: a number, a large title and its line on the
-   right, under a hairline that draws in from the left as the row comes up
+   then four rows. Each row: a number, an icon and a large title, its line on
+   the right, under a hairline that draws in from the left as the row comes up
    (process.js sets --line). Each row stops near the top of the screen just
    under the one before (sticky, offset by one title strip per row), and the
    next row slides up over it on the same ground, so the rows pile up as a
-   stack of title strips; the stack then scrolls away together.
+   stack of title strips; the whole stack then scrolls away together (the
+   rows' boxes are sized so they all reach the end of the list at once).
    In our language: Montserrat in sentence case, ink on the neutral ground.
    Uses shared tokens from styles.css (container).
    ========================================================================== */
@@ -17,6 +18,8 @@
   --process-name: 48px;        /* number and title */
   --process-pad: 22px;         /* above the title, under the hairline */
   --process-strip: 80px;       /* how much of a row stays in view once the next has covered it */
+  --process-row: 176px;        /* the space from one row to the next, before they stack */
+  --process-n: 4;              /* rows */
   --process-top: var(--space-6);   /* where the first row stops */
   background: var(--color-neutral);
   padding-top: var(--space-10);
@@ -39,7 +42,7 @@
 .process__list::after {
   content: "";
   display: block;
-  height: 30vh;
+  height: 20vh;
 }
 
 .process__row {
@@ -49,7 +52,12 @@
   grid-template-columns: repeat(12, minmax(0, 1fr));
   column-gap: var(--grid-gap);
   align-items: start;
-  min-height: 46vh;
+  /* Rows sit --process-row apart, but each box reaches down by one strip for every row after
+     it (pulled back with a negative margin on the next row), so once stacked every row ends at
+     the same line and the list's end moves them all at once: the stack leaves whole, instead of
+     the last row sliding up over the others */
+  min-height: calc(var(--process-row) + (var(--process-n) - 1 - var(--i, 0)) * var(--process-strip));
+  margin-top: calc((var(--i, 0) - var(--process-n)) * var(--process-strip));
   padding-top: var(--process-pad);
   background: var(--color-neutral);   /* covers the row before it as it slides up */
 }
@@ -77,7 +85,20 @@
   grid-column: 1 / span 2;
   font-variant-numeric: tabular-nums;
 }
-.process__name { grid-column: 3 / span 6; }
+.process__row:first-child { margin-top: 0; }
+.process__name {
+  grid-column: 3 / span 6;
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+/* The icon beside the title, in the set the Our story icons come from */
+.process__icon {
+  flex: none;
+  width: 40px;
+  height: 40px;
+  color: var(--color-ink);
+}
 
 .process__text {
   grid-column: 9 / span 4;
@@ -93,11 +114,12 @@
 /* Tablet and phone: not reviewed yet (desktop first). No stacking there. */
 @media (max-width: 1199px) {
   .process { --process-fs: 40px; --process-name: 36px; }
-  .process__row { position: relative; top: auto; min-height: 0; padding-bottom: var(--space-7); }
+  .process__row { position: relative; top: auto; min-height: 0; margin-top: 0; padding-bottom: var(--space-7); }
   .process__list::after { display: none; }
   .process__name { grid-column: 3 / -1; }
   .process__text { grid-column: 3 / -1; padding-top: var(--space-3); }
 }
 @media (max-width: 809px) {
   .process { --process-fs: 30px; --process-name: 28px; }
+  .process__icon { width: 28px; height: 28px; }
 }
