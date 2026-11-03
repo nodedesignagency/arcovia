@@ -15,6 +15,7 @@
   <link rel="stylesheet" href="styles.css">
   <!-- One stylesheet per section, so a section can be approved and moved to main on its own -->
   <link rel="stylesheet" href="sections/about-hero.css">
+  <link rel="stylesheet" href="sections/story.css">
   <link rel="stylesheet" href="sections/footer.css">
 </head>
 <body>
@@ -126,10 +127,70 @@
     </section>
     <!-- SECTION:about-hero END -->
 
-    <!-- Draft placeholder: next section goes here -->
-    <section class="section-next" data-header-theme="dark" aria-label="Next section, in progress">
-      <p>02 · Our story — next section, in progress</p>
+    <!-- SECTION:story START · styles: sections/story.css · scripts: story.js
+         About, block 2 ("Our story"). Layout after the user's process-section reference video:
+         the steps scroll on the left, each a title, a short line in small capitals and three
+         labelled lines; on the right one photo stays pinned and turns over to the next photo
+         as each step crosses the middle of the screen (in the video a big number turned).
+         Copy is the user's "Our story", set into four steps; every fact and figure is theirs.
+         Photos are stand-ins made with Magnific: [IMAGE NEEDED] real LPP Media and Arcovia photos. -->
+    <section class="story" data-story aria-labelledby="story-title">
+      <div class="story__inner container">
+        <header class="story__head">
+          <p class="chip">Our story</p>
+          <h2 class="story__title" id="story-title">From a studio in Los Angeles to a capital markets advisory</h2>
+        </header>
+
+        <ol class="story__steps">
+          <li class="story-step" data-story-step data-image="assets/story/studio.jpg">
+            <h3 class="story-step__title">A studio in Los Angeles</h3>
+            <p class="story-step__meta">LPP Media · founded by Colin Pham</p>
+            <ul class="story-step__list">
+              <li class="story-step__item"><span class="story-step__label">The studio</span><span class="story-step__text">Arcovia began here as LPP Media, a creative studio.</span></li>
+              <li class="story-step__item"><span class="story-step__label">600M+ organic views</span><span class="story-step__text">For Google, Microsoft, PepsiCo and Mercedes-Benz.</span></li>
+              <li class="story-step__item"><span class="story-step__label">The lesson</span><span class="story-step__text">Something most agencies never learn: attention is not the product. Belief is.</span></li>
+            </ul>
+          </li>
+          <li class="story-step" data-story-step data-image="assets/story/screening.jpg">
+            <h3 class="story-step__title">A story moves capital</h3>
+            <p class="story-step__meta">From LPP Media to Arcovia</p>
+            <ul class="story-step__list">
+              <li class="story-step__item"><span class="story-step__label">The turn</span><span class="story-step__text">We watched a story move capital the way it moves an audience.</span></li>
+              <li class="story-step__item"><span class="story-step__label">Outgrowing the studio</span><span class="story-step__text">The capital work outgrew the studio.</span></li>
+              <li class="story-step__item"><span class="story-step__label">Arcovia</span><span class="story-step__text">LPP Media evolved into Arcovia, an independent capital markets advisory.</span></li>
+            </ul>
+          </li>
+          <li class="story-step" data-story-step data-image="assets/story/table.jpg">
+            <h3 class="story-step__title">Arcovia today</h3>
+            <p class="story-step__meta">24 transactions closed · $330M+ raised</p>
+            <ul class="story-step__list">
+              <li class="story-step__item"><span class="story-step__label">Where we work</span><span class="story-step__text">The point where investor judgment and narrative meet.</span></li>
+              <li class="story-step__item"><span class="story-step__label">The preparation</span><span class="story-step__text">We prepare the story, the evidence and the investor map.</span></li>
+              <li class="story-step__item"><span class="story-step__label">The process</span><span class="story-step__text">Then we run the process through to close.</span></li>
+            </ul>
+          </li>
+          <li class="story-step" data-story-step data-image="assets/story/edit.jpg">
+            <h3 class="story-step__title">Two houses</h3>
+            <p class="story-step__meta">Arcovia and LPP Media</p>
+            <ul class="story-step__list">
+              <li class="story-step__item"><span class="story-step__label">If it moves money</span><span class="story-step__text">It is Arcovia.</span></li>
+              <li class="story-step__item"><span class="story-step__label">If it moves people</span><span class="story-step__text">It is LPP Media, the creative house of Arcovia, which makes the films, brands and motion behind our work.</span></li>
+              <li class="story-step__item"><span class="story-step__label">Next</span><span class="story-step__text">LPP Media will open its own doors soon.</span></li>
+            </ul>
+          </li>
+        </ol>
+
+        <!-- Component: story-card. One photo, pinned; story.js turns it over to the next step's photo.
+             Decorative here: each step's text carries the story on its own. -->
+        <div class="story__media" aria-hidden="true">
+          <div class="story__card" data-story-card>
+            <div class="story__face story__face--front"><img src="assets/story/studio.jpg" alt="" width="1216" height="1520"></div>
+            <div class="story__face story__face--back"><img src="assets/story/studio.jpg" alt="" width="1216" height="1520"></div>
+          </div>
+        </div>
+      </div>
     </section>
+    <!-- SECTION:story END -->
 
   </main>
 
@@ -191,5 +252,6 @@
 
   <script src="concrete.js"></script>
   <script src="main.js"></script>
+  <script src="story.js"></script>
 </body>
 </html>
