@@ -146,14 +146,34 @@
 }
 .mark__chip { color: var(--color-on-dark); }
 
-/* ---------- Tablet and phone: not reviewed yet (desktop first); keep it readable ---------- */
+/* ---------- Tablet and phone ----------
+   Below 1200 the section is no longer a fixed screen: it flows, at least a
+   screen tall. The mark first (centred, as large as fits), its line dropping to
+   the label under it, then Capital and Creative side by side on tablets and one
+   under the other on phones. Their headings are no longer level with the dot. */
 @media (max-width: 1199px) {
-  .mark { --mark-fs: 36px; --mark-h: min(46vh, 60vw * 57 / 72); --mark-top: 30vh; }
-  .mark__side { margin-top: var(--space-8); }
+  .mark {
+    --mark-h: min(48vh, 64cqw * 57 / 72);
+    --mark-gap: var(--space-7);
+    --mark-fs: 40px;
+    height: auto;
+    min-height: 100vh;
+    min-height: 100svh;
+    padding-block: var(--space-9);
+  }
+  .mark__inner { height: auto; min-height: calc(100svh - 2 * var(--space-9)); align-content: center; row-gap: 0; }
+  .mark__figure { position: relative; top: auto; left: auto; grid-column: 1 / -1; grid-row: 1; justify-self: center; }
+  .mark__joined { position: relative; top: auto; left: auto; grid-column: 1 / -1; grid-row: 2; justify-self: center; margin-top: var(--mark-gap); }
+  .mark__side { grid-row: 3; margin-top: var(--space-9); max-width: 26em; }
   .mark__side--capital { grid-column: 1 / span 6; }
   .mark__side--creative { grid-column: 7 / span 6; }
-  .mark__text { font-size: 16px; }
+  .mark__text { font-size: 17px; margin-top: var(--space-4); }
 }
 @media (max-width: 809px) {
-  .mark { --mark-h: min(34vh, 80vw * 57 / 72); --mark-top: 36vh; }
+  .mark { --mark-h: min(40vh, 84cqw * 57 / 72); --mark-gap: var(--space-6); --mark-fs: 32px; padding-block: var(--space-8); }
+  .mark__inner { min-height: calc(100svh - 2 * var(--space-8)); }
+  .mark__joined { width: 100%; }
+  .mark__side { margin-top: var(--space-8); }
+  .mark__side--capital, .mark__side--creative { grid-column: 1 / -1; }
+  .mark__side--creative { grid-row: 4; margin-top: var(--space-7); }
 }

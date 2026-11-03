@@ -76,15 +76,19 @@
   margin-bottom: calc(var(--about-fs) * 0.18 - var(--fs-lede) * 0.39);
 }
 
-/* Tablet and phone: not reviewed yet (desktop first); keep it stacked and readable */
+/* ---------- Tablet and phone ----------
+   As on Home: below 1200 the opening is one column, the chip and headline over
+   the line. Tablet keeps one sentence per line at 44px (it fits from 810 up);
+   on phones (30px) the sentences wrap, balanced, so no word is left alone. */
 @media (max-width: 1199px) {
-  .about-hero { --about-fs: 44px; }
-  .about-hero__heading { grid-column: 1 / -1; margin-bottom: var(--space-6); }
-  .about-hero__lede { grid-column: 1 / span 9; margin-bottom: 0; }
-  .about-hero__inner { align-items: start; }
+  .about-hero { --about-fs: 44px; padding-bottom: var(--space-8); }
+  .about-hero__inner { align-items: start; row-gap: var(--space-6); }
+  .about-hero__heading { grid-column: 1 / -1; gap: var(--space-5); }
+  .about-hero__lede { grid-column: 1 / span 9; max-width: 34em; margin-bottom: 0; }
 }
 @media (max-width: 809px) {
-  .about-hero { --about-fs: 30px; }
-  .about-hero__line { white-space: normal; }
+  .about-hero { --about-fs: 30px; padding-top: calc(var(--header-h) + var(--space-7)); padding-bottom: var(--space-7); }
+  .about-hero__title { line-height: 1.12; }
+  .about-hero__line { white-space: normal; text-wrap: balance; }
   .about-hero__lede { grid-column: 1 / -1; }
 }

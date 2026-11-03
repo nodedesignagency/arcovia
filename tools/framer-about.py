@@ -182,6 +182,8 @@ story_tsx = '''/**
  * interrupted CSS transition never reports its end and froze the card). At
  * rest the card has no transform, so the photo stays crisp. Reduced motion:
  * the photo simply changes. On the Framer canvas: the first photo, still.
+ * Below 1200 (tablet and phone, as Home's stages): no pinned card; each step
+ * shows its own photo, beside its text on tablets and above it on phones.
  * The photos are stand-ins: [IMAGE NEEDED] real LPP Media and Arcovia photos.
  * Ported from about.html (SECTION:story), sections/story.css and story.js on main.
  */
@@ -268,6 +270,10 @@ export default function ArcoviaStory(incoming: Partial<Props>) {
                                 .filter((pt) => pt.title || pt.text)
                             return (
                                 <li className="story-step" data-story-step="" data-image={photos[i]} key={i}>
+                                    {/* The step's own photo: shown only below 1200, where there is no pinned card */}
+                                    <div className="story-step__photo" aria-hidden="true">
+                                        <img src={photos[i]} alt="" width={1216} height={1520} loading="lazy" decoding="async" />
+                                    </div>
                                     <div className="story-step__head">
                                         <h3 className="story-step__title">{s.title}</h3>
                                         {s.meta ? <p className="story-step__meta">{s.meta}</p> : null}
@@ -418,6 +424,7 @@ function initStory(host: HTMLElement, life: Life) {
     let queued = false
     const update = () => {
         queued = false
+        if (!card.offsetParent) return // below 1200 the card is hidden: each step shows its own photo
         target = activeStep()
         turn()
     }

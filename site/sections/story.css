@@ -156,19 +156,57 @@
   object-fit: cover;
 }
 
-/* Tablet and phone: not reviewed yet (desktop first) */
+/* Each step's own photo: only below 1200, where there is no pinned card */
+.story-step__photo { display: none; }
+
+/* ---------- Tablet and phone ----------
+   As on Home below 1200 (What we do, the team): no pinned stage. The card goes,
+   and each step shows its own photo: beside its text on tablets, above it on
+   phones (a 4:3 crop, so four photos don't make the story too long). Steps are
+   no longer a screen tall; they follow one another with space between. */
 @media (max-width: 1199px) {
-  .story { --story-fs: 40px; }
-  .story__head { grid-column: 1 / -1; }
-  .story__steps { grid-column: 1 / span 7; }
-  .story__media { grid-column: 8 / span 5; }
+  .story { --story-fs: 40px; padding-block: var(--space-9); }
+  .story__head { grid-column: 1 / -1; margin-bottom: var(--space-8); }
+  .story__steps { grid-column: 1 / -1; display: grid; row-gap: var(--space-9); }
+  .story__media { display: none; }
+  .story-step {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 0.7fr);
+    grid-template-rows: auto 1fr;
+    column-gap: var(--space-7);
+    align-content: start;
+    min-height: 0;
+  }
+  .story-step__head { grid-column: 1; grid-row: 1; }
+  .story-step__points { grid-column: 1; grid-row: 2; }
+  .story-step__photo {
+    display: block;
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    align-self: start;
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    border-radius: var(--radius-l);
+    background: var(--color-concrete);
+  }
+  .story-step__photo img { display: block; width: 100%; height: 100%; object-fit: cover; }
   .story-step__title { font-size: 32px; }
+  .story-point { padding-top: var(--space-6); }
+  .story-point__title { font-size: 24px; }
 }
 @media (max-width: 809px) {
-  .story-step { min-height: 0; padding-bottom: var(--space-8); }
-  .story__media { padding-block: 0; }
-  .story { --story-fs: 30px; }
-  .story__steps { grid-column: 1 / -1; grid-row: 3; }
-  .story__media { grid-column: 1 / -1; grid-row: 2; margin-bottom: var(--space-7); }
-  .story__card { position: relative; top: 0; height: auto; width: 100%; }
+  .story { --story-fs: 30px; padding-block: var(--space-8); }
+  .story__head { gap: var(--space-5); margin-bottom: var(--space-7); }
+  .story__title { text-wrap: balance; }
+  .story__title br { display: none; }
+  .story__steps { row-gap: var(--space-8); }
+  .story-step { grid-template-columns: minmax(0, 1fr); grid-template-rows: none; }
+  .story-step__photo { grid-column: 1; grid-row: auto; aspect-ratio: 4 / 3; margin-bottom: var(--space-5); border-radius: var(--radius-m); }
+  .story-step__head, .story-step__points { grid-column: 1; grid-row: auto; }
+  .story-step__title { font-size: 28px; }
+  .story-step__meta { font-size: 12px; }
+  .story-point { grid-template-columns: 28px minmax(0, 1fr); column-gap: var(--space-4); padding-top: var(--space-6); }
+  .story-point__icon { width: 28px; height: 28px; margin-top: -1px; }   /* centred on the 22px heading's first line */
+  .story-point__title { font-size: 22px; }
+  .story-point__text { margin-top: var(--space-2); }
 }

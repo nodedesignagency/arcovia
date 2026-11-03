@@ -90,12 +90,23 @@
   text-wrap: pretty;
 }
 
-/* Tablet and phone: not reviewed yet (desktop first) */
+/* ---------- Tablet and phone ----------
+   Two columns on tablets, one on phones. The parts no longer line up across
+   columns (a belief runs top to bottom on its own), so each belief is a simple
+   column again. Phones: a hairline over each belief instead of beside it, and
+   smaller drawings. */
 @media (max-width: 1199px) {
-  .beliefs { --beliefs-fs: 40px; }
-  .beliefs__list { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: var(--space-8); }
+  .beliefs { --beliefs-fs: 40px; padding-block: var(--space-9); }
+  .beliefs__title { margin-bottom: var(--space-8); }
+  .beliefs__list { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: none; row-gap: var(--space-8); }
+  .belief { grid-row: auto; display: flex; flex-direction: column; align-items: flex-start; }
+  .belief__name { margin-top: var(--space-7); }
 }
 @media (max-width: 809px) {
-  .beliefs { --beliefs-fs: 30px; }
-  .beliefs__list { grid-template-columns: minmax(0, 1fr); }
+  .beliefs { --beliefs-fs: 30px; padding-block: var(--space-8); }
+  .beliefs__title { margin-bottom: var(--space-7); }
+  .beliefs__list { grid-template-columns: minmax(0, 1fr); row-gap: var(--space-7); }
+  .belief { padding: var(--space-5) 0 0; border-left: 0; border-top: 1px solid var(--beliefs-line); }
+  .belief__art { width: 160px; height: 120px; margin-top: var(--space-6); }
+  .belief__name { margin-top: var(--space-6); }
 }

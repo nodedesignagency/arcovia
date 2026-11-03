@@ -11,8 +11,9 @@
    card never rests half turned; if several steps go by during one turn, it
    turns again to catch up (fast scrolling included: see turn()). After each turn the new photo moves to the front
    and the card drops its transform, so at rest the photo stays crisp.
-   Reduced motion: the photo simply changes. Built to become a Framer code
-   component.
+   Reduced motion: the photo simply changes. Below 1200 the card is hidden
+   (each step shows its own photo) and this does nothing. Built to become a
+   Framer code component.
    ========================================================================== */
 (function () {
   "use strict";
@@ -94,6 +95,7 @@
   var queued = false;
   function update() {
     queued = false;
+    if (!card.offsetParent) return;               // below 1200 the card is hidden: each step shows its own photo
     target = activeStep();
     turn();
   }
