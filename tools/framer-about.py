@@ -172,11 +172,12 @@ story_tsx = '''/**
  * Duotone: 480 Design, CC BY 4.0, via Iconify) beside a heading and a
  * paragraph. Every point stays in full ink (no dimming: the user rejected it).
  * A 4:5 photo card is pinned flush right on cols 7-12, centred on the screen,
- * and turns over on its vertical axis to each step's photo when that step's
- * content reaches the photo's centre: four steps, four photos. Each step is a
- * screen tall with its content centred in it, so one step sits beside the photo
+ * and turns over on its vertical axis to each step's photo as soon as that
+ * step's content is nearer the middle of the screen than the last step's (the
+ * old rule, once it reaches the photo's centre, turned late or not at all):
+ * four steps, four photos. Each step is a screen tall with its content centred in it, so one step sits beside the photo
  * at a time, and the photo column is inset so the story starts and ends in the
- * middle of the screen. The turn is timed (700 ms), not scrubbed; it turns
+ * middle of the screen. The turn is timed (450 ms, starting at once), not scrubbed; it turns
  * back when scrolling up and catches up if several steps pass, fast scrolling
  * included (a Web Animations turn with a token and a backup timer: an
  * interrupted CSS transition never reports its end and froze the card). At
@@ -308,12 +309,19 @@ export default function ArcoviaStory(incoming: Partial<Props>) {
 
 /* ==========================================================================
    Behaviour (story.js): the pinned photo that turns over.
-   Once a step's content reaches the centre of the photo (the middle of the
-   screen), the card turns over (front: the photo shown now, back: the step's
-   photo). Scrolling back turns it back the other way. Timed, not scrubbed, so
-   the card never rests half turned; if several steps go by during one turn, it
-   turns again to catch up. After each turn the new photo moves to the front and
-   the card drops its transform, so at rest the photo stays crisp.
+   The step whose content is nearest the middle of the screen (where the photo
+   is pinned) owns the photo, so the card turns as soon as the next step comes
+   up past the halfway point between two steps. (The old rule, "once the content
+   reaches the photo's centre", turned late, did not turn at all if you stopped
+   a little short of the centre, and on the last step only turned as the card
+   was scrolling away.) The turn is quick (450 ms) and starts at once: every
+   photo is loaded and decoded up front, and after a turn the two faces trade
+   places instead of swapping photos, so nothing waits for an image. If the
+   reader moves on during the first half of a turn (the new photo still facing
+   away), the hidden face takes the newer photo, or the card turns back if the
+   reader went back; later in a turn it finishes and turns again to catch up.
+   Timed, not scrubbed, so the card never rests half turned; at rest the card
+   has no transform, so the photo stays crisp.
    ========================================================================== */
 function initStory(host: HTMLElement, life: Life) {
     const root = host.querySelector<HTMLElement>("[data-story]")
@@ -321,43 +329,62 @@ function initStory(host: HTMLElement, life: Life) {
     if (!root || !card) return
     const steps = Array.prototype.slice.call(root.querySelectorAll("[data-story-step]")) as HTMLElement[]
     const srcs = steps.map((s) => s.getAttribute("data-image") || "")
-    const front = card.querySelector<HTMLImageElement>(".story__face--front img")
-    const back = card.querySelector<HTMLImageElement>(".story__face--back img")
-    if (!front || !back || !steps.length) return
+    const faceA = card.querySelector<HTMLElement>(".story__face--front")
+    const faceB = card.querySelector<HTMLElement>(".story__face--back")
+    const imgA = faceA && faceA.querySelector("img")
+    const imgB = faceB && faceB.querySelector("img")
+    if (!faceA || !faceB || !imgA || !imgB || !steps.length) return
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)")
 
-    // Load every photo up front, so a turn never shows a blank face
+    // Load and decode every photo up front, so a turn starts at once and never shows a blank face
     srcs.forEach((src) => {
         if (!src) return
         const i = new Image()
         i.src = src
+        if (i.decode) i.decode().catch(() => {})
     })
 
-    let shown = 0
-    let target = 0
-    let turning = false
+    // The face showing (up) and the one facing away (down). They trade places after each turn.
+    type Face = { face: HTMLElement; img: HTMLImageElement }
+    let up: Face = { face: faceA, img: imgA }
+    let down: Face = { face: faceB, img: imgB }
+    const place = () => {
+        up.face.style.transform = "none"
+        down.face.style.transform = "rotateY(180deg)"
+    }
+    place()
+
+    let shown = 0 // the step whose photo is showing
+    let target = 0 // the step whose photo should show
+    let next = 0 // the step the card is turning to
+    let busy = false
     let token = 0
     let anim: Animation | null = null
-    const TURN_MS = 700
-    const EASE = "cubic-bezier(0.65, 0, 0.35, 1)"
+    const TURN_MS = 450
+    const EASE = "cubic-bezier(0.4, 0, 0.2, 1)"
+    const SLACK = 12 // px: a resting scroll position right at the halfway point never wobbles
 
-    // The last step whose content has reached the photo's centre. The card is pinned in the
-    // middle of the screen, so that is the screen's middle; each step's content is centred in
-    // its own box, so the box's centre is the content's.
+    // Middle of a step's content (its head and its points), wherever the step's box ends
+    const centreOf = (s: HTMLElement) => {
+        const head = s.querySelector<HTMLElement>(".story-step__head") || s
+        const pts = s.querySelector<HTMLElement>(".story-step__points") || head
+        return (head.getBoundingClientRect().top + pts.getBoundingClientRect().bottom) / 2
+    }
+
+    // The step whose content is nearest the middle of the screen
     const activeStep = () => {
         const mid = window.innerHeight * 0.5
+        const d = steps.map((s) => Math.abs(centreOf(s) - mid))
         let k = 0
-        steps.forEach((s, i) => {
-            const r = s.getBoundingClientRect()
-            if (r.top + r.height / 2 <= mid + 1) k = i
-        })
+        for (let i = 1; i < d.length; i++) if (d[i] < d[k]) k = i
+        if (k !== target && d[target] - d[k] < SLACK) return target
         return k
     }
 
     // Resolves once the photo can be drawn (or after a short wait, never later)
     const ready = (img: HTMLImageElement) =>
         new Promise<void>((resolve) => {
-            const t = life.timeout(resolve, 250)
+            const t = life.timeout(resolve, 150)
             const done = () => {
                 life.clear(t)
                 resolve()
@@ -367,39 +394,50 @@ function initStory(host: HTMLElement, life: Life) {
         })
 
     /* The turn is a self-timed animation (Web Animations), not a CSS transition: a transition
-       that gets interrupted never reports that it ended, and when you scrolled fast the card
-       waited for that report forever and stopped turning. Each turn has a token, and a timer
-       backs up the animation's own end, so a turn always finishes, exactly once. */
-    const settle = (t: number, next: number) => {
-        if (life.dead || t !== token || !turning) return
+       that gets interrupted never reports that it ended, and the card froze. Each turn has a
+       token, and a timer backs up the animation's own end, so a turn always finishes, once. */
+    const settle = (t: number) => {
+        if (life.dead || t !== token || !busy) return
         token++
-        front.src = srcs[next]
-        ready(front).then(() => {
-            if (life.dead) return
-            if (anim) {
-                anim.cancel() // drop the transform: the new photo is in front now
-                anim = null
-            }
-            card.classList.remove("is-turning")
+        if (anim) {
+            anim.cancel() // drop the transform
+            anim = null
+        }
+        card.classList.remove("is-turning")
+        if (next !== shown) {
+            // The face that turned to us keeps showing: the faces trade places in the same frame
+            // as the card drops its transform, so nothing flashes and nothing waits for a photo
+            const was = up
+            up = down
+            down = was
+            place()
             shown = next
-            turning = false
-            turn() // catch up if the reader has moved on meanwhile
-        })
+        }
+        busy = false
+        turn() // catch up if the reader has moved on meanwhile
     }
 
     const turn = () => {
-        if (life.dead || turning || target === shown) return
-        const next = target
+        if (life.dead || busy || target === shown) return
         if (reduced.matches || !card.animate) {
-            front.src = srcs[next]
-            shown = next
+            up.img.src = srcs[target]
+            shown = target
             return
         }
-        turning = true
-        const t = token
-        back.src = srcs[next]
-        ready(back).then(() => {
+        busy = true
+        next = target
+        const t = ++token
+        down.img.src = srcs[next]
+        ready(down.img).then(() => {
             if (life.dead || t !== token) return
+            if (target === shown) {
+                busy = false // the reader went back before it began
+                return
+            }
+            if (target !== next) {
+                next = target
+                down.img.src = srcs[next]
+            }
             card.classList.add("is-turning")
             // forwards turns to the left, backwards to the right
             anim = card.animate([{ transform: "rotateY(0deg)" }, { transform: "rotateY(" + (next > shown ? -180 : 180) + "deg)" }], {
@@ -407,40 +445,56 @@ function initStory(host: HTMLElement, life: Life) {
                 easing: EASE,
                 fill: "forwards",
             })
-            anim.finished.then(
-                () => settle(t, next),
-                () => settle(t, next)
-            )
-            life.timeout(() => settle(t, next), TURN_MS + 400)
+            const end = () => settle(t)
+            anim.finished.then(end, end)
+            life.timeout(end, TURN_MS * 2 + 300)
         })
+    }
+
+    // The reader moved on during a turn. While the new photo is still facing away (the first
+    // half), the hidden face takes the newer photo if it lies the same way round, or the card
+    // turns back if the reader returned to the photo already showing. Later, it finishes and catches up.
+    const retarget = () => {
+        if (!anim || target === next || anim.playbackRate < 0) return
+        const timing = anim.effect && anim.effect.getComputedTiming()
+        if (!timing || (timing.progress || 0) >= 0.5) return
+        if (target === shown) {
+            next = shown
+            anim.reverse()
+        } else if ((target > shown) === (next > shown)) {
+            next = target
+            down.img.src = srcs[next]
+        }
     }
 
     let queued = false
     const update = () => {
         queued = false
+        if (!card.offsetParent) return // the card is hidden
         target = activeStep()
+        retarget()
         turn()
     }
-    life.on(
-        window,
-        "scroll",
-        () => {
-            if (queued) return
-            queued = true
-            life.raf(update)
-        },
-        { passive: true }
-    )
-    life.on(window, "resize", update)
+    const request = () => {
+        if (queued) return
+        queued = true
+        life.raf(update)
+    }
+    life.on(window, "scroll", request, { passive: true })
+    life.on(window, "resize", request)
+    life.on(window, "load", request)
     update()
 
     life.add(() => {
         token++
         if (anim) anim.cancel()
         anim = null
+        busy = false
         card.classList.remove("is-turning")
-        front.src = srcs[0]
-        back.src = srcs[0]
+        faceA.style.transform = ""
+        faceB.style.transform = ""
+        imgA.src = srcs[0]
+        imgB.src = srcs[0]
     })
 }
 
