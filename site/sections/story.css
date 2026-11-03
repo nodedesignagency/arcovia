@@ -52,9 +52,7 @@
 }
 /* As in the What We Do section: each step is a screen tall with its content centred in it, so
    there is room above and below, only one step sits beside the photo at a time, and the photo
-   turns as a step's content reaches the photo's centre (story.js). The column ends with a
-   little extra room, so the card holds a moment after the last step arrives. */
-.story__steps { padding-bottom: calc(var(--story-card-h) * 0.25); }
+   turns as a step's content reaches the photo's centre (story.js). */
 .story-step {
   display: flex;
   flex-direction: column;
@@ -123,6 +121,11 @@
   grid-column: 7 / span 6;
   grid-row: 2;
   align-self: stretch;           /* runs the full height of the steps, so the card can stay pinned */
+  /* Inset by half the difference between a step and the card, top and bottom: the card then
+     sits centred on the first step's content when it pins, and on the last step's content when
+     it lets go, so the story starts and ends in the middle of the screen beside the photo */
+  padding-block: calc((100vh - var(--story-card-h)) / 2);
+  padding-block: calc((100svh - var(--story-card-h)) / 2);
   perspective: 1800px;
 }
 .story__card {
@@ -163,7 +166,7 @@
 }
 @media (max-width: 809px) {
   .story-step { min-height: 0; padding-bottom: var(--space-8); }
-  .story__steps { padding-bottom: 0; }
+  .story__media { padding-block: 0; }
   .story { --story-fs: 30px; }
   .story__steps { grid-column: 1 / -1; grid-row: 3; }
   .story__media { grid-column: 1 / -1; grid-row: 2; margin-bottom: var(--space-7); }
