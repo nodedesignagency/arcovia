@@ -1,8 +1,9 @@
 /* ==========================================================================
    SECTION: process — About, block 4 ("How we work")
    After the user's reference video (a stacking process list): the heading,
-   then four rows. Each row: a number, an icon and a large title, its line on
-   the right, under a hairline that draws in from the left as the row comes up
+   then four rows. Each row: a number, a large title with a 3D drawing under
+   it (as in What we believe, placed like the reference's list under its
+   heading), its line on the right, under a hairline that draws in from the left as the row comes up
    (process.js sets --line). Each row stops near the top of the screen just
    under the one before (sticky, offset by one title strip per row), and the
    next row slides up over it on the same ground, so the rows pile up as a
@@ -18,7 +19,7 @@
   --process-name: 48px;        /* number and title */
   --process-pad: 22px;         /* above the title, under the hairline */
   --process-strip: 80px;       /* how much of a row stays in view once the next has covered it */
-  --process-row: 176px;        /* the space from one row to the next, before they stack */
+  --process-row: 312px;        /* the space from one row to the next, before they stack: title and drawing */
   --process-n: 4;              /* rows */
   --process-top: var(--space-6);   /* where the first row stops */
   background: var(--color-neutral);
@@ -52,6 +53,7 @@
   grid-template-columns: repeat(12, minmax(0, 1fr));
   column-gap: var(--grid-gap);
   align-items: start;
+  align-content: start;   /* the box is taller than its content (see below): keep title and drawing together at the top */
   /* Rows sit --process-row apart, but each box reaches down by one strip for every row after
      it (pulled back with a negative margin on the next row), so once stacked every row ends at
      the same line and the list's end moves them all at once: the stack leaves whole, instead of
@@ -86,22 +88,32 @@
   font-variant-numeric: tabular-nums;
 }
 .process__row:first-child { margin-top: 0; }
-.process__name {
+.process__num { grid-row: 1; }
+.process__name { grid-column: 3 / span 6; grid-row: 1; }
+
+/* The drawing under the title, in the style and colours of What we believe: fine ink lines,
+   one isometric angle, white tops and fronts, concrete sides, one charcoal top */
+.process__art {
   grid-column: 3 / span 6;
-  display: flex;
-  align-items: center;
-  gap: var(--space-4);
+  grid-row: 2;
+  width: 200px;
+  height: 150px;
+  margin-top: var(--space-6);
+  overflow: visible;
+  fill: none;
+  stroke: var(--color-ink);
+  stroke-width: 1;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
-/* The icon beside the title, in the set the Our story icons come from */
-.process__icon {
-  flex: none;
-  width: 40px;
-  height: 40px;
-  color: var(--color-ink);
-}
+.process__art * { vector-effect: non-scaling-stroke; }
+.process__art .process__fill { fill: var(--color-charcoal); }
+.process__art .process__face { fill: var(--color-concrete); }
+.process__art .process__front { fill: var(--color-white); }
 
 .process__text {
   grid-column: 9 / span 4;
+  grid-row: 1;
   max-width: 24em;
   /* the first line sits on the title's cap height, as in the reference */
   padding-top: calc(var(--process-name) * 0.2);
@@ -117,9 +129,9 @@
   .process__row { position: relative; top: auto; min-height: 0; margin-top: 0; padding-bottom: var(--space-7); }
   .process__list::after { display: none; }
   .process__name { grid-column: 3 / -1; }
-  .process__text { grid-column: 3 / -1; padding-top: var(--space-3); }
+  .process__text { grid-column: 3 / -1; grid-row: 2; padding-top: var(--space-3); }
+  .process__art { grid-row: 3; }
 }
 @media (max-width: 809px) {
   .process { --process-fs: 30px; --process-name: 28px; }
-  .process__icon { width: 28px; height: 28px; }
 }
