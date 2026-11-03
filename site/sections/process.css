@@ -1,0 +1,103 @@
+/* ==========================================================================
+   SECTION: process — About, block 4 ("How we work")
+   After the user's reference video (a stacking process list): the heading,
+   then four rows. Each row: a number, a large title and its line on the
+   right, under a hairline that draws in from the left as the row comes up
+   (process.js sets --line). Each row stops near the top of the screen just
+   under the one before (sticky, offset by one title strip per row), and the
+   next row slides up over it on the same ground, so the rows pile up as a
+   stack of title strips; the stack then scrolls away together.
+   In our language: Montserrat in sentence case, ink on the neutral ground.
+   Uses shared tokens from styles.css (container).
+   ========================================================================== */
+
+.process {
+  --process-line: rgba(21, 21, 21, 0.2);
+  --process-fs: calc((min(100vw, var(--container-max)) - 2 * var(--gutter)) * 0.04);
+  --process-name: 48px;        /* number and title */
+  --process-pad: 22px;         /* above the title, under the hairline */
+  --process-strip: 80px;       /* how much of a row stays in view once the next has covered it */
+  --process-top: var(--space-6);   /* where the first row stops */
+  background: var(--color-neutral);
+  padding-top: var(--space-10);
+  padding-bottom: var(--space-9);
+}
+
+.process__title {
+  font-size: var(--process-fs);
+  font-weight: var(--weight-medium);
+  line-height: 1.08;
+  letter-spacing: var(--ls-h2);
+  color: var(--color-ink);
+  margin-bottom: var(--space-9);
+}
+
+/* The rows stack inside the list; the list's own end is where the stack lets go. The room
+   that keeps the whole stack in view for a moment is content (::after), not padding: a sticky
+   row can't move into its parent's padding, so padding would let the stack go too early. */
+.process__list { list-style: none; }
+.process__list::after {
+  content: "";
+  display: block;
+  height: 30vh;
+}
+
+.process__row {
+  position: sticky;
+  top: calc(var(--process-top) + var(--i, 0) * var(--process-strip));
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--grid-gap);
+  align-items: start;
+  min-height: 46vh;
+  padding-top: var(--process-pad);
+  background: var(--color-neutral);   /* covers the row before it as it slides up */
+}
+
+/* The hairline across the top of each row, drawn in from the left (--line: 0 to 1) */
+.process__row::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 1px;
+  background: var(--process-line);
+  transform: scaleX(var(--line, 1));
+  transform-origin: left center;
+}
+
+.process__num,
+.process__name {
+  font-size: var(--process-name);
+  font-weight: var(--weight-medium);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--color-ink);
+}
+.process__num {
+  grid-column: 1 / span 2;
+  font-variant-numeric: tabular-nums;
+}
+.process__name { grid-column: 3 / span 6; }
+
+.process__text {
+  grid-column: 9 / span 4;
+  max-width: 24em;
+  /* the first line sits on the title's cap height, as in the reference */
+  padding-top: calc(var(--process-name) * 0.2);
+  font-size: var(--fs-lede);
+  line-height: var(--lh-lede);
+  color: var(--color-text);
+  text-wrap: pretty;
+}
+
+/* Tablet and phone: not reviewed yet (desktop first). No stacking there. */
+@media (max-width: 1199px) {
+  .process { --process-fs: 40px; --process-name: 36px; }
+  .process__row { position: relative; top: auto; min-height: 0; padding-bottom: var(--space-7); }
+  .process__list::after { display: none; }
+  .process__name { grid-column: 3 / -1; }
+  .process__text { grid-column: 3 / -1; padding-top: var(--space-3); }
+}
+@media (max-width: 809px) {
+  .process { --process-fs: 30px; --process-name: 28px; }
+}

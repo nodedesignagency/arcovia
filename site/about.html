@@ -17,6 +17,7 @@
   <link rel="stylesheet" href="sections/about-hero.css">
   <link rel="stylesheet" href="sections/story.css">
   <link rel="stylesheet" href="sections/beliefs.css">
+  <link rel="stylesheet" href="sections/process.css">
   <link rel="stylesheet" href="sections/footer.css">
 </head>
 <body>
@@ -308,6 +309,44 @@
     </section>
     <!-- SECTION:beliefs END -->
 
+    <!-- SECTION:process START · styles: sections/process.css · scripts: process.js
+         About, block 4 ("How we work"). After the user's reference video (a stacking process
+         list): each row a number, a large title and its line on the right, under a hairline
+         that draws in from the left as the row comes up; each row stops near the top of the
+         screen just under the one before, and the next slides up over it, so the rows pile up
+         as a stack of title strips, then the stack scrolls away together. In our language:
+         Montserrat in sentence case, ink on the neutral ground.
+         Copy is the user's: the headline and four points, each with its line. -->
+    <section class="process" data-process aria-labelledby="process-title">
+      <div class="process__inner container">
+        <h2 class="process__title" id="process-title">How we work</h2>
+
+        <ol class="process__list">
+          <li class="process__row" style="--i:0">
+            <span class="process__num" aria-hidden="true">01</span>
+            <h3 class="process__name">Parallel execution</h3>
+            <p class="process__text">Materials and investor targeting start on day one.</p>
+          </li>
+          <li class="process__row" style="--i:1">
+            <span class="process__num" aria-hidden="true">02</span>
+            <h3 class="process__name">Conflict-free</h3>
+            <p class="process__text">No proprietary trading, no balance-sheet risk.</p>
+          </li>
+          <li class="process__row" style="--i:2">
+            <span class="process__num" aria-hidden="true">03</span>
+            <h3 class="process__name">Senior access</h3>
+            <p class="process__text">Named senior advisors on every mandate, from engagement through close.</p>
+          </li>
+          <li class="process__row" style="--i:3">
+            <span class="process__num" aria-hidden="true">04</span>
+            <h3 class="process__name">Global reach</h3>
+            <p class="process__text">North America, Europe, the Middle East and Asia-Pacific.</p>
+          </li>
+        </ol>
+      </div>
+    </section>
+    <!-- SECTION:process END -->
+
   </main>
 
   <!-- SECTION:footer START · styles: sections/footer.css
@@ -369,5 +408,6 @@
   <script src="concrete.js"></script>
   <script src="main.js"></script>
   <script src="story.js"></script>
+  <script src="process.js"></script>
 </body>
 </html>
