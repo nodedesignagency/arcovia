@@ -69,6 +69,7 @@
 .belief__art .belief__fill { fill: var(--color-charcoal); }                     /* the one filled part, in charcoal */
 .belief__art .belief__face { fill: var(--color-concrete); }                    /* sides with depth, in concrete */
 .belief__art .belief__front { fill: var(--color-white); }                      /* faces that cover what is behind */
+.belief__art .belief__hidden { stroke-dasharray: 2 3; }                         /* edges behind a solid, as in a technical drawing */
 
 .belief__name {
   margin-top: var(--space-8);
