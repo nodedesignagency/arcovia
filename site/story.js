@@ -2,9 +2,11 @@
    Our story: the pinned photo that turns over (component: story-card)
    Layout after the user's process-section reference video, where a big step
    number turned on its vertical axis whenever the next step arrived. Here the
-   photo does: once a step crosses the middle of the screen, the card turns
-   over (front: the photo shown now, back: the step's photo). Four steps, four
-   photos.
+   photo does: once a step's content reaches the centre of the photo (the
+   middle of the screen), the card turns over (front: the photo shown now,
+   back: the step's photo). Four steps, four photos. As in the What We Do
+   section, each step is as tall as the photo with its content centred in it
+   (story.css), so one step sits beside the photo at a time.
    Scrolling back turns it back the other way. Timed, not scrubbed, so the
    card never rests half turned; if several steps go by during one turn, it
    turns again to catch up. After each turn the new photo moves to the front
@@ -30,10 +32,15 @@
 
   var shown = 0, target = 0, turning = false, turningTo = 0;
 
-  // The step whose top last crossed the middle of the screen
+  // The last step whose content has reached the photo's centre. The card is pinned in the
+  // middle of the screen, so that is the screen's middle; each step's content is centred in
+  // its own box, so the box's centre is the content's.
   function activeStep() {
     var mid = window.innerHeight * 0.5, k = 0;
-    steps.forEach(function (s, i) { if (s.getBoundingClientRect().top < mid) k = i; });
+    steps.forEach(function (s, i) {
+      var r = s.getBoundingClientRect();
+      if (r.top + r.height / 2 <= mid + 1) k = i;
+    });
     return k;
   }
 

@@ -5,7 +5,9 @@
    (cols 1-6), each a title and a short line over a hairline, and three points,
    every point an icon, a heading and a paragraph. One photo stays
    pinned on the right (cols 7-12) and turns over to each step's photo as
-   the step crosses the middle of the screen (story.js): four photos.
+   the step's content reaches the photo's centre (story.js): four photos.
+   Each step is a screen tall, its content centred, after the What We Do
+   section.
    On the flat neutral ground, like the footer that follows.
    Uses shared tokens and components from styles.css (chip, container).
    ========================================================================== */
@@ -48,7 +50,18 @@
   grid-row: 2;
   list-style: none;
 }
-.story-step + .story-step { margin-top: var(--space-9); }
+/* As in the What We Do section: each step is a screen tall with its content centred in it, so
+   there is room above and below, only one step sits beside the photo at a time, and the photo
+   turns as a step's content reaches the photo's centre (story.js). The column ends with a
+   little extra room, so the card holds a moment after the last step arrives. */
+.story__steps { padding-bottom: calc(var(--story-card-h) * 0.25); }
+.story-step {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 100vh;
+  min-height: 100svh;
+}
 
 .story-step__head {
   display: grid;
@@ -152,6 +165,8 @@
   .story-step__title { font-size: 32px; }
 }
 @media (max-width: 809px) {
+  .story-step { min-height: 0; padding-bottom: var(--space-8); }
+  .story__steps { padding-bottom: 0; }
   .story { --story-fs: 30px; }
   .story__steps { grid-column: 1 / -1; grid-row: 3; }
   .story__media { grid-column: 1 / -1; grid-row: 2; margin-bottom: var(--space-7); }
