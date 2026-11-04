@@ -3,13 +3,16 @@
    Layout after the user's reference, a studio's team page: a group heading,
    then square black-and-white studio portraits in a close grid, and under
    each the name, the title and the person's direct contact (email underlined).
-   In our language: on white, the h2 at the size of the About headings, four
-   cards of three grid columns each. Every card (component: person-card) is
+   In our language: on white, a 2 × 2 grid (the user asked for it) at the
+   reference's portrait size: "Leadership" on cols 1-6, held in view (sticky)
+   while the grid on cols 7-12 goes by, the four cards three columns each.
+   ?leaders=large (people.js sets data-layout="large"): the 2 × 2 across the
+   full width instead, the heading above it. Every card (component: person-card) is
    portrait, name, title chip, then the direct email and the LinkedIn tile,
    so nobody has to click through to reach someone. The bio lives on the
    person's profile page, which portrait and name open. Name, title and
    contact line up across the row (subgrid), so the contact rows share one
-   line however the titles wrap.
+   line however the titles wrap (across each row of two).
    Portraits are black and white and turn to colour on hover or focus, as on
    Home (the user's call: the only colour on the site).
    Uses shared tokens and components from styles.css (chip, container).
@@ -22,22 +25,43 @@
   padding-block: var(--space-10);
 }
 
+.leadership__inner {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--grid-gap);
+  align-items: start;
+}
+
+/* The heading stays in view while the grid goes by; it clears the small header bar when that comes back */
 .leadership__title {
+  grid-column: 1 / span 6;
+  position: sticky;
+  top: calc(var(--mh-labels) + var(--mh-compact) + var(--space-6));
   font-size: var(--lead-fs);
   font-weight: var(--weight-medium);
   line-height: 1.08;
   letter-spacing: var(--ls-h2);
   color: var(--color-ink);
-  margin-bottom: var(--space-8);
 }
 
-/* Four cards on the 12-column grid (three columns each); rows shared so the parts line up */
+/* 2 × 2 on cols 7-12 (three columns a card); each row's parts line up (subgrid) */
 .leadership__list {
+  grid-column: 7 / -1;
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  grid-template-rows: repeat(4, auto);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-rows: repeat(8, auto);
   column-gap: var(--grid-gap);
 }
+.leadership__list > .person-card:nth-child(n + 3) { margin-top: var(--space-8); }
+
+/* ?leaders=large: the 2 × 2 across the full width (six columns a card), the heading above */
+.leadership[data-layout="large"] .leadership__title {
+  grid-column: 1 / -1;
+  position: static;
+  margin-bottom: var(--space-8);
+}
+.leadership[data-layout="large"] .leadership__list { grid-column: 1 / -1; }
+.leadership[data-layout="large"] .person-card__name { font-size: 26px; }
 
 /* ---------- Component: person-card ---------- */
 .person-card {
@@ -153,11 +177,13 @@
 
 /* Tablet and phone: not reviewed yet (desktop first); keep it readable */
 @media (max-width: 1199px) {
+  .leadership__title { grid-column: 1 / -1; position: static; margin-bottom: var(--space-7); }
   .leadership__list {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-column: 1 / -1;
     grid-template-rows: none;
     row-gap: var(--space-8);
   }
+  .leadership__list > .person-card:nth-child(n + 3) { margin-top: 0; }
   .person-card { grid-row: auto; grid-template-rows: none; }
 }
 @media (max-width: 809px) {

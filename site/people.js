@@ -2,7 +2,8 @@
    Direct emails: the markup carries only the name (data-email="colin", optional
    data-domain, arcovia.io by default) and a spelled-out fallback ("colin [at]
    arcovia.io"), so the address is never in the HTML for spam bots to harvest.
-   It is put together here. */
+   It is put together here.
+   Review switch: ?leaders=large shows the leadership 2 × 2 across the full width. */
 (function () {
   "use strict";
 
@@ -11,4 +12,9 @@
     a.setAttribute("href", "mailto:" + addr);
     a.textContent = addr;
   });
+
+  var layout = (location.search.match(/[?&]leaders=(\w+)/) || [])[1];
+  if (layout) {
+    document.querySelectorAll("[data-leadership]").forEach(function (s) { s.setAttribute("data-layout", layout); });
+  }
 })();
