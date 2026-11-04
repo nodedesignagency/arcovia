@@ -1,0 +1,71 @@
+/* ==========================================================================
+   SECTION: cookie-banner — every page (component: cookie-banner)
+   From the brief: analytics load only after consent; "Accept" and "Reject"
+   equally prominent; in the site's own look, not a plugin's. Built as the
+   site's floating panel (the path picker's menu, which the user chose: flat
+   white, a hairline ring and a soft, wide, very light shadow, the small
+   capitals title over a hairline). Bottom left on the container's edge.
+   The two choices are the same outlined pill, side by side, same width.
+   Script: cookie-banner.js (shows it, stores the choice, reopens it from
+   any [data-cookie-settings] button).
+   ========================================================================== */
+
+.cookie-banner {
+  position: fixed;
+  z-index: 55;    /* over the page, under the full-screen menu (60) */
+  left: max(var(--gutter), (100vw - var(--container-max)) / 2 + var(--gutter));
+  bottom: var(--space-5);
+  width: min(400px, calc(100vw - 2 * var(--gutter)));
+  padding: 10px 24px 24px;
+  background: var(--color-white);
+  border-radius: 24px;
+  box-shadow: var(--shadow-menu);
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity var(--dur-base) var(--ease-out), transform var(--dur-base) var(--ease-out);
+}
+.cookie-banner[hidden] { display: none; }
+.cookie-banner.is-shown {
+  opacity: 1;
+  transform: none;
+  transition-duration: var(--dur-slow);
+}
+
+/* The path picker's title: small capitals over a hairline */
+.cookie-banner__title {
+  padding: 12px 0 14px;
+  margin-bottom: 14px;
+  border-bottom: 1px solid rgba(17, 17, 17, 0.08);
+  font-size: 12px;
+  font-weight: var(--weight-medium);
+  letter-spacing: 0.08em;
+  line-height: 16px;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.cookie-banner__text {
+  font-size: 15px;
+  line-height: 22px;
+  color: var(--color-text);
+  text-wrap: pretty;
+}
+.cookie-banner__text a {
+  color: var(--color-ink);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  text-decoration-color: rgba(21, 21, 21, 0.35);
+}
+
+/* Equal weight: the same button twice, same width */
+.cookie-banner__actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+  margin-top: var(--space-5);
+}
+
+@media print {
+  .cookie-banner { display: none; }
+}
