@@ -2,16 +2,17 @@
 Arcovia: concrete renders for the "What we do" tiles.
 
 One square image per service, after the user's references: pale speckled
-concrete forms with soft rounded edges, lit by a broad soft light from the
-upper left, cut off by the frame, on a flat charcoal ground (#565656, the
-site's charcoal). Each form says something about its service:
+concrete forms with soft rounded edges, lit by a soft light from the upper
+right, each form whole in the frame (only a far end may run off the right),
+on a flat charcoal ground (#565656, the site's charcoal). Each form says
+something about its service:
 
-  narrative  Investor Narrative & Positioning  sheets stacked like shingles, in three lengths (memo, teaser, deck)
+  narrative  Investor Narrative & Positioning  seven sheets stacked like shingles, in three lengths (memo, teaser, deck)
   strategy   Capital Strategy                  four soft steps: size, anchor, structure, close
-  equity     Equity Raising                    rows of fins rising left to right
+  equity     Equity Raising                    rows of fins on one base line, rising left to right
   debt       Debt Advisory & Placement         a capital stack: five slabs, thick senior at the base
   mna        M&A and Project Finance           two masses fitted along one S-shaped joint
-  fund       Fund Formation & Partnerships     one slab carried by a colonnade
+  fund       Fund Formation & Partnerships     a pavilion: a roof slab on round columns, on a plinth
 
 Rendered with Blender's Cycles (the `bpy` module from PyPI), then set on the
 charcoal and given a fine film grain by finish.py.
@@ -331,65 +332,69 @@ def s_curve(p0, p1, n=24):
 
 def scene_narrative(mat):
     """Investor Narrative & Positioning: memo, teaser and deck as one system.
-    Sheets stacked like shingles, each lower one tucked behind the one above;
-    their left edges in a rhythm of three lengths."""
-    h, t, pitch = 0.46, 0.055, 0.34
+    Seven sheets stacked like shingles, each lower one tucked behind the one
+    above, their left edges in a rhythm of three lengths. The whole stack sits
+    in the frame (only the sheets' far ends run off the right), with charcoal
+    above and below it, framed like the capital stack."""
+    h, t, pitch, n = 0.46, 0.055, 0.34, 7
     lefts = (-0.62, 0.02, -0.30)  # memo (long), deck (short), teaser (between)
-    for i in range(11):
-        z = 1.85 - i * pitch
+    for i in range(n):
+        z = ((n - 1) / 2 - i) * pitch
         x0 = lefts[i % 3]
         x1 = 4.0
         box(f"sheet{i}", (x1 - x0, t, h), ((x0 + x1) / 2, i * 0.035, z), mat,
             rot=(math.radians(-9), 0, 0), bevel=0.02, segs=8)
     # looking straight down +y keeps the sheets level; the frame is shifted instead
-    camera((-0.9, -6.2, -1.1), (-0.9, 0.0, -0.35), lens=72, shift=(0.21, 0.08))
+    camera((-0.9, -6.2, -0.75), (-0.9, 0.0, 0.0), lens=64, shift=(0.20, 0.0))
     studio(target=(0.5, 0, 0))
 
 
 def scene_strategy(mat):
     """Capital Strategy: round size, valuation anchor, structure, closing
     sequence. One folded concrete plate, four soft steps rising to the right,
-    floating on the charcoal."""
+    floating on the charcoal. Its first landing starts inside the frame; only
+    the top landing runs off the right."""
     run, rise, th, n = 0.70, 0.42, 0.17, 4
-    x, z = -2.4, -1.55
-    top = [(x - 1.0, z)]
+    x, z = -1.45, -1.05
+    top = [(x - 0.55, z)]
     for i in range(n):
         top.append((x, z))
         z += rise
         top.append((x, z))
         x += run
-    top.append((x + 2.5, z))
+    top.append((x + 3.0, z))
     # a uniform plate: the underside is the top moved down and right by its thickness
     under = [(px + th, pz - th) for px, pz in top]
     under[0] = (top[0][0], top[0][1] - th)
     under[-1] = (top[-1][0], top[-1][1] - th)
     pts = top + list(reversed(under))
-    prism("plate", pts, 2.6, mat, plane="XZ", loc=(0, 0, 0), bevel=0.05, segs=12, angle=30)
-    camera((-2.7, -5.2, 0.9), (-0.55, 0.9, -0.3), lens=64)
+    prism("plate", pts, 2.4, mat, plane="XZ", loc=(0, 0, 0), bevel=0.05, segs=12, angle=30)
+    camera((-3.1, -5.6, 1.05), (-0.25, 0.9, -0.3), lens=56)
     studio(target=(0, 0.5, 0))
 
 
 def scene_equity(mat):
     """Equity Raising: growth equity through 3,000+ institutional relationships.
-    Rows of fins, many of them, rising from left to right."""
+    Three rows of fins standing on one base line, rising from left to right
+    like a chart. The whole group stands in the frame, with charcoal under it."""
+    base = -0.95
     rows = (
-        # depth, first x, step, widths, base height, rise per fin
-        (1.10, -0.72, 0.62, (0.48, 0.36, 0.52, 0.40, 0.46, 0.38, 0.50), 1.55, 0.26),
-        (0.55, -0.98, 0.58, (0.30, 0.44, 0.34, 0.48, 0.30, 0.42, 0.36), 0.95, 0.27),
-        (0.00, -1.22, 0.55, (0.26, 0.32, 0.24, 0.36, 0.28, 0.34, 0.30, 0.26), 0.40, 0.29),
+        # depth, first x, step, widths, first height, rise per fin
+        (1.10, -0.72, 0.62, (0.48, 0.36, 0.52, 0.40, 0.46, 0.38, 0.50), 1.75, 0.23),
+        (0.55, -0.98, 0.58, (0.30, 0.44, 0.34, 0.48, 0.30, 0.42, 0.36), 1.30, 0.24),
+        (0.00, -1.22, 0.55, (0.26, 0.32, 0.24, 0.36, 0.28, 0.34, 0.30, 0.26), 0.85, 0.24),
     )
     t = 0.045
     k = 0
     for depth, x0, step, widths, h0, dh in rows:
         for j, w in enumerate(widths):
-            top = h0 + j * dh
-            bottom = -3.0
+            top = base + h0 + j * dh
             x = x0 + j * step
-            box(f"fin{k}", (w, t, top - bottom), (x + w / 2, depth, (top + bottom) / 2), mat,
+            box(f"fin{k}", (w, t, top - base), (x + w / 2, depth, (top + base) / 2), mat,
                 bevel=0.014, segs=8)
             k += 1
-    camera((-1.45, -6.0, 0.45), (0.65, 0.5, 0.75), lens=60)
-    studio(target=(0.3, 0.5, 0.6))
+    camera((-1.9, -7.0, -0.35), (0.55, 0.5, 0.6), lens=58)
+    studio(target=(0.3, 0.5, 0.4))
 
 
 def scene_debt(mat):
@@ -412,33 +417,38 @@ def scene_debt(mat):
 
 def scene_mna(mat):
     """M&A and Project Finance: sell-side and buy-side brought together. Two
-    masses fitted along one S-shaped joint, a hairline of shadow between them,
-    the right one standing a step higher."""
-    gap = 0.03
-    joint = s_curve((-0.55, -4.0), (0.45, 4.0), n=48)
-    # the joint runs front to back (along y); it swings from left to right
-    left = [(-5.0, -4.0)] + [(x - gap / 2, y) for x, y in joint] + [(-5.0, 4.0)]
-    right = [(x + gap / 2, y) for x, y in joint] + [(5.0, 4.0), (5.0, -4.0)]
-    # the joint, squeezed so the S reads in the frame
-    def squeeze(pts):
-        return [(x, y * 0.5) for x, y in pts]
-    prism("sell", squeeze(left), 2.0, mat, plane="XY", loc=(0, 0, -2.6), bevel=0.06, segs=12, angle=25)
-    prism("buy", list(reversed(squeeze(right))), 2.36, mat, plane="XY", loc=(0, 0, -2.6), bevel=0.06, segs=12, angle=25)
-    camera((-1.7, -3.7, 3.6), (0.05, 0.25, -0.6), lens=55)
+    whole blocks fitted along one S-shaped joint, a hairline of shadow between
+    them, the right one standing a step higher. Both sit in the frame on the
+    charcoal; only the right block runs off the right."""
+    gap, half = 0.03, 1.2
+    joint = s_curve((-0.32, -half), (0.32, half), n=48)  # runs front to back (along y)
+    left = [(-1.75, -half)] + [(x - gap / 2, y) for x, y in joint] + [(-1.75, half)]
+    right = [(x + gap / 2, y) for x, y in joint] + [(4.5, half), (4.5, -half)]
+    base = -1.05
+    prism("sell", left, 0.78, mat, plane="XY", loc=(0, 0, base), bevel=0.06, segs=12, angle=25)
+    prism("buy", list(reversed(right)), 1.02, mat, plane="XY", loc=(0, 0, base), bevel=0.06, segs=12, angle=25)
+    camera((-3.0, -4.8, 2.55), (-0.05, 0.2, -0.6), lens=53)
     studio(target=(0, 0, -0.6))
 
 
 def scene_fund(mat):
     """Fund Formation & Partnerships: one fund carried by its partners. A deep
-    slab resting on rows of round columns, seen from below."""
-    box("slab", (7.0, 7.0, 0.5), (2.6, 2.8, 1.55), mat, bevel=0.05, segs=10)
-    for j in range(6):
+    roof slab on rows of round columns, standing on a plinth: the whole
+    pavilion in the frame, only its far end running off the right."""
+    x0, y0, x1, y1 = -1.15, -0.8, 5.0, 3.1
+    w, d = x1 - x0, y1 - y0
+    cx, cy = (x0 + x1) / 2, (y0 + y1) / 2
+    plinth_top, roof_bottom = -1.15, 0.85
+    box("plinth", (w, d, 0.3), (cx, cy, plinth_top - 0.15), mat, bevel=0.04, segs=10)
+    box("roof", (w, d, 0.42), (cx, cy, roof_bottom + 0.21), mat, bevel=0.045, segs=10)
+    height = roof_bottom - plinth_top + 0.2  # ends hidden in the slabs
+    for j in range(7):
         for i in range(3):
-            x = -0.7 + j * 0.95
-            y = -0.35 + i * 1.05
-            column(f"col{i}{j}", 0.17, 6.0, (x, y, 1.4 - 3.0), mat)
-    camera((-2.9, -5.2, -1.3), (0.7, 0.9, 0.75), lens=46)
-    studio(target=(0.5, 0.5, 0.6))
+            x = -0.75 + j * 0.92
+            y = -0.4 + i * 1.15
+            column(f"col{i}{j}", 0.15, height, (x, y, (plinth_top + roof_bottom) / 2), mat)
+    camera((-3.4, -5.8, 0.55), (0.45, 0.9, -0.2), lens=52)
+    studio(target=(0.5, 0.5, -0.1))
 
 
 SCENES = {

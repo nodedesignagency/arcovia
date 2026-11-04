@@ -1,16 +1,18 @@
 # Concrete renders
 
 The six "What we do" tiles on Home, after the user's references: pale speckled
-concrete forms on the flat charcoal ground (`#565656`). One form per service:
+concrete forms on the flat charcoal ground (`#565656`). One form per service,
+each a whole object with charcoal under it (only its far end may run off the
+right), framed like the capital stack, which the user picked as the model:
 
 | Tile | Service | Form |
 | --- | --- | --- |
-| `narrative` | Investor Narrative & Positioning | sheets stacked like shingles, three lengths: memo, teaser, deck |
+| `narrative` | Investor Narrative & Positioning | seven sheets stacked like shingles, three lengths: memo, teaser, deck |
 | `strategy` | Capital Strategy | one folded plate, four steps: size, anchor, structure, close |
-| `equity` | Equity Raising | rows of fins rising left to right |
+| `equity` | Equity Raising | three rows of fins on one base line, rising left to right like a chart |
 | `debt` | Debt Advisory & Placement | a capital stack: five slabs, the senior one thickest at the base |
 | `mna` | M&A and Project Finance | two masses fitted along one S-shaped joint |
-| `fund` | Fund Formation & Partnerships | a deep slab carried by rows of round columns |
+| `fund` | Fund Formation & Partnerships | a pavilion: a roof slab on rows of round columns, on a plinth |
 
 Output: `site/assets/services/<tile>.jpg` and `.webp`, 1440 × 1440 (the tile
 is at most 360px, so 2x is 720px).
