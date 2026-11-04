@@ -197,7 +197,9 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 
 /* ---------- Chip: a short label between square brackets, set as plain text ---------- */
 .chip {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
   max-width: 100%;
   white-space: nowrap;
   font-size: 13px;
@@ -207,11 +209,13 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   text-transform: uppercase;
   color: var(--color-text);
 }
-/* Brackets are decoration only: the "/ ''" keeps screen readers from announcing them */
-.chip::before { content: "[\00a0"; content: "[\00a0" / ""; }
-.chip::after { content: "\00a0]"; content: "\00a0]" / ""; }
+/* A small square before the word, after the user's reference (it replaced the brackets on
+   4 Nov 2026): square corners, no radius (the user's call); decoration only, it has no text.
+   Contact turns the chip on its side (.chip--side in contact.css), only on some pages. */
+.chip::before { content: ""; flex: none; width: 10px; height: 10px; background: currentColor; }
 @media (max-width: 809px) {
-  .chip { font-size: 11px; letter-spacing: 0.08em; }
+  .chip { gap: 10px; font-size: 11px; letter-spacing: 0.08em; }
+  .chip::before { width: 8px; height: 8px; }
 }
 
 /* ---------- Buttons ---------- */

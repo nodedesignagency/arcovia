@@ -72,23 +72,12 @@
   color: var(--color-ink);
 }
 
-/* The chip on its side (component: chip--side): no brackets, a small square with square
-   corners (the user asked for no radius) under the word, which reads upwards from it */
+/* The chip on its side (component: chip--side; only some pages, the user's call): the
+   shared chip (styles.css: a square before the word) turned to read upwards from its square */
 .contact .chip--side {
-  display: inline-flex;
-  align-items: center;
-  gap: 12px;
   writing-mode: vertical-rl;
   transform: rotate(180deg);
 }
-.contact .chip--side::before {
-  content: "";
-  flex: none;
-  width: 10px;
-  height: 10px;
-  background: currentColor;
-}
-.contact .chip--side::after { content: none; }
 
 /* ---------- Left: the line, direct email, offices ---------- */
 .contact__aside {
@@ -350,8 +339,7 @@
   .contact__title { grid-column: 1 / -1; grid-row: 2; padding-left: 0; font-size: 72px; }
   .contact__head { grid-template-columns: none; margin-bottom: var(--space-6); }
   .contact__head .chip { grid-column: 1 / -1; margin-top: 0; }
-  .contact .chip--side { writing-mode: horizontal-tb; transform: none; gap: 10px; }
-  .contact .chip--side::before { width: 8px; height: 8px; }
+  .contact .chip--side { writing-mode: horizontal-tb; transform: none; }
   .contact__aside { display: contents; }
   .contact__lede { grid-column: 1 / span 9; grid-row: 2; max-width: 30em; margin-bottom: var(--space-8); font-size: 19px; }
   .contact__main { grid-column: 1 / -1; grid-row: 3; padding-left: 0; }
