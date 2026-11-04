@@ -294,16 +294,43 @@
 [data-sheet="card"] .note__status:not(:empty) { margin-top: 0; padding-bottom: 24px; }
 [data-sheet="card"] .contact__aside { padding-top: 56px; }
 
-/* ---------- Tablet and phone (to refine once desktop is approved) ---------- */
+/* ---------- Tablet (810–1199) and phone (≤809) ----------
+   One column. The brief's line moves up under the headline (the left column's
+   parts join the page grid), then the note, then email and the offices:
+   side by side on tablet, stacked on phone. */
 @media (max-width: 1199px) {
   .contact { --nt-size: 26px; }
   .contact__title { font-size: 72px; }
-  .contact__aside { position: static; grid-column: 1 / -1; grid-row: 3; margin-top: var(--space-9); padding-top: 0; }
-  .contact__main { grid-column: 1 / -1; }
-  .note__foot { flex-direction: column; align-items: flex-start; }
+  .contact__head { margin-bottom: var(--space-6); }
+  .contact__aside { display: contents; }
+  .contact__lede { grid-column: 1 / span 9; grid-row: 2; max-width: 30em; margin-bottom: var(--space-8); font-size: 19px; }
+  .contact__main { grid-column: 1 / -1; grid-row: 3; }
+  .contact__block { grid-row: 4; margin-top: var(--space-9); }
+  .contact__block--email { grid-column: 1 / span 4; }
+  .contact__block--offices { grid-column: 5 / -1; }
+  .contact__offices { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--grid-gap); }
+  [data-sheet="card"] .note-form { padding: 44px 40px 0; }
+  [data-sheet="card"] .note-done { padding: 44px 40px; }
+  [data-sheet="card"] .note__foot { margin-inline: -40px; padding-inline: 40px; }
 }
 @media (max-width: 809px) {
-  .contact { --nt-size: 22px; }
-  .contact__title { font-size: 44px; }
-  .note-area { font-size: 20px; }
+  .contact { --nt-size: 22px; padding-bottom: var(--space-9); }
+  .contact__title { font-size: 46px; letter-spacing: -0.03em; }
+  .contact__head { gap: 16px; margin-bottom: var(--space-5); }
+  .contact__lede { grid-column: 1 / -1; margin-bottom: var(--space-7); font-size: 17px; }
+  .contact__block { grid-column: 1 / -1; }
+  .contact__block--email { margin-top: var(--space-8); }
+  .contact__block--offices { grid-row: 5; margin-top: var(--space-6); }
+  .contact__offices { grid-template-columns: 1fr; }
+  .note-who { gap: 8px; margin-top: 12px; }
+  .note-path { height: 42px; gap: 8px; padding: 0 16px 0 12px; font-size: 15px; }
+  .note-path__dot { width: 15px; height: 15px; }
+  .note__body { margin-top: 28px; }
+  .note__body > * + * { margin-top: 18px; }
+  .note-area { font-size: 19px; }
+  .note__foot { flex-direction: column; align-items: flex-start; gap: var(--space-5); margin-top: var(--space-7); }
+  .note-done__text { font-size: 30px; }
+  [data-sheet="card"] .note-form { padding: 32px 22px 0; border-radius: 22px; }
+  [data-sheet="card"] .note-done { padding: 32px 22px; border-radius: 22px; }
+  [data-sheet="card"] .note__foot { margin-inline: -22px; padding-inline: 22px; }
 }
