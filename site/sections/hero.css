@@ -148,9 +148,14 @@
    headline, and the "Choose your path" button gives way to the three paths, stacked in
    the right-hand column as rows like the masthead's links
    (the user's reference): hairlines above, between and below, medium type in ink, an arrow
-   at the end. Hover draws the masthead's short dash in before the label, inks the line under
-   the row and nudges the arrow on. (Tried first and set aside: everything centred with the
-   paths three across, commit 7fc639f.) */
+   at the end. Hover, after a reference the user sent (rows that roll forward like boxes):
+   each row is a box whose front face is the row; on hover it rolls towards you about its
+   own axis, the front face turning into a white card (label and arrow) while its top face
+   comes into view: the dark button's colour with the path's icon and one line. The other
+   rows step back (dimmed, a touch out of focus). Each box has its own perspective, so it
+   flares evenly to both sides. At rest nothing is transformed, so the type stays crisp.
+   Reduced motion: no roll, the front face just turns white. (Tried first and set aside:
+   everything centred with the paths three across, commit 7fc639f.) */
 .path-rows { display: none; }
 .hero__lede--under { display: none; }
 
@@ -172,41 +177,61 @@
   border-top: 1px solid var(--mh-line);
 }
 .path-rows__option {
+  --d: 56px;                 /* the box's depth: the height of its top face */
+  --roll: -40deg;            /* how far it rolls towards you */
   position: relative;
-  display: flex;
-  align-items: center;
-  gap: var(--space-4);
+  display: block;
   height: 56px;
   border-bottom: 1px solid var(--mh-line);
-  font-size: 20px;
-  font-weight: var(--weight-medium);
-  letter-spacing: -0.005em;
   color: var(--color-ink);
-  outline-offset: 4px;
+  outline: none;
+  transition: opacity 360ms var(--ease-out), filter 360ms var(--ease-out), border-color 240ms var(--ease-out);
 }
-/* The line under the row inks in from the left on hover */
-.path-rows__option::after {
-  content: "";
+/* The box: rolls about its own centre, half its depth behind the row */
+.path-rows__box {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  transform-origin: 50% 50% calc(var(--d) * -0.5);
+  transition: transform 560ms var(--ease-out);
+}
+.path-rows__face {
   position: absolute;
   left: 0;
   right: 0;
-  bottom: -1px;
-  height: 1px;
-  background: var(--color-ink);
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform var(--dur-slow) var(--ease-out);
+  display: flex;
+  align-items: center;
+  backface-visibility: hidden;
 }
-.path-rows__label { display: inline-flex; align-items: center; }
-/* The masthead's short dash */
-.path-rows__label::before {
-  content: "";
-  width: 0;
-  height: 1.5px;
-  margin-right: 0;
-  background: currentColor;
-  transition: width var(--dur-base) var(--ease-out), margin var(--dur-base) var(--ease-out);
+/* Front face: the row itself; on hover a white card */
+.path-rows__face--front {
+  top: 0;
+  bottom: 0;
+  gap: var(--space-4);
+  padding: 0;
+  font-size: 20px;
+  font-weight: var(--weight-medium);
+  letter-spacing: -0.005em;
+  background-color: rgba(255, 255, 255, 0);
+  transition: background-color 360ms var(--ease-out), padding 560ms var(--ease-out);
 }
+/* Top face: lies back along the top of the box, edge-on (unseen) until the box rolls */
+.path-rows__face--top {
+  bottom: 100%;
+  height: var(--d);
+  gap: 12px;
+  padding: 0 20px;
+  transform-origin: 50% 100%;
+  transform: rotateX(90deg);
+  background: linear-gradient(180deg, rgba(207, 207, 207, 0.16) 0%, rgba(207, 207, 207, 0.08) 100%), var(--btn-dark);
+  color: var(--color-on-dark);
+  font-size: 15px;
+  font-weight: var(--weight-medium);
+  letter-spacing: 0.005em;
+}
+.path-rows__icon { flex: none; width: 24px; height: 24px; }
+.path-rows__meta { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.path-rows__label { white-space: nowrap; }
 .path-rows__arrow {
   flex: none;
   width: 18px;
@@ -214,12 +239,41 @@
   margin-left: auto;
   transition: transform var(--dur-base) var(--ease-out);
 }
-@media (hover: hover) {
-  .path-rows__option:hover::after { transform: scaleX(1); }
-  .path-rows__option:hover .path-rows__label::before { width: 12px; margin-right: 8px; }
-  .path-rows__option:hover .path-rows__arrow { transform: translateX(4px); }
+/* A soft shadow on the concrete under the raised box */
+.path-rows__option::before {
+  content: "";
+  position: absolute;
+  left: 6%;
+  right: 6%;
+  bottom: -20px;
+  height: 22px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.26);
+  filter: blur(12px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 560ms var(--ease-out);
 }
-.path-rows__option:focus-visible::after { transform: scaleX(1); }
+
+/* The roll (hover, and keyboard focus) */
+.path-rows__option:focus-visible { z-index: 2; border-bottom-color: transparent; }
+.path-rows__option:focus-visible::before { opacity: 1; }
+.path-rows__option:focus-visible .path-rows__box { transform: perspective(620px) translateZ(8px) rotateX(var(--roll)); }
+.path-rows__option:focus-visible .path-rows__face--front { background-color: var(--color-white); padding: 0 20px; }
+@media (hover: hover) {
+  .path-rows__option:hover { z-index: 2; border-bottom-color: transparent; }
+  .path-rows__option:hover::before { opacity: 1; }
+  .path-rows__option:hover .path-rows__box { transform: perspective(620px) translateZ(8px) rotateX(var(--roll)); }
+  .path-rows__option:hover .path-rows__face--front { background-color: var(--color-white); padding: 0 20px; }
+  .path-rows__option:hover .path-rows__arrow { transform: translateX(3px); }
+  /* The other rows step back */
+  .path-rows__list:hover .path-rows__option:not(:hover) { opacity: 0.4; filter: blur(1.2px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .path-rows__option .path-rows__box { transform: none !important; }
+  .path-rows__option::before { display: none; }
+  .path-rows__option .path-rows__face--front { transition: none; }
+}
 
 @media (max-width: 1199px) {
   .hero__inner { grid-template-rows: 1fr auto auto; }
