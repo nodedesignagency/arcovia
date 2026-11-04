@@ -15,7 +15,7 @@
                text on the right
      end       the page ends on a hairline 12px over the footer, as Contact does
    V1 (the About hero's live concrete over plain columns) is frozen in
-   versions/legal-v1/ for comparison.
+   versions/legal-v1/ on the branch claude/zen-thompson-rp1coq.
    Rejected: the text on a white sheet with a shadow, a list of the four legal
    documents in the left column (the footer lists them) and a visible "draft"
    status line. Drafts are marked in the HTML comments.
