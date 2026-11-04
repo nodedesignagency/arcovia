@@ -64,6 +64,13 @@
   background: var(--color-neutral);   /* covers the row before it as it slides up */
 }
 
+/* The page's changing background (ArcoviaSurface, Framer): each row paints its own ground so it can
+   cover the row before as they stack, so the rows take the page's surface with the section, on the
+   veil's clock; otherwise they stay neutral boxes on a white or black page */
+:root[data-arc-surface="white"] .process[data-surface] .process__row { background-color: var(--color-white); }
+:root[data-arc-surface="black"] .process[data-surface] .process__row { background-color: var(--color-black); }
+.process[data-surface-live] .process__row { transition: background-color var(--arc-surface-dur, 600ms) var(--arc-surface-ease, ease); }
+
 /* The hairline across the top of each row, drawn in from the left (--line: 0 to 1) */
 .process__row::before {
   content: "";
