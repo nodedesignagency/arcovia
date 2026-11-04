@@ -10,8 +10,10 @@
  * right to zero, with a click at each stop), light catches in the joint, then the
  * doors slide apart and light pours through the gap onto the hero. About 2.3 s.
  *
- * Plays when the site is opened or reloaded on Home, not when you come back to Home
- * from another page in the same visit (?vault=on always plays, ?vault=off never).
+ * Plays every time Home opens: loading or reloading Home, and every visit to Home from
+ * another page (the user asked for this). The Plays control can limit it to when the site
+ * opens (then coming back to Home in the same visit skips it). ?vault=off never plays,
+ * ?vault=on always does.
  * A scroll, key or tap starts it at once. Reduced motion: the doors fade.
  *
  * Responsive: the door is the screen (a size container), the mark is half its height and at
@@ -39,7 +41,7 @@ interface Props {
     style?: React.CSSProperties
 }
 
-const DEFAULTS: Props = { plays: "open", preview: false }
+const DEFAULTS: Props = { plays: "always", preview: false }
 
 const MIN_HOLD = 400 // ms the closed door is seen
 const MAX_WAIT = 1600 // ms at most before it opens
@@ -471,7 +473,7 @@ export default function ArcoviaVault(incoming: Partial<Props>) {
     const isStatic = isStaticRender()
     // One set of ids per copy (Framer can render a copy per breakpoint into the page)
     const u = "v" + React.useId().replace(/[^a-zA-Z0-9_-]/g, "")
-    const plays: Plays = p.plays === "always" || p.plays === "off" ? p.plays : "open"
+    const plays: Plays = p.plays === "open" || p.plays === "off" ? p.plays : "always"
 
     useBeforePaint(() => {
         if (isStaticRender()) return
@@ -499,22 +501,37 @@ export default function ArcoviaVault(incoming: Partial<Props>) {
         }
         w.__arcVaultMounted = true
 
-        if (!play) {
+        let life: Life | null = null
+        const start = (fromLoad: boolean) => {
+            if (life) life.dispose()
+            vault.classList.remove("is-gone", "is-opening", "is-fading")
+            root.classList.remove(...ROOT_CLASSES)
+            void vault.offsetWidth // so the door's animations start again from the top
+            root.classList.add("vault-on")
+            life = createLife()
+            try {
+                runDoors(vault, life, fromLoad)
+            } catch (e) {
+                console.error("[Arcovia]", e)
+                vault.classList.add("is-gone")
+                root.classList.remove(...ROOT_CLASSES)
+            }
+        }
+        if (play) start(initial)
+        else {
             root.classList.remove(...ROOT_CLASSES)
             vault.classList.add("is-gone")
-            return
         }
-        root.classList.add("vault-on")
-        const life = createLife()
-        try {
-            runDoors(vault, life, initial)
-        } catch (e) {
-            console.error("[Arcovia]", e)
-            vault.classList.add("is-gone")
-            root.classList.remove(...ROOT_CLASSES)
+
+        // Back to Home from the browser's back/forward cache (Safari, after another site):
+        // nothing reloads, so start it again, as on any other visit to Home
+        const onShow = (e: PageTransitionEvent) => {
+            if (e.persisted && plays === "always" && !/[?&]vault=off\b/.test(location.search)) start(false)
         }
+        window.addEventListener("pageshow", onShow)
         return () => {
-            life.dispose()
+            window.removeEventListener("pageshow", onShow)
+            if (life) life.dispose()
             root.classList.remove(...ROOT_CLASSES)
             restoreTint()
         }
@@ -599,10 +616,10 @@ addPropertyControls(ArcoviaVault, {
     plays: {
         type: ControlType.Enum,
         title: "Plays",
-        options: ["open", "always", "off"],
-        optionTitles: ["When the site opens", "Every visit to Home", "Off"],
+        options: ["always", "open", "off"],
+        optionTitles: ["Every visit to Home", "When the site opens", "Off"],
         defaultValue: DEFAULTS.plays,
-        description: "When the site opens: on opening or reloading Home, not when coming back to Home from another page. ?vault=on / ?vault=off in the URL override it.",
+        description: "Every visit to Home: on loading, reloading and coming back to Home. When the site opens: not when coming back to Home in the same visit. ?vault=on / ?vault=off in the URL override it.",
     },
     preview: {
         type: ControlType.Boolean,
