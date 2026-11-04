@@ -7,8 +7,10 @@
    hidden spam trap and needs the Privacy Policy box ticked.
 
    Sending: data-endpoint on the <form> takes the GoHighLevel webhook URL (the
-   last step, once the client gives it). Until then, the form logs what it would
-   send to the console and shows the confirmation. */
+   last step, once the client gives it); it gets the note as JSON, or form-encoded
+   with data-send="form" if the webhook refuses requests from a browser (CORS).
+   Until then, the form logs what it would send to the console and shows the
+   confirmation. */
 (function () {
   "use strict";
 
@@ -251,8 +253,14 @@
       }
       form.classList.add("is-sending");
       if (submitLabel) submitLabel.textContent = "Sending…";
-      fetch(endpoint, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) })
-        .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); finish(data); })
+      // data-send="form" posts the fields form-encoded as a simple request: browsers send it without a CORS
+      // preflight, for a webhook that doesn't answer one. Its reply can't be read, so a delivered request counts.
+      var asForm = form.getAttribute("data-send") === "form";
+      var request = asForm
+        ? fetch(endpoint, { method: "POST", mode: "no-cors", body: new URLSearchParams(data) })
+        : fetch(endpoint, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) });
+      request
+        .then(function (r) { if (!asForm && !r.ok) throw new Error("HTTP " + r.status); finish(data); })
         .catch(function () { say("Your note didn’t go through. Please try again in a moment."); })
         .then(function () {
           form.classList.remove("is-sending");
