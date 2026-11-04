@@ -104,5 +104,21 @@
       "bio": "25+ years advising governments, central banks and sovereign funds, including Saudi Arabia’s PIF and the funds of Brazil, Angola and Timor-Leste. Lead Sustainable & Innovative Finance Advisor at UNDP; led the first sovereign SDG bond and Uzbekistan’s first green bond. Professor of Economics & Finance; former Visiting Professor at the London School of Economics."
     }
   ],
-  "advisors_note": "Senior advisors are independent professionals, not employees or registered representatives of Arcovia unless stated otherwise."
+  "advisors_note": "Senior advisors are independent professionals, not employees or registered representatives of Arcovia unless stated otherwise.",
+  "team_list": {
+    "_note": "Team page, section 4 of the brief: the Arcovia team, a clean list (name, role, scope), verbatim and in the brief's order. Shown as the table in team.html (SECTION:team-list); keep the two in step. Roles here are the brief's for this list and can differ from the titles above (Koyuki).",
+    "title": "The Arcovia team",
+    "rows": [
+      { "name": "Colin Pham", "role": "Founder & CEO", "scope": "Firm, capital and investor strategy; major relationships and mandates" },
+      { "name": "Lilla Váradi", "role": "Chief Investment Officer", "scope": "Investor relations, growth, investment coordination, operations" },
+      { "name": "Adil Amanullah", "role": "Principal", "scope": "Transactions, origination, ventures, fund-to-fund, Residency Program" },
+      { "name": "Caroline Farah Lembck", "role": "Co-Founder & Managing Principal", "scope": "Fund management, alternative investments, Act 60 infrastructure" },
+      { "name": "Bianca Bonetti", "role": "Director of Events & Partnerships", "scope": "Investor events, partnerships, relationship building" },
+      { "name": "Koyuki Nakamori", "role": "AI & Platform Architecture", "scope": "AI/ML platform architecture, data infrastructure" },
+      { "name": "Omar Momani", "role": "Director, Creative Narratives", "scope": "Visual storytelling, animation, cultural campaigns, global media" },
+      { "name": "Izabela Horvacanin", "role": "Outreach & PR", "scope": "Investor messaging, copywriting, PR" },
+      { "name": "Boston Steinborn", "role": "VP, Capital Closing", "scope": "Complex negotiation, deal closing" },
+      { "name": "Saanya Malhotra", "role": "Events", "scope": "Event production and vendor relationships", "todo": "Title [TO CONFIRM]" }
+    ]
+  }
 }

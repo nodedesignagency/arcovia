@@ -1,0 +1,94 @@
+/* ==========================================================================
+   SECTION: team-list — Team, block 4 (the Arcovia team)
+   The brief's "clean list: name, role, scope", after the user's table
+   reference (a comparison table on a warm off-white ground: a slightly
+   darker band row, a 1px hairline on every cell edge, 64px rows, text set
+   in from the lines). In our language: on the neutral ground (it runs on
+   into the footer), the h2 top left, then the table across all 12 columns.
+   Its columns follow the page grid, so Role and Scope start on the same
+   lines as the cards above: Name cols 1-3, Role cols 4-6, Scope cols 7-12
+   (each cell's text sits on its grid column; the hairline sits a gap to its
+   left). At 17px every row fits on one line at 1440, as in the reference.
+   The table itself is component `data-table` (Track Record will need one
+   too: move it to styles.css when it does).
+   Uses shared tokens from styles.css (container).
+   ========================================================================== */
+
+.team-list {
+  --tl-fs: calc((min(100vw, var(--container-max)) - 2 * var(--gutter)) * 0.04);
+  background: var(--color-neutral);
+  padding-top: var(--space-10);
+  padding-bottom: var(--space-9);
+}
+
+.team-list__title {
+  max-width: 12em;
+  margin-bottom: var(--space-8);
+  font-size: var(--tl-fs);
+  font-weight: var(--weight-medium);
+  line-height: 1.08;
+  letter-spacing: var(--ls-h2);
+  color: var(--color-ink);
+}
+
+/* --- Component: data-table ------------------------------------------------ */
+.data-table {
+  --dt-line: rgba(21, 21, 21, 0.1);
+  --dt-band: rgba(21, 21, 21, 0.035);
+  --dt-pad-x: var(--grid-gap);
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  font-size: var(--fs-body);
+  line-height: 24px;
+  text-align: left;
+}
+
+/* Grid-true columns: a cell's text starts on its grid column, so the line
+   before it sits one gap to the left (12 columns, 11 gaps across the table).
+   Lengths from the grid width, not percentages: Chrome drops calc(% - px)
+   on table columns and falls back to equal thirds. The last column takes
+   whatever is left. */
+.data-table {
+  --dt-w: calc(min(100vw, var(--container-max)) - 2 * var(--gutter));
+}
+.data-table__col--name  { width: calc(var(--dt-w) / 4 - 0.75 * var(--grid-gap)); }
+.data-table__col--role  { width: calc(var(--dt-w) / 4 + 0.25 * var(--grid-gap)); }
+
+.data-table th,
+.data-table td {
+  padding: 20px var(--dt-pad-x);
+  border: 1px solid var(--dt-line);
+  vertical-align: top;
+  font-weight: var(--weight-book);
+}
+
+/* The band: column labels on a slightly darker strip, as in the reference */
+.data-table thead th {
+  background: var(--dt-band);
+  font-weight: var(--weight-medium);
+  color: var(--color-ink);
+}
+
+.data-table tbody th { font-weight: var(--weight-medium); color: var(--color-ink); }
+.data-table__role  { color: var(--color-text); }
+.data-table__scope { color: var(--color-text-muted); }
+
+/* Tablet and phone: not reviewed yet (desktop first); keep it readable */
+@media (max-width: 1199px) {
+  .data-table__col--name { width: 26%; }
+  .data-table__col--role { width: 30%; }
+}
+@media (max-width: 809px) {
+  .data-table thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+  .data-table,
+  .data-table tbody,
+  .data-table tr,
+  .data-table th,
+  .data-table td { display: block; width: auto; }
+  .data-table tr { padding: var(--space-4) 0; border-top: 1px solid var(--dt-line); }
+  .data-table tr:last-child { border-bottom: 1px solid var(--dt-line); }
+  .data-table th,
+  .data-table td { padding: 0; border: 0; }
+  .data-table tbody th { margin-bottom: var(--space-1); }
+}
