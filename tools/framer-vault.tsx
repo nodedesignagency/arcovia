@@ -14,6 +14,11 @@
  * from another page in the same visit (?vault=on always plays, ?vault=off never).
  * A scroll, key or tap starts it at once. Reduced motion: the doors fade.
  *
+ * Responsive: the door is the screen (a size container), the mark is half its height and at
+ * most 70% of its width, so it fits phones in either orientation, tablets and desktops alike;
+ * below a 360px mark (phones) the dial's ticks, the click, the joint's glow and the light
+ * shrink with it. Older browsers without container units use the screen's vh / vw.
+ *
  * Before the first paint: a small inline script (rendered into the page's HTML, so it
  * runs while the page loads, like the head script on the HTML site) decides whether it
  * plays and sets html.vault-on; the CSS then paints the closed doors. On a client-side
@@ -192,6 +197,16 @@ html.vault-on {
   inset: 0;
   overflow: hidden;
 }
+/* Browsers without container units (older iOS): the door is the screen, so the screen's units */
+@supports not (height: 1cqh) {
+  .vault__doors {
+    --vault-h: min(50vh, calc(70vw * 57 / 72));
+    --vault-travel: calc(50vw + var(--vault-h) * 0.150088 + 2px);
+  }
+  .vault__cast .vault__leaf { top: calc(48vh + 80px); }
+}
+/* Fine details keep their desktop size down to a 360px mark (any desktop or tablet screen);
+   on phones, where the mark is smaller, they shrink with it so the dial does not look heavy */
 
 /* Charcoal behind the closed doors: where the two leaves meet on an anti-aliased edge, the hero
    would show through as a light hairline. It goes as the doors start to move */
@@ -236,10 +251,10 @@ html.vault-on {
 /* Light catching in the joint as the doors unlatch: a bright core in a soft glow */
 .vault__catch { opacity: 0; }
 .vault__glow { fill: none; stroke: #fff; stroke-linejoin: round; }
-.vault__glow--1 { stroke-width: 16px; stroke-opacity: 0.05; }
-.vault__glow--2 { stroke-width: 8px; stroke-opacity: 0.1; }
-.vault__glow--3 { stroke-width: 3.5px; stroke-opacity: 0.28; }
-.vault__glow--core { stroke-width: 1.4px; stroke-opacity: 0.9; }
+.vault__glow--1 { stroke-width: min(16px, var(--vault-h) * 0.04444); stroke-opacity: 0.05; }
+.vault__glow--2 { stroke-width: min(8px, var(--vault-h) * 0.02222); stroke-opacity: 0.1; }
+.vault__glow--3 { stroke-width: min(3.5px, var(--vault-h) * 0.009722); stroke-opacity: 0.28; }
+.vault__glow--core { stroke-width: max(1px, min(1.4px, var(--vault-h) * 0.003889)); stroke-opacity: 0.9; }
 
 /* ---------- The lock: the circle is the dial ----------
    An SVG over the wheel (viewBox = the circle's box in mark units, so it lines up exactly),
@@ -258,19 +273,20 @@ html.vault-on {
   will-change: transform, opacity;
 }
 .vault__ticks { fill: none; stroke: #fff; }
-.vault__ticks--minor { stroke-width: 1px; stroke-opacity: 0.16; }
-.vault__ticks--major { stroke-width: 1.25px; stroke-opacity: 0.3; }
-.vault__ticks--zero { stroke-width: 2px; stroke-opacity: 0.62; }
-.vault__ticks--hub { stroke-width: 1px; stroke-opacity: 0.16; }
+.vault__ticks--minor { stroke-width: min(1px, var(--vault-h) * 0.002778); stroke-opacity: 0.16; }
+.vault__ticks--major { stroke-width: min(1.25px, var(--vault-h) * 0.003472); stroke-opacity: 0.3; }
+.vault__ticks--zero { stroke-width: min(2px, var(--vault-h) * 0.005556); stroke-opacity: 0.62; }
+.vault__ticks--hub { stroke-width: min(1px, var(--vault-h) * 0.002778); stroke-opacity: 0.16; }
 
 /* The click at each stop: a small glint where the dial's top meets the seam (the index) */
 .vault__glint {
   position: absolute;
   left: 50%;
   top: calc(48% - var(--vault-h) * 0.5047);       /* y -0.27 of 57: between the dial and the seam */
-  width: 28px;
-  height: 28px;
-  margin: -14px 0 0 -14px;
+  --glint: min(28px, var(--vault-h) * 0.07778);
+  width: var(--glint);
+  height: var(--glint);
+  margin: calc(var(--glint) / -2) 0 0 calc(var(--glint) / -2);
   border-radius: 50%;
   background: radial-gradient(closest-side, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.22) 38%, rgba(255, 255, 255, 0));
   opacity: 0;
@@ -326,8 +342,9 @@ html.vault-on {
   top: 0;
   bottom: 0;
   left: 50%;
-  width: 160px;
-  margin-left: -80px;
+  --beam: min(160px, var(--vault-h) * 0.4444);
+  width: var(--beam);
+  margin-left: calc(var(--beam) / -2);
   background: linear-gradient(90deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.55) 50%, rgba(255, 255, 255, 0));
   opacity: 0;
   transform: scaleX(0.02);
