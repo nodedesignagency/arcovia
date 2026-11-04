@@ -1,5 +1,5 @@
 {
-  "_note": "The Team page's people, from the client's brief (Team page, sections 2 and 3). The source for the profile pages (team/<slug>.html) and Framer's Team CMS collection. contact: \"email\" (the direct address, <email>@arcovia.io) or \"form\" (\"Contact via Arcovia\", a short form naming the person) [TO CONFIRM each person's preference]. photo: null until the deck photos or the Los Angeles shoot arrive [PHOTO NEEDED]. linkedin: null until confirmed [TO CONFIRM].",
+  "_note": "The Team page's people, from the client's brief (Team page, sections 2 and 3). The source for the profile pages (team/<slug>.html) and Framer's Team CMS collection. contact: \"email\" (the direct address, <email>@arcovia.io) or \"form\" (\"Contact via Arcovia\", a short form naming the person) [TO CONFIRM each person's preference]. photo: null until the deck photos or the Los Angeles shoot arrive [PHOTO NEEDED]. linkedin: null until confirmed [TO CONFIRM]. first: the name used in \"Dear Ken,\" and \"Email Colin\". crop: where the portrait sits in its frame (fy: vertical position; zoom, ox, oy: brings a wider shot in to head and shoulders). Profiles are generated from this file by tools/team-profiles.py.",
   "groups": [
     { "id": "leadership", "name": "Leadership", "section": "leadership" },
     { "id": "media-technology-ai", "name": "Media, Technology & AI", "section": "advisors" },
@@ -8,95 +8,97 @@
   ],
   "people": [
     {
-      "slug": "colin-pham", "name": "Colin Pham", "group": "leadership",
+      "slug": "colin-pham", "first": "Colin", "name": "Colin Pham", "group": "leadership",
       "title": "Founder & CEO",
       "contact": "email", "email": "colin", "linkedin": null,
       "photo": "assets/team/colin-pham.jpg",
+      "crop": { "fy": "26%" },
       "bio": "Sets Arcovia’s direction, capital and investor strategy, and leads the firm’s major relationships and mandates. Led $330M+ in capital raised across 24 transactions and is the architect of the GENESIS outreach system. Founded a media company generating 600M+ organic views for Google, Microsoft, PepsiCo and Mercedes-Benz."
     },
     {
-      "slug": "caroline-farah-lembck", "name": "Caroline Farah Lembck", "group": "leadership",
+      "slug": "caroline-farah-lembck", "first": "Caroline", "name": "Caroline Farah Lembck", "group": "leadership",
       "title": "Co-Founder & Managing Principal, Capital Markets",
       "contact": "email", "email": "caroline", "linkedin": null,
       "photo": "assets/team/caroline-farah-lembck.jpg",
+      "crop": { "fy": "18%", "zoom": 1.6, "ox": "30%", "oy": "34%" },
       "bio": "CEO of LemVega Capital ($1B AUM) across hedge funds, VC, PE and real estate. Began her career in business development at Genmab ($40B global biotech). Building LemVega International Bank; equity partner at Solid Rep IP."
     },
     {
-      "slug": "adil-amanullah", "name": "Adil Amanullah", "group": "leadership",
+      "slug": "adil-amanullah", "first": "Adil", "name": "Adil Amanullah", "group": "leadership",
       "title": "Principal",
       "contact": "email", "email": "adil", "linkedin": null,
       "photo": null,
       "bio": "Leads Arcovia’s transaction, venture and origination platform, from first screen to close. Runs the firm’s capital-intelligence engine: scout intake, AI-driven insights and investor mapping. Co-leads fund-to-fund partnerships and develops Arcovia’s investment talent through the Residency Program. Previously at LvlUp Ventures."
     },
     {
-      "slug": "lilla-varadi", "name": "Lilla Váradi", "group": "leadership",
+      "slug": "lilla-varadi", "first": "Lilla", "name": "Lilla Váradi", "group": "leadership",
       "title": "Chief Investment Officer",
       "contact": "email", "email": "lilla", "linkedin": null,
       "photo": null,
       "bio": "Leads investor relations, investment coordination, growth and operations. Co-leads key capital relationships and fund partnerships across the US, Europe and the Middle East. 6+ years in business development and operations; built a growth-stage real estate firm’s operating and partner platform from day one."
     },
     {
-      "slug": "ken-hershman", "name": "Ken Hershman", "group": "media-technology-ai",
+      "slug": "ken-hershman", "first": "Ken", "name": "Ken Hershman", "group": "media-technology-ai",
       "title": "Senior Advisor, Media, Entertainment & Sports",
       "contact": "form", "linkedin": null, "photo": null,
       "bio": "Former President of HBO Sports and EVP/GM of Showtime Sports; 25+ years across sports media, premium television and entertainment. Negotiated the joint HBO–Showtime broadcast of Mayweather vs. Pacquiao ($600M+ pay-per-view event). Advises boards, founders and funds through CTH Advisors on M&A, growth strategy, governance and media IP."
     },
     {
-      "slug": "jon-brodsky", "name": "Jon Brodsky", "group": "media-technology-ai",
+      "slug": "jon-brodsky", "first": "Jon", "name": "Jon Brodsky", "group": "media-technology-ai",
       "title": "Senior Advisor, Technology, Digital Media & Growth",
       "contact": "form", "linkedin": null, "photo": null,
       "bio": "Former CEO of YouNow (global livestreaming network) and finder.com USA (1,000+ corporate clients). Former SVP Digital at Chicken Soup for the Soul, scaling to 1B content views per month. As Director of Corporate Development at 1-800-Flowers, added $300M+ in revenue through M&A."
     },
     {
-      "slug": "koyuki-nakamori", "name": "Koyuki Nakamori", "group": "media-technology-ai",
+      "slug": "koyuki-nakamori", "first": "Koyuki", "name": "Koyuki Nakamori", "group": "media-technology-ai",
       "title": "Senior Advisor, AI & Platform Architecture",
       "contact": "form", "linkedin": null, "photo": null,
       "bio": "14+ years of AI and Web3 leadership in Silicon Valley; Co-Founder and Chief AI Officer of Halo AI. Scaled ML teams at Nextdoor, Headspace, Ava Labs and the Opentensor Foundation."
     },
     {
-      "slug": "julian-smith", "name": "Julian Smith", "group": "infrastructure-finance",
+      "slug": "julian-smith", "first": "Julian", "name": "Julian Smith", "group": "infrastructure-finance",
       "title": "Senior Advisor, Infrastructure & Climate Finance (PwC)",
       "contact": "form", "linkedin": null, "photo": null,
       "bio": "38 years in international infrastructure and climate finance; PwC Partner 2002–2025. Advised on $15B+ of completed infrastructure finance, including the £5.2B UK Intercity Express PPP and the €900M+ Port of Gothenburg privatisation."
     },
     {
-      "slug": "kendall-holman", "name": "Kendall Holman", "group": "infrastructure-finance",
+      "slug": "kendall-holman", "first": "Kendall", "name": "Kendall Holman", "group": "infrastructure-finance",
       "title": "Senior Advisor, Middle Market M&A & Debt Capital Markets (Credit Suisse, JPMorgan)",
       "contact": "form", "linkedin": null, "photo": null,
       "bio": "40+ years and 315+ engagements valued at $11B+; built capital markets divisions at Synovus and SouthTrust Securities. $2.7B+ across 64 healthcare transactions and $1.3B+ across 53 governmental transactions."
     },
     {
-      "slug": "morgan-edwards", "name": "Morgan Edwards", "group": "infrastructure-finance",
+      "slug": "morgan-edwards", "first": "Morgan", "name": "Morgan Edwards", "group": "infrastructure-finance",
       "title": "Senior Advisor, Leveraged Finance & FinTech (Morgan Stanley, Macquarie)",
       "contact": "form", "linkedin": null, "photo": null,
       "bio": "30 years at Morgan Stanley, Bear Stearns and Macquarie; $20B+ in LBO transactions for KKR, Blackstone, TPG, Carlyle, Apollo and Bain Capital. Led the $1.1B Dresser Industries LBO (Euromoney Deal of the Year); co-founded CommonBond and Orchard Platform."
     },
     {
-      "slug": "kristina-mcdonough", "name": "Kristina McDonough", "group": "infrastructure-finance",
+      "slug": "kristina-mcdonough", "first": "Kristina", "name": "Kristina McDonough", "group": "infrastructure-finance",
       "title": "Senior Advisor, Capital Markets & Alternatives (Bank of America, Credit Suisse)",
       "contact": "form", "linkedin": null, "photo": null,
       "bio": "35 years across BofA, Credit Suisse, DLJ and HypoVereinsbank; founded or co-founded six platform companies. $10B+ raised across private equity, hedge fund and real estate platforms; 60–80 UHNW family relationships."
     },
     {
-      "slug": "nitan-pathak", "name": "Nitan Pathak", "group": "sovereign-pe-family-offices",
+      "slug": "nitan-pathak", "first": "Nitan", "name": "Nitan Pathak", "group": "sovereign-pe-family-offices",
       "title": "Senior Advisor, Private Equity & Venture Capital",
       "contact": "form", "linkedin": null, "photo": null,
       "bio": "20+ years in private equity, venture capital and institutional portfolio construction. Senior Head of Unit at the European Investment Fund (EIB Group), with capital deployed across hundreds of PE and VC funds, and long-term partnerships with sovereign wealth funds and public pensions across Europe, the GCC and Asia-Pacific. Earlier at Raymond James (TMT M&A), Texas Instruments and KPMG; MBA, University of Oxford."
     },
     {
-      "slug": "stephane-prefol", "name": "Stéphane Préfol", "group": "sovereign-pe-family-offices",
+      "slug": "stephane-prefol", "first": "Stéphane", "name": "Stéphane Préfol", "group": "sovereign-pe-family-offices",
       "title": "Senior Advisor, Cross-Border M&A",
       "contact": "form", "linkedin": null, "photo": null,
       "bio": "20+ years executing cross-border M&A: 50+ transactions in 20+ countries worth €5bn+. Head of M&A at Banijay, the world’s largest independent content producer, reporting to the CEO. Previously led international M&A at Publicis; earlier at Kepler Cheuvreux and Wagram Corporate Finance. Board member and adviser at Balich Wonder Studio, Chantelle and SPACLO."
     },
     {
-      "slug": "sunil-varma", "name": "Sunil Varma", "group": "sovereign-pe-family-offices",
+      "slug": "sunil-varma", "first": "Sunil", "name": "Sunil Varma", "group": "sovereign-pe-family-offices",
       "title": "Senior Advisor, Family Offices & GCC Investments",
       "contact": "form", "linkedin": null, "photo": null,
       "bio": "30+ years across family offices, investment banking, asset management and treasury; managed and deployed $2bn+ across public markets, private investments, real estate and alternatives. Strategic Investment Advisor to the Chairman of an Abu Dhabi single-family office; previously Director of Investments, Al Qassimi Group."
     },
     {
-      "slug": "joao-pedro-goncalves", "name": "João Pedro Gonçalves", "group": "sovereign-pe-family-offices",
+      "slug": "joao-pedro-goncalves", "first": "João Pedro", "name": "João Pedro Gonçalves", "group": "sovereign-pe-family-offices",
       "title": "Senior Advisor, Sovereign & Sustainable Finance",
       "contact": "form", "linkedin": null, "photo": null,
       "bio": "25+ years advising governments, central banks and sovereign funds, including Saudi Arabia’s PIF and the funds of Brazil, Angola and Timor-Leste. Lead Sustainable & Innovative Finance Advisor at UNDP; led the first sovereign SDG bond and Uzbekistan’s first green bond. Professor of Economics & Finance; former Visiting Professor at the London School of Economics."

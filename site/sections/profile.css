@@ -1,0 +1,273 @@
+/* ==========================================================================
+   SECTION: profile — the profile template (team/<slug>.html), one page per
+   person, generated from data/team.json by tools/team-profiles.py
+   On a plain white page (body.page--white), like Contact. The portrait (4:5,
+   black and white, colour on hover) on cols 1-4, held in view; on cols 6-12
+   the group as a chip (it links back to that group on the Team page), the
+   name as the page's headline, the title, the bio from the brief, then the
+   contact row over a hairline: the Contact button and the LinkedIn tile.
+   Leadership: the button writes to the person's direct email (people.js
+   puts the address together) and the address shows beside it. Senior
+   advisors (independent, so no direct email): the brief's legal line under
+   the bio, "Contact via Arcovia" leads to a short note under the bio, written
+   like the Contact page's note ("Dear Ken, ..."; its blanks, sign-off and
+   thank-you reuse the Contact styles in sections/contact.css), so the
+   portrait stays beside you while you write to them. Then Previous / All
+   team members / Next over a hairline.
+   Uses shared tokens and components from styles.css (chip, buttons, .check,
+   .trap, container, page--white).
+   ========================================================================== */
+
+.profile {
+  /* The name is a share of the grid width, like the page headlines (About, Team) */
+  --pf-fs: calc((min(100vw, var(--container-max)) - 2 * var(--gutter)) * 0.044);
+  --pf-line: rgba(21, 21, 21, 0.12);
+  --pf-top: calc(var(--mh-labels) + var(--mh-compact) + var(--space-6));  /* clears the small header bar */
+  --pf-measure: 660px;   /* one measure for the bio, the contact row and the note, so their hairlines match */
+  padding: calc(var(--header-h) + var(--space-8)) 0 var(--space-10);
+}
+
+.profile__grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--grid-gap);
+  align-items: start;
+}
+
+/* ---------- The portrait, held in view ---------- */
+.profile__media {
+  grid-column: 1 / span 4;
+  position: sticky;
+  top: var(--pf-top);
+}
+.profile__frame {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  background: var(--color-well);
+}
+/* A faint inner edge keeps light studio backdrops from melting into the white page */
+.profile__frame::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.05);
+  pointer-events: none;
+}
+.profile__photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% var(--fy, 30%);
+  transform: scale(var(--zoom, 1));
+  transform-origin: var(--ox, 50%) var(--oy, 50%);
+  filter: grayscale(1) contrast(1.04) brightness(0.97);
+  transition: filter 700ms var(--ease-out);
+}
+@media (hover: hover) {
+  .profile__frame:hover .profile__photo { filter: grayscale(0) contrast(1) brightness(1); }
+}
+
+/* ---------- Name, title, bio ---------- */
+.profile__body { grid-column: 6 / -1; min-width: 0; }
+
+/* The group, as a chip that leads back to it on the Team page */
+.profile__group { transition: color var(--dur-base) var(--ease-out); }
+@media (hover: hover) {
+  .profile__group:hover { color: var(--color-ink); }
+}
+
+.profile__name {
+  margin-top: var(--space-6);
+  font-size: var(--pf-fs);
+  font-weight: var(--weight-medium);
+  line-height: 1.06;
+  letter-spacing: var(--ls-hero);
+  color: var(--color-ink);
+  text-wrap: balance;
+}
+.profile__title {
+  max-width: 34em;
+  margin-top: var(--space-5);
+  font-size: var(--fs-lede);
+  line-height: 1.45;
+  color: var(--color-text-muted);
+  text-wrap: pretty;
+}
+.profile__bio {
+  max-width: var(--pf-measure);
+  margin-top: 40px;
+  font-size: 22px;
+  line-height: 1.6;
+  letter-spacing: -0.006em;
+  color: var(--color-text);
+  text-wrap: pretty;
+}
+/* Senior advisors: the brief's legal line */
+.profile__legal {
+  max-width: var(--pf-measure);
+  margin-top: var(--space-5);
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--color-text-muted);
+}
+
+/* ---------- Contact row: the button, LinkedIn, and the direct email ---------- */
+.profile__contact {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+  max-width: var(--pf-measure);
+  margin-top: 40px;
+  padding-top: 28px;
+  border-top: 1px solid var(--pf-line);
+}
+.profile__cta { --btn-h: 52px; padding: 0 28px; font-size: 16px; }
+.profile__cta .btn__icon { transition: transform var(--dur-base) var(--ease-out); }
+@media (hover: hover) { .profile__cta:hover .btn__icon { transform: translateX(3px); } }
+/* LinkedIn: the dark tile from the Team cards, as tall as the button */
+.profile__social {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  color: var(--color-on-dark);
+  background: linear-gradient(180deg, rgba(207, 207, 207, 0.16) 0%, rgba(207, 207, 207, 0.11) 100%), var(--btn-dark);
+  box-shadow: var(--shadow-btn);
+  transition: transform var(--dur-fast) var(--ease-out);
+}
+.profile__social svg { width: 18px; height: 18px; fill: currentColor; }
+.profile__social:active { transform: scale(0.96); box-shadow: var(--shadow-btn-pressed); }
+@media (hover: hover) {
+  .profile__social:hover { background: linear-gradient(180deg, rgba(207, 207, 207, 0.22) 0%, rgba(207, 207, 207, 0.15) 100%), var(--btn-dark); }
+}
+.profile__email {
+  margin-left: var(--space-4);
+  font-size: 16px;
+  font-weight: var(--weight-medium);
+  color: var(--color-ink);
+  text-decoration-line: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+  text-decoration-color: rgba(21, 21, 21, 0.32);
+  transition: text-decoration-color var(--dur-fast) var(--ease-out);
+}
+@media (hover: hover) {
+  .profile__email:hover { text-decoration-color: currentColor; }
+}
+
+/* ---------- Senior advisors: the short note ("Contact via Arcovia") ----------
+   Written like the Contact page's note; the blanks (.note-input, .note-area), the
+   sign-off (.note__foot) and the thank-you (.note-done) come from sections/contact.css,
+   with its colours set here. */
+.profile-note {
+  --nt-words: #6b6b6b;      /* the letter's own words: 5.3:1 on white */
+  --nt-line: #cccccc;       /* a blank's underline */
+  --nt-place: #a6a6a6;      /* a blank not filled in yet */
+  --nt-rule: rgba(21, 21, 21, 0.12);
+  max-width: var(--pf-measure);
+  margin-top: var(--space-10);
+  padding-top: var(--space-7);
+  border-top: 1px solid var(--pf-line);
+  scroll-margin-top: var(--pf-top);
+}
+.profile-note__title {
+  font-size: 32px;
+  font-weight: var(--weight-medium);
+  line-height: 1.2;
+  letter-spacing: -0.016em;
+  color: var(--color-ink);
+}
+.profile-note__lede {
+  max-width: 32em;
+  margin-top: var(--space-3);
+  font-size: 17px;
+  line-height: 1.55;
+  color: var(--color-text-muted);
+}
+.profile-note__form {
+  margin-top: var(--space-7);
+  font-size: 26px;
+  line-height: 1.6;
+  letter-spacing: -0.012em;
+  color: var(--nt-words);
+}
+.profile-note__form > * + * { margin-top: 20px; }
+.profile-note__form .note-area { font-size: 21px; }
+.profile-note__form.is-sending .note__send { opacity: 0.7; pointer-events: none; }
+.profile-note .note-done { margin-top: var(--space-7); }
+.profile-note .note-done__text { font-size: 36px; }
+
+/* ---------- Previous / All team members / Next ---------- */
+.profile-nav {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--grid-gap);
+  align-items: end;
+  margin-top: var(--space-10);
+}
+.profile-nav__inner {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: subgrid;
+  align-items: end;
+  padding-top: var(--space-6);
+  border-top: 1px solid var(--pf-line);
+}
+.profile-nav__link { display: grid; gap: 6px; color: var(--color-ink); }
+.profile-nav__link--prev { grid-column: 1 / span 4; justify-items: start; }
+.profile-nav__all { grid-column: 5 / span 4; justify-self: center; }
+.profile-nav__link--next { grid-column: 9 / span 4; justify-items: end; text-align: right; }
+.profile-nav__label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: var(--weight-medium);
+  color: var(--color-text-muted);
+}
+.profile-nav__label .btn__icon { width: 13px; height: 13px; transition: transform var(--dur-base) var(--ease-out); }
+.profile-nav__link--prev .btn__icon { transform: scaleX(-1); }
+.profile-nav__name {
+  font-size: 24px;
+  font-weight: var(--weight-medium);
+  line-height: 1.25;
+  letter-spacing: -0.012em;
+}
+.profile-nav__all,
+.profile-nav__name {
+  text-decoration-line: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 5px;
+  text-decoration-color: transparent;
+  transition: text-decoration-color var(--dur-base) var(--ease-out);
+}
+.profile-nav__all { font-size: 16px; font-weight: var(--weight-medium); color: var(--color-ink); text-decoration-color: rgba(21, 21, 21, 0.32); padding-bottom: 4px; }
+@media (hover: hover) {
+  .profile-nav__link:hover .profile-nav__name,
+  .profile-nav__all:hover { text-decoration-color: currentColor; }
+  .profile-nav__link--prev:hover .btn__icon { transform: scaleX(-1) translateX(3px); }
+  .profile-nav__link--next:hover .btn__icon { transform: translateX(3px); }
+}
+
+/* Tablet and phone: not reviewed yet (desktop first); keep it stacked and readable */
+@media (max-width: 1199px) {
+  .profile { --pf-fs: 44px; }
+  .profile__media { grid-column: 1 / span 5; position: static; }
+  .profile__body { grid-column: 7 / -1; }
+  .profile-note__form { font-size: 22px; }
+}
+@media (max-width: 809px) {
+  .profile { --pf-fs: 32px; }
+  .profile__media { grid-column: 1 / -1; max-width: 420px; }
+  .profile__body { grid-column: 1 / -1; margin-top: var(--space-7); }
+  .profile__bio { font-size: 19px; }
+  .profile-note__form { font-size: 20px; }
+  .profile-nav__link--prev { grid-column: 1 / span 6; }
+  .profile-nav__link--next { grid-column: 7 / span 6; }
+  .profile-nav__all { grid-column: 1 / -1; grid-row: 2; justify-self: start; margin-top: var(--space-6); }
+  .profile-nav__name { font-size: 18px; }
+  .profile__email { margin-left: 0; flex-basis: 100%; margin-top: var(--space-2); }
+}
