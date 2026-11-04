@@ -266,13 +266,37 @@
   .mark-v2__name { font-size: 32px; --title: 38px; }
   .mark-v2__text { font-size: 16px; text-wrap: pretty; }
 }
+/* Phone: the closing copy leads as the section's heading (after the user's review and the usual
+   mobile pattern: a short strong heading, a quieter line under it, then the visual and the list):
+   the first sentence in medium, left like the notes, the second smaller and muted under it; then
+   the mark, then the notes, each with the same room above and below its text. */
 @media (max-width: 809px) {
   .mark-v2 { --mv2-w: min(420px, 76vw); }
   .mark-v2__stage { padding-block: var(--space-8); }
-  .mark-v2__closing { margin-top: var(--space-7); font-size: 20px; }
-  .mark-v2__notes { margin-top: var(--space-8); }
-  .mark-v2__list { grid-template-columns: 1fr; gap: var(--space-6); }
+  .mark-v2__closing {
+    order: 0;
+    margin: 0;
+    max-width: none;
+    text-align: left;
+    font-size: 26px;
+    font-weight: var(--weight-medium);
+    line-height: 1.22;
+    letter-spacing: -0.015em;
+  }
+  .mark-v2__closing span { display: block; }
+  .mark-v2__closing span + span {
+    margin-top: var(--space-3);
+    font-size: 17px;
+    font-weight: var(--weight-book);
+    line-height: 1.55;
+    letter-spacing: 0;
+    color: var(--color-on-dark-muted);
+  }
+  .mark-v2__figure { margin-top: var(--space-8); }
+  .mark-v2__notes,
+  .mark-v2:not(.is-live) .mark-v2__notes { margin-top: var(--space-8); }
+  .mark-v2__list { grid-template-columns: 1fr; gap: 0; }
   .mark-v2__note,
-  .mark-v2__note--1 { padding-top: var(--space-4); }
+  .mark-v2__note--1 { padding-block: var(--space-5); }
   .mark-v2__name { font-size: 28px; --title: 34px; }
 }
