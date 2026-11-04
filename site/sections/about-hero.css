@@ -4,7 +4,9 @@
    only: a short opening (about two thirds of the screen) with the headline
    low on the left and its line on the right, sitting on the headline's
    baseline. On the home hero's live concrete (concrete.js, started by main.js
-   through [data-hero]). No bars, no text animation.
+   through [data-hero]). No bars, no text animation. Pinned at the top of the
+   opening's scroll stack while Our story rides up over it, the heading and
+   line climbing a little (about-stack.js), as on the template's About page.
    Uses shared tokens and components from styles.css (chip, container).
    ========================================================================== */
 
@@ -12,7 +14,10 @@
   /* The headline is a share of the grid width, so its lines break the same at every desktop width */
   --about-fs: calc((min(100vw, var(--container-max)) - 2 * var(--gutter)) * 0.044);
 
-  position: relative;
+  /* Pinned at the top of its stack (.about-stack): Our story rides up over it (about-stack.js) */
+  position: sticky;
+  top: 0;
+  z-index: 0;
   isolation: isolate;
   display: grid;
   align-items: end;

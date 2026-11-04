@@ -126,7 +126,11 @@
 
   <main id="main">
 
-    <!-- SECTION:about-hero START · styles: sections/about-hero.css · scripts: concrete.js, main.js
+    <!-- The opening's scroll stack (after the Mahadeva template's About page): the opening is
+         pinned at the top and Our story rides up over it (about-stack.js: the opening's climb) -->
+    <div class="about-stack" data-scroll-stack>
+
+    <!-- SECTION:about-hero START · styles: sections/about-hero.css · scripts: concrete.js, main.js, about-stack.js
          About, block 1. Structure after the user's Mahadeva template (its About opening), layout
          only: a short opening, the headline low on the left, its line on the right on the
          headline's baseline. On the home hero's live concrete (main.js starts it via data-hero). -->
@@ -153,7 +157,7 @@
          screen (in the video a big number turned): four steps, four photos.
          Copy is the user's "Our story", set into four steps; every fact and figure is theirs.
          Photos are stand-ins made with Magnific: [IMAGE NEEDED] real LPP Media and Arcovia photos. -->
-    <section class="story" data-story aria-labelledby="story-title">
+    <section class="story" data-bg="neutral" data-story aria-labelledby="story-title">
       <div class="story__inner container">
         <header class="story__head">
           <p class="chip">Our story</p>
@@ -267,6 +271,8 @@
     </section>
     <!-- SECTION:story END -->
 
+    </div><!-- /.about-stack -->
+
     <!-- SECTION:beliefs START · styles: sections/beliefs.css
          About, block 3 ("What we believe"). Layout after the user's reference (four columns
          between vertical hairlines, each a small number, a fine line drawing, a title and one
@@ -275,7 +281,7 @@
          our colours: ink lines, white tops and fronts, concrete sides, one charcoal accent.
          Still: no motion.
          Copy is the user's: four principles, 01–04, each with one line. -->
-    <section class="beliefs" aria-labelledby="beliefs-title">
+    <section class="beliefs" data-bg="white" aria-labelledby="beliefs-title">
       <div class="beliefs__inner container">
         <h2 class="beliefs__title" id="beliefs-title">What we believe</h2>
 
@@ -322,7 +328,7 @@
          as a stack of title strips, then the whole stack scrolls away together. In our language:
          Montserrat in sentence case, ink on the neutral ground.
          Copy is the user's: the headline and four points, each with its line. -->
-    <section class="process" data-process aria-labelledby="process-title">
+    <section class="process" data-bg="neutral" data-process aria-labelledby="process-title">
       <div class="process__inner container">
         <h2 class="process__title" id="process-title">How we work</h2>
 
@@ -364,7 +370,7 @@
          About, block 6: Home's map, as it is there (the user asked for "the map
          section of the home page"), with id="map" so Home's "Explore the map"
          lands here. Without that pill on this page: it would point to itself. -->
-    <section class="map" id="map" data-world-map data-origin="la" data-center-lat="30" data-center-lon="-26" aria-labelledby="map-title">
+    <section class="map" id="map" data-bg="white" data-world-map data-origin="la" data-center-lat="30" data-center-lon="-26" aria-labelledby="map-title">
       <div class="map__layout container">
         <div class="map__head">
           <p class="chip">Where we are</p>
@@ -414,7 +420,7 @@
          data, credited on the map); the map opens Google Maps, like "Get directions".
          The San Juan address in the brief ("450 Ave. 200") does not resolve to a street:
          its map shows 450 Ave. de la Constitución [TO CONFIRM with the client]. -->
-    <section class="offices" aria-labelledby="offices-title">
+    <section class="offices" data-bg="neutral" aria-labelledby="offices-title">
       <div class="offices__inner container">
         <div class="offices__head">
           <p class="chip offices__chip">Our offices</p>
@@ -537,6 +543,7 @@
   <script src="main.js"></script>
   <script src="story.js"></script>
   <script src="process.js"></script>
+  <script src="about-stack.js"></script>
   <script src="assets/land-dots.js"></script>
   <script src="map.js"></script>
 </body>

@@ -13,6 +13,9 @@
    ========================================================================== */
 
 .story {
+  /* Rides up over the pinned opening (the scroll stack), on its own ground */
+  position: relative;
+  z-index: 1;
   --story-line: rgba(21, 21, 21, 0.16);
   --story-card-h: min(70vh, 760px);
   --story-fs: calc((min(100vw, var(--container-max)) - 2 * var(--gutter)) * 0.04);
