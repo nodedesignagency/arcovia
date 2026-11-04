@@ -5,10 +5,9 @@
    email and the two offices with their local time; it stays in view while you
    write. Right (columns 5–12): the form, written as a short note on the open
    white page. The letter's own words are grey; what you write in is ink.
-   The note's first sentence is the path: "I'm [raising capital] [an investor]
-   …", five large pills in the line. Choosing one folds the others away so the
-   sentence reads on; clicking the chosen pill (or its up-down chevrons, the
-   site's "pick one of several" icon) opens them again.
+   The note opens with the path: "Here's why I'm writing:" and five radio
+   pills (the brief's five buttons, after the user's reference). They stay in
+   view; choosing one opens that path's questions below.
    ?sheet=card puts the note back on a floating white sheet.
    Uses shared tokens and form parts (.check, .trap) from styles.css.
    ========================================================================== */
@@ -20,7 +19,6 @@
   --nt-place: #a6a6a6;      /* a blank not filled in yet */
   --nt-soft: #6e6e6e;       /* small labels on the left */
   --nt-rule: rgba(21, 21, 21, 0.12);
-  --nt-fold: 520ms;         /* pills folding away */
   padding: calc(var(--header-h) + var(--space-8)) 0 var(--space-10);
 }
 
@@ -101,98 +99,65 @@
 }
 .note { scroll-margin-top: 140px; }
 
-/* The path, in the first sentence */
+/* The path: "Here's why I'm writing:" and five radio pills, after the user's reference.
+   All five stay in view. The chosen one fills light grey and its dot fills with ink. */
+.note-who__ask { color: var(--nt-words); }
 .note-who {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
-  margin-top: 4px;
+  gap: 10px;
+  margin-top: 16px;
+  letter-spacing: 0;
 }
-.note-who__lead { margin-right: 14px; }
-.note-who__opt {
+.note-path {
   position: relative;
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  height: 56px;
-  max-width: var(--w, 34em);   /* its own width, measured in contact.js, so it folds smoothly */
-  margin: 5px 8px 5px 0;
-  padding: 0 22px 0 16px;
+  height: 46px;
+  padding: 0 20px 0 14px;
   border-radius: var(--radius-pill);
-  background: var(--color-white);
   box-shadow: inset 0 0 0 1px rgba(21, 21, 21, 0.16);
-  font-size: 20px;
+  font-size: 17px;
   font-weight: var(--weight-medium);
-  letter-spacing: -0.005em;
   line-height: 1;
   color: var(--color-ink);
   white-space: nowrap;
-  overflow: hidden;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   user-select: none;
-  transition:
-    max-width var(--nt-fold) var(--mh-ease),
-    padding var(--nt-fold) var(--mh-ease),
-    margin var(--nt-fold) var(--mh-ease),
-    opacity calc(var(--nt-fold) * 0.5) var(--ease-out),
-    visibility 0s,
-    background-color var(--dur-fast) var(--ease-out),
-    box-shadow var(--dur-fast) var(--ease-out),
-    color var(--dur-fast) var(--ease-out);
+  transition: background-color var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out);
 }
-.note-who__opt input { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
-.note-who__icon { flex: none; width: 24px; height: 24px; color: var(--color-text); transition: color var(--dur-fast) var(--ease-out); }
-/* Up-down chevrons on the chosen pill once folded: "change" */
-.note-who__chev {
+.note-path input { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+.note-path__dot {
+  position: relative;
   flex: none;
-  width: 0;
+  width: 16px;
   height: 16px;
-  margin-left: -10px;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.5;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  opacity: 0;
-  transition: width var(--nt-fold) var(--mh-ease), margin var(--nt-fold) var(--mh-ease), opacity var(--dur-base) var(--ease-out);
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 1.5px rgba(21, 21, 21, 0.3);
+  transition: box-shadow var(--dur-fast) var(--ease-out);
 }
-.note-who__end { width: 0; overflow: hidden; opacity: 0; transition: opacity var(--dur-base) var(--ease-out); }
-
-.note-who__opt:has(:checked) {
+.note-path__dot::after {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  border-radius: 50%;
   background: var(--color-ink);
-  box-shadow: inset 0 0 0 1px var(--color-ink);
-  color: var(--color-white);
+  transform: scale(0);
+  transition: transform var(--dur-base) var(--ease-out);
 }
-.note-who__opt:has(:checked) .note-who__icon { color: var(--color-white); }
-.note-who__opt:has(:focus-visible) { outline: 2px solid var(--color-ink); outline-offset: 3px; }
+.note-path:has(:checked) { background: #f0f0f0; box-shadow: inset 0 0 0 1px #f0f0f0; }
+.note-path:has(:checked) .note-path__dot { box-shadow: inset 0 0 0 1.5px var(--color-ink); }
+.note-path:has(:checked) .note-path__dot::after { transform: scale(1); }
+.note-path:has(:focus-visible) { outline: 1.5px solid var(--color-ink); outline-offset: 2px; }
 @media (hover: hover) {
-  .note-who__opt:hover:not(:has(:checked)) { box-shadow: inset 0 0 0 1px rgba(21, 21, 21, 0.55); }
-  .note-who__opt:hover:has(:checked) { background: #333333; box-shadow: inset 0 0 0 1px #333333; }
+  .note-path:hover:not(:has(:checked)) { box-shadow: inset 0 0 0 1px rgba(21, 21, 21, 0.45); }
 }
-.note-who.is-invalid .note-who__opt { box-shadow: inset 0 0 0 1.5px var(--color-ink); }
-
-/* Folded: only the chosen pill stays, then a full stop, and the sentence reads on */
-.is-chosen:not(.is-picking) .note-who__opt:not(:has(:checked)) {
-  max-width: 0;
-  margin-inline: 0;
-  padding-inline: 0;
-  opacity: 0;
-  visibility: hidden;
-  box-shadow: none;
-  transition:
-    max-width var(--nt-fold) var(--mh-ease),
-    padding var(--nt-fold) var(--mh-ease),
-    margin var(--nt-fold) var(--mh-ease),
-    opacity calc(var(--nt-fold) * 0.4) var(--ease-out),
-    visibility 0s linear var(--nt-fold);
-}
-.is-chosen:not(.is-picking) .note-who__opt:has(:checked) { max-width: calc(var(--w, 34em) + 24px); margin-right: 4px; padding-right: 18px; }
-.is-chosen:not(.is-picking) .note-who__opt:has(:checked) .note-who__chev { width: 16px; margin-left: 2px; opacity: 0.7; }
-.is-chosen:not(.is-picking) .note-who__end { width: auto; opacity: 1; transition-delay: calc(var(--nt-fold) * 0.6); }
+.note-who.is-invalid .note-path { box-shadow: inset 0 0 0 1.5px var(--color-ink); }
 
 /* The path's questions */
-.note__body { margin: 14px 0 0; padding: 0; border: 0; min-width: 0; }
+.note__body { margin: 36px 0 0; padding: 0; border: 0; min-width: 0; }
 .note__body:not([hidden]) { animation: note-in 560ms var(--ease-out) both; }
 @keyframes note-in { from { opacity: 0; transform: translateY(10px); } }
 .note__body > * + * { margin-top: 24px; }
@@ -335,7 +300,6 @@
   .contact__title { font-size: 72px; }
   .contact__aside { position: static; grid-column: 1 / -1; grid-row: 3; margin-top: var(--space-9); padding-top: 0; }
   .contact__main { grid-column: 1 / -1; }
-  .note-who__opt { font-size: 18px; height: 50px; }
   .note__foot { flex-direction: column; align-items: flex-start; }
 }
 @media (max-width: 809px) {

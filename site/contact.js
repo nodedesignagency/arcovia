@@ -1,11 +1,9 @@
 /* Arcovia — contact form
 
-   The note's first sentence picks a path: the radio "tag", whose values are the
-   GoHighLevel tags (founder, investor, institution, partner-press, talent).
-   Choosing one folds the other pills away (.is-chosen); clicking the chosen pill,
-   or pressing a key on it, opens them again (.is-picking). The chosen path's
-   fieldset is switched on; the others are disabled, so they neither validate nor
-   send. Every note saves the visit source (UTM tags, first page, referrer), has a
+   The note opens with the path: five radio pills named "tag", whose values are
+   the GoHighLevel tags (founder, investor, institution, partner-press, talent).
+   The chosen path's fieldset is switched on; the others are disabled, so they
+   neither validate nor send. Every note saves the visit source (UTM tags, first page, referrer), has a
    hidden spam trap and needs the Privacy Policy box ticked.
 
    Sending: data-endpoint on the <form> takes the GoHighLevel webhook URL (the
@@ -70,7 +68,6 @@
     var scope = form.closest("[data-contact]") || form.parentNode;
     var done = scope.querySelector("[data-contact-done]");
     var paths = Array.prototype.slice.call(form.querySelectorAll('input[name="tag"]'));
-    var who = form.querySelector(".note-who");
     var groups = form.querySelectorAll("[data-path-fields]");
     var afterPath = form.querySelectorAll("[data-after-path]");
     var status = form.querySelector("[data-status]");
@@ -79,7 +76,7 @@
     var submitText = submitLabel ? submitLabel.textContent : "";
     var memory = {};          // what was typed, so it follows you to another path
     var started = Date.now();
-    var byPointer = false;    // a click folds the pills at once; arrow keys leave them open
+    var byPointer = false;    // only scroll the questions into view after a click, not while arrowing
 
     // Visit source into the hidden fields
     var visit = readVisit();
@@ -96,19 +93,8 @@
     }
 
     function refresh() {
-      // Each pill folds from its own width, so they all fold at the same pace
-      if (who) who.querySelectorAll(".note-who__opt").forEach(function (opt) {
-        if (!opt.getClientRects().length) return;
-        var picking = form.classList.contains("is-picking") || !form.classList.contains("is-chosen");
-        if (picking || opt.querySelector(":checked")) opt.style.setProperty("--w", opt.scrollWidth + 2 + "px");
-      });
       form.querySelectorAll("[data-autosize]").forEach(fit);
       form.querySelectorAll("textarea[data-autogrow]").forEach(grow);
-    }
-
-    function setPicking(open) {
-      if (open) refresh();
-      form.classList.toggle("is-picking", open);
     }
 
     function setPath(value, fromUser) {
@@ -145,31 +131,14 @@
     }
 
     /* ---------- The path pills ---------- */
-    if (who) {
-      who.querySelectorAll(".note-who__opt").forEach(function (opt) {
-        var input = opt.querySelector("input");
-        opt.addEventListener("pointerdown", function () { byPointer = true; });
-        // The label's own click comes first, before the radio changes: if this pill was
-        // already the chosen one and the row is folded, open it so another can be picked
-        opt.addEventListener("click", function (e) {
-          if (e.target === input) return;
-          if (input.checked && form.classList.contains("is-chosen") && !form.classList.contains("is-picking")) {
-            setPicking(true);
-          }
-        });
-      });
-      who.addEventListener("keydown", function (e) {
-        byPointer = false;
-        var folded = form.classList.contains("is-chosen") && !form.classList.contains("is-picking");
-        var keys = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", " ", "Enter"];
-        if (folded && keys.indexOf(e.key) > -1) { e.preventDefault(); setPicking(true); return; }
-        if (e.key === "Enter") { e.preventDefault(); if (current()) setPicking(false); }
-        if (e.key === "Escape" && current()) setPicking(false);
-      });
-      who.addEventListener("focusout", function (e) {
-        if (current() && !(e.relatedTarget && who.contains(e.relatedTarget))) setPicking(false);
-      });
-    }
+    form.querySelectorAll(".note-path").forEach(function (pill) {
+      pill.addEventListener("pointerdown", function () { byPointer = true; });
+    });
+    form.addEventListener("keydown", function (e) {
+      if (e.target.name !== "tag") return;
+      byPointer = false;
+      if (e.key === "Enter") e.preventDefault(); // Enter on a path shouldn't send an empty note
+    });
 
     /* ---------- Errors (monochrome: an ink line and a short message) ---------- */
     function holder(el) { return el.closest("[data-field]") || el; }
@@ -190,7 +159,7 @@
     function say(text) { if (status) status.textContent = text; }
 
     function summary(bad) {
-      if (!current()) return "Choose who you are to begin your note.";
+      if (!current()) return "Choose why you’re writing to begin your note.";
       var names = [], alone = [];
       bad.forEach(function (h) {
         var n = h.getAttribute("data-error-name");
@@ -206,7 +175,6 @@
       if (el.name === "tag") {
         if (e.type !== "change") return;
         setPath(el.value, byPointer);
-        if (byPointer) setPicking(false); else setPicking(true);
         clearError(holder(el));
         say("");
         return;
@@ -314,7 +282,6 @@
         say("");
         done.hidden = true;
         form.hidden = false;
-        form.classList.remove("is-picking");
         setPath("", false);
         paths[0].focus({ preventScroll: true });
       });
