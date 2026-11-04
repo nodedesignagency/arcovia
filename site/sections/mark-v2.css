@@ -164,6 +164,9 @@
 
 /* ---------- Text laid over the drawing ---------- */
 .mark-v2__notes { pointer-events: none; }
+/* Without the script (and on the Framer canvas) the desktop shows how it ends: the mark and the
+   closing line; the notes belong to the drawing */
+.mark-v2:not(.is-live) .mark-v2__notes { display: none; }
 .mark-v2__list { margin: 0; padding: 0; list-style: none; }
 
 /* The annotation in the frame's top middle cell, as on a logo sheet */
@@ -254,7 +257,8 @@
   .mark-v2__figure { order: 1; position: relative; left: auto; top: auto; align-self: center; }
   .mark-v2__closing { order: 2; position: static; width: auto; max-width: 30em; margin: var(--space-8) auto 0; font-size: 24px; text-wrap: balance; }
   .mark-v2__closing span { display: inline; }
-  .mark-v2__notes { order: 3; position: static; width: auto; height: auto; margin-top: var(--space-9); }
+  .mark-v2__notes,
+  .mark-v2:not(.is-live) .mark-v2__notes { order: 3; display: block; position: static; width: auto; height: auto; margin-top: var(--space-9); }
   .mark-v2__tag { display: none; }
   .mark-v2__list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--grid-gap); }
   .mark-v2__note,

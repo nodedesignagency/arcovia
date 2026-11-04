@@ -1,12 +1,13 @@
 """Generate the About page's Framer code components (ArcoviaAboutHero, ArcoviaStory, ArcoviaBeliefs,
-ArcoviaProcess) from site/about.html, the section stylesheets and the section scripts, so the Framer
+ArcoviaProcess, ArcoviaMark) from site/about.html, the section stylesheets and the section scripts, so the Framer
 project stays a faithful port of the approved HTML. Follows the Home port's conventions (ArcoviaBase:
 baseStyle, cssTag, useArcoviaScript; @media (max-width) -> @container arc; 100vw -> 100cqw).
 
     python3 tools/framer-about.py        # writes review/framer/*.tsx (git-ignored)
 
 Then upload each file as text (Framer MCP create_upload_url, PUT the file), fetch() it inside a
-project program and api.files.write() it over the existing file. PHOTOS are the Our story photos
+project program and api.files.write() it over the existing file. ArcoviaMark's behaviour (the port of
+mark-v2.js) lives in tools/framer-mark-behaviour.ts and is pasted in as it is. PHOTOS are the Our story photos
 already uploaded to the Framer project."""
 import json, os, re, sys, html
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -763,7 +764,170 @@ addPropertyControls(ArcoviaProcess, {
 })
 '''
 
-files = {'ArcoviaAboutHero.tsx': about_hero, 'ArcoviaStory.tsx': story_tsx, 'ArcoviaBeliefs.tsx': beliefs_tsx, 'ArcoviaProcess.tsx': process_tsx}
+# ---------------------------------------------------------------- The mark (approved V2)
+mk = section('mark-v2')
+def squash(markup):
+    markup = re.sub(r'<!--.*?-->', '', markup, flags=re.S)
+    return re.sub(r'>\s+<', '><', markup).strip()
+mark_svg = squash(re.search(r'<svg class="mark-v2__svg"[^>]*>(.*?)</svg>', mk, re.S).group(1))
+mark_paths = squash(re.search(r'<g id="mark-v2-shape">(.*?)</g>', mk, re.S).group(1))
+assert mark_paths.count('<path') == 3
+m_notes = re.findall(r'<h3 class="mark-v2__name">(.*?)</h3>\s*<p class="mark-v2__text">(.*?)</p>', mk, re.S)
+assert len(m_notes) == 3, m_notes
+m_unit = text(re.search(r'<p class="mark-v2__tag"[^>]*>.*?</svg>(.*?)</p>', mk, re.S).group(1))
+m_closing = [text(x) for x in re.findall(r'<span>(.*?)</span>', re.search(r'<p class="mark-v2__closing"[^>]*>(.*?)</p>', mk, re.S).group(1))]
+assert len(m_closing) == 2
+mark_css = re.sub(r'(\d+(?:\.\d+)?)vw\b', r'\1cqw', css('mark-v2'))   # every vw: the component's own width
+
+mark_tsx = """/**
+ * Arcovia: "The mark" (About block 5; the approved second version, The mark · V2).
+ *
+ * The A-mark stays in the middle of the screen while it is drawn the way a
+ * designer builds a logo sheet, then pressed into the concrete (the stage pins
+ * for 400vh; the drawing follows the scroll, so it runs back when scrolling up
+ * and fast scrolling settles exactly):
+ *   1  the clear-space frame (a 3 x 3 grid one circle-radius round the mark)
+ *      rules itself in; the left leg's edges run on across it as construction
+ *      lines; the outline is drawn the way the pen tool places points (hollow
+ *      anchors on the corners); a hairline to "Capital"
+ *   2  the right leg the same way; "Creative"; Capital dims
+ *   3  the axis, the circle drawn through its four anchors; x in the corner
+ *      cells and "x = radius of the circle"; "One idea"; the others dim
+ *   4  the drawing fades while the mark is carved into the wall (concrete.js,
+ *      wide walls, pressed in with scroll), the beam of sunlight from the CTA
+ *      comes in and sweeps across it with dust in it, and the closing line
+ *      comes in, centred under the mark.
+ * Below 1200 (tablet and phone, as container queries on the component's own
+ * width): no pinning; the finished state: the carved mark with the beam, the
+ * closing line under it, then the notes under hairlines (a row of three on
+ * tablets, one under the other on phones). The script reads the stage's CSS
+ * position to know which layout is on, so each breakpoint frame gets its own.
+ * Reduced motion: parts appear whole at their point; the beam holds still.
+ * On the Framer canvas (and without WebGL): the finished mark pressed in with
+ * SVG, a soft raking light and the closing line.
+ * Copy: [TO CONFIRM wording with Lilla].
+ * Ported from about.html (SECTION:mark-v2), sections/mark-v2.css and mark-v2.js on main.
+ */
+import * as React from "react"
+import { addPropertyControls, ControlType } from "framer"
+import { ASSETS, baseStyle, cssTag, useArcoviaScript, type Life } from "./ArcoviaBase.tsx"
+import { ConcreteSurface } from "./ArcoviaConcrete.tsx"
+
+const MARK_CSS = `""" + mark_css + """`
+
+/** The drawing: defs (the mark's shape, the no-WebGL deboss filters), the deboss, and the sketch */
+const MARK_SVG = """ + j(mark_svg) + """
+
+/** The official brandmark's three paths, for concrete.js to carve */
+const MARK_PATHS = """ + j(mark_paths) + """
+
+interface Props {
+    capital: string
+    capitalText: string
+    creative: string
+    creativeText: string
+    idea: string
+    ideaText: string
+    unit: string
+    line1: string
+    line2: string
+    style?: React.CSSProperties
+}
+
+const DEFAULTS: Props = {
+    capital: """ + j(text(m_notes[0][0])) + """,
+    capitalText: """ + j(text(m_notes[0][1])) + """,
+    creative: """ + j(text(m_notes[1][0])) + """,
+    creativeText: """ + j(text(m_notes[1][1])) + """,
+    idea: """ + j(text(m_notes[2][0])) + """,
+    ideaText: """ + j(text(m_notes[2][1])) + """,
+    unit: """ + j(m_unit) + """,
+    line1: """ + j(m_closing[0]) + """,
+    line2: """ + j(m_closing[1]) + """,
+}
+
+/**
+ * @framerSupportedLayoutWidth any-prefer-fixed
+ * @framerSupportedLayoutHeight auto
+ */
+export default function ArcoviaMark(incoming: Partial<Props>) {
+    const p = { ...DEFAULTS, ...incoming }
+    const ref = React.useRef<HTMLDivElement>(null)
+    // Lay everything out again whenever the copy changes
+    const key = JSON.stringify([p.capital, p.capitalText, p.creative, p.creativeText, p.idea, p.ideaText, p.unit, p.line1, p.line2])
+    useArcoviaScript(ref, (root, life) => initMark(root, life), [key])
+
+    return (
+        <div className="arc arc-mark" ref={ref} style={p.style}>
+            {baseStyle()}
+            {cssTag("mark-v2", MARK_CSS)}
+            <section className="mark-v2" data-mark-v2="" data-header-theme="dark" aria-labelledby="mark-v2-title">
+                <div className="mark-v2__stage">
+                    <div className="mark-v2__overlay" aria-hidden="true"></div>
+                    {/* The wall in WebGL (concrete.js): dark concrete, the carved mark and the beam */}
+                    <canvas className="mark-v2__canvas" aria-hidden="true"></canvas>
+
+                    <div className="mark-v2__frame container">
+                        <h2 className="visually-hidden" id="mark-v2-title">The mark</h2>
+
+                        <div className="mark-v2__figure" aria-hidden="true">
+                            <svg className="mark-v2__svg" viewBox="0 0 72 57" focusable="false" dangerouslySetInnerHTML={{ __html: MARK_SVG }} />
+                            {/* Only marks the place for concrete.js to carve the mark */}
+                            <svg className="mark-v2__carve" viewBox="0 0 72 57" data-carve="mark" focusable="false" dangerouslySetInnerHTML={{ __html: MARK_PATHS }} />
+                            {/* Without WebGL: soft daylight raking slowly across the wall and the mark */}
+                            <span className="mark-v2__light"></span>
+                        </div>
+
+                        <div className="mark-v2__notes">
+                            {p.unit ? (
+                                <p className="mark-v2__tag" data-tag="">
+                                    <svg className="mark-v2__tag-x" viewBox="0 0 10 10" aria-hidden="true">
+                                        <path d="M2 2L8 8M8 2L2 8" />
+                                    </svg>{" "}
+                                    {p.unit}
+                                </p>
+                            ) : null}
+                            <ol className="mark-v2__list">
+                                <li className="mark-v2__note mark-v2__note--1" data-note="1">
+                                    <h3 className="mark-v2__name">{p.capital}</h3>
+                                    <p className="mark-v2__text">{p.capitalText}</p>
+                                </li>
+                                <li className="mark-v2__note mark-v2__note--2" data-note="2">
+                                    <h3 className="mark-v2__name">{p.creative}</h3>
+                                    <p className="mark-v2__text">{p.creativeText}</p>
+                                </li>
+                                <li className="mark-v2__note mark-v2__note--3" data-note="3">
+                                    <h3 className="mark-v2__name">{p.idea}</h3>
+                                    <p className="mark-v2__text">{p.ideaText}</p>
+                                </li>
+                            </ol>
+                        </div>
+
+                        <p className="mark-v2__closing" data-closing="">
+                            <span>{p.line1}</span> <span>{p.line2}</span>
+                        </p>
+                    </div>
+                </div>
+            </section>
+        </div>
+    )
+}
+
+""" + open(os.path.join(ROOT, 'tools', 'framer-mark-behaviour.ts'), encoding='utf-8').read() + """
+addPropertyControls(ArcoviaMark, {
+    capital: { type: ControlType.String, title: "Left line", defaultValue: DEFAULTS.capital },
+    capitalText: { type: ControlType.String, title: "Left text", displayTextArea: true, defaultValue: DEFAULTS.capitalText },
+    creative: { type: ControlType.String, title: "Right line", defaultValue: DEFAULTS.creative },
+    creativeText: { type: ControlType.String, title: "Right text", displayTextArea: true, defaultValue: DEFAULTS.creativeText },
+    idea: { type: ControlType.String, title: "Circle", defaultValue: DEFAULTS.idea },
+    ideaText: { type: ControlType.String, title: "Circle text", displayTextArea: true, defaultValue: DEFAULTS.ideaText },
+    unit: { type: ControlType.String, title: "Grid note", defaultValue: DEFAULTS.unit },
+    line1: { type: ControlType.String, title: "Closing 1", displayTextArea: true, defaultValue: DEFAULTS.line1 },
+    line2: { type: ControlType.String, title: "Closing 2", displayTextArea: true, defaultValue: DEFAULTS.line2 },
+})
+"""
+
+files = {'ArcoviaAboutHero.tsx': about_hero, 'ArcoviaStory.tsx': story_tsx, 'ArcoviaBeliefs.tsx': beliefs_tsx, 'ArcoviaProcess.tsx': process_tsx, 'ArcoviaMark.tsx': mark_tsx}
 for name, src in files.items():
     open(f'{OUT}/{name}', 'w', encoding='utf-8').write(src)
     print(name, len(src.encode('utf-8')), 'bytes')
@@ -771,3 +935,4 @@ print('hero', chip, lines, lede[:40])
 print('story', s_chip, s_title, [s['title'] for s in steps])
 print('beliefs', b_title, [i['title'] for i in b_items])
 print('process', p_title, [r['title'] for r in p_rows])
+print('mark', [text(n[0]) for n in m_notes], m_unit, m_closing)
