@@ -58,6 +58,7 @@
 
 /* Tablet and phone: not reviewed yet (desktop first); keep it readable */
 @media (max-width: 1199px) {
+  .leadership { --lead-fs: var(--fs-h2); }
   .leadership__title { grid-column: 1 / -1; position: static; margin-bottom: var(--space-7); }
   .leadership__list {
     grid-column: 1 / -1;

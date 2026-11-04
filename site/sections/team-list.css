@@ -74,21 +74,27 @@
 .data-table__role  { color: var(--color-text); }
 .data-table__scope { color: var(--color-text-muted); }
 
-/* Tablet and phone: not reviewed yet (desktop first); keep it readable */
+/* Tablet and phone (after the user's mobile reference): the table keeps its
+   shape (band row, every hairline) and slides sideways inside its own strip,
+   which starts on the page margin and runs off the right edge of the screen.
+   Fixed columns, as in Framer (a 1000px row: Name 3/12, Role 4/12, Scope
+   5/12): names and roles stay on one line, the longer scopes take two. */
+.team-list__scroll { outline-offset: 4px; }
 @media (max-width: 1199px) {
-  .data-table__col--name { width: 26%; }
-  .data-table__col--role { width: 30%; }
+  .team-list { --tl-fs: var(--fs-h2); padding-block: var(--space-9); }
+  .team-list__title { margin-bottom: var(--space-7); }
+  .team-list__scroll {
+    overflow-x: auto;
+    margin-right: calc(-1 * var(--gutter));
+    padding-right: var(--gutter);
+  }
+  .data-table { --dt-pad-x: 20px; width: 1000px; }
+  .data-table__col--name { width: 250px; }
+  .data-table__col--role { width: 333px; }
+  .data-table th,
+  .data-table td { padding-block: 18px; }
 }
 @media (max-width: 809px) {
-  .data-table thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
-  .data-table,
-  .data-table tbody,
-  .data-table tr,
-  .data-table th,
-  .data-table td { display: block; width: auto; }
-  .data-table tr { padding: var(--space-4) 0; border-top: 1px solid var(--dt-line); }
-  .data-table tr:last-child { border-bottom: 1px solid var(--dt-line); }
-  .data-table th,
-  .data-table td { padding: 0; border: 0; }
-  .data-table tbody th { margin-bottom: var(--space-1); }
+  .team-list { padding-block: var(--space-8); }
+  .team-list__title { margin-bottom: 40px; }
 }

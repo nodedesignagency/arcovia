@@ -81,6 +81,7 @@
 
 /* Tablet and phone: not reviewed yet (desktop first); keep it readable */
 @media (max-width: 1199px) {
+  .advisors { --advisors-fs: var(--fs-h2); }
   .advisors__title { grid-column: 1 / -1; grid-row: auto; position: static; margin-bottom: var(--space-7); }
   .advisors__groups,
   .advisors__note { grid-column: 1 / -1; }
