@@ -40,6 +40,7 @@ cd ~/Desktop/arcovia-preview && ./preview.sh <branch>
 - `site/zoom.js`: the hero → statement zoom-through (pinned scroll stage).
 - `site/concrete.js`: WebGL concrete for the hero (carved text and marks, drifting sunlight, cursor light). Built to become a Framer code component.
 - `site/assets/`: concrete texture (seamless, 90 KB); `logo/` holds the client's official logo SVGs (brandmark, wordmark, lockup, parts; white fills as delivered). The sprite in `index.html` inlines the brandmark (`#a-mark`, viewBox 0 0 72 57) and wordmark (`#wordmark`, 0 0 72 11) with `currentColor`; `a-mark.svg` is the favicon. Use these, never a typeset "ARCOVIA", for the logo.
+- `site/assets/services/`: the "What we do" tiles (Framer's `ArcoviaWhatWeDo.tsx`), one square concrete render per service after the user's references (pale speckled concrete forms on flat charcoal `#565656`), in place of the stock photos. Made by `tools/concrete-renders/` (Blender's `bpy` from PyPI; see its README to re-render).
 - `site/versions/<name>/`: frozen snapshots the user asked to keep for comparison (e.g. `final-1`). Never edit them and never promote them to `main`; open with `./preview.sh <branch> versions/<name>/index.html`.
 - `review/`: screenshots and videos for review. Git-ignored; send them to the user, don't commit them.
 
