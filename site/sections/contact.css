@@ -19,7 +19,16 @@
   --nt-place: #a6a6a6;      /* a blank not filled in yet */
   --nt-soft: #6e6e6e;       /* small labels on the left */
   --nt-rule: rgba(21, 21, 21, 0.12);
-  padding: calc(var(--header-h) + var(--space-8)) 0 var(--space-10);
+  /* Little bottom padding: the page ends on a hairline just above the footer, as the About page's
+     closing does (the same line, 12px over the footer); the page's bottom space is above the line */
+  padding: calc(var(--header-h) + var(--space-8)) 0 var(--space-3);
+}
+.contact::after {
+  content: "";
+  display: block;
+  width: calc(min(100%, var(--container-max)) - 2 * var(--gutter));
+  margin: var(--space-10) auto 0;
+  border-top: 1px solid rgba(21, 21, 21, 0.16);
 }
 
 .contact__grid {
@@ -320,7 +329,8 @@
   [data-sheet="card"] .note__foot { margin-inline: -40px; padding-inline: 40px; }
 }
 @media (max-width: 809px) {
-  .contact { --nt-size: 22px; padding-bottom: var(--space-9); }
+  .contact { --nt-size: 22px; }
+  .contact::after { margin-top: var(--space-9); }
   .contact__title { font-size: 46px; letter-spacing: -0.03em; }
   .contact__head { gap: 16px; margin-bottom: var(--space-5); }
   .contact__lede { grid-column: 1 / -1; margin-bottom: var(--space-7); font-size: 17px; }
