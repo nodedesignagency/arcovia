@@ -9,7 +9,8 @@
               masthead's short dash draws in on hover
      offices 6-8 · 9-12: side by side over hairlines, city, live local
               time (main.js), address
-     bar: © on the left, the legal pages on the right, over a hairline
+     regulatory line (from the brief, small, every page): 1-8, under the offices
+     bar: © on the left, the four legal pages on the right, over a hairline
    ========================================================================== */
 
 .site-footer {
@@ -17,6 +18,9 @@
   background: var(--color-neutral);
   color: var(--color-text);
 }
+/* White pages (Contact, the legal pages): no CTA above it, so the footer stays on the page's
+   white, as in Framer (the Site template's "White footer" variable) */
+.page--white .site-footer { background: var(--color-white); }
 
 .site-footer__inner {
   display: grid;
@@ -113,16 +117,28 @@
   color: var(--color-text-muted);
 }
 
+/* ---------- Regulatory line: small print under the offices ---------- */
+.site-footer__reg {
+  grid-column: 1 / span 8;
+  grid-row: 3;
+  max-width: 64em;
+  margin-top: var(--space-9);
+  font-size: 13px;
+  line-height: 20px;
+  color: var(--color-text-muted);
+  text-wrap: pretty;
+}
+
 /* ---------- Bar: © left, legal right ---------- */
 .site-footer__bar {
   grid-column: 1 / -1;
-  grid-row: 3;
+  grid-row: 4;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: var(--space-5);
   height: 72px;
-  margin-top: var(--space-9);
+  margin-top: var(--space-5);
   border-top: 1px solid var(--ft-line);
   font-size: 14px;
   line-height: 20px;
@@ -130,6 +146,7 @@
 }
 .site-footer__legal { display: flex; gap: var(--space-6); }
 .site-footer__legal-link { transition: color var(--dur-fast) var(--ease-out); }
+.site-footer__legal-link[aria-current="page"] { color: var(--color-ink); }
 @media (hover: hover) {
   .site-footer__legal-link:hover { color: var(--color-ink); }
 }
@@ -142,11 +159,13 @@
   .site-footer__offices { grid-column: 1 / -1; grid-row: 3; }
   .site-footer__office:nth-child(1) { grid-column: 1 / span 6; }
   .site-footer__office:nth-child(2) { grid-column: 7 / span 6; }
-  .site-footer__bar { grid-row: 4; }
+  .site-footer__reg { grid-column: 1 / -1; grid-row: 4; }
+  .site-footer__bar { grid-row: 5; }
 }
 @media (max-width: 809px) {
   .site-footer__link { font-size: 26px; }
   .site-footer__office:nth-child(n) { grid-column: 1 / -1; }
   .site-footer__offices { row-gap: var(--space-6); }
+  .site-footer__legal { flex-wrap: wrap; gap: var(--space-2) var(--space-5); }
   .site-footer__bar { flex-direction: column; align-items: flex-start; justify-content: center; height: auto; padding-block: var(--space-5); }
 }
