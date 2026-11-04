@@ -305,6 +305,12 @@
   .contact__aside { display: contents; }
   .contact__lede { grid-column: 1 / span 9; grid-row: 2; max-width: 30em; margin-bottom: var(--space-8); font-size: 19px; }
   .contact__main { grid-column: 1 / -1; grid-row: 3; }
+  /* A hairline over the note, the same as the one over its sign-off: the same rule, the lede's
+     margin above it (as the sign-off's margin) and 28px under it (as the sign-off); it dims
+     with the sign-off until a path is chosen, so the two lines always match */
+  .note-form::before { content: ""; display: block; margin-bottom: 28px; border-top: 1px solid var(--nt-rule); transition: opacity var(--dur-slow) var(--ease-out); }
+  .js .note-form:not(.is-chosen)::before { opacity: 0.4; }
+  [data-sheet="card"] .note-form::before { content: none; }
   .contact__block { grid-row: 4; margin-top: var(--space-9); }
   .contact__block--email { grid-column: 1 / span 4; }
   .contact__block--offices { grid-column: 5 / -1; }

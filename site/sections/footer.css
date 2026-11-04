@@ -17,6 +17,10 @@
   background: var(--color-neutral);
   color: var(--color-text);
 }
+/* White pages (Contact): no CTA above it, so the footer stays on the page's white.
+   In Framer the footer can't see the page: its Ground control sets .site-footer--white. */
+.page--white .site-footer,
+.site-footer--white { background: var(--color-white); }
 
 .site-footer__inner {
   display: grid;
