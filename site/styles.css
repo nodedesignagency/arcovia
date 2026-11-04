@@ -217,6 +217,13 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   .chip { gap: 10px; font-size: 11px; letter-spacing: 0.08em; }
   .chip::before { width: 8px; height: 8px; }
 }
+/* On its side (component: chip--side; some pages only, e.g. Contact and About's team): the
+   chip turned to read upwards from its square, up the left edge. Desktop only: below 1200
+   it lies flat again. */
+.chip--side { writing-mode: vertical-rl; transform: rotate(180deg); }
+@media (max-width: 1199px) {
+  .chip--side { writing-mode: horizontal-tb; transform: none; }
+}
 
 /* ---------- Buttons ---------- */
 .btn {
