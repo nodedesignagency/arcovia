@@ -1,0 +1,92 @@
+/* ==========================================================================
+   SECTION: advisors — Team, block 3 (the senior advisors)
+   The brief's "medium cards in three labelled groups", laid out like
+   Leadership above it and after the user's reference (a group label over a
+   hairline, then its grid, as the reference's city groups): on white,
+   "Senior advisors" on cols 1-6, held in view while the groups go by on
+   cols 7-12; each group's label (24px) and its cards three to a row (two
+   grid columns each: person-card--medium). The legal line closes it.
+   Leadership's bottom padding is the space above this heading.
+   Uses shared tokens and components from styles.css (container, person-card).
+   ========================================================================== */
+
+.advisors {
+  --advisors-fs: calc((min(100vw, var(--container-max)) - 2 * var(--gutter)) * 0.04);
+  --advisors-line: rgba(21, 21, 21, 0.16);
+  background: var(--color-white);
+  padding-bottom: var(--space-10);
+}
+
+.advisors__inner {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--grid-gap);
+  align-items: start;
+}
+
+/* Held in view like "Leadership"; clears the small header bar when that comes back */
+.advisors__title {
+  grid-column: 1 / span 6;
+  grid-row: 1 / span 2;
+  position: sticky;
+  top: calc(var(--mh-labels) + var(--mh-compact) + var(--space-6));
+  font-size: var(--advisors-fs);
+  font-weight: var(--weight-medium);
+  line-height: 1.08;
+  letter-spacing: var(--ls-h2);
+  color: var(--color-ink);
+}
+
+.advisors__groups {
+  grid-column: 7 / -1;
+  display: grid;
+  gap: var(--space-8);
+}
+
+/* A hairline between groups, as in the reference */
+.advisor-group + .advisor-group {
+  padding-top: var(--space-6);
+  border-top: 1px solid var(--advisors-line);
+}
+.advisor-group__title {
+  max-width: 24em;
+  margin-bottom: var(--space-6);
+  font-size: 24px;
+  font-weight: var(--weight-medium);
+  line-height: 1.25;
+  letter-spacing: -0.012em;
+  color: var(--color-ink);
+  text-wrap: balance;
+}
+
+/* Three to a row; each row's parts line up (subgrid rows, created as needed) */
+.advisor-group__list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  column-gap: var(--grid-gap);
+}
+.advisor-group__list > .person-card:nth-child(n + 4) { margin-top: var(--space-7); }
+
+/* The brief's legal line */
+.advisors__note {
+  grid-column: 7 / -1;
+  max-width: 40em;
+  margin-top: var(--space-8);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--advisors-line);
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--color-text-muted);
+}
+
+/* Tablet and phone: not reviewed yet (desktop first); keep it readable */
+@media (max-width: 1199px) {
+  .advisors__title { grid-column: 1 / -1; grid-row: auto; position: static; margin-bottom: var(--space-7); }
+  .advisors__groups,
+  .advisors__note { grid-column: 1 / -1; }
+  .advisor-group__list { row-gap: var(--space-7); }
+  .advisor-group__list > .person-card:nth-child(n + 4) { margin-top: 0; }
+}
+@media (max-width: 809px) {
+  .advisor-group__list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}

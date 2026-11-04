@@ -16,6 +16,7 @@
   <!-- One stylesheet per section, so a section can be approved and moved to main on its own -->
   <link rel="stylesheet" href="sections/team-hero.css">
   <link rel="stylesheet" href="sections/leadership.css">
+  <link rel="stylesheet" href="sections/advisors.css">
   <link rel="stylesheet" href="sections/footer.css">
 </head>
 <body>
@@ -226,6 +227,187 @@
       </div>
     </section>
     <!-- SECTION:leadership END -->
+
+    <!-- SECTION:advisors START · styles: sections/advisors.css
+         Team, block 3: the eleven senior advisors in the brief's three labelled groups ("medium
+         cards in three labelled groups"). Laid out like Leadership above it: "Senior advisors" on
+         cols 1-6, held in view while the groups go by on cols 7-12; each group's label over a
+         hairline, as the city groups in the user's reference, then its cards three to a row. The
+         same person-card, medium: portrait, name, title as a plain line, then "Contact via
+         Arcovia" (the profile's short form, naming the advisor: advisors are independent) and
+         LinkedIn. No bios on the cards: they live on the profiles. The brief's legal line closes it.
+         Names, titles, groups and bios: site/data/team.json (from the brief, Team section 3).
+         [PHOTO NEEDED] all eleven (the deck photos at launch). [TO CONFIRM] LinkedIn URLs, and each
+         advisor's contact preference. -->
+    <section class="advisors" id="advisors" aria-labelledby="advisors-title">
+      <div class="advisors__inner container">
+        <h2 class="advisors__title" id="advisors-title">Senior advisors</h2>
+
+        <div class="advisors__groups">
+          <section class="advisor-group" aria-labelledby="group-media-technology-ai">
+            <h3 class="advisor-group__title" id="group-media-technology-ai">Media, Technology &amp; AI</h3>
+            <ul class="advisor-group__list">
+              <li class="person-card person-card--medium">
+                <a class="person-card__media" href="team/ken-hershman.html" tabindex="-1" aria-hidden="true" data-todo="Profile page (CMS template) [TO BUILD]">
+                  <img class="person-card__photo" src="assets/team/portrait-placeholder.svg" alt="" width="600" height="720" loading="lazy" data-todo="Portrait of Ken Hershman [PHOTO NEEDED]">
+                </a>
+                <h4 class="person-card__name"><a class="person-card__link" href="team/ken-hershman.html" data-todo="Profile page (CMS template) [TO BUILD]">Ken Hershman</a></h4>
+                <p class="person-card__role">Senior Advisor, Media, Entertainment &amp; Sports</p>
+                <p class="person-card__contact">
+                  <a class="person-card__ask" href="team/ken-hershman.html#contact" aria-label="Contact Ken Hershman via Arcovia" data-todo="The profile's short form [TO BUILD]">Contact via Arcovia</a>
+                  <a class="person-card__social" href="#" aria-label="Ken Hershman on LinkedIn" data-todo="LinkedIn URL [TO CONFIRM]">
+                    <svg aria-hidden="true"><use href="#icon-linkedin"/></svg>
+                  </a>
+                </p>
+              </li>
+              <li class="person-card person-card--medium">
+                <a class="person-card__media" href="team/jon-brodsky.html" tabindex="-1" aria-hidden="true" data-todo="Profile page (CMS template) [TO BUILD]">
+                  <img class="person-card__photo" src="assets/team/portrait-placeholder.svg" alt="" width="600" height="720" loading="lazy" data-todo="Portrait of Jon Brodsky [PHOTO NEEDED]">
+                </a>
+                <h4 class="person-card__name"><a class="person-card__link" href="team/jon-brodsky.html" data-todo="Profile page (CMS template) [TO BUILD]">Jon Brodsky</a></h4>
+                <p class="person-card__role">Senior Advisor, Technology, Digital Media &amp; Growth</p>
+                <p class="person-card__contact">
+                  <a class="person-card__ask" href="team/jon-brodsky.html#contact" aria-label="Contact Jon Brodsky via Arcovia" data-todo="The profile's short form [TO BUILD]">Contact via Arcovia</a>
+                  <a class="person-card__social" href="#" aria-label="Jon Brodsky on LinkedIn" data-todo="LinkedIn URL [TO CONFIRM]">
+                    <svg aria-hidden="true"><use href="#icon-linkedin"/></svg>
+                  </a>
+                </p>
+              </li>
+              <li class="person-card person-card--medium">
+                <a class="person-card__media" href="team/koyuki-nakamori.html" tabindex="-1" aria-hidden="true" data-todo="Profile page (CMS template) [TO BUILD]">
+                  <img class="person-card__photo" src="assets/team/portrait-placeholder.svg" alt="" width="600" height="720" loading="lazy" data-todo="Portrait of Koyuki Nakamori [PHOTO NEEDED]">
+                </a>
+                <h4 class="person-card__name"><a class="person-card__link" href="team/koyuki-nakamori.html" data-todo="Profile page (CMS template) [TO BUILD]">Koyuki Nakamori</a></h4>
+                <p class="person-card__role">Senior Advisor, AI &amp; Platform Architecture</p>
+                <p class="person-card__contact">
+                  <a class="person-card__ask" href="team/koyuki-nakamori.html#contact" aria-label="Contact Koyuki Nakamori via Arcovia" data-todo="The profile's short form [TO BUILD]">Contact via Arcovia</a>
+                  <a class="person-card__social" href="#" aria-label="Koyuki Nakamori on LinkedIn" data-todo="LinkedIn URL [TO CONFIRM]">
+                    <svg aria-hidden="true"><use href="#icon-linkedin"/></svg>
+                  </a>
+                </p>
+              </li>
+            </ul>
+          </section>
+          <section class="advisor-group" aria-labelledby="group-infrastructure-finance">
+            <h3 class="advisor-group__title" id="group-infrastructure-finance">Infrastructure, Leveraged Finance, Capital Markets &amp; Alternatives</h3>
+            <ul class="advisor-group__list">
+              <li class="person-card person-card--medium">
+                <a class="person-card__media" href="team/julian-smith.html" tabindex="-1" aria-hidden="true" data-todo="Profile page (CMS template) [TO BUILD]">
+                  <img class="person-card__photo" src="assets/team/portrait-placeholder.svg" alt="" width="600" height="720" loading="lazy" data-todo="Portrait of Julian Smith [PHOTO NEEDED]">
+                </a>
+                <h4 class="person-card__name"><a class="person-card__link" href="team/julian-smith.html" data-todo="Profile page (CMS template) [TO BUILD]">Julian Smith</a></h4>
+                <p class="person-card__role">Senior Advisor, Infrastructure &amp; Climate Finance (PwC)</p>
+                <p class="person-card__contact">
+                  <a class="person-card__ask" href="team/julian-smith.html#contact" aria-label="Contact Julian Smith via Arcovia" data-todo="The profile's short form [TO BUILD]">Contact via Arcovia</a>
+                  <a class="person-card__social" href="#" aria-label="Julian Smith on LinkedIn" data-todo="LinkedIn URL [TO CONFIRM]">
+                    <svg aria-hidden="true"><use href="#icon-linkedin"/></svg>
+                  </a>
+                </p>
+              </li>
+              <li class="person-card person-card--medium">
+                <a class="person-card__media" href="team/kendall-holman.html" tabindex="-1" aria-hidden="true" data-todo="Profile page (CMS template) [TO BUILD]">
+                  <img class="person-card__photo" src="assets/team/portrait-placeholder.svg" alt="" width="600" height="720" loading="lazy" data-todo="Portrait of Kendall Holman [PHOTO NEEDED]">
+                </a>
+                <h4 class="person-card__name"><a class="person-card__link" href="team/kendall-holman.html" data-todo="Profile page (CMS template) [TO BUILD]">Kendall Holman</a></h4>
+                <p class="person-card__role">Senior Advisor, Middle Market M&amp;A &amp; Debt Capital Markets (Credit Suisse, JPMorgan)</p>
+                <p class="person-card__contact">
+                  <a class="person-card__ask" href="team/kendall-holman.html#contact" aria-label="Contact Kendall Holman via Arcovia" data-todo="The profile's short form [TO BUILD]">Contact via Arcovia</a>
+                  <a class="person-card__social" href="#" aria-label="Kendall Holman on LinkedIn" data-todo="LinkedIn URL [TO CONFIRM]">
+                    <svg aria-hidden="true"><use href="#icon-linkedin"/></svg>
+                  </a>
+                </p>
+              </li>
+              <li class="person-card person-card--medium">
+                <a class="person-card__media" href="team/morgan-edwards.html" tabindex="-1" aria-hidden="true" data-todo="Profile page (CMS template) [TO BUILD]">
+                  <img class="person-card__photo" src="assets/team/portrait-placeholder.svg" alt="" width="600" height="720" loading="lazy" data-todo="Portrait of Morgan Edwards [PHOTO NEEDED]">
+                </a>
+                <h4 class="person-card__name"><a class="person-card__link" href="team/morgan-edwards.html" data-todo="Profile page (CMS template) [TO BUILD]">Morgan Edwards</a></h4>
+                <p class="person-card__role">Senior Advisor, Leveraged Finance &amp; FinTech (Morgan Stanley, Macquarie)</p>
+                <p class="person-card__contact">
+                  <a class="person-card__ask" href="team/morgan-edwards.html#contact" aria-label="Contact Morgan Edwards via Arcovia" data-todo="The profile's short form [TO BUILD]">Contact via Arcovia</a>
+                  <a class="person-card__social" href="#" aria-label="Morgan Edwards on LinkedIn" data-todo="LinkedIn URL [TO CONFIRM]">
+                    <svg aria-hidden="true"><use href="#icon-linkedin"/></svg>
+                  </a>
+                </p>
+              </li>
+              <li class="person-card person-card--medium">
+                <a class="person-card__media" href="team/kristina-mcdonough.html" tabindex="-1" aria-hidden="true" data-todo="Profile page (CMS template) [TO BUILD]">
+                  <img class="person-card__photo" src="assets/team/portrait-placeholder.svg" alt="" width="600" height="720" loading="lazy" data-todo="Portrait of Kristina McDonough [PHOTO NEEDED]">
+                </a>
+                <h4 class="person-card__name"><a class="person-card__link" href="team/kristina-mcdonough.html" data-todo="Profile page (CMS template) [TO BUILD]">Kristina McDonough</a></h4>
+                <p class="person-card__role">Senior Advisor, Capital Markets &amp; Alternatives (Bank of America, Credit Suisse)</p>
+                <p class="person-card__contact">
+                  <a class="person-card__ask" href="team/kristina-mcdonough.html#contact" aria-label="Contact Kristina McDonough via Arcovia" data-todo="The profile's short form [TO BUILD]">Contact via Arcovia</a>
+                  <a class="person-card__social" href="#" aria-label="Kristina McDonough on LinkedIn" data-todo="LinkedIn URL [TO CONFIRM]">
+                    <svg aria-hidden="true"><use href="#icon-linkedin"/></svg>
+                  </a>
+                </p>
+              </li>
+            </ul>
+          </section>
+          <section class="advisor-group" aria-labelledby="group-sovereign-pe-family-offices">
+            <h3 class="advisor-group__title" id="group-sovereign-pe-family-offices">Sovereign Capital, Private Equity, Family Offices &amp; M&amp;A</h3>
+            <ul class="advisor-group__list">
+              <li class="person-card person-card--medium">
+                <a class="person-card__media" href="team/nitan-pathak.html" tabindex="-1" aria-hidden="true" data-todo="Profile page (CMS template) [TO BUILD]">
+                  <img class="person-card__photo" src="assets/team/portrait-placeholder.svg" alt="" width="600" height="720" loading="lazy" data-todo="Portrait of Nitan Pathak [PHOTO NEEDED]">
+                </a>
+                <h4 class="person-card__name"><a class="person-card__link" href="team/nitan-pathak.html" data-todo="Profile page (CMS template) [TO BUILD]">Nitan Pathak</a></h4>
+                <p class="person-card__role">Senior Advisor, Private Equity &amp; Venture Capital</p>
+                <p class="person-card__contact">
+                  <a class="person-card__ask" href="team/nitan-pathak.html#contact" aria-label="Contact Nitan Pathak via Arcovia" data-todo="The profile's short form [TO BUILD]">Contact via Arcovia</a>
+                  <a class="person-card__social" href="#" aria-label="Nitan Pathak on LinkedIn" data-todo="LinkedIn URL [TO CONFIRM]">
+                    <svg aria-hidden="true"><use href="#icon-linkedin"/></svg>
+                  </a>
+                </p>
+              </li>
+              <li class="person-card person-card--medium">
+                <a class="person-card__media" href="team/stephane-prefol.html" tabindex="-1" aria-hidden="true" data-todo="Profile page (CMS template) [TO BUILD]">
+                  <img class="person-card__photo" src="assets/team/portrait-placeholder.svg" alt="" width="600" height="720" loading="lazy" data-todo="Portrait of Stéphane Préfol [PHOTO NEEDED]">
+                </a>
+                <h4 class="person-card__name"><a class="person-card__link" href="team/stephane-prefol.html" data-todo="Profile page (CMS template) [TO BUILD]">Stéphane Préfol</a></h4>
+                <p class="person-card__role">Senior Advisor, Cross-Border M&amp;A</p>
+                <p class="person-card__contact">
+                  <a class="person-card__ask" href="team/stephane-prefol.html#contact" aria-label="Contact Stéphane Préfol via Arcovia" data-todo="The profile's short form [TO BUILD]">Contact via Arcovia</a>
+                  <a class="person-card__social" href="#" aria-label="Stéphane Préfol on LinkedIn" data-todo="LinkedIn URL [TO CONFIRM]">
+                    <svg aria-hidden="true"><use href="#icon-linkedin"/></svg>
+                  </a>
+                </p>
+              </li>
+              <li class="person-card person-card--medium">
+                <a class="person-card__media" href="team/sunil-varma.html" tabindex="-1" aria-hidden="true" data-todo="Profile page (CMS template) [TO BUILD]">
+                  <img class="person-card__photo" src="assets/team/portrait-placeholder.svg" alt="" width="600" height="720" loading="lazy" data-todo="Portrait of Sunil Varma [PHOTO NEEDED]">
+                </a>
+                <h4 class="person-card__name"><a class="person-card__link" href="team/sunil-varma.html" data-todo="Profile page (CMS template) [TO BUILD]">Sunil Varma</a></h4>
+                <p class="person-card__role">Senior Advisor, Family Offices &amp; GCC Investments</p>
+                <p class="person-card__contact">
+                  <a class="person-card__ask" href="team/sunil-varma.html#contact" aria-label="Contact Sunil Varma via Arcovia" data-todo="The profile's short form [TO BUILD]">Contact via Arcovia</a>
+                  <a class="person-card__social" href="#" aria-label="Sunil Varma on LinkedIn" data-todo="LinkedIn URL [TO CONFIRM]">
+                    <svg aria-hidden="true"><use href="#icon-linkedin"/></svg>
+                  </a>
+                </p>
+              </li>
+              <li class="person-card person-card--medium">
+                <a class="person-card__media" href="team/joao-pedro-goncalves.html" tabindex="-1" aria-hidden="true" data-todo="Profile page (CMS template) [TO BUILD]">
+                  <img class="person-card__photo" src="assets/team/portrait-placeholder.svg" alt="" width="600" height="720" loading="lazy" data-todo="Portrait of João Pedro Gonçalves [PHOTO NEEDED]">
+                </a>
+                <h4 class="person-card__name"><a class="person-card__link" href="team/joao-pedro-goncalves.html" data-todo="Profile page (CMS template) [TO BUILD]">João Pedro Gonçalves</a></h4>
+                <p class="person-card__role">Senior Advisor, Sovereign &amp; Sustainable Finance</p>
+                <p class="person-card__contact">
+                  <a class="person-card__ask" href="team/joao-pedro-goncalves.html#contact" aria-label="Contact João Pedro Gonçalves via Arcovia" data-todo="The profile's short form [TO BUILD]">Contact via Arcovia</a>
+                  <a class="person-card__social" href="#" aria-label="João Pedro Gonçalves on LinkedIn" data-todo="LinkedIn URL [TO CONFIRM]">
+                    <svg aria-hidden="true"><use href="#icon-linkedin"/></svg>
+                  </a>
+                </p>
+              </li>
+            </ul>
+          </section>
+        </div>
+
+        <p class="advisors__note">Senior advisors are independent professionals, not employees or registered representatives of Arcovia unless stated otherwise.</p>
+      </div>
+    </section>
+    <!-- SECTION:advisors END -->
 
   </main>
 
