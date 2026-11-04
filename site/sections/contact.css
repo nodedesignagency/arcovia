@@ -64,6 +64,16 @@
   text-wrap: pretty;
 }
 .contact__block { padding-top: var(--space-5); border-top: 1px solid var(--nt-rule); }
+/* The emails and the offices in one box (the user asked for it): a hairline, square corners,
+   16px inside; the line between the emails and the offices runs from edge to edge */
+.contact__card {
+  display: grid;
+  gap: var(--space-5);
+  padding: 16px;
+  border: 1px solid var(--nt-rule);
+}
+.contact__card .contact__block--email { padding-top: 0; border-top: 0; }
+.contact__card .contact__block--offices { margin-inline: -16px; padding-inline: 16px; }
 .contact__list { display: grid; gap: var(--space-4); margin: 0; }
 .contact__list dt { font-size: 14px; line-height: 1.4; color: var(--nt-soft); }
 .contact__list dd { margin: 2px 0 0; font-size: 17px; font-weight: var(--weight-medium); line-height: 1.45; }
@@ -308,6 +318,10 @@
   .contact__block { grid-row: 4; margin-top: var(--space-9); }
   .contact__block--email { grid-column: 1 / span 4; }
   .contact__block--offices { grid-column: 5 / -1; }
+  /* The box is desktop only: below 1200 its two blocks take their places on the page grid */
+  .contact__card { display: contents; }
+  .contact__card .contact__block--email { padding-top: var(--space-5); border-top: 1px solid var(--nt-rule); }
+  .contact__card .contact__block--offices { margin-inline: 0; padding-inline: 0; }
   .contact__offices { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--grid-gap); }
   [data-sheet="card"] .note-form { padding: 44px 40px 0; }
   [data-sheet="card"] .note-done { padding: 44px 40px; }
