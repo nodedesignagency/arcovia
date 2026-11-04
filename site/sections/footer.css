@@ -1,0 +1,152 @@
+/* ==========================================================================
+   SECTION: footer — every page (component: site-footer)
+   After the user's references: defiant.vc's footer (the main inspiration,
+   not a copy) and their own Native Foreign footer. On the neutral ground
+   straight after the CTA, no line across the top.
+     logo 1-3 (small and horizontal: the brandmark beside the wordmark, in
+              the proportions of the client's horizontal logo)
+     Site map 6-8 · Company 9-12: just the links, set large, no labels; the
+              masthead's short dash draws in on hover
+     offices 6-8 · 9-12: side by side over hairlines, city, live local
+              time (main.js), address
+     bar: © on the left, the legal pages on the right, over a hairline
+   ========================================================================== */
+
+.site-footer {
+  --ft-line: rgba(21, 21, 21, 0.16);
+  background: var(--color-neutral);
+  color: var(--color-text);
+}
+
+.site-footer__inner {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--grid-gap);
+  /* The logo and the links' capitals sit 64px under the CTA box, the same space as the box
+     has above it (under the sectors line): the capitals start about 10px into their line */
+  padding-top: calc(var(--space-8) - 10px);
+}
+
+/* ---------- The logo: small and horizontal ----------
+   The shared .logo (brandmark beside wordmark). The client's pack has no horizontal
+   lockup, so the spacing follows their stacked lockup: there the mark sits 0.46 times
+   the wordmark's height above it, so here it sits 0.46 times beside it (8px at a 17px
+   wordmark; the mark's SVG already carries about 3px of space on its right). */
+.site-footer__logo {
+  grid-column: 1 / span 3;
+  grid-row: 1;
+  align-self: start;
+  justify-self: start;
+  gap: 5px;
+  margin-top: 10px;         /* centred on the first line of links */
+}
+.site-footer__logo .logo__mark { width: 30px; }
+.site-footer__logo .logo__word { height: 17px; }
+
+/* ---------- Link columns ---------- */
+.site-footer__col--site { grid-column: 6 / span 3; grid-row: 1; }
+.site-footer__col--company { grid-column: 9 / span 4; grid-row: 1; }
+
+.site-footer__links { display: grid; }
+.site-footer__link {
+  display: inline-flex;
+  align-items: center;
+  font-size: 32px;
+  font-weight: var(--weight-medium);
+  line-height: 1.34;
+  letter-spacing: -0.018em;
+  color: var(--color-ink);
+}
+/* The masthead's short dash, drawing in on hover */
+.site-footer__link::before {
+  content: "";
+  width: 0;
+  height: 1.5px;
+  margin-right: 0;
+  background: currentColor;
+  transition: width var(--dur-base) var(--ease-out), margin var(--dur-base) var(--ease-out);
+}
+@media (hover: hover) {
+  .site-footer__link:hover::before { width: 16px; margin-right: 10px; }
+}
+
+/* ---------- Offices, side by side over hairlines ---------- */
+.site-footer__offices {
+  grid-column: 6 / -1;
+  grid-row: 2;
+  display: grid;
+  grid-template-columns: subgrid;
+  margin-top: var(--space-9);
+}
+.site-footer__office {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: baseline;
+  column-gap: var(--space-4);
+  row-gap: 6px;
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--ft-line);
+}
+.site-footer__office:nth-child(1) { grid-column: 1 / span 3; }
+.site-footer__office:nth-child(2) { grid-column: 4 / span 4; }
+.site-footer__city {
+  font-size: 16px;
+  font-weight: var(--weight-medium);
+  line-height: 22px;
+  color: var(--color-ink);
+}
+/* Live local time, as in the masthead's clock */
+.site-footer__time {
+  font-size: 13px;
+  font-weight: var(--weight-semibold);
+  line-height: 22px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  color: var(--color-ink);
+}
+.site-footer__time .office__tz { font-weight: var(--weight-medium); color: var(--color-text-muted); }
+.site-footer__address {
+  grid-column: 1 / -1;
+  font-style: normal;
+  font-size: 15px;
+  line-height: 22px;
+  color: var(--color-text-muted);
+}
+
+/* ---------- Bar: © left, legal right ---------- */
+.site-footer__bar {
+  grid-column: 1 / -1;
+  grid-row: 3;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-5);
+  height: 72px;
+  margin-top: var(--space-9);
+  border-top: 1px solid var(--ft-line);
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--color-text-muted);
+}
+.site-footer__legal { display: flex; gap: var(--space-6); }
+.site-footer__legal-link { transition: color var(--dur-fast) var(--ease-out); }
+@media (hover: hover) {
+  .site-footer__legal-link:hover { color: var(--color-ink); }
+}
+
+/* ---------- Tablet and phone (to refine once desktop is approved) ---------- */
+@media (max-width: 1199px) {
+  .site-footer__logo { grid-column: 1 / -1; margin-bottom: var(--space-8); }
+  .site-footer__col--site { grid-column: 1 / span 6; grid-row: 2; }
+  .site-footer__col--company { grid-column: 7 / span 6; grid-row: 2; }
+  .site-footer__offices { grid-column: 1 / -1; grid-row: 3; }
+  .site-footer__office:nth-child(1) { grid-column: 1 / span 6; }
+  .site-footer__office:nth-child(2) { grid-column: 7 / span 6; }
+  .site-footer__bar { grid-row: 4; }
+}
+@media (max-width: 809px) {
+  .site-footer__link { font-size: 26px; }
+  .site-footer__office:nth-child(n) { grid-column: 1 / -1; }
+  .site-footer__offices { row-gap: var(--space-6); }
+  .site-footer__bar { flex-direction: column; align-items: flex-start; justify-content: center; height: auto; padding-block: var(--space-5); }
+}
