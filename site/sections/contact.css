@@ -14,9 +14,9 @@
 
 .contact {
   --nt-size: 32px;          /* the note's type */
-  --nt-words: #6b6b6b;      /* the letter's own words: 5.3:1 on white */
-  --nt-line: #cccccc;       /* a blank's underline */
-  --nt-place: #a6a6a6;      /* a blank not filled in yet */
+  --nt-words: var(--color-ink); /* the letter's own words: ink, so the eye goes to the note (they were #6b6b6b) */
+  --nt-line: #bdbdbd;       /* a blank's underline (was #cccccc) */
+  --nt-place: #767676;      /* a blank not filled in yet: 4.5:1 on white, still lighter than what is written (was #a6a6a6) */
   --nt-soft: #6e6e6e;       /* small labels on the left */
   --nt-rule: rgba(21, 21, 21, 0.12);
   /* Little bottom padding: the page ends on a hairline just above the footer, as the About page's
@@ -98,7 +98,9 @@
 .office__address { margin-top: 2px; font-style: normal; font-size: 16px; line-height: 1.5; color: var(--color-text-muted); }
 
 /* ---------- Right: the note ---------- */
-.contact__main { grid-column: 5 / -1; min-width: 0; }
+/* 32px more room between the left column and the note, so the note doesn't crowd the lede */
+.contact__main { grid-column: 5 / -1; min-width: 0; padding-left: var(--space-6); }
+[data-sheet="card"] .contact__main { padding-left: 0; }
 
 .note-form {
   font-size: var(--nt-size);
@@ -313,7 +315,7 @@
   .contact__head { margin-bottom: var(--space-6); }
   .contact__aside { display: contents; }
   .contact__lede { grid-column: 1 / span 9; grid-row: 2; max-width: 30em; margin-bottom: var(--space-8); font-size: 19px; }
-  .contact__main { grid-column: 1 / -1; grid-row: 3; }
+  .contact__main { grid-column: 1 / -1; grid-row: 3; padding-left: 0; }
   /* A hairline over the note, the same as the one over its sign-off: the same rule, the lede's
      margin above it (as the sign-off's margin) and 28px under it (as the sign-off); it dims
      with the sign-off until a path is chosen, so the two lines always match */
