@@ -106,7 +106,7 @@
   ],
   "advisors_note": "Senior advisors are independent professionals, not employees or registered representatives of Arcovia unless stated otherwise.",
   "team_list": {
-    "_note": "Team page, section 4 of the brief: the Arcovia team, a clean list (name, role, scope), verbatim and in the brief's order. Shown as the table in team.html (SECTION:team-list); keep the two in step. Roles here are the brief's for this list and can differ from the titles above (Koyuki).",
+    "_note": "Team page, section 4 of the brief: the Arcovia team, a clean list (name, role, scope), verbatim and in the brief's order. Shown as the table in team.html (SECTION:team-list); keep the two in step. Roles here are the brief's for this list and can differ from the titles above (Caroline, Koyuki). In Framer these rows live in the Team CMS collection (fields In team table, Table order, Table role, Scope); Bianca, Omar, Izabela, Boston and Saanya are items there with Category and Sub-category Team, and have no entry in people[] here yet.",
     "title": "The Arcovia team",
     "rows": [
       { "name": "Colin Pham", "role": "Founder & CEO", "scope": "Firm, capital and investor strategy; major relationships and mandates" },
