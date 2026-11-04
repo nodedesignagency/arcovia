@@ -149,11 +149,9 @@
    the right-hand column as rows like the masthead's links
    (the user's reference): hairlines above, between and below, medium type in ink, an arrow
    at the end. Hover (the user's spec, kept simple): no fill; the row takes 12px of padding
-   at both ends (the label and the arrow box slide 12px in) and the arrow swaps: a fixed 18px box holds two arrows on a strip, aligned right at rest
-   (the right arrow shows); on hover the strip aligns left, so that arrow slides out to the
-   right while the other slides in from the left. (Set aside: everything centred with the
-   paths three across, commit 7fc639f; 3D hovers after the user's references, a box rolling
-   about its middle, then a fold: the user found them bad.) */
+   at both ends (the label and the arrow slide 12px in), nothing else. (Set aside: everything
+   centred with the paths three across, commit 7fc639f; 3D hovers after the user's
+   references, a box rolling about its middle, then a fold; a white wash; a two-arrow swap.) */
 .path-rows { display: none; }
 .hero__lede--under { display: none; }
 
@@ -188,42 +186,28 @@
   outline-offset: 2px;
 }
 /* On hover the row takes 12px of padding at both ends: the label slides 12px in from the
-   left and the arrow box 12px in from the right (transforms, so nothing re-lays out) */
+   left and the arrow 12px in from the right (transforms, so nothing re-lays out) */
 .path-rows__label {
   white-space: nowrap;
   transition: transform 420ms var(--ease-out);
 }
-/* The arrow swap: a fixed box, two arrows on a strip (12px apart, so one has left before
-   the other arrives); right-aligned at rest, left-aligned on hover */
-.path-rows__arrows {
+.path-rows__arrow {
   flex: none;
   width: 18px;
   height: 18px;
   margin-left: auto;
-  overflow: hidden;
   transition: transform 420ms var(--ease-out);
 }
-.path-rows__arrows-track {
-  display: flex;
-  gap: 12px;
-  width: max-content;
-  transform: translateX(-30px);   /* right-aligned: the right arrow shows */
-  transition: transform 420ms var(--ease-out);
-}
-.path-rows__arrow { flex: none; width: 18px; height: 18px; }
 
 .path-rows__option:focus-visible .path-rows__label { transform: translateX(12px); }
-.path-rows__option:focus-visible .path-rows__arrows { transform: translateX(-12px); }
-.path-rows__option:focus-visible .path-rows__arrows-track { transform: translateX(0); }
+.path-rows__option:focus-visible .path-rows__arrow { transform: translateX(-12px); }
 @media (hover: hover) {
   .path-rows__option:hover .path-rows__label { transform: translateX(12px); }
-  .path-rows__option:hover .path-rows__arrows { transform: translateX(-12px); }
-  .path-rows__option:hover .path-rows__arrows-track { transform: translateX(0); }   /* left-aligned */
+  .path-rows__option:hover .path-rows__arrow { transform: translateX(-12px); }
 }
 @media (prefers-reduced-motion: reduce) {
   .path-rows__label,
-  .path-rows__arrows,
-  .path-rows__arrows-track { transition: none; }
+  .path-rows__arrow { transition: none; }
 }
 
 @media (max-width: 1199px) {
