@@ -1,0 +1,345 @@
+/* ==========================================================================
+   SECTION: contact — the Contact page
+   After the user's reference: a large headline top left, then two columns on
+   the 12-column grid. Left (columns 1–3): the line from the brief, direct
+   email and the two offices with their local time; it stays in view while you
+   write. Right (columns 5–12): the form, written as a short note on the open
+   white page. The letter's own words are grey; what you write in is ink.
+   The note's first sentence is the path: "I'm [raising capital] [an investor]
+   …", five large pills in the line. Choosing one folds the others away so the
+   sentence reads on; clicking the chosen pill (or its up-down chevrons, the
+   site's "pick one of several" icon) opens them again.
+   ?sheet=card puts the note back on a floating white sheet.
+   Uses shared tokens and form parts (.check, .trap) from styles.css.
+   ========================================================================== */
+
+.contact {
+  --nt-size: 32px;          /* the note's type */
+  --nt-words: #6b6b6b;      /* the letter's own words: 5.3:1 on white */
+  --nt-line: #cccccc;       /* a blank's underline */
+  --nt-place: #a6a6a6;      /* a blank not filled in yet */
+  --nt-soft: #6e6e6e;       /* small labels on the left */
+  --nt-rule: rgba(21, 21, 21, 0.12);
+  --nt-fold: 520ms;         /* pills folding away */
+  padding: calc(var(--header-h) + var(--space-8)) 0 var(--space-10);
+}
+
+.contact__grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--grid-gap);
+  align-items: start;
+}
+
+/* ---------- Headline ---------- */
+.contact__head {
+  grid-column: 1 / -1;
+  display: grid;
+  justify-items: start;
+  gap: 22px;
+  margin-bottom: 80px;
+}
+.contact__title {
+  /* A share of the grid's width, so it sets the same way at every desktop width */
+  font-size: calc((min(100vw, var(--container-max)) - 2 * var(--gutter)) * 0.07);
+  font-weight: var(--weight-medium);
+  line-height: 1;
+  letter-spacing: -0.034em;
+  color: var(--color-ink);
+}
+
+/* ---------- Left: the line, direct email, offices ---------- */
+.contact__aside {
+  grid-column: 1 / span 3;
+  position: sticky;
+  top: calc(var(--mh-labels) + var(--mh-compact) + 32px);
+  display: grid;
+  gap: var(--space-7);
+  /* the lede's first line sits on the note's first line */
+  padding-top: calc((var(--nt-size) * 1.6 - 18px * 1.55) / 2);
+}
+.contact__lede {
+  max-width: 20em;
+  font-size: 18px;
+  line-height: 1.55;
+  color: var(--color-text);
+  text-wrap: pretty;
+}
+.contact__block { padding-top: var(--space-5); border-top: 1px solid var(--nt-rule); }
+.contact__list { display: grid; gap: var(--space-4); margin: 0; }
+.contact__list dt { font-size: 14px; line-height: 1.4; color: var(--nt-soft); }
+.contact__list dd { margin: 2px 0 0; font-size: 17px; font-weight: var(--weight-medium); line-height: 1.45; }
+.contact__list a {
+  color: var(--color-ink);
+  background: linear-gradient(currentColor, currentColor) left bottom / 0 1px no-repeat;
+  transition: background-size var(--dur-base) var(--ease-out);
+}
+@media (hover: hover) { .contact__list a:hover { background-size: 100% 1px; } }
+
+.contact__offices { display: grid; gap: var(--space-5); }
+.office__city {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-4);
+  font-size: 17px;
+  font-weight: var(--weight-medium);
+  line-height: 1.45;
+  color: var(--color-ink);
+}
+.office__time { font-size: 13px; font-weight: var(--weight-medium); color: var(--nt-soft); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.office__address { margin-top: 2px; font-style: normal; font-size: 16px; line-height: 1.5; color: var(--color-text-muted); }
+
+/* ---------- Right: the note ---------- */
+.contact__main { grid-column: 5 / -1; min-width: 0; }
+
+.note-form {
+  font-size: var(--nt-size);
+  line-height: 1.6;
+  letter-spacing: -0.014em;
+  color: var(--nt-words);
+}
+.note { scroll-margin-top: 140px; }
+
+/* The path, in the first sentence */
+.note-who {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-top: 4px;
+}
+.note-who__lead { margin-right: 14px; }
+.note-who__opt {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  height: 56px;
+  max-width: var(--w, 34em);   /* its own width, measured in contact.js, so it folds smoothly */
+  margin: 5px 8px 5px 0;
+  padding: 0 22px 0 16px;
+  border-radius: var(--radius-pill);
+  background: var(--color-white);
+  box-shadow: inset 0 0 0 1px rgba(21, 21, 21, 0.16);
+  font-size: 20px;
+  font-weight: var(--weight-medium);
+  letter-spacing: -0.005em;
+  line-height: 1;
+  color: var(--color-ink);
+  white-space: nowrap;
+  overflow: hidden;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  transition:
+    max-width var(--nt-fold) var(--mh-ease),
+    padding var(--nt-fold) var(--mh-ease),
+    margin var(--nt-fold) var(--mh-ease),
+    opacity calc(var(--nt-fold) * 0.5) var(--ease-out),
+    visibility 0s,
+    background-color var(--dur-fast) var(--ease-out),
+    box-shadow var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out);
+}
+.note-who__opt input { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+.note-who__icon { flex: none; width: 24px; height: 24px; color: var(--color-text); transition: color var(--dur-fast) var(--ease-out); }
+/* Up-down chevrons on the chosen pill once folded: "change" */
+.note-who__chev {
+  flex: none;
+  width: 0;
+  height: 16px;
+  margin-left: -10px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0;
+  transition: width var(--nt-fold) var(--mh-ease), margin var(--nt-fold) var(--mh-ease), opacity var(--dur-base) var(--ease-out);
+}
+.note-who__end { width: 0; overflow: hidden; opacity: 0; transition: opacity var(--dur-base) var(--ease-out); }
+
+.note-who__opt:has(:checked) {
+  background: var(--color-ink);
+  box-shadow: inset 0 0 0 1px var(--color-ink);
+  color: var(--color-white);
+}
+.note-who__opt:has(:checked) .note-who__icon { color: var(--color-white); }
+.note-who__opt:has(:focus-visible) { outline: 2px solid var(--color-ink); outline-offset: 3px; }
+@media (hover: hover) {
+  .note-who__opt:hover:not(:has(:checked)) { box-shadow: inset 0 0 0 1px rgba(21, 21, 21, 0.55); }
+  .note-who__opt:hover:has(:checked) { background: #333333; box-shadow: inset 0 0 0 1px #333333; }
+}
+.note-who.is-invalid .note-who__opt { box-shadow: inset 0 0 0 1.5px var(--color-ink); }
+
+/* Folded: only the chosen pill stays, then a full stop, and the sentence reads on */
+.is-chosen:not(.is-picking) .note-who__opt:not(:has(:checked)) {
+  max-width: 0;
+  margin-inline: 0;
+  padding-inline: 0;
+  opacity: 0;
+  visibility: hidden;
+  box-shadow: none;
+  transition:
+    max-width var(--nt-fold) var(--mh-ease),
+    padding var(--nt-fold) var(--mh-ease),
+    margin var(--nt-fold) var(--mh-ease),
+    opacity calc(var(--nt-fold) * 0.4) var(--ease-out),
+    visibility 0s linear var(--nt-fold);
+}
+.is-chosen:not(.is-picking) .note-who__opt:has(:checked) { max-width: calc(var(--w, 34em) + 24px); margin-right: 4px; padding-right: 18px; }
+.is-chosen:not(.is-picking) .note-who__opt:has(:checked) .note-who__chev { width: 16px; margin-left: 2px; opacity: 0.7; }
+.is-chosen:not(.is-picking) .note-who__end { width: auto; opacity: 1; transition-delay: calc(var(--nt-fold) * 0.6); }
+
+/* The path's questions */
+.note__body { margin: 14px 0 0; padding: 0; border: 0; min-width: 0; }
+.note__body:not([hidden]) { animation: note-in 560ms var(--ease-out) both; }
+@keyframes note-in { from { opacity: 0; transform: translateY(10px); } }
+.note__body > * + * { margin-top: 24px; }
+
+/* A blank: an underline the width of what is written in it (contact.js) */
+.note-input {
+  display: inline-block;
+  max-width: 100%;
+  margin: 0;
+  padding: 0 1px;
+  border: 0;
+  border-bottom: 1.5px solid var(--nt-line);
+  border-radius: 0;
+  background: none;
+  font: inherit;
+  letter-spacing: inherit;
+  line-height: 1.3;
+  color: var(--color-ink);
+  vertical-align: baseline;
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+  transition: border-color var(--dur-base) var(--ease-out);
+}
+.note-input::placeholder { color: var(--nt-place); opacity: 1; }
+.note-input:focus { border-bottom-color: var(--color-ink); }
+.note-input:not(:placeholder-shown):not(:focus) { border-bottom-color: #e2e2e2; }
+.note-input.is-invalid { border-bottom: 2px dashed var(--color-ink); }
+
+/* Choices in the sentence: a quiet chevron after the word */
+.note-select {
+  padding-right: 0.85em;
+  cursor: pointer;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4 6l4 4 4-4' fill='none' stroke='%23151515' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") right 1px center / 0.5em no-repeat;
+}
+.note-select.is-empty { color: var(--nt-place); border-bottom-color: var(--nt-line); }
+.note-select option { color: var(--color-ink); font-size: 16px; }
+
+/* A question with room for a few lines */
+.note__block { display: block; }
+.note__ask { display: block; color: var(--nt-words); }
+.note__ask::after { content: ":"; }
+.note-area {
+  display: block;
+  width: 100%;
+  min-height: 1.6em;
+  margin: 4px 0 0;
+  padding: 0 0 8px;
+  border: 0;
+  border-bottom: 1.5px solid var(--nt-line);
+  border-radius: 0;
+  background: none;
+  font: inherit;
+  font-size: 24px;
+  line-height: 1.55;
+  letter-spacing: -0.008em;
+  color: var(--color-ink);
+  resize: none;
+  overflow: hidden;
+  outline: none;
+  transition: border-color var(--dur-base) var(--ease-out);
+}
+.note-area::placeholder { color: var(--nt-place); opacity: 1; }
+.note-area:focus { border-bottom-color: var(--color-ink); }
+.note-area:not(:placeholder-shown):not(:focus) { border-bottom-color: #e2e2e2; }
+.note__block .field-count {
+  display: block;
+  margin-top: 8px;
+  font-size: 13px;
+  line-height: 1.4;
+  letter-spacing: 0;
+  color: #8a8a8a;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+/* Sign-off: consent and send, under a hairline */
+.note__foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-6);
+  margin-top: var(--space-8);
+  padding-top: 28px;
+  border-top: 1px solid var(--nt-rule);
+  letter-spacing: 0;
+  transition: opacity var(--dur-slow) var(--ease-out);
+}
+.js .note-form:not(.is-chosen) .note__foot { opacity: 0.4; }
+.note__foot .check { max-width: 30em; font-size: 15px; line-height: 1.5; column-gap: 14px; }
+.note__foot .check__box { margin-top: 1px; }
+.note__send { flex: none; --btn-h: 52px; padding: 0 28px; font-size: 16px; }
+.note__send .btn__icon { transition: transform var(--dur-base) var(--ease-out); }
+@media (hover: hover) { .note__send:hover .btn__icon { transform: translateX(3px); } }
+.note-form.is-sending .note__send { opacity: 0.7; pointer-events: none; }
+.note__status { font-size: 14px; font-weight: var(--weight-medium); line-height: 1.5; letter-spacing: 0; color: var(--color-ink); }
+.note__status:not(:empty) { margin-top: var(--space-5); }
+
+/* ---------- Confirmation, in place of the note ---------- */
+.note-done { padding-top: 8px; outline: none; animation: note-in 620ms var(--ease-out) both; }
+.note-done__mark { width: 44px; height: auto; fill: var(--color-ink); }
+.note-done__text {
+  max-width: 16em;
+  margin-top: var(--space-6);
+  font-size: 44px;
+  font-weight: var(--weight-medium);
+  line-height: 1.15;
+  letter-spacing: -0.022em;
+  color: var(--color-ink);
+  text-wrap: balance;
+}
+.note-done__meta { margin-top: var(--space-5); font-size: var(--fs-lede); color: var(--color-text-muted); }
+.note-done__again {
+  margin-top: var(--space-7);
+  font-size: 16px;
+  font-weight: var(--weight-medium);
+  color: var(--color-ink);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+}
+
+/* ---------- ?sheet=card: the note on a floating white sheet ---------- */
+[data-sheet="card"] .contact { --nt-size: 28px; }
+[data-sheet="card"] .note-form,
+[data-sheet="card"] .note-done {
+  padding: 56px 64px 0;
+  border-radius: 28px;
+  background: var(--color-white);
+  box-shadow: var(--shadow-menu);
+}
+[data-sheet="card"] .note-done { padding-bottom: 56px; }
+[data-sheet="card"] .note__foot { margin: var(--space-7) -64px 0; padding: 22px 64px 24px; border-top-color: rgba(17, 17, 17, 0.08); }
+[data-sheet="card"] .note__status:not(:empty) { margin-top: 0; padding-bottom: 24px; }
+[data-sheet="card"] .contact__aside { padding-top: 56px; }
+
+/* ---------- Tablet and phone (to refine once desktop is approved) ---------- */
+@media (max-width: 1199px) {
+  .contact { --nt-size: 26px; }
+  .contact__title { font-size: 72px; }
+  .contact__aside { position: static; grid-column: 1 / -1; grid-row: 3; margin-top: var(--space-9); padding-top: 0; }
+  .contact__main { grid-column: 1 / -1; }
+  .note-who__opt { font-size: 18px; height: 50px; }
+  .note__foot { flex-direction: column; align-items: flex-start; }
+}
+@media (max-width: 809px) {
+  .contact { --nt-size: 22px; }
+  .contact__title { font-size: 44px; }
+  .note-area { font-size: 20px; }
+}

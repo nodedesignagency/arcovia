@@ -1,14 +1,16 @@
-/* Arcovia — contact form (used by both draft versions: Ledger and Note)
+/* Arcovia — contact form
 
-   Step 1 picks a path: the radio "tag", whose values are the GoHighLevel tags
-   (founder, investor, institution, partner-press, talent). The chosen path's
-   fieldset is switched on; the others are disabled, so they neither validate
-   nor send. Every form saves the visit source (UTM tags, first page, referrer),
-   has a hidden spam trap and needs the Privacy Policy box ticked.
+   The note's first sentence picks a path: the radio "tag", whose values are the
+   GoHighLevel tags (founder, investor, institution, partner-press, talent).
+   Choosing one folds the other pills away (.is-chosen); clicking the chosen pill,
+   or pressing a key on it, opens them again (.is-picking). The chosen path's
+   fieldset is switched on; the others are disabled, so they neither validate nor
+   send. Every note saves the visit source (UTM tags, first page, referrer), has a
+   hidden spam trap and needs the Privacy Policy box ticked.
 
    Sending: data-endpoint on the <form> takes the GoHighLevel webhook URL (the
-   last step, once the client gives it). Until then, the form logs what it
-   would send to the console and shows the confirmation. */
+   last step, once the client gives it). Until then, the form logs what it would
+   send to the console and shows the confirmation. */
 (function () {
   "use strict";
 
@@ -26,7 +28,7 @@
     return visit;
   }
 
-  // Blanks in the note grow with what is written in them
+  // Blanks grow with what is written in them
   var ctx = document.createElement("canvas").getContext("2d");
   function fit(el) {
     if (!el.getClientRects().length) return; // not shown
@@ -67,7 +69,8 @@
   function initForm(form) {
     var scope = form.closest("[data-contact]") || form.parentNode;
     var done = scope.querySelector("[data-contact-done]");
-    var paths = form.querySelectorAll('input[name="tag"]');
+    var paths = Array.prototype.slice.call(form.querySelectorAll('input[name="tag"]'));
+    var who = form.querySelector(".note-who");
     var groups = form.querySelectorAll("[data-path-fields]");
     var afterPath = form.querySelectorAll("[data-after-path]");
     var status = form.querySelector("[data-status]");
@@ -76,7 +79,7 @@
     var submitText = submitLabel ? submitLabel.textContent : "";
     var memory = {};          // what was typed, so it follows you to another path
     var started = Date.now();
-    var pointerPick = false;  // only scroll after a click, not while arrowing through
+    var byPointer = false;    // a click folds the pills at once; arrow keys leave them open
 
     // Visit source into the hidden fields
     var visit = readVisit();
@@ -93,8 +96,19 @@
     }
 
     function refresh() {
+      // Each pill folds from its own width, so they all fold at the same pace
+      if (who) who.querySelectorAll(".note-who__opt").forEach(function (opt) {
+        if (!opt.getClientRects().length) return;
+        var picking = form.classList.contains("is-picking") || !form.classList.contains("is-chosen");
+        if (picking || opt.querySelector(":checked")) opt.style.setProperty("--w", opt.scrollWidth + 2 + "px");
+      });
       form.querySelectorAll("[data-autosize]").forEach(fit);
       form.querySelectorAll("textarea[data-autogrow]").forEach(grow);
+    }
+
+    function setPicking(open) {
+      if (open) refresh();
+      form.classList.toggle("is-picking", open);
     }
 
     function setPath(value, fromUser) {
@@ -115,21 +129,46 @@
         });
       });
       afterPath.forEach(function (el) { el.inert = !value; });
-
-      var chosen = form.querySelector('input[name="tag"]:checked');
-      var name = chosen ? chosen.closest("label").querySelector("[data-path-name]") : null;
-      form.querySelectorAll("[data-path-label]").forEach(function (el) { el.textContent = name ? name.textContent : ""; });
       refresh();
 
       // The first time, bring the questions into view if they open below the fold
       if (value && fromUser && firstTime) {
-        var target = form.querySelector("[data-reveal-target]") || form.querySelector('[data-step="details"] .ledger-head');
+        var target = form.querySelector("[data-path-fields]:not([hidden])");
         if (!target) return;
-        var top = target.getBoundingClientRect().top;
-        if (top > window.innerHeight * 0.62) {
-          window.scrollTo({ top: window.scrollY + top - 132, behavior: reduceMotion ? "auto" : "smooth" });
-        }
+        setTimeout(function () {
+          var top = target.getBoundingClientRect().top;
+          if (top > window.innerHeight * 0.7) {
+            window.scrollTo({ top: window.scrollY + top - window.innerHeight * 0.35, behavior: reduceMotion ? "auto" : "smooth" });
+          }
+        }, 120);
       }
+    }
+
+    /* ---------- The path pills ---------- */
+    if (who) {
+      who.querySelectorAll(".note-who__opt").forEach(function (opt) {
+        var input = opt.querySelector("input");
+        opt.addEventListener("pointerdown", function () { byPointer = true; });
+        // The label's own click comes first, before the radio changes: if this pill was
+        // already the chosen one and the row is folded, open it so another can be picked
+        opt.addEventListener("click", function (e) {
+          if (e.target === input) return;
+          if (input.checked && form.classList.contains("is-chosen") && !form.classList.contains("is-picking")) {
+            setPicking(true);
+          }
+        });
+      });
+      who.addEventListener("keydown", function (e) {
+        byPointer = false;
+        var folded = form.classList.contains("is-chosen") && !form.classList.contains("is-picking");
+        var keys = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", " ", "Enter"];
+        if (folded && keys.indexOf(e.key) > -1) { e.preventDefault(); setPicking(true); return; }
+        if (e.key === "Enter") { e.preventDefault(); if (current()) setPicking(false); }
+        if (e.key === "Escape" && current()) setPicking(false);
+      });
+      who.addEventListener("focusout", function (e) {
+        if (current() && !(e.relatedTarget && who.contains(e.relatedTarget))) setPicking(false);
+      });
     }
 
     /* ---------- Errors (monochrome: an ink line and a short message) ---------- */
@@ -143,19 +182,6 @@
     function showError(h) {
       h.classList.add("is-invalid");
       controls(h).forEach(function (c) { c.setAttribute("aria-invalid", "true"); });
-      var msg = h.getAttribute("data-error");
-      if (!msg) return;
-      var first = controls(h)[0];
-      if (first && first.validity && first.validity.typeMismatch && h.getAttribute("data-error-format")) msg = h.getAttribute("data-error-format");
-      var p = h.querySelector(":scope > .field-error");
-      if (!p) {
-        p = document.createElement("p");
-        p.className = "field-error";
-        p.id = "err-" + Math.random().toString(36).slice(2, 9);
-        h.appendChild(p);
-      }
-      p.textContent = msg;
-      controls(h).forEach(function (c) { c.setAttribute("aria-describedby", p.id); });
     }
     function clearError(h) {
       h.classList.remove("is-invalid");
@@ -164,25 +190,27 @@
     function say(text) { if (status) status.textContent = text; }
 
     function summary(bad) {
-      // Version B names what is missing; version A marks each row and says so once
-      var names = [], alone = [], unnamed = 0;
+      if (!current()) return "Choose who you are to begin your note.";
+      var names = [], alone = [];
       bad.forEach(function (h) {
         var n = h.getAttribute("data-error-name");
         var a = h.getAttribute("data-error-alone");
-        if (n) names.push(n); else if (a) alone.push(a); else unnamed++;
+        if (n) names.push(n); else if (a) alone.push(a);
       });
-      if (!current()) return "Choose who you are to begin.";
-      if (unnamed) return "Please complete the rows marked above.";
       return ((names.length ? "Still to fill in: " + listJoin(names) + ". " : "") + alone.join(" ")).trim();
     }
 
-    /* ---------- Events ---------- */
-    form.addEventListener("pointerdown", function (e) { pointerPick = !!e.target.closest('label:has(input[name="tag"])'); });
-    form.addEventListener("keydown", function () { pointerPick = false; });
-
+    /* ---------- Typing ---------- */
     function onEdit(e) {
       var el = e.target;
-      if (el.name === "tag") { setPath(el.value, pointerPick); clearError(holder(el)); say(""); return; }
+      if (el.name === "tag") {
+        if (e.type !== "change") return;
+        setPath(el.value, byPointer);
+        if (byPointer) setPicking(false); else setPicking(true);
+        clearError(holder(el));
+        say("");
+        return;
+      }
       if (el.name && el.type !== "radio" && el.type !== "checkbox" && el.type !== "hidden") memory[el.name] = el.value;
       if (el.hasAttribute("data-autosize")) fit(el);
       if (el.hasAttribute("data-autogrow")) grow(el);
@@ -193,16 +221,7 @@
     form.addEventListener("input", onEdit);
     form.addEventListener("change", onEdit);
 
-    form.querySelectorAll("[data-change]").forEach(function (a) {
-      a.addEventListener("click", function (e) {
-        e.preventDefault();
-        var head = document.getElementById(a.getAttribute("href").slice(1));
-        if (head) head.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" });
-        var c = form.querySelector('input[name="tag"]:checked');
-        if (c) c.focus({ preventScroll: true });
-      });
-    });
-
+    /* ---------- Sending ---------- */
     form.addEventListener("submit", function (e) {
       e.preventDefault();
       if (form.classList.contains("is-sending")) return;
@@ -226,7 +245,7 @@
         say(summary(bad));
         var first = controls(bad[0])[0];
         if (first) {
-          (first.closest(".ledger-row, .note-paths, .ledger-paths, .check") || first).scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "center" });
+          (first.closest(".note-who, .check") || first).scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "center" });
           first.focus({ preventScroll: true });
         }
         return;
@@ -240,7 +259,7 @@
       new FormData(form).forEach(function (value, key) {
         value = String(value).trim();
         if (!value) return;
-        data[key] = data[key] ? data[key] + ", " + value : value; // several stages become one line
+        data[key] = data[key] ? data[key] + ", " + value : value;
       });
       ["website", "linkedin_url"].forEach(function (k) {
         if (data[k] && !/^https?:\/\//i.test(data[k])) data[k] = "https://" + data[k];
@@ -279,7 +298,7 @@
       form.hidden = true;
       done.hidden = false;
       done.focus({ preventScroll: true });
-      // Back to the top of the page when the thank-you fits on the first screen, under the headline
+      // Back to the top when the thank-you fits on the first screen, under the headline
       var top = window.scrollY + done.getBoundingClientRect().top;
       window.scrollTo({ top: top < window.innerHeight * 0.8 ? 0 : top - 180, behavior: reduceMotion ? "auto" : "smooth" });
     }
@@ -295,8 +314,8 @@
         say("");
         done.hidden = true;
         form.hidden = false;
+        form.classList.remove("is-picking");
         setPath("", false);
-        form.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" });
         paths[0].focus({ preventScroll: true });
       });
     }

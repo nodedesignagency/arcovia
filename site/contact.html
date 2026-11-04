@@ -13,14 +13,9 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap">
   <link rel="stylesheet" href="styles.css">
   <!-- One stylesheet per section, so a section can be approved and moved to main on its own -->
-  <link rel="stylesheet" href="sections/contact-ledger.css">
-  <link rel="stylesheet" href="sections/contact-note.css">
-  <!-- Draft only: two versions of the contact section. ?v=note shows version B, anything else version A -->
-  <script>document.documentElement.setAttribute("data-contact", /[?&]v=note\b/.test(location.search) ? "note" : "ledger");</script>
-  <style>
-    [data-contact="ledger"] .contact--note,
-    [data-contact="note"] .contact--ledger { display: none; }
-  </style>
+  <link rel="stylesheet" href="sections/contact.css">
+  <!-- Review switch: ?sheet=card sets the note on a floating white sheet -->
+  <script>if (/[?&]sheet=card\b/.test(location.search)) document.documentElement.setAttribute("data-sheet", "card");</script>
 </head>
 <body class="page--white">
 
@@ -112,408 +107,111 @@
 
   <main id="main">
 
-    <!-- SECTION:contact-ledger START · styles: sections/contact-ledger.css · scripts: contact.js
-         Version A "Ledger". The form reads like a term sheet: ruled rows, the question on the
-         left, the answer on the right, under three numbered steps. 01 picks a path from five
-         large rows; 02 opens that path's questions; 03 sends.
-         One <form>. The radio "tag" holds the GoHighLevel tag. Each path's questions sit in
-         their own fieldset; contact.js switches the chosen one on and disables the rest, so only
-         it validates and sends. data-endpoint takes the GoHighLevel webhook (the last step). -->
-    <section class="contact contact--ledger" data-contact aria-labelledby="la-title">
-      <div class="container">
-        <div class="ledger-intro">
-          <div class="ledger-intro__heading">
-            <p class="chip">Contact</p>
-            <h1 class="ledger-intro__title" id="la-title">Start a conversation</h1>
-          </div>
-          <!-- [TO CONFIRM] "within two working days" -->
-          <p class="ledger-intro__lede">Tell us who you are and what you need. The right person on our team will reply within two working days.</p>
-        </div>
-
-        <form class="ledger" data-contact-form data-endpoint="" action="#" method="post" novalidate>
-
-          <!-- 01 · Who are you? Five large buttons (native radios, so arrow keys work) -->
-          <div class="ledger-step" data-step="paths">
-            <div class="ledger-head" id="la-step-1">
-              <span class="ledger-head__num">01</span>
-              <h2 class="ledger-head__title" id="la-paths-title">Who are you?</h2>
-            </div>
-            <div class="ledger-paths" role="radiogroup" aria-labelledby="la-paths-title" data-field data-error="Choose one to continue">
-              <label class="ledger-path">
-                <input class="ledger-path__input" type="radio" name="tag" value="founder" required>
-                <svg class="ledger-path__icon" aria-hidden="true"><use href="#icon-raise"/></svg>
-                <span class="ledger-path__label" data-path-name>I’m raising capital</span>
-                <span class="ledger-path__meta">Founders and funds raising <span class="nowrap">$5M–$500M+</span></span>
-                <span class="ledger-path__mark" aria-hidden="true"></span>
-              </label>
-              <label class="ledger-path">
-                <input class="ledger-path__input" type="radio" name="tag" value="investor">
-                <svg class="ledger-path__icon" aria-hidden="true"><use href="#icon-invest"/></svg>
-                <span class="ledger-path__label" data-path-name>I’m an investor</span>
-                <span class="ledger-path__meta">Family offices, VCs, funds and LPs</span>
-                <span class="ledger-path__mark" aria-hidden="true"></span>
-              </label>
-              <label class="ledger-path">
-                <input class="ledger-path__input" type="radio" name="tag" value="institution">
-                <svg class="ledger-path__icon" aria-hidden="true"><use href="#icon-institution"/></svg>
-                <span class="ledger-path__label" data-path-name>I represent an institution</span>
-                <span class="ledger-path__meta">Institutions and sovereign capital</span>
-                <span class="ledger-path__mark" aria-hidden="true"></span>
-              </label>
-              <label class="ledger-path">
-                <input class="ledger-path__input" type="radio" name="tag" value="partner-press">
-                <svg class="ledger-path__icon" aria-hidden="true"><use href="#icon-press"/></svg>
-                <span class="ledger-path__label" data-path-name>Partnerships and press</span>
-                <span class="ledger-path__meta">Press, corporate partners and creative collaborators</span>
-                <span class="ledger-path__mark" aria-hidden="true"></span>
-              </label>
-              <label class="ledger-path">
-                <input class="ledger-path__input" type="radio" name="tag" value="talent">
-                <svg class="ledger-path__icon" aria-hidden="true"><use href="#icon-talent"/></svg>
-                <span class="ledger-path__label" data-path-name>Join the team or the Residency</span>
-                <span class="ledger-path__meta">Roles at Arcovia and places in the Residency</span>
-                <span class="ledger-path__mark" aria-hidden="true"></span>
-              </label>
-            </div>
-          </div>
-
-          <!-- 02 · About you. Name and email for everyone, then the chosen path's questions -->
-          <div class="ledger-step" data-step="details">
-            <div class="ledger-head">
-              <span class="ledger-head__num">02</span>
-              <h2 class="ledger-head__title">About you</h2>
-              <p class="ledger-head__aside ledger-head__aside--wait">Opens when you choose who you are</p>
-              <p class="ledger-head__aside ledger-head__aside--path"><span data-path-label></span><a class="ledger-head__change" href="#la-step-1" data-change>Change</a></p>
-            </div>
-            <div class="ledger-step__body" data-after-path>
-              <div class="ledger-step__inner">
-                <div class="ledger-rows">
-                  <div class="ledger-row" data-field data-error="Please add your name">
-                    <label class="ledger-row__label" for="la-full_name">Name</label>
-                    <div class="ledger-row__field"><input class="ledger-input" id="la-full_name" name="full_name" type="text" autocomplete="name" placeholder="Your full name" required></div>
-                  </div>
-                  <div class="ledger-row" data-field data-error="Please add your email" data-error-format="Please check this email address">
-                    <label class="ledger-row__label" for="la-email">Email</label>
-                    <div class="ledger-row__field"><input class="ledger-input" id="la-email" name="email" type="email" autocomplete="email" inputmode="email" placeholder="name@company.com" required></div>
-                  </div>
-
-                  <!-- Founder · tag: founder -->
-                  <fieldset class="ledger-fields" data-path-fields="founder">
-                    <legend class="visually-hidden">About your raise</legend>
-                    <div class="ledger-row" data-field data-error="Please add your company">
-                      <label class="ledger-row__label" for="la-company_name">Company</label>
-                      <div class="ledger-row__field"><input class="ledger-input" id="la-company_name" name="company_name" type="text" autocomplete="organization" placeholder="Company name" required></div>
-                    </div>
-                    <div class="ledger-row" data-field>
-                      <label class="ledger-row__label" for="la-website">Website <span class="ledger-row__opt">Optional</span></label>
-                      <div class="ledger-row__field"><input class="ledger-input" id="la-website" name="website" type="text" inputmode="url" autocomplete="url" placeholder="company.com"></div>
-                    </div>
-                    <div class="ledger-row" data-field>
-                      <label class="ledger-row__label" for="la-founder-role">Role <span class="ledger-row__opt">Optional</span></label>
-                      <div class="ledger-row__field"><input class="ledger-input" id="la-founder-role" name="role" type="text" autocomplete="organization-title" placeholder="Founder and CEO"></div>
-                    </div>
-                    <!-- [TO CONFIRM] stage options -->
-                    <div class="ledger-row" role="group" aria-labelledby="la-stage-l" data-field>
-                      <p class="ledger-row__label" id="la-stage-l">Stage <span class="ledger-row__opt">Optional</span></p>
-                      <div class="ledger-row__field choices">
-                        <label class="choice"><input type="radio" name="stage" value="Pre-seed"><span>Pre-seed</span></label>
-                        <label class="choice"><input type="radio" name="stage" value="Seed"><span>Seed</span></label>
-                        <label class="choice"><input type="radio" name="stage" value="Series A"><span>Series A</span></label>
-                        <label class="choice"><input type="radio" name="stage" value="Series B"><span>Series B</span></label>
-                        <label class="choice"><input type="radio" name="stage" value="Series C+"><span>Series C+</span></label>
-                        <label class="choice"><input type="radio" name="stage" value="Growth"><span>Growth</span></label>
-                      </div>
-                    </div>
-                    <div class="ledger-row" role="group" aria-labelledby="la-amount-l" data-field data-error="Please choose how much you are raising">
-                      <p class="ledger-row__label" id="la-amount-l">Amount raising</p>
-                      <div class="ledger-row__field choices">
-                        <label class="choice"><input type="radio" name="raise_amount" value="Under $5M" required><span>Under $5M</span></label>
-                        <label class="choice"><input type="radio" name="raise_amount" value="$5–25M"><span>$5–25M</span></label>
-                        <label class="choice"><input type="radio" name="raise_amount" value="$25–100M"><span>$25–100M</span></label>
-                        <label class="choice"><input type="radio" name="raise_amount" value="$100–500M"><span>$100–500M</span></label>
-                        <label class="choice"><input type="radio" name="raise_amount" value="$500M+"><span>$500M+</span></label>
-                      </div>
-                    </div>
-                    <div class="ledger-row" data-field>
-                      <label class="ledger-row__label" for="la-sector">Sector <span class="ledger-row__opt">Optional</span></label>
-                      <div class="ledger-row__field"><input class="ledger-input" id="la-sector" name="sector" type="text" placeholder="Fintech, climate, health…"></div>
-                    </div>
-                    <!-- [TO CONFIRM] timing options -->
-                    <div class="ledger-row" role="group" aria-labelledby="la-timing-l" data-field>
-                      <p class="ledger-row__label" id="la-timing-l">When the money must be in the bank <span class="ledger-row__opt">Optional</span></p>
-                      <div class="ledger-row__field choices">
-                        <label class="choice"><input type="radio" name="funds_needed_by" value="Within 3 months"><span>Within 3 months</span></label>
-                        <label class="choice"><input type="radio" name="funds_needed_by" value="Within 6 months"><span>Within 6 months</span></label>
-                        <label class="choice"><input type="radio" name="funds_needed_by" value="Within 12 months"><span>Within 12 months</span></label>
-                        <label class="choice"><input type="radio" name="funds_needed_by" value="No fixed date"><span>No fixed date</span></label>
-                      </div>
-                    </div>
-                    <div class="ledger-row" data-field>
-                      <label class="ledger-row__label" for="la-building">What you are building <span class="ledger-row__opt">Optional · a few lines</span></label>
-                      <div class="ledger-row__field"><textarea class="ledger-input ledger-input--area" id="la-building" name="building" rows="2" maxlength="600" placeholder="The company, the round, and what the money is for" data-autogrow></textarea></div>
-                    </div>
-                  </fieldset>
-
-                  <!-- Investor · tag: investor -->
-                  <fieldset class="ledger-fields" data-path-fields="investor">
-                    <legend class="visually-hidden">About your investing</legend>
-                    <div class="ledger-row" data-field data-error="Please add your firm">
-                      <label class="ledger-row__label" for="la-firm">Firm</label>
-                      <div class="ledger-row__field"><input class="ledger-input" id="la-firm" name="firm" type="text" autocomplete="organization" placeholder="Firm name" required></div>
-                    </div>
-                    <div class="ledger-row" role="group" aria-labelledby="la-itype-l" data-field>
-                      <p class="ledger-row__label" id="la-itype-l">Investor type <span class="ledger-row__opt">Optional</span></p>
-                      <div class="ledger-row__field choices">
-                        <label class="choice"><input type="radio" name="investor_type" value="Family office"><span>Family office</span></label>
-                        <label class="choice"><input type="radio" name="investor_type" value="Venture capital"><span>Venture capital</span></label>
-                        <label class="choice"><input type="radio" name="investor_type" value="Fund"><span>Fund</span></label>
-                        <label class="choice"><input type="radio" name="investor_type" value="LP"><span>LP</span></label>
-                        <label class="choice"><input type="radio" name="investor_type" value="Other"><span>Other</span></label>
-                      </div>
-                    </div>
-                    <div class="ledger-row" data-field>
-                      <label class="ledger-row__label" for="la-check_size">Typical check size <span class="ledger-row__opt">Optional</span></label>
-                      <div class="ledger-row__field"><input class="ledger-input" id="la-check_size" name="check_size" type="text" placeholder="Your usual range"></div>
-                    </div>
-                    <div class="ledger-row" role="group" aria-labelledby="la-stages-l" data-field>
-                      <p class="ledger-row__label" id="la-stages-l">Stages <span class="ledger-row__opt">Optional · choose any</span></p>
-                      <div class="ledger-row__field choices">
-                        <label class="choice"><input type="checkbox" name="stages" value="Pre-seed"><span>Pre-seed</span></label>
-                        <label class="choice"><input type="checkbox" name="stages" value="Seed"><span>Seed</span></label>
-                        <label class="choice"><input type="checkbox" name="stages" value="Series A"><span>Series A</span></label>
-                        <label class="choice"><input type="checkbox" name="stages" value="Series B"><span>Series B</span></label>
-                        <label class="choice"><input type="checkbox" name="stages" value="Series C+"><span>Series C+</span></label>
-                        <label class="choice"><input type="checkbox" name="stages" value="Growth"><span>Growth</span></label>
-                      </div>
-                    </div>
-                    <div class="ledger-row" data-field>
-                      <label class="ledger-row__label" for="la-sectors">Sectors <span class="ledger-row__opt">Optional</span></label>
-                      <div class="ledger-row__field"><input class="ledger-input" id="la-sectors" name="sectors" type="text" placeholder="The sectors you invest in"></div>
-                    </div>
-                    <div class="ledger-row" data-field>
-                      <label class="ledger-row__label" for="la-geographies">Geographies <span class="ledger-row__opt">Optional</span></label>
-                      <div class="ledger-row__field"><input class="ledger-input" id="la-geographies" name="geographies" type="text" placeholder="Where you invest"></div>
-                    </div>
-                    <div class="ledger-row" data-field>
-                      <label class="ledger-row__label" for="la-convinces_first">What convinces you first? <span class="ledger-row__opt">Optional</span></label>
-                      <div class="ledger-row__field"><textarea class="ledger-input ledger-input--area" id="la-convinces_first" name="convinces_first" rows="2" maxlength="600" placeholder="The team, the numbers, the market…" data-autogrow></textarea></div>
-                    </div>
-                    <div class="ledger-row" data-field>
-                      <label class="ledger-row__label" for="la-never_send">What should we never send you? <span class="ledger-row__opt">Optional</span></label>
-                      <div class="ledger-row__field"><textarea class="ledger-input ledger-input--area" id="la-never_send" name="never_send" rows="2" maxlength="600" placeholder="So we don’t waste your time" data-autogrow></textarea></div>
-                    </div>
-                  </fieldset>
-
-                  <!-- Institution · tag: institution -->
-                  <fieldset class="ledger-fields" data-path-fields="institution">
-                    <legend class="visually-hidden">About your institution</legend>
-                    <div class="ledger-row" data-field data-error="Please add your organisation">
-                      <label class="ledger-row__label" for="la-inst-organisation">Organisation</label>
-                      <div class="ledger-row__field"><input class="ledger-input" id="la-inst-organisation" name="organisation" type="text" autocomplete="organization" placeholder="Organisation name" required></div>
-                    </div>
-                    <div class="ledger-row" data-field>
-                      <label class="ledger-row__label" for="la-inst-role">Role <span class="ledger-row__opt">Optional</span></label>
-                      <div class="ledger-row__field"><input class="ledger-input" id="la-inst-role" name="role" type="text" autocomplete="organization-title" placeholder="Your role"></div>
-                    </div>
-                    <div class="ledger-row" data-field>
-                      <label class="ledger-row__label" for="la-country">Country <span class="ledger-row__opt">Optional</span></label>
-                      <div class="ledger-row__field"><input class="ledger-input" id="la-country" name="country" type="text" autocomplete="country-name" placeholder="Where you are based"></div>
-                    </div>
-                    <div class="ledger-row" role="group" aria-labelledby="la-topic-l" data-field>
-                      <p class="ledger-row__label" id="la-topic-l">Topic <span class="ledger-row__opt">Optional</span></p>
-                      <div class="ledger-row__field choices">
-                        <label class="choice"><input type="radio" name="topic" value="Sovereign or development capital"><span>Sovereign or development capital</span></label>
-                        <label class="choice"><input type="radio" name="topic" value="Infrastructure"><span>Infrastructure</span></label>
-                        <label class="choice"><input type="radio" name="topic" value="Corporate partnership"><span>Corporate partnership</span></label>
-                        <label class="choice"><input type="radio" name="topic" value="Other"><span>Other</span></label>
-                      </div>
-                    </div>
-                    <div class="ledger-row" data-field>
-                      <label class="ledger-row__label" for="la-inst-note">Short note <span class="ledger-row__opt">Optional</span></label>
-                      <div class="ledger-row__field"><textarea class="ledger-input ledger-input--area" id="la-inst-note" name="note" rows="2" maxlength="600" placeholder="What you have in mind" data-autogrow></textarea></div>
-                    </div>
-                  </fieldset>
-
-                  <!-- Partnerships and press · tag: partner-press -->
-                  <fieldset class="ledger-fields" data-path-fields="partner-press">
-                    <legend class="visually-hidden">About your request</legend>
-                    <div class="ledger-row" data-field data-error="Please add your organisation">
-                      <label class="ledger-row__label" for="la-pp-organisation">Organisation</label>
-                      <div class="ledger-row__field"><input class="ledger-input" id="la-pp-organisation" name="organisation" type="text" autocomplete="organization" placeholder="Publication, company or studio" required></div>
-                    </div>
-                    <div class="ledger-row" role="group" aria-labelledby="la-ptype-l" data-field data-error="Please choose one">
-                      <p class="ledger-row__label" id="la-ptype-l">Type</p>
-                      <div class="ledger-row__field choices">
-                        <label class="choice"><input type="radio" name="partner_type" value="Press" required><span>Press</span></label>
-                        <label class="choice"><input type="radio" name="partner_type" value="Corporate partner"><span>Corporate partner</span></label>
-                        <label class="choice"><input type="radio" name="partner_type" value="Creative collaborator"><span>Creative collaborator</span></label>
-                      </div>
-                    </div>
-                    <div class="ledger-row" data-field>
-                      <label class="ledger-row__label" for="la-pp-note">Short note <span class="ledger-row__opt">Optional</span></label>
-                      <div class="ledger-row__field"><textarea class="ledger-input ledger-input--area" id="la-pp-note" name="note" rows="2" maxlength="600" placeholder="What you’re working on, and any deadline" data-autogrow></textarea></div>
-                    </div>
-                  </fieldset>
-
-                  <!-- Team and Residency · tag: talent -->
-                  <fieldset class="ledger-fields" data-path-fields="talent">
-                    <legend class="visually-hidden">About you</legend>
-                    <div class="ledger-row" data-field data-error="Please add your LinkedIn profile">
-                      <label class="ledger-row__label" for="la-linkedin_url">LinkedIn URL</label>
-                      <div class="ledger-row__field"><input class="ledger-input" id="la-linkedin_url" name="linkedin_url" type="text" inputmode="url" placeholder="linkedin.com/in/your-name" required></div>
-                    </div>
-                    <div class="ledger-row" data-field>
-                      <label class="ledger-row__label" for="la-current_firm">Current firm <span class="ledger-row__opt">Optional</span></label>
-                      <div class="ledger-row__field"><input class="ledger-input" id="la-current_firm" name="current_firm" type="text" autocomplete="organization" placeholder="Where you work now"></div>
-                    </div>
-                    <div class="ledger-row" data-field>
-                      <label class="ledger-row__label" for="la-talent-note">Short note <span class="ledger-row__opt">Optional</span></label>
-                      <div class="ledger-row__field"><textarea class="ledger-input ledger-input--area" id="la-talent-note" name="note" rows="2" maxlength="600" placeholder="What you would bring, and whether it’s the team or the Residency" data-autogrow></textarea></div>
-                    </div>
-                  </fieldset>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- 03 · Send -->
-          <div class="ledger-step" data-step="send">
-            <div class="ledger-head">
-              <span class="ledger-head__num">03</span>
-              <h2 class="ledger-head__title">Send</h2>
-            </div>
-            <div class="ledger-step__body" data-after-path>
-              <div class="ledger-step__inner">
-                <div class="ledger-send">
-                  <div class="ledger-send__consent" data-field data-error="Please agree so we can reply">
-                    <label class="check">
-                      <input type="checkbox" name="consent" value="yes" required>
-                      <span class="check__box" aria-hidden="true"></span>
-                      <span class="check__text">I agree to the <a href="privacy.html">Privacy Policy</a> and to Arcovia keeping these details to reply to me.</span>
-                    </label>
-                  </div>
-                  <button class="btn btn--primary ledger-send__btn" type="submit"><span data-submit-label>Send</span><svg class="btn__icon" aria-hidden="true"><use href="#icon-arrow"/></svg></button>
-                  <p class="ledger-status" role="status" aria-live="polite" data-status></p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Visit source, saved with the lead (filled in by contact.js) -->
-          <input type="hidden" name="utm_source">
-          <input type="hidden" name="utm_medium">
-          <input type="hidden" name="utm_campaign">
-          <input type="hidden" name="utm_term">
-          <input type="hidden" name="utm_content">
-          <input type="hidden" name="landing_page">
-          <input type="hidden" name="referrer">
-          <!-- Spam trap: hidden from people, filled in by bots -->
-          <div class="trap" aria-hidden="true"><label>Leave this empty <input type="text" name="fax" tabindex="-1" autocomplete="off"></label></div>
-        </form>
-
-        <!-- Confirmation, in place of the form -->
-        <div class="ledger-done" data-contact-done hidden tabindex="-1">
-          <div class="ledger-head">
-            <span class="ledger-head__num">✓</span>
-            <h2 class="ledger-head__title">Sent</h2>
-          </div>
-          <div class="ledger-done__body">
-            <p class="ledger-done__text">Thank you. Your note is with the right person on our team.</p>
-            <p class="ledger-done__meta">We’ll reply to <span data-done-email></span>.</p>
-            <button class="ledger-done__again" type="button" data-contact-again>Send another note</button>
-          </div>
-        </div>
-      </div>
-    </section>
-    <!-- SECTION:contact-ledger END -->
-
-    <!-- SECTION:contact-note START · styles: sections/contact-note.css · scripts: contact.js
-         Version B "Note". Five large cards to say who you are, then the form reads as a short
-         letter: "Hello Arcovia, I'm ___ at ___…", with the answers written into the lines.
-         Same form, field names and tags as version A; only the way it reads changes. -->
-    <section class="contact contact--note" data-contact aria-labelledby="nb-title">
-      <div class="container">
-        <div class="note-intro">
+    <!-- SECTION:contact START · styles: sections/contact.css · scripts: contact.js
+         Contact, after the user's reference: a large headline top left, then two columns.
+         Left: the line from the brief, direct email and the two offices (it stays in view while
+         you write). Right: the form, written as a short note whose first sentence is the path:
+         "Hello Arcovia, I'm [raising capital] [an investor] …", five large pills in the line.
+         Once one is chosen the others fold away (click the chosen pill to change it) and the
+         note carries on with that path's questions.
+         The radio "tag" holds the GoHighLevel tag. Each path's questions sit in their own
+         fieldset; contact.js switches the chosen one on and disables the rest, so only it
+         validates and sends. data-endpoint takes the GoHighLevel webhook (the last step).
+         ?sheet=card sets the note on a floating white sheet instead of the open page. -->
+    <section class="contact" data-contact aria-labelledby="contact-title">
+      <div class="container contact__grid">
+        <div class="contact__head">
           <p class="chip">Contact</p>
-          <h1 class="note-intro__title" id="nb-title">Start a conversation</h1>
-          <!-- [TO CONFIRM] "within two working days" -->
-          <p class="note-intro__lede">Tell us who you are and what you need. The right person on our team will reply within two working days.</p>
+          <h1 class="contact__title" id="contact-title">Start a<br> conversation</h1>
         </div>
 
-        <form class="note-form" data-contact-form data-endpoint="" action="#" method="post" novalidate>
-          <h2 class="visually-hidden" id="nb-paths-title">Who are you?</h2>
-          <div class="note-paths" role="radiogroup" aria-labelledby="nb-paths-title" data-field>
-            <label class="note-path">
-              <input type="radio" name="tag" value="founder" required>
-              <svg class="note-path__icon" aria-hidden="true"><use href="#icon-raise"/></svg>
-              <span class="note-path__check" aria-hidden="true"></span>
-              <span class="note-path__text">
-                <span class="note-path__label" data-path-name>I’m raising capital</span>
-                <span class="note-path__meta">Founders and funds raising <span class="nowrap">$5M–$500M+</span></span>
-              </span>
-            </label>
-            <label class="note-path">
-              <input type="radio" name="tag" value="investor">
-              <svg class="note-path__icon" aria-hidden="true"><use href="#icon-invest"/></svg>
-              <span class="note-path__check" aria-hidden="true"></span>
-              <span class="note-path__text">
-                <span class="note-path__label" data-path-name>I’m an investor</span>
-                <span class="note-path__meta">Family offices, VCs, funds and LPs</span>
-              </span>
-            </label>
-            <label class="note-path">
-              <input type="radio" name="tag" value="institution">
-              <svg class="note-path__icon" aria-hidden="true"><use href="#icon-institution"/></svg>
-              <span class="note-path__check" aria-hidden="true"></span>
-              <span class="note-path__text">
-                <span class="note-path__label" data-path-name>I represent an institution</span>
-                <span class="note-path__meta">Institutions and sovereign capital</span>
-              </span>
-            </label>
-            <label class="note-path">
-              <input type="radio" name="tag" value="partner-press">
-              <svg class="note-path__icon" aria-hidden="true"><use href="#icon-press"/></svg>
-              <span class="note-path__check" aria-hidden="true"></span>
-              <span class="note-path__text">
-                <span class="note-path__label" data-path-name>Partnerships and press</span>
-                <span class="note-path__meta">Press, partners and collaborators</span>
-              </span>
-            </label>
-            <label class="note-path">
-              <input type="radio" name="tag" value="talent">
-              <svg class="note-path__icon" aria-hidden="true"><use href="#icon-talent"/></svg>
-              <span class="note-path__check" aria-hidden="true"></span>
-              <span class="note-path__text">
-                <span class="note-path__label" data-path-name>Join the team or the Residency</span>
-                <span class="note-path__meta">Roles and the Residency</span>
-              </span>
-            </label>
+        <aside class="contact__aside" aria-label="Other ways to reach us">
+          <!-- [TO CONFIRM] "within two working days" -->
+          <p class="contact__lede">Tell us who you are and what you need. The right person on our team will reply within two working days.</p>
+
+          <div class="contact__block">
+            <h2 class="visually-hidden">Email</h2>
+            <!-- [TO CONFIRM] addresses (the deck lists colin@arcovia.io) -->
+            <dl class="contact__list">
+              <div><dt>General inquiries</dt><dd><a href="mailto:hello@arcovia.io">hello@arcovia.io</a></dd></div>
+              <div><dt>Press</dt><dd><a href="mailto:press@arcovia.io">press@arcovia.io</a></dd></div>
+            </dl>
           </div>
 
-          <!-- The note. Each blank is a real field with its own label (aria-label) -->
-          <div class="note" data-reveal-target>
-            <div class="note__sheet">
+          <div class="contact__block">
+            <h2 class="visually-hidden">Offices</h2>
+            <ul class="contact__offices">
+              <li class="office">
+                <p class="office__city">Los Angeles <span class="office__time" data-clock="America/Los_Angeles"></span></p>
+                <address class="office__address">2029 Century Park East<br>Los Angeles, CA 90067</address>
+              </li>
+              <li class="office">
+                <p class="office__city">San Juan <span class="office__time" data-clock="America/Puerto_Rico"></span></p>
+                <address class="office__address">450 Ave. 200<br>San Juan, Puerto Rico 00901</address>
+              </li>
+            </ul>
+          </div>
+        </aside>
+
+        <div class="contact__main">
+          <form class="note-form" data-contact-form data-endpoint="" action="#" method="post" novalidate>
+            <div class="note" data-reveal-target>
               <p class="note__hello">Hello Arcovia,</p>
-              <p class="note__wait">Choose who you are above, and your note starts here.</p>
+
+              <!-- The path: five large buttons in the first sentence (native radios, so arrow keys work) -->
+              <div class="note-who" role="radiogroup" aria-label="Who are you?" data-field data-error-name="who you are">
+                <span class="note-who__lead" aria-hidden="true">I’m</span>
+                <label class="note-who__opt">
+                  <input type="radio" name="tag" value="founder" required>
+                  <svg class="note-who__icon" aria-hidden="true"><use href="#icon-raise"/></svg>
+                  <span data-path-name>raising capital</span>
+                  <svg class="note-who__chev" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 6.25 8 3.25l3 3M5 9.75l3 3 3-3"/></svg>
+                </label>
+                <label class="note-who__opt">
+                  <input type="radio" name="tag" value="investor">
+                  <svg class="note-who__icon" aria-hidden="true"><use href="#icon-invest"/></svg>
+                  <span data-path-name>an investor</span>
+                  <svg class="note-who__chev" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 6.25 8 3.25l3 3M5 9.75l3 3 3-3"/></svg>
+                </label>
+                <label class="note-who__opt">
+                  <input type="radio" name="tag" value="institution">
+                  <svg class="note-who__icon" aria-hidden="true"><use href="#icon-institution"/></svg>
+                  <span data-path-name>representing an institution</span>
+                  <svg class="note-who__chev" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 6.25 8 3.25l3 3M5 9.75l3 3 3-3"/></svg>
+                </label>
+                <label class="note-who__opt">
+                  <input type="radio" name="tag" value="partner-press">
+                  <svg class="note-who__icon" aria-hidden="true"><use href="#icon-press"/></svg>
+                  <span data-path-name>here for partnerships or press</span>
+                  <svg class="note-who__chev" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 6.25 8 3.25l3 3M5 9.75l3 3 3-3"/></svg>
+                </label>
+                <label class="note-who__opt">
+                  <input type="radio" name="tag" value="talent">
+                  <svg class="note-who__icon" aria-hidden="true"><use href="#icon-talent"/></svg>
+                  <span data-path-name>hoping to join the team or the Residency</span>
+                  <svg class="note-who__chev" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 6.25 8 3.25l3 3M5 9.75l3 3 3-3"/></svg>
+                </label>
+                <span class="note-who__end" aria-hidden="true">.</span>
+              </div>
 
               <!-- Founder · tag: founder -->
               <fieldset class="note__body" data-path-fields="founder">
                 <legend class="visually-hidden">About your raise</legend>
-                <p>I’m <input class="note-input" data-autosize name="full_name" type="text" autocomplete="name" placeholder="your name" aria-label="Your name" data-error-name="your name" required>, <input class="note-input" data-autosize name="role" type="text" autocomplete="organization-title" placeholder="your role" aria-label="Your role"> at <input class="note-input" data-autosize name="company_name" type="text" autocomplete="organization" placeholder="company" aria-label="Company" data-error-name="your company" required>. Our website is <input class="note-input" data-autosize name="website" type="text" inputmode="url" autocomplete="url" placeholder="company.com" aria-label="Website">.</p>
+                <p>My name is <span class="nowrap"><input class="note-input" data-autosize name="full_name" type="text" autocomplete="name" placeholder="your name" aria-label="Your name" data-error-name="your name" required>,</span> <input class="note-input" data-autosize name="role" type="text" autocomplete="organization-title" placeholder="your role" aria-label="Your role"> at <span class="nowrap"><input class="note-input" data-autosize name="company_name" type="text" autocomplete="organization" placeholder="company" aria-label="Company" data-error-name="your company" required>.</span> Our website is <span class="nowrap"><input class="note-input" data-autosize name="website" type="text" inputmode="url" autocomplete="url" placeholder="company.com" aria-label="Website">.</span></p>
                 <!-- [TO CONFIRM] stage and timing options -->
-                <p>We’re a <select class="note-input note-select" data-autosize name="stage" aria-label="Stage"><option value="" selected>stage</option><option value="Pre-seed">pre-seed</option><option value="Seed">seed</option><option value="Series A">Series A</option><option value="Series B">Series B</option><option value="Series C+">Series C+</option><option value="Growth">growth-stage</option></select> company in <input class="note-input" data-autosize name="sector" type="text" placeholder="sector" aria-label="Sector">, raising <select class="note-input note-select" data-autosize name="raise_amount" aria-label="Amount raising" data-error-name="how much you are raising" required><option value="" selected disabled>amount</option><option value="Under $5M">under $5M</option><option value="$5–25M">$5–25M</option><option value="$25–100M">$25–100M</option><option value="$100–500M">$100–500M</option><option value="$500M+">$500M+</option></select>. We&nbsp;need the money in the&nbsp;bank <select class="note-input note-select" data-autosize name="funds_needed_by" aria-label="When the money must be in the bank"><option value="" selected>by when</option><option value="Within 3 months">within 3 months</option><option value="Within 6 months">within 6 months</option><option value="Within 12 months">within 12 months</option><option value="No fixed date">with no fixed date</option></select>.</p>
+                <p>We’re a <select class="note-input note-select" data-autosize name="stage" aria-label="Stage"><option value="" selected>stage</option><option value="Pre-seed">pre-seed</option><option value="Seed">seed</option><option value="Series A">Series A</option><option value="Series B">Series B</option><option value="Series C+">Series C+</option><option value="Growth">growth-stage</option></select> company in <span class="nowrap"><input class="note-input" data-autosize name="sector" type="text" placeholder="sector" aria-label="Sector">,</span> raising <span class="nowrap"><select class="note-input note-select" data-autosize name="raise_amount" aria-label="Amount raising" data-error-name="how much you are raising" required><option value="" selected disabled>amount</option><option value="Under $5M">under $5M</option><option value="$5–25M">$5–25M</option><option value="$25–100M">$25–100M</option><option value="$100–500M">$100–500M</option><option value="$500M+">$500M+</option></select>.</span> We&nbsp;need the money in the&nbsp;bank <span class="nowrap"><select class="note-input note-select" data-autosize name="funds_needed_by" aria-label="When the money must be in the bank"><option value="" selected>by when</option><option value="Within 3 months">within 3 months</option><option value="Within 6 months">within 6 months</option><option value="Within 12 months">within 12 months</option><option value="No fixed date">with no fixed date</option></select>.</span></p>
                 <div class="note__block">
                   <label class="note__ask" for="nb-building">What we’re building</label>
                   <textarea class="note-area" id="nb-building" name="building" rows="1" maxlength="600" placeholder="The company, the round, and what the money is for" data-autogrow></textarea>
                 </div>
-                <p>You can reach me at <input class="note-input" data-autosize name="email" type="email" autocomplete="email" inputmode="email" placeholder="email address" aria-label="Email" data-error-name="your email address" required>.</p>
+                <p>You can reach me at <span class="nowrap"><input class="note-input" data-autosize name="email" type="email" autocomplete="email" inputmode="email" placeholder="email address" aria-label="Email" data-error-name="your email address" required>.</span></p>
               </fieldset>
 
               <!-- Investor · tag: investor -->
               <fieldset class="note__body" data-path-fields="investor">
                 <legend class="visually-hidden">About your investing</legend>
-                <p>I’m <input class="note-input" data-autosize name="full_name" type="text" autocomplete="name" placeholder="your name" aria-label="Your name" data-error-name="your name" required> at <input class="note-input" data-autosize name="firm" type="text" autocomplete="organization" placeholder="firm" aria-label="Firm" data-error-name="your firm" required>.</p>
-                <p>We’re <select class="note-input note-select" data-autosize name="investor_type" aria-label="Investor type"><option value="" selected>a type of investor</option><option value="Family office">a family office</option><option value="Venture capital">a venture capital firm</option><option value="Fund">a fund</option><option value="LP">an LP</option><option value="Other">another kind of investor</option></select> with a typical check of <input class="note-input" data-autosize name="check_size" type="text" placeholder="check size" aria-label="Typical check size">. We invest at <input class="note-input" data-autosize name="stages" type="text" placeholder="stages" aria-label="Stages"> in <input class="note-input" data-autosize name="sectors" type="text" placeholder="sectors" aria-label="Sectors">, across <input class="note-input" data-autosize name="geographies" type="text" placeholder="geographies" aria-label="Geographies">.</p>
+                <p>My name is <input class="note-input" data-autosize name="full_name" type="text" autocomplete="name" placeholder="your name" aria-label="Your name" data-error-name="your name" required> and I work at <span class="nowrap"><input class="note-input" data-autosize name="firm" type="text" autocomplete="organization" placeholder="firm" aria-label="Firm" data-error-name="your firm" required>.</span></p>
+                <p>We’re <select class="note-input note-select" data-autosize name="investor_type" aria-label="Investor type"><option value="" selected>a type of investor</option><option value="Family office">a family office</option><option value="Venture capital">a venture capital firm</option><option value="Fund">a fund</option><option value="LP">an LP</option><option value="Other">another kind of investor</option></select> with a typical check of <span class="nowrap"><input class="note-input" data-autosize name="check_size" type="text" placeholder="check size" aria-label="Typical check size">.</span> We invest at <input class="note-input" data-autosize name="stages" type="text" placeholder="stages" aria-label="Stages"> in <span class="nowrap"><input class="note-input" data-autosize name="sectors" type="text" placeholder="sectors" aria-label="Sectors">,</span> across <span class="nowrap"><input class="note-input" data-autosize name="geographies" type="text" placeholder="geographies" aria-label="Geographies">.</span></p>
                 <div class="note__block">
                   <label class="note__ask" for="nb-convinces_first">What convinces us first</label>
                   <textarea class="note-area" id="nb-convinces_first" name="convinces_first" rows="1" maxlength="600" placeholder="The team, the numbers, the market…" data-autogrow></textarea>
@@ -522,43 +220,43 @@
                   <label class="note__ask" for="nb-never_send">What you should never send us</label>
                   <textarea class="note-area" id="nb-never_send" name="never_send" rows="1" maxlength="600" placeholder="So nobody wastes anyone’s time" data-autogrow></textarea>
                 </div>
-                <p>You can reach me at <input class="note-input" data-autosize name="email" type="email" autocomplete="email" inputmode="email" placeholder="email address" aria-label="Email" data-error-name="your email address" required>.</p>
+                <p>You can reach me at <span class="nowrap"><input class="note-input" data-autosize name="email" type="email" autocomplete="email" inputmode="email" placeholder="email address" aria-label="Email" data-error-name="your email address" required>.</span></p>
               </fieldset>
 
               <!-- Institution · tag: institution -->
               <fieldset class="note__body" data-path-fields="institution">
                 <legend class="visually-hidden">About your institution</legend>
-                <p>I’m <input class="note-input" data-autosize name="full_name" type="text" autocomplete="name" placeholder="your name" aria-label="Your name" data-error-name="your name" required>, <input class="note-input" data-autosize name="role" type="text" autocomplete="organization-title" placeholder="your role" aria-label="Your role"> at <input class="note-input" data-autosize name="organisation" type="text" autocomplete="organization" placeholder="organisation" aria-label="Organisation" data-error-name="your organisation" required> in <input class="note-input" data-autosize name="country" type="text" autocomplete="country-name" placeholder="country" aria-label="Country">.</p>
-                <p>I’d like to talk about <select class="note-input note-select" data-autosize name="topic" aria-label="Topic"><option value="" selected>a topic</option><option value="Sovereign or development capital">sovereign or development capital</option><option value="Infrastructure">infrastructure</option><option value="Corporate partnership">a corporate partnership</option><option value="Other">something else</option></select>.</p>
+                <p>My name is <span class="nowrap"><input class="note-input" data-autosize name="full_name" type="text" autocomplete="name" placeholder="your name" aria-label="Your name" data-error-name="your name" required>,</span> <input class="note-input" data-autosize name="role" type="text" autocomplete="organization-title" placeholder="your role" aria-label="Your role"> at <input class="note-input" data-autosize name="organisation" type="text" autocomplete="organization" placeholder="organisation" aria-label="Organisation" data-error-name="your organisation" required> in <span class="nowrap"><input class="note-input" data-autosize name="country" type="text" autocomplete="country-name" placeholder="country" aria-label="Country">.</span></p>
+                <p>I’d like to talk about <span class="nowrap"><select class="note-input note-select" data-autosize name="topic" aria-label="Topic"><option value="" selected>a topic</option><option value="Sovereign or development capital">sovereign or development capital</option><option value="Infrastructure">infrastructure</option><option value="Corporate partnership">a corporate partnership</option><option value="Other">something else</option></select>.</span></p>
                 <div class="note__block">
                   <label class="note__ask" for="nb-inst-note">A short note</label>
                   <textarea class="note-area" id="nb-inst-note" name="note" rows="1" maxlength="600" placeholder="What you have in mind" data-autogrow></textarea>
                 </div>
-                <p>You can reach me at <input class="note-input" data-autosize name="email" type="email" autocomplete="email" inputmode="email" placeholder="email address" aria-label="Email" data-error-name="your email address" required>.</p>
+                <p>You can reach me at <span class="nowrap"><input class="note-input" data-autosize name="email" type="email" autocomplete="email" inputmode="email" placeholder="email address" aria-label="Email" data-error-name="your email address" required>.</span></p>
               </fieldset>
 
               <!-- Partnerships and press · tag: partner-press -->
               <fieldset class="note__body" data-path-fields="partner-press">
                 <legend class="visually-hidden">About your request</legend>
-                <p>I’m <input class="note-input" data-autosize name="full_name" type="text" autocomplete="name" placeholder="your name" aria-label="Your name" data-error-name="your name" required> from <input class="note-input" data-autosize name="organisation" type="text" autocomplete="organization" placeholder="organisation" aria-label="Organisation" data-error-name="your organisation" required>.</p>
-                <p>I’m getting in touch <select class="note-input note-select" data-autosize name="partner_type" aria-label="Type" data-error-name="why you’re getting in touch" required><option value="" selected disabled>about…</option><option value="Press">as press</option><option value="Corporate partner">about a corporate partnership</option><option value="Creative collaborator">as a creative collaborator</option></select>.</p>
+                <p>My name is <input class="note-input" data-autosize name="full_name" type="text" autocomplete="name" placeholder="your name" aria-label="Your name" data-error-name="your name" required> and I’m with <span class="nowrap"><input class="note-input" data-autosize name="organisation" type="text" autocomplete="organization" placeholder="organisation" aria-label="Organisation" data-error-name="your organisation" required>.</span></p>
+                <p>I’m writing <span class="nowrap"><select class="note-input note-select" data-autosize name="partner_type" aria-label="Type" data-error-name="why you’re writing" required><option value="" selected disabled>as…</option><option value="Press">as press</option><option value="Corporate partner">about a corporate partnership</option><option value="Creative collaborator">as a creative collaborator</option></select>.</span></p>
                 <div class="note__block">
                   <label class="note__ask" for="nb-pp-note">A short note</label>
                   <textarea class="note-area" id="nb-pp-note" name="note" rows="1" maxlength="600" placeholder="What you’re working on, and any deadline" data-autogrow></textarea>
                 </div>
-                <p>You can reach me at <input class="note-input" data-autosize name="email" type="email" autocomplete="email" inputmode="email" placeholder="email address" aria-label="Email" data-error-name="your email address" required>.</p>
+                <p>You can reach me at <span class="nowrap"><input class="note-input" data-autosize name="email" type="email" autocomplete="email" inputmode="email" placeholder="email address" aria-label="Email" data-error-name="your email address" required>.</span></p>
               </fieldset>
 
               <!-- Team and Residency · tag: talent -->
               <fieldset class="note__body" data-path-fields="talent">
                 <legend class="visually-hidden">About you</legend>
-                <p>I’m <input class="note-input" data-autosize name="full_name" type="text" autocomplete="name" placeholder="your name" aria-label="Your name" data-error-name="your name" required>, currently at <input class="note-input" data-autosize name="current_firm" type="text" autocomplete="organization" placeholder="current firm" aria-label="Current firm">.</p>
-                <p>You’ll find me on LinkedIn at <input class="note-input" data-autosize name="linkedin_url" type="text" inputmode="url" placeholder="linkedin.com/in/your-name" aria-label="LinkedIn URL" data-error-name="your LinkedIn profile" required>.</p>
+                <p>My name is <span class="nowrap"><input class="note-input" data-autosize name="full_name" type="text" autocomplete="name" placeholder="your name" aria-label="Your name" data-error-name="your name" required>,</span> currently at <span class="nowrap"><input class="note-input" data-autosize name="current_firm" type="text" autocomplete="organization" placeholder="current firm" aria-label="Current firm">.</span></p>
+                <p>You’ll find me on LinkedIn at <span class="nowrap"><input class="note-input" data-autosize name="linkedin_url" type="text" inputmode="url" placeholder="linkedin.com/in/your-name" aria-label="LinkedIn URL" data-error-name="your LinkedIn profile" required>.</span></p>
                 <div class="note__block">
                   <label class="note__ask" for="nb-talent-note">A short note</label>
                   <textarea class="note-area" id="nb-talent-note" name="note" rows="1" maxlength="600" placeholder="What you would bring, and whether it’s the team or the Residency" data-autogrow></textarea>
                 </div>
-                <p>You can reach me at <input class="note-input" data-autosize name="email" type="email" autocomplete="email" inputmode="email" placeholder="email address" aria-label="Email" data-error-name="your email address" required>.</p>
+                <p>You can reach me at <span class="nowrap"><input class="note-input" data-autosize name="email" type="email" autocomplete="email" inputmode="email" placeholder="email address" aria-label="Email" data-error-name="your email address" required>.</span></p>
               </fieldset>
             </div>
 
@@ -571,46 +269,32 @@
               <button class="btn btn--primary note__send" type="submit"><span data-submit-label>Send note</span><svg class="btn__icon" aria-hidden="true"><use href="#icon-arrow"/></svg></button>
             </div>
             <p class="note__status" role="status" aria-live="polite" data-status></p>
+
+            <!-- Visit source, saved with the lead (filled in by contact.js) -->
+            <input type="hidden" name="utm_source">
+            <input type="hidden" name="utm_medium">
+            <input type="hidden" name="utm_campaign">
+            <input type="hidden" name="utm_term">
+            <input type="hidden" name="utm_content">
+            <input type="hidden" name="landing_page">
+            <input type="hidden" name="referrer">
+            <!-- Spam trap: hidden from people, filled in by bots -->
+            <div class="trap" aria-hidden="true"><label>Leave this empty <input type="text" name="fax" tabindex="-1" autocomplete="off"></label></div>
+          </form>
+
+          <!-- Confirmation, in place of the note -->
+          <div class="note-done" data-contact-done hidden tabindex="-1">
+            <svg class="note-done__mark" viewBox="0 0 72 57" aria-hidden="true"><use href="#a-mark"/></svg>
+            <p class="note-done__text">Thank you. Your note is with the right person on our team.</p>
+            <p class="note-done__meta">We’ll reply to <span data-done-email></span>.</p>
+            <button class="note-done__again" type="button" data-contact-again>Write another note</button>
           </div>
-
-          <input type="hidden" name="utm_source">
-          <input type="hidden" name="utm_medium">
-          <input type="hidden" name="utm_campaign">
-          <input type="hidden" name="utm_term">
-          <input type="hidden" name="utm_content">
-          <input type="hidden" name="landing_page">
-          <input type="hidden" name="referrer">
-          <div class="trap" aria-hidden="true"><label>Leave this empty <input type="text" name="fax" tabindex="-1" autocomplete="off"></label></div>
-        </form>
-
-        <!-- Confirmation, in place of the note -->
-        <div class="note-done" data-contact-done hidden tabindex="-1">
-          <svg class="note-done__mark" viewBox="0 0 72 57" aria-hidden="true"><use href="#a-mark"/></svg>
-          <p class="note-done__text">Thank you. Your note is with the right person on our team.</p>
-          <p class="note-done__meta">We’ll reply to <span data-done-email></span>.</p>
-          <button class="note-done__again" type="button" data-contact-again>Write another note</button>
         </div>
       </div>
     </section>
-    <!-- SECTION:contact-note END -->
-
-    <!-- Draft placeholder: next section goes here -->
-    <section class="section-next section-next--light" aria-label="Next section, in progress">
-      <p>Next · Direct email and offices, in progress</p>
-    </section>
+    <!-- SECTION:contact END -->
 
   </main>
-
-  <!-- Draft only: switch between the two versions while comparing -->
-  <nav class="review-switch" aria-label="Draft versions">
-    <a href="contact.html?v=ledger" data-v="ledger" title="Version A · Ledger">A</a>
-    <a href="contact.html?v=note" data-v="note" title="Version B · Note">B</a>
-  </nav>
-  <script>
-    document.querySelectorAll(".review-switch a").forEach(function (a) {
-      a.setAttribute("aria-current", String(a.getAttribute("data-v") === document.documentElement.getAttribute("data-contact")));
-    });
-  </script>
 
   <script src="main.js"></script>
   <script src="contact.js"></script>
