@@ -19,8 +19,6 @@
   <link rel="stylesheet" href="sections/beliefs.css">
   <link rel="stylesheet" href="sections/process.css">
   <link rel="stylesheet" href="sections/mark.css">
-  <!-- The mark · V2: its small labels are set in a mono (Spline Sans Mono, --font-mono: a plain zero, so "05" never reads as "Ø5") -->
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spline+Sans+Mono:wght@400&display=swap">
   <link rel="stylesheet" href="sections/mark-v2.css">
   <link rel="stylesheet" href="sections/footer.css">
 </head>
@@ -416,24 +414,25 @@
     </section>
     <!-- SECTION:mark END -->
 
-    <!-- SECTION:mark-v2 START · styles: sections/mark-v2.css · scripts: mark-v2.js · font: Spline Sans Mono (head)
+    <!-- SECTION:mark-v2 START · styles: sections/mark-v2.css · scripts: mark-v2.js
          About, block 5, second version ("The mark · V2"), to compare with the one above.
-         The A-mark sits in the middle of the screen the whole time and is sketched part by part
-         as you scroll (pinned, 400vh): 1 the left line, 2 the right line, 3 the circle where they
-         meet, 4 the sketch gives way to the mark pressed into the concrete. One note per line,
-         on a hairline leader. No cards, no columns, no bracket labels.
+         The A-mark sits in the middle of the screen the whole time and is drawn the way a designer
+         builds a logo sheet (after the user's references: pen-tool anchor points, a clear-space grid
+         with × cells, faint construction lines along the edges): 1 the frame and the left line,
+         2 the right line, 3 the circle, whose radius turns out to be the frame's unit, 4 the
+         drawing gives way to the mark pressed into the concrete. One note per line, on a hairline.
          Copy from the user's brief for this version: [TO CONFIRM wording with Lilla]. -->
     <section class="mark-v2" data-mark-v2 data-header-theme="dark" aria-labelledby="mark-v2-title">
       <div class="mark-v2__stage">
         <div class="mark-v2__overlay" aria-hidden="true"></div>
 
         <div class="mark-v2__frame container">
-          <h2 class="mark-v2__label" id="mark-v2-title"><span aria-hidden="true">05 · </span>The mark</h2>
+          <h2 class="visually-hidden" id="mark-v2-title">The mark</h2>
 
           <div class="mark-v2__figure" aria-hidden="true">
-            <!-- The official brandmark (assets/logo/brandmark.svg) in its own 72 × 57 box: circle, left
-                 leg and right leg as separate paths so each can be drawn. The legs start at their outer
-                 foot and run up the outer edge first, so the pencil rises with the line. -->
+            <!-- The official brandmark (assets/logo/brandmark.svg) in its own 72 × 57 box: left leg,
+                 right leg and circle as separate paths so each can be drawn. Each path starts at the
+                 outer foot (the circle at its bottom), so the line rises first. -->
             <svg class="mark-v2__svg" viewBox="0 0 72 57" focusable="false">
               <defs>
                 <g id="mark-v2-shape">
@@ -465,11 +464,6 @@
                   <feFlood flood-color="#fff" flood-opacity="0.62"/>
                   <feComposite in2="rimSoft" operator="in"/>
                 </filter>
-                <radialGradient id="mark-v2-glow">
-                  <stop offset="0" stop-color="#fff" stop-opacity="0.9"/>
-                  <stop offset="0.22" stop-color="#fff" stop-opacity="0.38"/>
-                  <stop offset="1" stop-color="#fff" stop-opacity="0"/>
-                </radialGradient>
               </defs>
 
               <!-- 4 · The mark pressed into the concrete: floor, walls, lip -->
@@ -479,61 +473,71 @@
                 <use class="mark-v2__lip" href="#mark-v2-shape" filter="url(#mark-v2-lip)"/>
               </g>
 
-              <!-- 1-3 · The sketch: dotted guides, outlines, leaders and the pencil tip -->
+              <!-- 1-3 · The drawing -->
               <g class="mark-v2__sketch">
-                <line class="mark-v2__guide" data-guide="axis" x1="36.201" y1="63" x2="36.201" y2="-9"/>
-                <line class="mark-v2__guide" data-guide="base" x1="-6" y1="56.272" x2="78" y2="56.272"/>
-                <line class="mark-v2__guide" data-guide="left" x1="32.333" y1="15.915" x2="36.201" y2="8.011"/>
-                <line class="mark-v2__guide" data-guide="right" x1="40.117" y1="15.678" x2="36.201" y2="8.011"/>
-                <path class="mark-v2__guide mark-v2__guide--compass" data-guide="compass" d=""/>
-                <circle class="mark-v2__node" data-node="apex" cx="36.201" cy="8.011" r="0.36"/>
-
-                <path class="mark-v2__line" data-draw="left" d="M6.4043 56.272L12.0606 45.653L29.6286 14.4009C31.1725 15.7479 32.9219 16.7924 35.0366 17.4288L14.1267 56.2321C12.4458 56.3605 11.096 56.3148 9.58059 56.3005Z"/>
-                <path class="mark-v2__line" data-draw="right" d="M65.3551 56.243C64.3192 54.3652 63.3831 52.7499 62.5327 50.738L42.9184 14.1807C41.2461 15.8616 39.5509 16.9432 37.3164 17.1743L57.8439 56.243Z"/>
-                <path class="mark-v2__line" data-draw="circle" d="M36.201 16.0215A8.0106 8.0106 0 0 1 36.201 0.0003A8.0106 8.0106 0 0 1 36.201 16.0215Z"/>
-
-                <polyline class="mark-v2__leader" data-leader="1" points="17.488,36 -16,36"/>
-                <polyline class="mark-v2__leader" data-leader="2" points="54.626,36 88,36"/>
-                <polyline class="mark-v2__leader" data-leader="3" points="42.337,2.862 51.199,-6 88,-6"/>
-                <circle class="mark-v2__node" data-node="1" cx="17.488" cy="36" r="0.36"/>
-                <circle class="mark-v2__node" data-node="2" cx="54.626" cy="36" r="0.36"/>
-                <circle class="mark-v2__node" data-node="3" cx="42.337" cy="2.862" r="0.36"/>
-
-                <g class="mark-v2__tip" data-tip>
-                  <circle r="2.4" fill="url(#mark-v2-glow)"/>
-                  <circle class="mark-v2__tip-core" r="0.3"/>
+                <!-- Clear space: a frame one circle-radius (×) round the mark, ruled into a 3 × 3 grid -->
+                <g class="mark-v2__grid">
+                  <line class="mark-v2__rule" data-rule x1="-1.607" y1="-8.011" x2="-1.607" y2="64.283"/>
+                  <line class="mark-v2__rule" data-rule x1="-1.607" y1="-8.011" x2="73.366" y2="-8.011"/>
+                  <line class="mark-v2__rule" data-rule x1="6.404" y1="-8.011" x2="6.404" y2="64.283"/>
+                  <line class="mark-v2__rule" data-rule x1="-1.607" y1="0" x2="73.366" y2="0"/>
+                  <line class="mark-v2__rule" data-rule x1="65.355" y1="-8.011" x2="65.355" y2="64.283"/>
+                  <line class="mark-v2__rule" data-rule x1="-1.607" y1="56.272" x2="73.366" y2="56.272"/>
+                  <line class="mark-v2__rule" data-rule x1="73.366" y1="-8.011" x2="73.366" y2="64.283"/>
+                  <line class="mark-v2__rule" data-rule x1="-1.607" y1="64.283" x2="73.366" y2="64.283"/>
                 </g>
+                <!-- × in the corner cells: the frame's unit -->
+                <path class="mark-v2__cross" data-cross d="M1.648 -4.755L3.148 -3.255M3.148 -4.755L1.648 -3.255M68.611 -4.755L70.111 -3.255M70.111 -4.755L68.611 -3.255M1.648 59.528L3.148 61.028M3.148 59.528L1.648 61.028M68.611 59.528L70.111 61.028M70.111 59.528L68.611 61.028"/>
+
+                <!-- Construction: each leg's two long edges run on across the frame, through its corner anchors; the axis through the circle -->
+                <line class="mark-v2__cons" data-cons="left" x1="1.961" y1="64.283" x2="37.617" y2="0"/>
+                <line class="mark-v2__cons" data-cons="left" x1="9.788" y1="64.283" x2="44.430" y2="0"/>
+                <line class="mark-v2__cons" data-cons="right" x1="69.644" y1="64.283" x2="35.354" y2="0"/>
+                <line class="mark-v2__cons" data-cons="right" x1="62.068" y1="64.283" x2="28.290" y2="0"/>
+                <line class="mark-v2__cons" data-cons="axis" x1="36.201" y1="64.283" x2="36.201" y2="-8.011"/>
+
+                <!-- The outlines, drawn the way the pen tool places points: anchors (added by mark-v2.js) at the corners -->
+                <path class="mark-v2__line" data-draw="left" data-anchors="6.4043,56.272 29.6286,14.4009 35.0366,17.4288 14.1267,56.2321" d="M6.4043 56.272L12.0606 45.653L29.6286 14.4009C31.1725 15.7479 32.9219 16.7924 35.0366 17.4288L14.1267 56.2321C12.4458 56.3605 11.096 56.3148 9.58059 56.3005Z"/>
+                <path class="mark-v2__line" data-draw="right" data-anchors="65.3551,56.243 42.9184,14.1807 37.3164,17.1743 57.8439,56.243" d="M65.3551 56.243C64.3192 54.3652 63.3831 52.7499 62.5327 50.738L42.9184 14.1807C41.2461 15.8616 39.5509 16.9432 37.3164 17.1743L57.8439 56.243Z"/>
+                <path class="mark-v2__line" data-draw="circle" data-anchors="36.201,16.0215 28.1904,8.011 36.201,0.0003 44.2116,8.011" d="M36.201 16.0215A8.0106 8.0106 0 0 1 28.1904 8.011A8.0106 8.0106 0 0 1 36.201 0.0003A8.0106 8.0106 0 0 1 44.2116 8.011A8.0106 8.0106 0 0 1 36.201 16.0215"/>
+                <!-- The circle's centre and its radius (×) -->
+                <path class="mark-v2__centre" data-centre d="M35.401 8.011H37.001M36.201 7.211V8.811"/>
+                <line class="mark-v2__radius" data-radius x1="36.201" y1="8.011" x2="30.537" y2="2.346"/>
+
+                <!-- Hairlines out to the notes -->
+                <line class="mark-v2__leader" data-leader="1" x1="17.488" y1="36" x2="-16" y2="36"/>
+                <line class="mark-v2__leader" data-leader="2" x1="54.626" y1="36" x2="88" y2="36"/>
+                <line class="mark-v2__leader" data-leader="3" x1="44.2116" y1="8.011" x2="88" y2="8.011"/>
+                <circle class="mark-v2__dot" data-dot="1" cx="17.488" cy="36" r="0.3"/>
+                <circle class="mark-v2__dot" data-dot="2" cx="54.626" cy="36" r="0.3"/>
+
+                <g data-anchor-layer></g>
               </g>
             </svg>
             <!-- 4 · A soft light drifting slowly across the mark -->
             <span class="mark-v2__light"></span>
           </div>
 
-          <ol class="mark-v2__notes">
-            <li class="mark-v2__note mark-v2__note--1" data-note="1">
-              <p class="mark-v2__mono">01 · The left line</p>
-              <h3 class="mark-v2__name">Capital</h3>
-              <p class="mark-v2__text">If it moves money, it is Arcovia.</p>
-            </li>
-            <li class="mark-v2__note mark-v2__note--2" data-note="2">
-              <p class="mark-v2__mono">02 · The right line</p>
-              <h3 class="mark-v2__name">Creative</h3>
-              <p class="mark-v2__text">If it moves people, it is LPP Media, the creative house of Arcovia.</p>
-            </li>
-            <li class="mark-v2__note mark-v2__note--3" data-note="3">
-              <p class="mark-v2__mono">03 · Where they meet</p>
-              <h3 class="mark-v2__name">One idea</h3>
-              <p class="mark-v2__text">Two lines rising to meet at one point.</p>
-            </li>
-          </ol>
-
-          <div class="mark-v2__foot">
-            <div class="mark-v2__closing" data-closing>
-              <p class="mark-v2__mono">Capital · Creative · One idea</p>
-              <p class="mark-v2__lede">The Arcovia mark is an arc: two lines rising to meet at one point. The two houses of our work, joined by one idea.</p>
-            </div>
-            <p class="mark-v2__count mark-v2__mono" aria-hidden="true"><span data-step>1</span> / 4</p>
+          <div class="mark-v2__notes">
+            <!-- The frame's unit, as on a logo sheet -->
+            <p class="mark-v2__tag" data-tag><svg class="mark-v2__tag-x" viewBox="0 0 10 10" aria-hidden="true"><path d="M2 2L8 8M8 2L2 8"/></svg> = radius of the circle</p>
+            <ol class="mark-v2__list">
+              <li class="mark-v2__note mark-v2__note--1" data-note="1">
+                <h3 class="mark-v2__name">Capital</h3>
+                <p class="mark-v2__text">If it moves money, it is Arcovia.</p>
+              </li>
+              <li class="mark-v2__note mark-v2__note--2" data-note="2">
+                <h3 class="mark-v2__name">Creative</h3>
+                <p class="mark-v2__text">If it moves people, it is LPP Media, the creative house of Arcovia.</p>
+              </li>
+              <li class="mark-v2__note mark-v2__note--3" data-note="3">
+                <h3 class="mark-v2__name">One idea</h3>
+                <p class="mark-v2__text">Two lines rising to meet at one point.</p>
+              </li>
+            </ol>
           </div>
+
+          <p class="mark-v2__closing" data-closing>The Arcovia mark is an arc: two lines rising to meet at one point. The two houses of our work, joined by one idea.</p>
         </div>
       </div>
     </section>

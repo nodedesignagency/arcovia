@@ -28,8 +28,6 @@
 
   /* Type: Montserrat stands in for Gotham until the licence is bought */
   --font-sans: "Montserrat", "Helvetica Neue", Arial, sans-serif;
-  /* Small labels in The mark · V2 (About); load Spline Sans Mono in the page's head where it is used */
-  --font-mono: "Spline Sans Mono", ui-monospace, "SF Mono", Menlo, monospace;
   --weight-book: 400;
   --weight-medium: 500;
   --weight-semibold: 600;

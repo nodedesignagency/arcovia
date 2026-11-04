@@ -1,35 +1,37 @@
 /* ==========================================================================
    SECTION: mark-v2 — About, block 5, second version ("The mark · V2")
-   The A-mark stays in the middle of the screen while it is sketched part by
-   part as you scroll (the stage pins for 400vh; mark-v2.js drives it):
-     1  the left line draws itself (dotted axis and baseline, a pencil tip),
-        its guide runs up to the top point; a leader to "Capital"
-     2  the right line, its guide rising to meet the left one; "Creative"
-     3  the circle draws closed round the point where they meet, inside a
-        faint compass guide; "One idea"
-     4  the sketch gives way to the mark pressed into the concrete (darker
+   The A-mark stays in the middle of the screen while it is drawn the way a
+   designer builds a logo sheet (after the user's references: pen-tool
+   anchor points on the corners, a clear-space grid with × in the corner
+   cells, faint construction lines running on along the edges). The stage
+   pins for 400vh; mark-v2.js drives it:
+     1  the clear-space frame rules itself in; the left leg's edges run on
+        across it, then its outline is drawn anchor to anchor; "Capital"
+     2  the right leg the same way; "Creative"
+     3  the axis, the circle's centre, the circle drawn through its four
+        anchors, its radius; × fills the corner cells and the annotation
+        says what it is; "One idea"
+     4  the drawing gives way to the mark pressed into the concrete (darker
         floor, shaded walls, a thin light lip on the top edges); the wall
-        lightens a little, a soft light drifts across the mark, and one
-        line comes in at the bottom left.
+        lightens a little, a soft light drifts across the mark, and one line
+        comes in at the bottom left.
    Ground: the concrete texture under a dark overlay (74%), full bleed.
+   Type: Montserrat only (no mono, no counters, no numbered labels).
    No JS: one screen with the finished mark and the closing line.
-   Below 1200: no pinning; the finished mark, then the three notes and the
-   closing line one under the other.
-   Uses shared tokens (container, colours, --font-mono).
+   Below 1200: no pinning; the finished mark, then the notes and the line.
    ========================================================================== */
 
 .mark-v2 {
   --mv2-w: 420px;                              /* the mark's width (72 × 57) */
   --mv2-h: calc(var(--mv2-w) * 57 / 72);
   --mv2-u: calc(var(--mv2-w) / 72);            /* one unit of the mark's box */
-  /* Stroke sizes in the mark's units at 420px; mark-v2.js keeps them true to the pixel */
-  --mv2-sw: 0.2057;                            /* sketch lines: 1.2px */
-  --mv2-hair: 0.1714;                          /* leaders: 1px */
-  --mv2-dot: 0.2571;                           /* guide dots: 1.5px */
-  --mv2-gap: 0.8571;                           /* guide dots: every 5px */
-  --mv2-sketch: rgba(244, 244, 243, 0.92);
-  --mv2-guide: rgba(244, 244, 243, 0.4);
-  --mv2-lead: rgba(244, 244, 243, 0.5);
+  /* Line widths in the mark's units at 420px; mark-v2.js keeps them true to the pixel */
+  --mv2-px: 0.1714;                            /* 1px */
+  --mv2-ground: #3d3d3d;                       /* the wall under the overlay, inside the anchors */
+  --mv2-ink: rgba(244, 244, 243, 0.92);        /* outlines and anchors */
+  --mv2-rule: rgba(244, 244, 243, 0.17);       /* the clear-space grid */
+  --mv2-cons: rgba(244, 244, 243, 0.13);       /* construction lines */
+  --mv2-lead: rgba(244, 244, 243, 0.42);       /* hairlines to the notes, the radius, × */
 
   position: relative;
   height: 100vh;
@@ -69,27 +71,6 @@
   margin-inline: auto;
 }
 
-/* ---------- Small mono labels ---------- */
-.mark-v2__mono {
-  font-family: var(--font-mono);
-  font-size: 12px;
-  font-weight: 400;
-  line-height: 18px;
-  letter-spacing: 0.02em;
-  color: var(--color-on-dark-muted);
-}
-.mark-v2__label {
-  position: absolute;
-  top: var(--space-6);
-  left: var(--gutter);
-  font-family: var(--font-mono);
-  font-size: 12px;
-  font-weight: 400;
-  line-height: 18px;
-  letter-spacing: 0.02em;
-  color: var(--color-on-dark-muted);
-}
-
 /* ---------- The mark, in the middle the whole time ---------- */
 .mark-v2__figure,
 .mark-v2__notes {
@@ -111,30 +92,28 @@
 .mark-v2__walls,
 .mark-v2__lip { fill: #000; }
 
-/* 1-3 · the sketch */
+/* 1-3 · the drawing */
 .mark-v2__sketch { opacity: 0; }       /* no JS: the finished mark only */
 .mark-v2.is-live .mark-v2__sketch { opacity: 1; }
-.mark-v2__guide {
+.mark-v2__sketch line,
+.mark-v2__sketch path {
   fill: none;
-  stroke: var(--mv2-guide);
-  stroke-width: var(--mv2-dot);
-  stroke-linecap: round;
-  stroke-dasharray: 0 var(--mv2-gap);
+  stroke-width: var(--mv2-px);
 }
-.mark-v2__line {
-  fill: none;
-  stroke: var(--mv2-sketch);
-  stroke-width: var(--mv2-sw);
-  stroke-linejoin: round;
-  stroke-linecap: round;
+.mark-v2__rule { stroke: var(--mv2-rule); }
+.mark-v2__cons { stroke: var(--mv2-cons); }
+.mark-v2__line { stroke: var(--mv2-ink); stroke-linejoin: round; }
+.mark-v2__cross,
+.mark-v2__radius,
+.mark-v2__leader { stroke: var(--mv2-lead); }
+.mark-v2__centre { stroke: var(--mv2-ink); }
+.mark-v2__dot { fill: var(--mv2-ink); }
+.mark-v2__anchor {
+  fill: var(--mv2-ground);
+  stroke: var(--mv2-ink);
+  stroke-width: var(--mv2-px);
 }
-.mark-v2__leader {
-  fill: none;
-  stroke: var(--mv2-lead);
-  stroke-width: var(--mv2-hair);
-}
-.mark-v2__node { fill: var(--color-on-dark); }
-.mark-v2__tip-core { fill: #fff; }
+.mark-v2__anchor.is-current { fill: var(--color-on-dark); }   /* the last point placed, as in a pen tool */
 
 /* 4 · a soft light drifting slowly across the mark (blends with the wall behind it) */
 .mark-v2__light {
@@ -146,7 +125,6 @@
   pointer-events: none;
   background: radial-gradient(closest-side, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.2) 45%, rgba(255, 255, 255, 0) 100%);
   mix-blend-mode: soft-light;
-  opacity: 1;
   animation: mark-v2-drift 16s var(--ease-in-out) infinite alternate;
 }
 .mark-v2__light::after {
@@ -161,64 +139,70 @@
   to   { transform: translate(24%, 5%); }
 }
 
-/* ---------- The three notes, each at the end of its leader ---------- */
-.mark-v2__notes {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  pointer-events: none;
+/* ---------- Text laid over the drawing ---------- */
+.mark-v2__notes { pointer-events: none; }
+.mark-v2__list { margin: 0; padding: 0; list-style: none; }
+
+/* The annotation in the frame's top middle cell, as on a logo sheet */
+.mark-v2__tag {
+  position: absolute;
+  left: calc(var(--mv2-u) * 6.404);
+  width: calc(var(--mv2-u) * 58.951);
+  top: calc(var(--mv2-u) * -8.011);
+  height: calc(var(--mv2-u) * 8.011);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 13px;
+  line-height: 1;
+  color: var(--color-on-dark-muted);
+  white-space: nowrap;
 }
+.mark-v2__tag-x {
+  width: 10px;
+  height: 10px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1;
+}
+
+/* The three notes, each at the end of its hairline; the title's first line sits on the line */
 .mark-v2__note {
   position: absolute;
-  /* the room between the end of a leader and the edge of the grid */
   width: min(300px, calc(50vw - var(--mv2-w) / 2 - var(--mv2-u) * 18 - var(--gutter)));
+  --title: 44px;                                /* the title's line */
 }
-/* The first line (the mono label) sits on the leader */
-.mark-v2__note--1 { right: calc(var(--mv2-u) * 90); top: calc(var(--mv2-u) * 36 - 9px); text-align: right; }
-.mark-v2__note--2 { left: calc(var(--mv2-u) * 90); top: calc(var(--mv2-u) * 36 - 9px); }
-.mark-v2__note--3 { left: calc(var(--mv2-u) * 90); top: calc(var(--mv2-u) * -6 - 9px); }
+.mark-v2__note--1 { right: calc(var(--mv2-u) * 90); top: calc(var(--mv2-u) * 36 - var(--title) / 2); text-align: right; }
+.mark-v2__note--2 { left: calc(var(--mv2-u) * 90); top: calc(var(--mv2-u) * 36 - var(--title) / 2); }
+.mark-v2__note--3 { left: calc(var(--mv2-u) * 90); top: calc(var(--mv2-u) * 8.011 - var(--title) / 2); }
 
 .mark-v2__name {
-  margin-top: var(--space-3);
   font-size: 40px;
   font-weight: var(--weight-book);
-  line-height: 1.1;
+  line-height: var(--title);
   letter-spacing: var(--ls-h2);
   color: var(--color-on-dark);
 }
 .mark-v2__text {
-  margin-top: var(--space-3);
+  margin-top: var(--space-2);
   font-size: 17px;
   line-height: 1.55;
   color: var(--color-on-dark-muted);
   text-wrap: pretty;
 }
 
-/* ---------- Bottom: the closing line (left) and the step counter (right) ---------- */
-.mark-v2__foot {
+/* ---------- The closing line, bottom left ---------- */
+.mark-v2__closing {
   position: absolute;
   left: var(--gutter);
-  right: var(--gutter);
-  bottom: var(--space-6);
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: var(--space-7);
-}
-.mark-v2__closing { max-width: 660px; }   /* breaks after "one point." */
-.mark-v2__lede {
-  margin-top: var(--space-3);
+  bottom: var(--space-7);
+  max-width: 660px;              /* breaks after "one point." */
   font-size: 20px;
   line-height: 1.5;
   color: var(--color-on-dark);
   text-wrap: pretty;
 }
-.mark-v2__count {
-  flex: none;
-  font-variant-numeric: tabular-nums;
-}
-.mark-v2__count span { color: var(--color-on-dark); }
-.mark-v2:not(.is-live) .mark-v2__count { visibility: hidden; }
 
 @media (prefers-reduced-motion: reduce) {
   .mark-v2__light { animation: none; }
@@ -231,19 +215,19 @@
   .mark-v2.is-live { height: auto; }
   .mark-v2__stage { position: relative; height: auto; min-height: 100svh; padding-block: var(--space-9); }
   .mark-v2__frame { position: relative; inset: auto; display: flex; flex-direction: column; }
-  .mark-v2__label { position: static; }
-  .mark-v2__figure { position: relative; left: auto; top: auto; align-self: center; margin-block: var(--space-9) var(--space-8); }
-  .mark-v2__notes { position: static; width: auto; height: auto; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-6); }
+  .mark-v2__figure { position: relative; left: auto; top: auto; align-self: center; margin-block: var(--space-6) var(--space-8); }
+  .mark-v2__notes { position: static; width: auto; height: auto; }
+  .mark-v2__tag { display: none; }
+  .mark-v2__list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-6); }
   .mark-v2__note { position: static; width: auto; text-align: left; }
   .mark-v2__note--1 { text-align: left; }
-  .mark-v2__name { font-size: 32px; }
-  .mark-v2__foot { position: static; margin-top: var(--space-8); }
-  .mark-v2__count { display: none; }
+  .mark-v2__name { font-size: 32px; --title: 38px; }
+  .mark-v2__closing { position: static; margin-top: var(--space-8); }
 }
 @media (max-width: 809px) {
   .mark-v2__stage { padding-block: var(--space-8); }
-  .mark-v2__figure { margin-block: var(--space-8) var(--space-7); }
-  .mark-v2__notes { grid-template-columns: 1fr; gap: var(--space-6); }
-  .mark-v2__name { font-size: 28px; }
-  .mark-v2__lede { font-size: 19px; }
+  .mark-v2__figure { margin-block: var(--space-4) var(--space-7); }
+  .mark-v2__list { grid-template-columns: 1fr; }
+  .mark-v2__name { font-size: 28px; --title: 34px; }
+  .mark-v2__closing { font-size: 19px; text-wrap: balance; }
 }
