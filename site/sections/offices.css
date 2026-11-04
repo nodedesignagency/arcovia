@@ -20,7 +20,9 @@
   --offices-fs: calc((min(100vw, var(--container-max)) - 2 * var(--gutter)) * 0.04);
   --offices-line: rgba(21, 21, 21, 0.16);
   background: var(--color-neutral);
-  padding-block: var(--space-10) var(--space-9);
+  /* Little bottom padding: the footer follows the closing row's lower hairline, and with its own top
+     padding its logo and first capitals sit as far under it as the closing line sits from each hairline */
+  padding-block: var(--space-10) var(--space-3);
 }
 
 /* ---------- Head: the heading on the left, its line on the right ---------- */
@@ -218,22 +220,22 @@
 
 /* ---------- Tablet: the line under the heading; each office's details one under the other ---------- */
 @media (max-width: 1199px) {
-  .offices { --offices-fs: 40px; padding-block: var(--space-9) var(--space-8); }
+  .offices { --offices-fs: 40px; padding-block: var(--space-9) var(--space-3); }
   .offices__head { margin-bottom: var(--space-7); }
   .offices__title { grid-column: 1 / -1; }
   .offices__lede { grid-column: 1 / span 8; grid-row: 3; justify-self: start; margin: var(--space-5) 0 0; }
   .office__city { font-size: 24px; }
   .office__details { grid-template-columns: minmax(0, 1fr); }
-  .offices__close { margin-top: var(--space-9); padding-block: var(--space-7); }
+  .offices__close { margin-top: var(--space-9); }
   .offices__close-title { font-size: 30px; }
 }
 
 /* ---------- Phone: one office under the other; the button under the line ---------- */
 @media (max-width: 809px) {
-  .offices { --offices-fs: 30px; padding-block: var(--space-8) var(--space-7); }
+  .offices { --offices-fs: 30px; padding-block: var(--space-8) var(--space-3); }
   .offices__lede { grid-column: 1 / -1; text-wrap: balance; } /* even lines, no word left alone */
   .offices__list { grid-template-columns: minmax(0, 1fr); row-gap: var(--space-8); }
   .office__city { font-size: 22px; }
-  .offices__close { flex-direction: column; align-items: flex-start; gap: var(--space-5); margin-top: var(--space-8); padding-block: var(--space-6); }
+  .offices__close { flex-direction: column; align-items: flex-start; gap: var(--space-5); margin-top: var(--space-8); }
   .offices__close-title { font-size: 24px; }
 }
