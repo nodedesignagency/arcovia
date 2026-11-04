@@ -51,7 +51,8 @@
   grid-template-columns: subgrid;
   align-items: start;
   row-gap: 22px;
-  margin-bottom: 80px;
+  /* the line follows 32px under the headline */
+  margin-bottom: var(--space-6);
 }
 .contact__head .chip {
   grid-column: 1 / span 2;
@@ -72,24 +73,45 @@
   color: var(--color-ink);
 }
 
-/* ---------- Left: the line, direct email, offices ---------- */
-.contact__aside {
-  grid-column: 1 / span 3;
-  position: sticky;
-  top: calc(var(--mh-labels) + var(--mh-compact) + 32px);
-  display: grid;
-  gap: var(--space-7);
-  /* the lede's first line sits on the note's first line */
-  padding-top: calc((var(--nt-size) * 1.6 - 18px * 1.55) / 2);
-}
+/* ---------- The line: under the headline, where the note starts ----------
+   The user moved it there from the left column (4 Nov 2026); a hairline follows it,
+   over the note (.note-form::before), the same as the one over the sign-off. */
 .contact__lede {
-  max-width: 20em;
-  font-size: 18px;
+  grid-column: 5 / -1;
+  grid-row: 2;
+  max-width: 34em;
+  margin-bottom: var(--space-8);
+  padding-left: var(--space-6);
+  font-size: 20px;
   line-height: 1.55;
   color: var(--color-text);
   text-wrap: pretty;
 }
+
+/* ---------- Left: direct email, offices ---------- */
+.contact__aside {
+  grid-column: 1 / span 3;
+  grid-row: 3;
+  position: sticky;
+  top: calc(var(--mh-labels) + var(--mh-compact) + 32px);
+  display: grid;
+  gap: var(--space-7);
+  /* beside the note: the box's first label has its cap height on "Hello Arcovia,"'s (under
+     the note's hairline and its 28px, less the box's 1px border and 16px inside; Montserrat's
+     cap height sits (line-height / 2 - 0.3415)em under the top of a line) */
+  padding-top: calc(1px + 28px + var(--nt-size) * (1.6 / 2 - 0.3415) - 17px - 14px * (1.4 / 2 - 0.3415));
+}
 .contact__block { padding-top: var(--space-5); border-top: 1px solid var(--nt-rule); }
+/* The emails and the offices in one box (the user asked for it): a hairline, square corners,
+   16px inside; the line between the emails and the offices runs from edge to edge */
+.contact__card {
+  display: grid;
+  gap: var(--space-5);
+  padding: 16px;
+  border: 1px solid var(--nt-rule);
+}
+.contact__card .contact__block--email { padding-top: 0; border-top: 0; }
+.contact__card .contact__block--offices { margin-inline: -16px; padding-inline: 16px; }
 .contact__list { display: grid; gap: var(--space-4); margin: 0; }
 .contact__list dt { font-size: 14px; line-height: 1.4; color: var(--nt-soft); }
 .contact__list dd { margin: 2px 0 0; font-size: 17px; font-weight: var(--weight-medium); line-height: 1.45; }
@@ -116,9 +138,17 @@
 
 /* ---------- Right: the note ---------- */
 /* 32px more room between the left column and the note, so the note doesn't crowd the lede */
-.contact__main { grid-column: 5 / -1; min-width: 0; padding-left: var(--space-6); }
+.contact__main { grid-column: 5 / -1; grid-row: 3; min-width: 0; padding-left: var(--space-6); }
 [data-sheet="card"] .contact__main,
-[data-sheet="card"] .contact__title { padding-left: 0; }
+[data-sheet="card"] .contact__title,
+[data-sheet="card"] .contact__lede { padding-left: 0; }
+
+/* A hairline over the note, the same as the one over its sign-off: the same rule, the line's
+   margin above it (as the sign-off's margin) and 28px under it (as the sign-off); it dims
+   with the sign-off until a path is chosen, so the two lines always match */
+.note-form::before { content: ""; display: block; margin-bottom: 28px; border-top: 1px solid var(--nt-rule); transition: opacity var(--dur-slow) var(--ease-out); }
+.js .note-form:not(.is-chosen)::before { opacity: 0.4; }
+[data-sheet="card"] .note-form::before { content: none; }
 
 .note-form {
   font-size: var(--nt-size);
@@ -333,17 +363,15 @@
   .contact__head { grid-template-columns: none; margin-bottom: var(--space-6); }
   .contact__head .chip { grid-column: 1 / -1; margin-top: 0; }
   .contact__aside { display: contents; }
-  .contact__lede { grid-column: 1 / span 9; grid-row: 2; max-width: 30em; margin-bottom: var(--space-8); font-size: 19px; }
+  .contact__lede { grid-column: 1 / span 9; grid-row: 2; max-width: 30em; margin-bottom: var(--space-8); padding-left: 0; font-size: 19px; }
   .contact__main { grid-column: 1 / -1; grid-row: 3; padding-left: 0; }
-  /* A hairline over the note, the same as the one over its sign-off: the same rule, the lede's
-     margin above it (as the sign-off's margin) and 28px under it (as the sign-off); it dims
-     with the sign-off until a path is chosen, so the two lines always match */
-  .note-form::before { content: ""; display: block; margin-bottom: 28px; border-top: 1px solid var(--nt-rule); transition: opacity var(--dur-slow) var(--ease-out); }
-  .js .note-form:not(.is-chosen)::before { opacity: 0.4; }
-  [data-sheet="card"] .note-form::before { content: none; }
   .contact__block { grid-row: 4; margin-top: var(--space-9); }
   .contact__block--email { grid-column: 1 / span 4; }
   .contact__block--offices { grid-column: 5 / -1; }
+  /* The box is desktop only: below 1200 its two blocks take their places on the page grid */
+  .contact__card { display: contents; }
+  .contact__card .contact__block--email { padding-top: var(--space-5); border-top: 1px solid var(--nt-rule); }
+  .contact__card .contact__block--offices { margin-inline: 0; padding-inline: 0; }
   .contact__offices { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: var(--grid-gap); }
   [data-sheet="card"] .note-form { padding: 44px 40px 0; }
   [data-sheet="card"] .note-done { padding: 44px 40px; }
