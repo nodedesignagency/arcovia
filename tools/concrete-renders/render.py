@@ -9,7 +9,7 @@ something about its service:
 
   narrative  Investor Narrative & Positioning  seven sheets stacked like shingles, in three lengths (memo, teaser, deck)
   strategy   Capital Strategy                  four soft steps: size, anchor, structure, close
-  equity     Equity Raising                    rows of fins on one base line, rising left to right
+  equity     Equity Raising                    a pin field: a grid of pegs rising towards one corner
   debt       Debt Advisory & Placement         a capital stack: five slabs, thick senior at the base
   mna        M&A and Project Finance           two masses fitted along one S-shaped joint
   fund       Fund Formation & Partnerships     a pavilion: a roof slab on round columns, on a plinth
@@ -373,9 +373,8 @@ def scene_strategy(mat):
     studio(target=(0, 0.5, 0))
 
 
-def scene_equity(mat):
-    """Equity Raising: growth equity through 3,000+ institutional relationships.
-    Three rows of fins, layered and overlapping as in the user's fins
+def scene_equity_fins(mat):
+    """Equity, earlier option (the user moved on to the pin field): three rows of fins, layered and overlapping as in the user's fins
     reference, standing on one base line and rising from left to right. Close
     to the camera so they fill the tile; the base line and the charcoal under it
     stay in the frame, and only the tallest fins run off the right."""
@@ -452,49 +451,39 @@ def scene_fund(mat):
     studio(target=(0.5, 0.5, -0.1))
 
 
-def scene_equity_bold(mat):
-    """Equity, option A: one row of six broad, thick fins rising left to right,
-    big in the tile, standing whole on the charcoal."""
-    base, t = -1.15, 0.14
-    heights = (0.95, 1.30, 1.65, 2.00, 2.35, 2.70)
-    for j, hgt in enumerate(heights):
-        w, x = 0.46, -1.45 + j * 0.62
-        box(f"fin{j}", (w, t, hgt), (x + w / 2, 0.0, base + hgt / 2), mat, bevel=0.03, segs=10)
-    camera((-1.6, -5.6, -0.55), (0.35, 0.0, 0.35), lens=50)
-    studio(target=(0.3, 0.0, 0.3))
+def scene_equity(mat):
+    """Equity Raising: growth equity through 3,000+ institutional relationships,
+    many institutions lifting one company. A slab with a
+    grid of small square pegs, their heights rising smoothly towards the far
+    right corner, like pin art; the whole slab sits on the charcoal."""
+    n, peg, pitch = 9, 0.28, 0.36
+    span = n * pitch
+    x0, y0, top = -span / 2, -span / 2, -0.75
+    box("slab", (span + 0.2, span + 0.2, 0.28), (0, 0, top - 0.14), mat, bevel=0.04, segs=10)
+    for i in range(n):
+        for j in range(n):
+            d = (i + j) / (2 * (n - 1))
+            hgt = 0.08 + 1.9 * d ** 2.2
+            x = x0 + pitch / 2 + i * pitch
+            y = y0 + pitch / 2 + j * pitch
+            box(f"peg{i}_{j}", (peg, peg, hgt + 0.05), (x, y, top + (hgt - 0.05) / 2), mat, bevel=0.025, segs=6)
+    camera((-4.2, -5.0, 2.3), (0.15, 0.25, -0.25), lens=47)
+    studio(target=(0, 0, -0.3))
 
 
-def scene_equity_close(mat):
-    """Equity, option B: the layered three-row fins of the user's reference,
-    much closer, so they fill the tile; the base line sits just above the
-    bottom edge, on a strip of charcoal."""
-    base = -0.95
-    rows = (
-        (1.10, -0.72, 0.62, (0.48, 0.36, 0.52, 0.40, 0.46, 0.38, 0.50), 1.75, 0.23),
-        (0.55, -0.98, 0.58, (0.30, 0.44, 0.34, 0.48, 0.30, 0.42, 0.36), 1.30, 0.24),
-        (0.00, -1.22, 0.55, (0.26, 0.32, 0.24, 0.36, 0.28, 0.34, 0.30, 0.26), 0.85, 0.24),
-    )
-    k = 0
-    for depth, x0, step, widths, h0, dh in rows:
-        for j, w in enumerate(widths):
-            top = base + h0 + j * dh
-            box(f"fin{k}", (w, 0.045, top - base), (x0 + j * step + w / 2, depth, (top + base) / 2), mat,
-                bevel=0.014, segs=8)
-            k += 1
-    camera((-1.2, -4.3, -0.55), (0.25, 0.5, 0.55), lens=40)
-    studio(target=(0.3, 0.5, 0.4))
-
-
-def scene_equity_row(mat):
-    """Equity, option C: a row of plates running back into the picture, rising
-    towards the viewer, seen from the side, whole on the charcoal."""
-    base, n = -1.1, 9
-    for j in range(n):
-        hgt = 0.75 + (n - 1 - j) * 0.24  # the nearest is the tallest, so the row rises to the right
-        y = j * 0.42
-        box(f"fin{j}", (0.62, 0.07, hgt), (0.0, y, base + hgt / 2), mat, bevel=0.02, segs=8)
-    camera((-3.6, -3.2, -0.2), (0.0, 1.7, 0.2), lens=50)
-    studio(target=(0.0, 1.7, 0.0))
+def scene_equity_curve(mat):
+    """Equity, concept: growth cast in stone. One solid whose top rises along a
+    smooth curve, gently at first and then steeply, seen whole on the charcoal."""
+    w, n = 3.6, 64
+    x0, base = -1.8, -1.1
+    pts = [(x0, base)]
+    for k in range(n + 1):
+        u = k / n
+        pts.append((x0 + u * w, base + 0.22 + 2.0 * u ** 2.6))
+    pts.append((x0 + w, base))
+    prism("curve", pts, 1.5, mat, plane="XZ", loc=(0, 0, 0), bevel=0.05, segs=12, angle=25)
+    camera((-3.0, -5.6, 1.0), (0.15, 0.75, -0.05), lens=50)
+    studio(target=(0, 0.7, -0.2))
 
 
 SCENES = {
@@ -504,9 +493,9 @@ SCENES = {
     "debt": scene_debt,
     "mna": scene_mna,
     "fund": scene_fund,
-    "equity_bold": scene_equity_bold,
-    "equity_close": scene_equity_close,
-    "equity_row": scene_equity_row,
+    # earlier Equity options, kept for comparison
+    "equity_fins": scene_equity_fins,
+    "equity_curve": scene_equity_curve,
 }
 
 
