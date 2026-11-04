@@ -19,6 +19,21 @@ Earlier Equity options stay in the script as `equity_fins` and `equity_curve`.
 Output: `site/assets/services/<tile>.jpg` and `.webp`, 1440 × 1440 (the tile
 is at most 360px, so 2x is 720px).
 
+## About: "Our story"
+
+Four 4:5 portrait cards for the pinned photo in About's "Our story"
+(Framer's `ArcoviaStory.tsx`), in place of its stock photos, in the same style:
+
+| Card | Step | Form |
+| --- | --- | --- |
+| `story_studio` | A studio in Los Angeles | a lens: three stepped rings like a camera barrel, on a plinth |
+| `story_turn` | A story moves capital | a tower of square slabs, each turned a little further |
+| `story_mark` | Arcovia today | the Arcovia brandmark cast in concrete (official logo geometry), on a plinth |
+| `story_houses` | Two houses | two volumes on one plinth, Arcovia and LPP Media, each with a doorway |
+
+Output: `site/assets/story/<card>.jpg` and `.webp`, 1216 × 1520. Render with
+`--res 1216 --res-y 1520`.
+
 ## Re-rendering
 
 Blender as a Python module, then Pillow for the finish:

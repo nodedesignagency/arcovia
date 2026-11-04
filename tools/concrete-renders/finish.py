@@ -16,7 +16,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("src")
     ap.add_argument("dst", help="output path without extension")
-    ap.add_argument("--size", type=int, default=1600)
+    ap.add_argument("--size", type=int, default=1600, help="output width; the height keeps the render's proportions")
     ap.add_argument("--grain", type=float, default=2.2, help="grain strength, in 8-bit levels")
     ap.add_argument("--seed", type=int, default=7)
     a = ap.parse_args()
@@ -34,7 +34,7 @@ def main():
 
     img = Image.fromarray((out * 255.0 + 0.5).astype(np.uint8), "RGB")
     if img.width != a.size:
-        img = img.resize((a.size, a.size), Image.LANCZOS)
+        img = img.resize((a.size, round(a.size * img.height / img.width)), Image.LANCZOS)
     img.save(a.dst + ".jpg", quality=88, optimize=True, progressive=True)
     img.save(a.dst + ".webp", quality=86, method=6)
 

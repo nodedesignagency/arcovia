@@ -256,7 +256,24 @@ def concrete(name="Concrete", base=0.60, fleck_scale=1.0):
 # faces stay flat and the edges catch the light like cast concrete.
 
 
-def _finish(name, bm, loc, rot, bevel, segs, mat, angle=None):
+def _cutter(name, size, loc):
+    """A box that is never rendered, used to cut an opening into a form."""
+    bm = bmesh.new()
+    bmesh.ops.create_cube(bm, size=1.0)
+    for vert in bm.verts:
+        vert.co = Vector((vert.co.x * size[0], vert.co.y * size[1], vert.co.z * size[2]))
+    me = bpy.data.meshes.new(name)
+    bm.to_mesh(me)
+    bm.free()
+    ob = bpy.data.objects.new(name, me)
+    bpy.context.scene.collection.objects.link(ob)
+    ob.location = loc
+    ob.hide_render = True
+    ob.display_type = "WIRE"
+    return ob
+
+
+def _finish(name, bm, loc, rot, bevel, segs, mat, angle=None, cuts=()):
     me = bpy.data.meshes.new(name)
     bm.to_mesh(me)
     bm.free()
@@ -264,6 +281,10 @@ def _finish(name, bm, loc, rot, bevel, segs, mat, angle=None):
     bpy.context.scene.collection.objects.link(ob)
     ob.location = loc
     ob.rotation_euler = rot
+    for k, (size, cloc) in enumerate(cuts):
+        mod = ob.modifiers.new(f"Cut{k}", "BOOLEAN")
+        mod.operation = "DIFFERENCE"
+        mod.object = _cutter(f"{name}_cut{k}", size, cloc)
     if bevel:
         mod = ob.modifiers.new("Bevel", "BEVEL")
         mod.width = bevel
@@ -280,13 +301,41 @@ def _finish(name, bm, loc, rot, bevel, segs, mat, angle=None):
     return ob
 
 
-def box(name, size, loc, mat, rot=(0, 0, 0), bevel=0.02, segs=8):
-    """A box of size (x, y, z) centred on loc."""
+def box(name, size, loc, mat, rot=(0, 0, 0), bevel=0.02, segs=8, cuts=()):
+    """A box of size (x, y, z) centred on loc; cuts are (size, world location)
+    boxes taken out of it before its edges are rounded."""
     bm = bmesh.new()
     bmesh.ops.create_cube(bm, size=1.0)
     for vert in bm.verts:
         vert.co = Vector((vert.co.x * size[0], vert.co.y * size[1], vert.co.z * size[2]))
-    return _finish(name, bm, loc, rot, bevel, segs, mat)
+    return _finish(name, bm, loc, rot, bevel, segs, mat, angle=30 if cuts else None, cuts=cuts)
+
+
+def rounded_section(r0, z0, r1, z1, rad, n=10):
+    """A closed rectangle from (r0, z0) to (r1, z1) with round corners, as points."""
+    pts = []
+    corners = ((r1 - rad, z0 + rad, -90), (r1 - rad, z1 - rad, 0), (r0 + rad, z1 - rad, 90), (r0 + rad, z0 + rad, 180))
+    for cx, cz, a0 in corners:
+        for k in range(n + 1):
+            t = math.radians(a0 + 90 * k / n)
+            pts.append((cx + rad * math.cos(t), cz + rad * math.sin(t)))
+    return pts
+
+
+def lathe(name, profile, mat, loc=(0, 0, 0), rot=(0, 0, 0), steps=192, closed=True):
+    """A profile of (r, z) points turned around the local z axis, smooth shaded.
+    The profile carries its own rounded corners, so no bevel is needed."""
+    bm = bmesh.new()
+    vs = [bm.verts.new((r, 0.0, z)) for r, z in profile]
+    edges = [bm.edges.new((vs[i], vs[i + 1])) for i in range(len(vs) - 1)]
+    if closed:
+        edges.append(bm.edges.new((vs[-1], vs[0])))
+    bmesh.ops.spin(bm, geom=vs + edges, cent=(0, 0, 0), axis=(0, 0, 1), angle=2 * math.pi, steps=steps)
+    bmesh.ops.remove_doubles(bm, verts=bm.verts, dist=1e-6)
+    bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+    ob = _finish(name, bm, loc, rot, 0, 0, mat)
+    ob.data.shade_smooth()
+    return ob
 
 
 def column(name, radius, height, loc, mat, segs=96):
@@ -486,6 +535,80 @@ def scene_equity_curve(mat):
     studio(target=(0, 0.7, -0.2))
 
 
+# ---------------------------------------------------------------------------
+# About, "Our story": four 4:5 portrait cards, one per step of the story
+
+
+def scene_story_studio(mat):
+    """A studio in Los Angeles (LPP Media, the films, the views): a lens. Three
+    stepped concrete rings like a camera barrel, standing on a plinth."""
+    rings = (
+        # inner r, outer r, back z, front z
+        (0.58, 1.00, -0.30, 0.20),
+        (0.46, 0.78, 0.12, 0.40),
+        (0.36, 0.56, 0.32, 0.56),
+    )
+    # the lens looks out to the front left; its axis is level
+    rot = (math.radians(90), 0, math.radians(-52))
+    for k, (r0, r1, z0, z1) in enumerate(rings):
+        lathe(f"ring{k}", rounded_section(r0, z0, r1, z1, 0.045), mat, loc=(0, 0, 0), rot=rot)
+    box("plinth", (2.6, 1.5, 0.24), (0.1, 0.25, -1.0 - 0.12), mat, bevel=0.035, segs=10)
+    camera((-2.2, -6.0, 0.75), (0.0, 0.1, -0.12), lens=58)
+    studio(target=(0, 0, -0.2))
+
+
+def scene_story_turn(mat):
+    """A story moves capital (the turn, outgrowing the studio): a tower of
+    square slabs, each turned a little further than the one below."""
+    n, side, th, gap = 15, 1.15, 0.11, 0.026
+    z = -1.45
+    for k in range(n):
+        box(f"slab{k}", (side, side, th), (0, 0, z + th / 2), mat, rot=(0, 0, math.radians(5.6 * k)), bevel=0.022, segs=8)
+        z += th + gap
+    camera((-2.4, -6.2, 1.55), (0.0, 0.0, -0.32), lens=56)
+    studio(target=(0, 0, -0.3))
+
+
+def scene_story_mark(mat):
+    """Arcovia today: the Arcovia brandmark, cast in concrete on a plinth. Built
+    from the official logo's geometry (site/assets/logo, viewBox 0 0 72 57)."""
+    s, cx, base, depth = 0.043, 36.2, -1.2, 0.34
+
+    def p(x, y):
+        return ((x - cx) * s, (56.27 - y) * s + base - 0.02)
+
+    left = [p(12.06, 45.65), p(6.40, 56.27), p(9.58, 56.30), p(14.13, 56.23), p(35.04, 17.43), p(32.2, 16.0), p(29.63, 14.40)]
+    right = [p(62.53, 50.74), p(42.92, 14.18), p(40.2, 16.2), p(37.32, 17.17), p(57.84, 56.24), p(65.36, 56.24)]
+    prism("leg_left", left, depth, mat, plane="XZ", loc=(0, -depth / 2, 0), bevel=0.025, segs=8, angle=30)
+    prism("leg_right", right, depth, mat, plane="XZ", loc=(0, -depth / 2, 0), bevel=0.025, segs=8, angle=30)
+    r = 8.01 * s
+    dx, dz = p(36.20, 8.01)
+    disc = rounded_section(0.0, -depth / 2, r, depth / 2, 0.025)
+    disc = [(max(x, 0.0), z) for x, z in disc if x >= -1e-9]
+    lathe("dot", [(0.0, -depth / 2)] + [q for q in disc if q[0] > 0] + [(0.0, depth / 2)], mat,
+          loc=(dx, 0, dz), rot=(math.radians(90), 0, 0), closed=False)
+    box("plinth", (3.3, 1.2, 0.26), (0, 0.1, base - 0.13), mat, bevel=0.035, segs=10)
+    camera((-2.0, -6.2, 0.35), (0.05, 0.0, -0.05), lens=52)
+    studio(target=(0, 0, -0.2))
+
+
+def scene_story_houses(mat):
+    """Two houses (Arcovia and LPP Media, and the doors LPP Media will open):
+    two volumes on one plinth, each with a doorway."""
+    top = -1.05
+    box("plinth", (3.0, 1.7, 0.24), (0.05, 0.1, top - 0.12), mat, bevel=0.035, segs=10)
+    tall = (0.95, 0.95, 2.05)
+    low = (1.35, 0.95, 1.35)
+    tx, lx = -0.62, 0.66
+    door = (0.30, 0.6, 0.82)
+    box("arcovia", tall, (tx, 0, top + tall[2] / 2), mat, bevel=0.03, segs=8,
+        cuts=[(door, (tx, -tall[1] / 2, top + door[2] / 2 - 0.05))])
+    box("lpp", low, (lx, 0, top + low[2] / 2), mat, bevel=0.03, segs=8,
+        cuts=[((0.30, 0.6, 0.72), (lx + 0.12, -low[1] / 2, top + 0.72 / 2 - 0.05))])
+    camera((-2.3, -6.0, 0.95), (0.05, 0.0, -0.15), lens=54)
+    studio(target=(0, 0, -0.2))
+
+
 SCENES = {
     "narrative": scene_narrative,
     "strategy": scene_strategy,
@@ -496,6 +619,11 @@ SCENES = {
     # earlier Equity options, kept for comparison
     "equity_fins": scene_equity_fins,
     "equity_curve": scene_equity_curve,
+    # About, Our story (render at --res 1216 --res-y 1520)
+    "story_studio": scene_story_studio,
+    "story_turn": scene_story_turn,
+    "story_mark": scene_story_mark,
+    "story_houses": scene_story_houses,
 }
 
 
@@ -503,7 +631,8 @@ def main():
     argv = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else sys.argv[1:]
     ap = argparse.ArgumentParser()
     ap.add_argument("--scene", required=True, choices=sorted(SCENES))
-    ap.add_argument("--res", type=int, default=1600)
+    ap.add_argument("--res", type=int, default=1600, help="width in pixels")
+    ap.add_argument("--res-y", type=int, help="height in pixels (default: square)")
     ap.add_argument("--samples", type=int, default=160)
     ap.add_argument("--out", required=True)
     ap.add_argument("--blend", help="also save the scene as a .blend file")
@@ -513,7 +642,7 @@ def main():
 
     sc = reset()
     sc.render.resolution_x = a.res
-    sc.render.resolution_y = a.res
+    sc.render.resolution_y = a.res_y or a.res
     sc.render.resolution_percentage = 100
     sc.cycles.samples = a.samples
     if a.crop:
