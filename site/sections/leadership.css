@@ -5,9 +5,9 @@
    each the name, the title and the person's direct contact (email underlined).
    In our language: on white, a 2 × 2 grid (the user asked for it) at the
    reference's portrait size: "Leadership" on cols 1-6, held in view (sticky)
-   while the grid on cols 7-12 goes by, the four cards three columns each.
-   ?leaders=large (people.js sets data-layout="large"): the 2 × 2 across the
-   full width instead, the heading above it. Every card (component: person-card) is
+   while the grid on cols 7-12 goes by, the four cards three columns each
+   (the user chose this over a row of four and a full-width 2 × 2).
+   Every card (component: person-card) is
    portrait, name, title chip, then the direct email and the LinkedIn tile,
    so nobody has to click through to reach someone. The bio lives on the
    person's profile page, which portrait and name open. Name, title and
@@ -53,15 +53,6 @@
   column-gap: var(--grid-gap);
 }
 .leadership__list > .person-card:nth-child(n + 3) { margin-top: var(--space-8); }
-
-/* ?leaders=large: the 2 × 2 across the full width (six columns a card), the heading above */
-.leadership[data-layout="large"] .leadership__title {
-  grid-column: 1 / -1;
-  position: static;
-  margin-bottom: var(--space-8);
-}
-.leadership[data-layout="large"] .leadership__list { grid-column: 1 / -1; }
-.leadership[data-layout="large"] .person-card__name { font-size: 26px; }
 
 /* ---------- Component: person-card ---------- */
 .person-card {
