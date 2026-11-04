@@ -9,7 +9,7 @@ right), framed like the capital stack, which the user picked as the model:
 | --- | --- | --- |
 | `narrative` | Investor Narrative & Positioning | seven sheets stacked like shingles, three lengths: memo, teaser, deck |
 | `strategy` | Capital Strategy | one folded plate, four steps: size, anchor, structure, close |
-| `equity` | Equity Raising | three rows of fins on one base line, rising left to right like a chart |
+| `equity` | Equity Raising | three rows of fins, layered and close, on one base line, rising left to right |
 | `debt` | Debt Advisory & Placement | a capital stack: five slabs, the senior one thickest at the base |
 | `mna` | M&A and Project Finance | two masses fitted along one S-shaped joint |
 | `fund` | Fund Formation & Partnerships | a pavilion: a roof slab on rows of round columns, on a plinth |

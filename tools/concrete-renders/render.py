@@ -369,14 +369,16 @@ def scene_strategy(mat):
     under[-1] = (top[-1][0], top[-1][1] - th)
     pts = top + list(reversed(under))
     prism("plate", pts, 2.4, mat, plane="XZ", loc=(0, 0, 0), bevel=0.05, segs=12, angle=30)
-    camera((-3.1, -5.6, 1.05), (-0.25, 0.9, -0.3), lens=56)
+    camera((-3.1, -5.6, 1.05), (-0.55, 0.9, -0.5), lens=68)
     studio(target=(0, 0.5, 0))
 
 
 def scene_equity(mat):
     """Equity Raising: growth equity through 3,000+ institutional relationships.
-    Three rows of fins standing on one base line, rising from left to right
-    like a chart. The whole group stands in the frame, with charcoal under it."""
+    Three rows of fins, layered and overlapping as in the user's fins
+    reference, standing on one base line and rising from left to right. Close
+    to the camera so they fill the tile; the base line and the charcoal under it
+    stay in the frame, and only the tallest fins run off the right."""
     base = -0.95
     rows = (
         # depth, first x, step, widths, first height, rise per fin
@@ -393,9 +395,8 @@ def scene_equity(mat):
             box(f"fin{k}", (w, t, top - base), (x + w / 2, depth, (top + base) / 2), mat,
                 bevel=0.014, segs=8)
             k += 1
-    camera((-1.9, -7.0, -0.35), (0.55, 0.5, 0.6), lens=58)
+    camera((-1.05, -5.4, -0.4), (0.55, 0.5, 0.62), lens=48)
     studio(target=(0.3, 0.5, 0.4))
-
 
 def scene_debt(mat):
     """Debt Advisory & Placement: venture debt, growth lending, unitranche,
