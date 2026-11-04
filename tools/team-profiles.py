@@ -4,8 +4,9 @@
 The people come from site/data/team.json (from the client's brief); the masthead,
 menu, sprite and footer are taken from site/team.html, so every profile carries
 the same shared markup (links rewritten one folder up). The profile itself is
-SECTION:profile (sections/profile.css, people.js); advisors' pages also load
-sections/contact.css for the short note's blanks, sign-off and thank-you.
+SECTION:profile (sections/profile.css, people.js). A person whose contact is
+"form" in team.json gets "Contact via Arcovia" and the short note instead of the
+email (their page then also loads sections/contact.css); for now nobody does.
 
     python3 tools/team-profiles.py        writes all fifteen pages
 
@@ -77,10 +78,12 @@ def contact_row(p):
                 f'<a class="profile__social" href="#" aria-label="{esc(p["name"])} on LinkedIn" data-todo="LinkedIn URL [TO CONFIRM]">')
     linkedin += '\n              <svg aria-hidden="true"><use href="#icon-linkedin"/></svg>\n            </a>'
     if p["contact"] == "email":
+        # Advisors write by email too for now (the user); their addresses follow the team's pattern, to confirm
+        todo = ' data-todo="The advisor\'s email address [TO CONFIRM]"' if section_of(p) == "advisors" else ""
         return f'''          <div class="profile__contact">
-            <a class="btn btn--primary profile__cta" href="#" data-mailto="{esc(p["email"])}">Email {first}<svg class="btn__icon" aria-hidden="true"><use href="#icon-arrow"/></svg></a>
+            <a class="btn btn--primary profile__cta" href="#" data-mailto="{esc(p["email"])}"{todo}>Email {first}<svg class="btn__icon" aria-hidden="true"><use href="#icon-arrow"/></svg></a>
             {linkedin}
-            <a class="profile__email" data-email="{esc(p["email"])}">{esc(p["email"])} [at] arcovia.io</a>
+            <a class="profile__email" data-email="{esc(p["email"])}"{todo}>{esc(p["email"])} [at] arcovia.io</a>
           </div>'''
     return f'''          <div class="profile__contact">
             <a class="btn btn--primary profile__cta" href="#contact">Contact via Arcovia<svg class="btn__icon" aria-hidden="true"><use href="#icon-arrow"/></svg></a>
@@ -165,13 +168,14 @@ def jsonld(p):
 def page(i, p):
     prev_p, next_p = people[i - 1], people[(i + 1) % len(people)]
     is_adv = section_of(p) == "advisors"
+    by_note = p["contact"] == "form"   # "Contact via Arcovia": the short note (none for now: everyone writes by email)
     group_label = "Senior advisors" if is_adv else "Leadership"
     group_href = "../team.html#advisors" if is_adv else "../team.html#leadership"
     first_sentence = re.split(r"(?<=[.;])\s", p["bio"], maxsplit=1)[0].rstrip(";")
     desc = f'{p["name"]}, {p["title"]}. {first_sentence}'
     if not desc.endswith("."):
         desc += "."
-    contact_css = '\n  <link rel="stylesheet" href="../sections/contact.css">' if is_adv else ""
+    contact_css = '\n  <link rel="stylesheet" href="../sections/contact.css">' if by_note else ""
     legal = f'\n          <p class="profile__legal">{esc(ADVISOR_NOTE)}</p>' if is_adv else ""
     return f'''<!doctype html>
 <html lang="en">
@@ -200,11 +204,11 @@ def page(i, p):
 {sprite}
 {chrome}  <main id="main">
 
-    <!-- SECTION:profile START · styles: sections/profile.css{" (+ sections/contact.css for the note)" if is_adv else ""} · scripts: people.js
+    <!-- SECTION:profile START · styles: sections/profile.css{" (+ sections/contact.css for the note)" if by_note else ""} · scripts: people.js
          The profile template, one page per person (team/<slug>.html; in Framer, the Team CMS
          template). Portrait on cols 1-4, held in view; the group as a chip back to the Team page,
          the name, the title, the bio from the brief, then the Contact button and LinkedIn.
-         {"Senior advisors: the legal line, and Contact via Arcovia (the short note below)." if is_adv else "Leadership: the button writes to the direct email, which people.js puts together."}
+         {"Contact via Arcovia: the short note below." if by_note else "The button writes to the direct email, which people.js puts together."}{" Senior advisors: the brief's legal line under the bio." if is_adv else ""}
          Previous / All team members / Next at the end. -->
     <article class="profile" aria-labelledby="profile-name">
       <div class="profile__grid container">
@@ -219,7 +223,7 @@ def page(i, p):
           <h1 class="profile__name" id="profile-name">{esc(p["name"])}</h1>
           <p class="profile__title">{esc(p["title"])}</p>
           <p class="profile__bio">{esc(p["bio"])}</p>{legal}
-{contact_row(p)}{note(p) if is_adv else ""}
+{contact_row(p)}{note(p) if by_note else ""}
         </div>
       </div>
 
