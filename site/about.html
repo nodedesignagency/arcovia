@@ -1,0 +1,557 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>About · Arcovia</title>
+  <meta name="description" content="Arcovia is an independent capital markets advisory. We help ambitious founders, funds and foundations raise from investors who understand what they are building and why it matters.">
+  <meta name="robots" content="noindex, nofollow"><!-- Draft: keep staging out of search -->
+  <meta name="theme-color" content="#d3d3d3">
+  <link rel="icon" href="assets/a-mark.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&display=swap">
+  <link rel="preload" href="assets/concrete.jpg" as="image">
+  <link rel="stylesheet" href="styles.css">
+  <!-- One stylesheet per section, so a section can be approved and moved to main on its own -->
+  <link rel="stylesheet" href="sections/about-hero.css">
+  <link rel="stylesheet" href="sections/story.css">
+  <link rel="stylesheet" href="sections/beliefs.css">
+  <link rel="stylesheet" href="sections/process.css">
+  <link rel="stylesheet" href="sections/mark-v2.css">
+  <link rel="stylesheet" href="sections/footer.css">
+</head>
+<body>
+
+  <!-- Sprite: logo. One source for header, menu and footer -->
+  <svg class="sprite" aria-hidden="true" focusable="false">
+    <!-- Official Arcovia logo (site/assets/logo/, from the client): brandmark and wordmark -->
+    <symbol id="a-mark" viewBox="0 0 72 57"><path d="M12.0606 45.653L6.4043 56.272L9.58059 56.3005C11.096 56.3148 12.4458 56.3605 14.1267 56.2321L35.0366 17.4288C32.9219 16.7924 31.1725 15.7479 29.6286 14.4009L12.0606 45.653Z"/><path d="M62.5327 50.738L42.9184 14.1807C41.2461 15.8616 39.5509 16.9432 37.3164 17.1743L57.8439 56.243H65.3551C64.3192 54.3652 63.3831 52.7499 62.5327 50.738Z"/><path d="M36.201 16.0215C40.6267 16.0215 44.2145 12.4351 44.2145 8.0109C44.2145 3.58674 40.6267 0.000244141 36.201 0.000244141C31.7753 0.000244141 28.1875 3.58674 28.1875 8.0109C28.1875 12.4351 31.7753 16.0215 36.201 16.0215Z"/></symbol>
+    <symbol id="wordmark" viewBox="0 0 72 11"><path d="M60.8672 10.8151L65.4337 0.362549H67.1239L71.6903 10.8151H69.7629L68.7103 8.30942H63.8028L62.7353 10.8151H60.8672ZM64.47 6.69336H68.0431L66.2491 2.54201L64.47 6.69336Z"/><path d="M57.1562 10.8149V0.436523H58.9799V10.8149H57.1562Z"/><path d="M49.3426 10.889L45.043 0.436523H47.0593L50.1877 8.41305L53.3012 0.436523H55.2731L50.9735 10.889H49.3426Z"/><path d="M38.9389 10.993C35.7513 10.993 33.5273 8.57632 33.5273 5.65554V5.62589C33.5273 2.71995 35.7809 0.258789 38.9686 0.258789C42.1562 0.258789 44.3802 2.67547 44.3802 5.59624V5.62589C44.3802 8.53184 42.1266 10.993 38.9389 10.993ZM38.9686 9.3028C41.0294 9.3028 42.4676 7.67191 42.4676 5.65554V5.62589C42.4676 3.60952 41.0146 1.94898 38.9389 1.94898C36.8781 1.94898 35.4399 3.57987 35.4399 5.59624V5.62589C35.4399 7.64226 36.8929 9.3028 38.9686 9.3028Z"/><path d="M28.1356 10.993C25.111 10.993 22.8574 8.63562 22.8574 5.65554V5.62589C22.8574 2.67547 25.0665 0.258789 28.1949 0.258789C30.1223 0.258789 31.2787 0.92597 32.2721 1.87485L31.1008 3.22404C30.2557 2.45307 29.381 1.94898 28.18 1.94898C26.223 1.94898 24.77 3.56504 24.77 5.59624V5.62589C24.77 7.65709 26.2082 9.3028 28.1949 9.3028C29.4551 9.3028 30.2854 8.79871 31.1749 7.96844L32.3462 9.15454C31.2936 10.2962 30.063 10.993 28.1356 10.993Z"/><path d="M12.6016 10.8149V0.436523H17.2274C18.5321 0.436523 19.5551 0.822006 20.2223 1.47436C20.7708 2.05259 21.0822 2.80872 21.0822 3.71313V3.74278C21.0822 5.4478 20.0592 6.47081 18.621 6.88594L21.4232 10.8149H19.2585L16.7084 7.19729H14.4252V10.8149H12.6016ZM14.4252 5.58123H17.0939C18.3986 5.58123 19.2289 4.91405 19.2289 3.84656V3.81691C19.2289 2.69011 18.4431 2.09706 17.0791 2.09706H14.4252V5.58123Z"/><path d="M0 10.8151L4.56649 0.362549H6.25668L10.8232 10.8151H8.89575L7.84309 8.30942H2.9356L1.86811 10.8151H0ZM3.60278 6.69336H7.17591L5.38193 2.54201L3.60278 6.69336Z"/></symbol>
+    <!-- Our story icons: Solar, Bold Duotone (480 Design, CC BY 4.0, via Iconify), the set the path-picker icons come from; light layer at 20% as there -->
+    <symbol id="icon-story-camera" viewBox="0 0 24 24"><g fill="currentColor"><path d="M17.6582 9.1709C19.6041 8.19795 20.5777 7.7117 21.2891 8.15137C22.0001 8.59119 22 9.67931 22 11.8545V12.1465C22 14.3212 21.9999 15.4088 21.2891 15.8486C20.5777 16.2883 19.6041 15.802 17.6582 14.8291L17 14.5V9.5L17.6582 9.1709Z"/><path d="M12.5 7C13.3284 7 14 7.67157 14 8.5C14 9.32843 13.3284 10 12.5 10C11.6716 10 11 9.32843 11 8.5C11 7.67157 11.6716 7 12.5 7Z"/><path fill-rule="evenodd" d="M2.90796 5.46243C2 6.56878 2 8.21252 2 11.5V12.5C2 15.7875 2 17.4312 2.90796 18.5376C3.07418 18.7401 3.25989 18.9258 3.46243 19.092C4.56878 20 6.21252 20 9.5 20C12.7875 20 14.4312 20 15.5376 19.092C15.7401 18.9258 15.9258 18.7401 16.092 18.5376C17 17.4312 17 15.7875 17 12.5V11.5C17 8.21252 17 6.56878 16.092 5.46243C15.9258 5.25989 15.7401 5.07418 15.5376 4.90796C14.4312 4 12.7875 4 9.5 4C6.21252 4 4.56878 4 3.46243 4.90796C3.25989 5.07418 3.07418 5.25989 2.90796 5.46243Z" clip-rule="evenodd" opacity="0.2"/></g></symbol>
+    <symbol id="icon-story-views" viewBox="0 0 24 24"><g fill="currentColor"><path d="M2 12C2 13.6394 2.42496 14.1915 3.27489 15.2957C4.97196 17.5004 7.81811 20 12 20C16.1819 20 19.028 17.5004 20.7251 15.2957C21.575 14.1915 22 13.6394 22 12C22 10.3606 21.575 9.80853 20.7251 8.70433C19.028 6.49956 16.1819 4 12 4C7.81811 4 4.97196 6.49956 3.27489 8.70433C2.42496 9.80853 2 10.3606 2 12Z" opacity="0.2"/><path fill-rule="evenodd" d="M8.25 12C8.25 9.92893 9.92893 8.25 12 8.25C14.0711 8.25 15.75 9.92893 15.75 12C15.75 14.0711 14.0711 15.75 12 15.75C9.92893 15.75 8.25 14.0711 8.25 12ZM9.75 12C9.75 10.7574 10.7574 9.75 12 9.75C13.2426 9.75 14.25 10.7574 14.25 12C14.25 13.2426 13.2426 14.25 12 14.25C10.7574 14.25 9.75 13.2426 9.75 12Z" clip-rule="evenodd"/></g></symbol>
+    <symbol id="icon-story-lesson" viewBox="0 0 24 24"><g fill="currentColor"><path d="M4 9.67442C4 5.43595 7.35786 2 11.5 2C15.6421 2 19 5.43595 19 9.67442C19 11.9468 18.034 13.9892 16.5014 15.3934C15.9906 15.8614 15.6122 16.2082 15.344 16.4598C15.2099 16.5855 15.1074 16.6838 15.0317 16.7592C14.994 16.7968 14.9651 16.8266 14.9436 16.8496C14.933 16.861 14.925 16.8699 14.9192 16.8766C14.9133 16.8834 14.9108 16.8864 14.9108 16.8864C14.6743 17.1851 14.6231 17.2622 14.5926 17.332C14.5621 17.4018 14.5402 17.4922 14.4805 17.8717C14.457 18.0216 14.4545 18.2782 14.4545 18.9767V19.0067C14.4546 19.4158 14.4546 19.7687 14.4289 20.0583C14.4018 20.3645 14.3418 20.6677 14.1805 20.9535C14.001 21.2717 13.7428 21.5359 13.4318 21.7196C13.1525 21.8846 12.8562 21.946 12.557 21.9738C12.274 22 11.9292 22 11.5294 22H11.5293H11.4707H11.4706C11.0708 22 10.726 22 10.443 21.9738C10.1438 21.946 9.84747 21.8846 9.56818 21.7196C9.25723 21.5359 8.99902 21.2717 8.81949 20.9535C8.65825 20.6677 8.5982 20.3645 8.57107 20.0583C8.54543 19.7687 8.54544 19.4158 8.54545 19.0067L8.54545 18.9767C8.54545 18.2782 8.54305 18.0216 8.51949 17.8717C8.45982 17.4922 8.43787 17.4018 8.40739 17.332C8.3769 17.2622 8.32571 17.1851 8.0892 16.8864C8.0892 16.8864 8.08649 16.8831 8.0808 16.8766C8.07499 16.8699 8.06699 16.861 8.05635 16.8496C8.03486 16.8266 8.00601 16.7968 7.9683 16.7592C7.89262 16.6838 7.7901 16.5855 7.65601 16.4598C7.38782 16.2082 7.0094 15.8614 6.49859 15.3934C4.96602 13.9892 4 11.9468 4 9.67442Z" opacity="0.2"/><path d="M13.0848 19.6748H9.91463C9.9176 19.7718 9.92209 19.8565 9.92884 19.9327C9.94739 20.1422 9.97868 20.2182 10.0001 20.2562C10.06 20.3623 10.146 20.4504 10.2497 20.5116C10.2868 20.5335 10.3612 20.5656 10.5658 20.5845C10.7799 20.6044 11.0623 20.6051 11.4997 20.6051C11.9371 20.6051 12.2195 20.6044 12.4336 20.5845C12.6382 20.5656 12.7125 20.5335 12.7497 20.5116C12.8533 20.4504 12.9394 20.3623 12.9993 20.2562C13.0207 20.2182 13.052 20.1422 13.0706 19.9327C13.0773 19.8565 13.0818 19.7718 13.0848 19.6748Z"/><path d="M12.6102 8.17688C12.9166 8.40084 12.9875 8.83658 12.7687 9.15012L11.5907 10.8376H12.9931C13.2485 10.8376 13.4825 10.9837 13.5993 11.2161C13.7162 11.4484 13.6963 11.7282 13.5479 11.9408L11.5998 14.7315C11.381 15.0451 10.9551 15.1177 10.6487 14.8937C10.3423 14.6698 10.2713 14.234 10.4902 13.9205L11.6682 12.233H10.2658C10.0104 12.233 9.77642 12.0869 9.65955 11.8545C9.54269 11.6222 9.56254 11.3424 9.71099 11.1298L11.659 8.33909C11.8779 8.02555 12.3037 7.95292 12.6102 8.17688Z"/></g></symbol>
+    <symbol id="icon-story-turn" viewBox="0 0 24 24"><g fill="currentColor"><path fill-rule="evenodd" d="M2 12C2 10.7632 2 9.68872 2.02644 8.75H21.9736C22 9.68872 22 10.7632 22 12C22 16.714 22 19.071 20.5355 20.5355C19.0711 22 16.714 22 12 22C7.28595 22 4.92893 22 3.46447 20.5355C2 19.071 2 16.714 2 12Z" clip-rule="evenodd" opacity="0.2"/><path d="M10.5005 11.6045C11.0009 11.2866 11.6721 11.719 13.0142 12.585C14.3382 13.4392 15.0005 13.8666 15.0005 14.5C15.0005 15.1334 14.3382 15.5608 13.0142 16.415C11.6721 17.281 11.0009 17.7134 10.5005 17.3955C10.0002 17.0776 10.0005 16.2185 10.0005 14.5C10.0005 12.7815 10.0002 11.9224 10.5005 11.6045Z"/><path d="M6.59814 7.25H2.104C2.25125 5.48602 2.60681 4.32249 3.46436 3.46484C4.71669 2.21251 6.62167 2.03116 10.0952 2.00488L6.59814 7.25Z"/><path d="M11.9995 2C13.8446 2 15.3288 2.00009 16.5396 2.08789L13.0981 7.25H8.40088L11.9009 2H11.9995Z"/><path d="M18.1987 2.30371C19.1924 2.51314 19.9383 2.86754 20.5356 3.46484C21.3931 4.32248 21.7488 5.48613 21.896 7.25H14.9009L18.1987 2.30371Z"/></g></symbol>
+    <symbol id="icon-story-outgrow" viewBox="0 0 24 24"><g fill="currentColor"><path d="M2 12C2 7.28595 2 4.92893 3.46447 3.46447C4.92893 2 7.28595 2 12 2C16.714 2 19.0711 2 20.5355 3.46447C22 4.92893 22 7.28595 22 12C22 16.714 22 19.0711 20.5355 20.5355C19.0711 22 16.714 22 12 22C7.28595 22 4.92893 22 3.46447 20.5355C2 19.0711 2 16.714 2 12Z" opacity="0.2"/><path d="M13.25 7C13.25 7.41421 13.5858 7.75 14 7.75H15.1893L12.9697 9.96967C12.6768 10.2626 12.6768 10.7374 12.9697 11.0303C13.2626 11.3232 13.7374 11.3232 14.0303 11.0303L16.25 8.81066V10C16.25 10.4142 16.5858 10.75 17 10.75C17.4142 10.75 17.75 10.4142 17.75 10V7C17.75 6.58579 17.4142 6.25 17 6.25H14C13.5858 6.25 13.25 6.58579 13.25 7Z"/><path d="M11.0303 14.0303C11.3232 13.7374 11.3232 13.2626 11.0303 12.9697C10.7374 12.6768 10.2626 12.6768 9.96967 12.9697L7.75 15.1893V14C7.75 13.5858 7.41421 13.25 7 13.25C6.58579 13.25 6.25 13.5858 6.25 14V17C6.25 17.4142 6.58579 17.75 7 17.75H10C10.4142 17.75 10.75 17.4142 10.75 17C10.75 16.5858 10.4142 16.25 10 16.25H8.81066L11.0303 14.0303Z"/><path d="M10.75 7C10.75 7.41421 10.4142 7.75 10 7.75H8.81066L11.0303 9.96967C11.3232 10.2626 11.3232 10.7374 11.0303 11.0303C10.7374 11.3232 10.2626 11.3232 9.96967 11.0303L7.75 8.81066V10C7.75 10.4142 7.41421 10.75 7 10.75C6.58579 10.75 6.25 10.4142 6.25 10V7C6.25 6.58579 6.58579 6.25 7 6.25H10C10.4142 6.25 10.75 6.58579 10.75 7Z"/><path d="M12.9697 14.0303C12.6768 13.7374 12.6768 13.2626 12.9697 12.9697C13.2626 12.6768 13.7374 12.6768 14.0303 12.9697L16.25 15.1893V14C16.25 13.5858 16.5858 13.25 17 13.25C17.4142 13.25 17.75 13.5858 17.75 14V17C17.75 17.4142 17.4142 17.75 17 17.75H14C13.5858 17.75 13.25 17.4142 13.25 17C13.25 16.5858 13.5858 16.25 14 16.25H15.1893L12.9697 14.0303Z"/></g></symbol>
+    <symbol id="icon-story-firm" viewBox="0 0 24 24"><g fill="currentColor"><path d="M20.9129 5.88881C21.25 6.39325 21.25 7.09549 21.25 8.49995V21.2499H21.75C22.1642 21.2499 22.5 21.5857 22.5 21.9999C22.5 22.4142 22.1642 22.7499 21.75 22.7499H1.75C1.33579 22.7499 1 22.4142 1 21.9999C1 21.5857 1.33579 21.2499 1.75 21.2499H2.25V8.49995C2.25 7.09549 2.25 6.39325 2.58706 5.88881C2.73298 5.67043 2.92048 5.48293 3.13886 5.33701C3.58008 5.04219 5.67561 5.00524 6.75702 5.00061C6.75291 5.292 6.75294 5.59649 6.75298 5.91045L6.75299 5.99995V7.24995H4.25C3.83579 7.24995 3.5 7.58573 3.5 7.99995C3.5 8.41416 3.83579 8.74995 4.25 8.74995H6.75299V10.2499H4.25C3.83579 10.2499 3.5 10.5857 3.5 10.9999C3.5 11.4142 3.83579 11.7499 4.25 11.7499H6.75299V13.2499H4.25C3.83579 13.2499 3.5 13.5857 3.5 13.9999C3.5 14.4142 3.83579 14.7499 4.25 14.7499H6.75299V21.2499H16.7529V14.7499H19.25C19.6642 14.7499 20 14.4142 20 13.9999C20 13.5857 19.6642 13.2499 19.25 13.2499H16.7529V11.7499H19.25C19.6642 11.7499 20 11.4142 20 10.9999C20 10.5857 19.6642 10.2499 19.25 10.2499H16.7529V8.74995H19.25C19.6642 8.74995 20 8.41416 20 7.99995C20 7.58573 19.6642 7.24995 19.25 7.24995H16.7529V5.99995L16.7529 5.91046V5.91043C16.753 5.59648 16.753 5.292 16.7489 5.00061C17.8303 5.00524 19.9199 5.04219 20.3611 5.33701C20.5795 5.48293 20.767 5.67043 20.9129 5.88881Z" opacity="0.2"/><path fill-rule="evenodd" d="M10.75 2H12.75C14.6356 2 15.5784 2 16.1642 2.58579C16.75 3.17157 16.75 4.11438 16.75 6V21.25H18.25H21.25H21.75C22.1642 21.25 22.5 21.5858 22.5 22C22.5 22.4142 22.1642 22.75 21.75 22.75H1.75C1.33579 22.75 1 22.4142 1 22C1 21.5858 1.33579 21.25 1.75 21.25H2.25H5.25H6.75V6C6.75 4.11438 6.75 3.17157 7.33579 2.58579C7.92157 2 8.86438 2 10.75 2ZM11.75 18.25C12.1642 18.25 12.5 18.5858 12.5 19V21.25H11V19C11 18.5858 11.3358 18.25 11.75 18.25ZM9.75 14C9.33579 14 9 14.3358 9 14.75C9 15.1642 9.33579 15.5 9.75 15.5H13.75C14.1642 15.5 14.5 15.1642 14.5 14.75C14.5 14.3358 14.1642 14 13.75 14H9.75ZM9 11.75C9 11.3358 9.33579 11 9.75 11H13.75C14.1642 11 14.5 11.3358 14.5 11.75C14.5 12.1642 14.1642 12.5 13.75 12.5H9.75C9.33579 12.5 9 12.1642 9 11.75ZM9.75 8.5C9.33579 8.5 9 8.83579 9 9.25C9 9.66421 9.33579 10 9.75 10H13.75C14.1642 10 14.5 9.66421 14.5 9.25C14.5 8.83579 14.1642 8.5 13.75 8.5H9.75ZM9 6.25C9 5.83579 9.33579 5.5 9.75 5.5H13.75C14.1642 5.5 14.5 5.83579 14.5 6.25C14.5 6.66421 14.1642 7 13.75 7H9.75C9.33579 7 9 6.66421 9 6.25Z" clip-rule="evenodd"/></g></symbol>
+    <symbol id="icon-story-point" viewBox="0 0 24 24"><g fill="currentColor"><path d="M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z" opacity="0.2"/><path d="M12 18.25C12.4142 18.25 12.75 18.5858 12.75 19V21.9727C12.5024 21.991 12.2523 22 12 22C11.7477 22 11.4976 21.991 11.25 21.9727V19C11.25 18.5858 11.5858 18.25 12 18.25Z"/><path d="M12 9.25C12.4142 9.25 12.75 9.58579 12.75 10V11.25H14C14.4142 11.25 14.75 11.5858 14.75 12C14.75 12.4142 14.4142 12.75 14 12.75H12.75V14C12.75 14.4142 12.4142 14.75 12 14.75C11.5858 14.75 11.25 14.4142 11.25 14V12.75H10C9.58579 12.75 9.25 12.4142 9.25 12C9.25 11.5858 9.58579 11.25 10 11.25H11.25V10C11.25 9.58579 11.5858 9.25 12 9.25Z"/><path d="M5 11.25C5.41421 11.25 5.75 11.5858 5.75 12C5.75 12.4142 5.41421 12.75 5 12.75H2.02734C2.00899 12.5024 2 12.2523 2 12C2 11.7477 2.00899 11.4976 2.02734 11.25H5Z"/><path d="M21.9727 11.25C21.991 11.4976 22 11.7477 22 12C22 12.2523 21.991 12.5024 21.9727 12.75H19C18.5858 12.75 18.25 12.4142 18.25 12C18.25 11.5858 18.5858 11.25 19 11.25H21.9727Z"/><path d="M12 2C12.2523 2 12.5024 2.00899 12.75 2.02734V5C12.75 5.41421 12.4142 5.75 12 5.75C11.5858 5.75 11.25 5.41421 11.25 5V2.02734C11.4976 2.00899 11.7477 2 12 2Z"/></g></symbol>
+    <symbol id="icon-story-map" viewBox="0 0 24 24"><g fill="currentColor"><g opacity="0.2"><path d="M3 8.70938V16.8377C3 17.8813 3 18.4031 3.28314 18.7959C3.56627 19.1888 4.06129 19.3538 5.05132 19.6838L6.21609 20.072C7.58318 20.5277 8.26674 20.7556 8.95493 20.6634C8.96999 20.6614 8.98501 20.6593 9 20.6569V6.65705C8.88712 6.67391 8.77331 6.68433 8.6591 6.68823C8.11989 6.70665 7.58626 6.52877 6.51901 6.17302C5.12109 5.70705 4.42213 5.47406 3.89029 5.71066C3.70147 5.79466 3.53204 5.91678 3.39264 6.06935C3 6.49907 3 7.23584 3 8.70938Z"/><path d="M21 15.2907V7.16229C21 6.11872 21 5.59692 20.7169 5.20409C20.4337 4.81126 19.9387 4.64625 18.9487 4.31624L17.7839 3.92799C16.4168 3.47229 15.7333 3.24444 15.0451 3.3366C15.03 3.33861 15.015 3.34078 15 3.34309V17.343C15.1129 17.3261 15.2267 17.3157 15.3409 17.3118C15.8801 17.2934 16.4137 17.4713 17.481 17.827C18.8789 18.293 19.5779 18.526 20.1097 18.2894C20.2985 18.2054 20.468 18.0833 20.6074 17.9307C21 17.501 21 16.7642 21 15.2907Z"/></g><path d="M9.24685 6.60921C9.16522 6.6285 9.08286 6.64435 9 6.65673V20.6566C9.66964 20.5533 10.2689 20.1538 11.4416 19.3719L12.824 18.4503C13.7601 17.8263 14.2281 17.5143 14.7532 17.3902C14.8348 17.3709 14.9171 17.355 15 17.3427V3.34277C14.3304 3.44613 13.7311 3.84561 12.5583 4.62747L11.176 5.54905C10.2399 6.17308 9.77191 6.48509 9.24685 6.60921Z"/><path d="M17.481 17.8267C17.5684 17.8558 17.653 17.884 17.735 17.9113L17.481 17.8267Z"/></g></symbol>
+    <symbol id="icon-story-process" viewBox="0 0 24 24"><g fill="currentColor"><path d="M2 12C2 7.28595 2 4.92893 3.46447 3.46447C4.92893 2 7.28595 2 12 2C16.714 2 19.0711 2 20.5355 3.46447C22 4.92893 22 7.28595 22 12C22 16.714 22 19.0711 20.5355 20.5355C19.0711 22 16.714 22 12 22C7.28595 22 4.92893 22 3.46447 20.5355C2 19.0711 2 16.714 2 12Z" opacity="0.2"/><path d="M10.5431 7.51724C10.8288 7.2173 10.8172 6.74256 10.5172 6.4569C10.2173 6.17123 9.74256 6.18281 9.4569 6.48276L7.14286 8.9125L6.5431 8.28276C6.25744 7.98281 5.78271 7.97123 5.48276 8.2569C5.18281 8.54256 5.17123 9.01729 5.4569 9.31724L6.59976 10.5172C6.74131 10.6659 6.9376 10.75 7.14286 10.75C7.34812 10.75 7.5444 10.6659 7.68596 10.5172L10.5431 7.51724Z"/><path d="M13 8.25C12.5858 8.25 12.25 8.58579 12.25 9C12.25 9.41422 12.5858 9.75 13 9.75H18C18.4142 9.75 18.75 9.41422 18.75 9C18.75 8.58579 18.4142 8.25 18 8.25H13Z"/><path d="M10.5431 14.5172C10.8288 14.2173 10.8172 13.7426 10.5172 13.4569C10.2173 13.1712 9.74256 13.1828 9.4569 13.4828L7.14286 15.9125L6.5431 15.2828C6.25744 14.9828 5.78271 14.9712 5.48276 15.2569C5.18281 15.5426 5.17123 16.0173 5.4569 16.3172L6.59976 17.5172C6.74131 17.6659 6.9376 17.75 7.14286 17.75C7.34812 17.75 7.5444 17.6659 7.68596 17.5172L10.5431 14.5172Z"/><path d="M13 15.25C12.5858 15.25 12.25 15.5858 12.25 16C12.25 16.4142 12.5858 16.75 13 16.75H18C18.4142 16.75 18.75 16.4142 18.75 16C18.75 15.5858 18.4142 15.25 18 15.25H13Z"/></g></symbol>
+    <symbol id="icon-story-money" viewBox="0 0 24 24"><g fill="currentColor"><path fill-rule="evenodd" d="M21.1885 10.0037C22.1109 10.0603 22.9263 10.7611 22.9951 11.7401C22.9996 11.8043 23 11.8741 23 11.9383V16.0613C23 16.1255 22.9996 16.1954 22.9951 16.2596C22.9263 17.2386 22.1109 17.9393 21.1885 17.9959C21.1263 17.9997 21.0585 17.9998 20.9883 17.9998H18.2148C15.9435 17.9998 14 16.2637 14 13.9998C14 11.7359 15.9435 9.99986 18.2148 9.99982H20.9883C21.0585 9.99979 21.1263 9.99991 21.1885 10.0037ZM17.9707 12.9334C17.3859 12.9334 16.9121 13.4107 16.9121 13.9998C16.9121 14.5889 17.3859 15.0662 17.9707 15.0662C18.5554 15.0662 19.0293 14.5889 19.0293 13.9998C19.0293 13.4108 18.5554 12.9335 17.9707 12.9334Z" clip-rule="evenodd"/><path d="M9.46973 8.88556C9.86895 8.88556 10.1924 9.21172 10.1924 9.61408C10.1924 10.0165 9.86897 10.3426 9.46973 10.3426H5.61426C5.21512 10.3425 4.8916 10.0164 4.8916 9.61408C4.89163 9.2118 5.21514 8.88569 5.61426 8.88556H9.46973Z"/><path d="M10.1016 2.57208C11.2301 1.80932 12.7592 1.80929 13.8877 2.57208L16 3.99982L17.9014 5.2674C17.6892 5.22148 17.4683 5.18394 17.2393 5.15314C16.1001 4.99999 14.6442 4.9998 12.8066 4.99982H10.6934C8.85875 4.9998 7.40494 4.99977 6.2666 5.15216L8 3.99201L10.1016 2.57208Z"/><path d="M21.1394 10.0015C21.1394 8.82091 21.0965 7.55447 20.3418 6.64658C20.2689 6.55894 20.1914 6.47384 20.1088 6.39124C19.3604 5.64288 18.4114 5.31076 17.239 5.15314C16.0998 4.99997 14.6442 4.99999 12.8064 5H10.6936C8.85583 4.99999 7.40019 4.99997 6.26098 5.15314C5.08856 5.31076 4.13961 5.64288 3.39124 6.39124C2.64288 7.13961 2.31076 8.08856 2.15314 9.26098C1.99997 10.4002 1.99999 11.8558 2 13.6936V13.8064C1.99999 15.6442 1.99997 17.0998 2.15314 18.239C2.31076 19.4114 2.64288 20.3604 3.39124 21.1088C4.13961 21.8571 5.08856 22.1892 6.26098 22.3469C7.40018 22.5 8.8558 22.5 10.6935 22.5H12.8064C14.6442 22.5 16.0998 22.5 17.239 22.3469C18.4114 22.1892 19.3604 21.8571 20.1088 21.1088C20.3133 20.9042 20.487 20.6844 20.6346 20.4486C21.0851 19.7291 21.1394 18.8473 21.1394 17.9985C21.0912 18 21.0404 18 20.9882 18L18.2149 18C15.9435 18 14 16.2639 14 14C14 11.7361 15.9435 10 18.2149 10L20.9881 10C21.0403 9.99999 21.0912 9.99997 21.1394 10.0015Z" opacity="0.2"/></g></symbol>
+    <symbol id="icon-story-people" viewBox="0 0 24 24"><g fill="currentColor"><g opacity="0.2"><path d="M16 14C18.7614 14 21 15.3431 21 17C21 18.6569 18.7614 20 16 20C13.2386 20 11 18.6569 11 17C11 15.3431 13.2386 14 16 14Z"/><path d="M15 3C16.6569 3 18 4.34315 18 6C18 7.65685 16.6569 9 15 9C13.3431 9 12 7.65685 12 6C12 4.34315 13.3431 3 15 3Z"/></g><path d="M9.00098 13.001C12.867 13.001 16.001 14.7918 16.001 17.001C16.001 19.2101 12.867 21.001 9.00098 21.001C5.13498 21.001 2.00098 19.2101 2.00098 17.001C2.00098 14.7918 5.13498 13.001 9.00098 13.001Z"/><path d="M9.00098 2C11.2101 2 13.001 3.79086 13.001 6C13.001 8.20914 11.2101 10 9.00098 10C6.79184 10 5.00098 8.20914 5.00098 6C5.00098 3.79086 6.79184 2 9.00098 2Z"/></g></symbol>
+    <symbol id="icon-story-door" viewBox="0 0 24 24"><g fill="currentColor"><path d="M9.052 4.5C9 5.07763 9 5.80355 9 6.72183V17.2781C9 18.1964 9 18.9224 9.05201 19.5H8C5.64298 19.5 4.46447 19.5 3.73223 18.7678C3 18.0355 3 16.857 3 14.5V9.5C3 7.14298 3 5.96447 3.73223 5.23223C4.46447 4.5 5.64298 4.5 8 4.5H9.052Z" opacity="0.2"/><path fill-rule="evenodd" d="M9.70725 2.4087C9 3.03569 9 4.18259 9 6.4764V17.5236C9 19.8174 9 20.9643 9.70725 21.5913C10.4145 22.2183 11.4955 22.0297 13.6576 21.6526L15.9864 21.2465C18.3809 20.8288 19.5781 20.62 20.2891 19.7417C21 18.8635 21 17.5933 21 15.0529V8.94711C21 6.40671 21 5.13652 20.2891 4.25826C19.5781 3.37999 18.3809 3.17118 15.9864 2.75354L13.6576 2.34736C11.4955 1.97026 10.4145 1.78171 9.70725 2.4087ZM12.75 10.9535C12.75 10.52 12.4142 10.1686 12 10.1686C11.5858 10.1686 11.25 10.52 11.25 10.9535V13.0465C11.25 13.48 11.5858 13.8314 12 13.8314C12.4142 13.8314 12.75 13.48 12.75 13.0465V10.9535Z" clip-rule="evenodd"/></g></symbol>
+  </svg>
+
+  <a class="visually-hidden" href="#main">Skip to content</a>
+
+  <!-- ===== Header (component: site-header) =====
+       Masthead after defiant.vc. At the top of the page: a labels row (the
+       two offices and one clock), the big A-mark, the wordmark, one line on
+       what we do, and the site map as rows. Scrolling down folds it into a
+       small bar and slides it away; scrolling up brings the small bar back
+       with the labels row; the top of the page opens it again. No
+       background: it sits straight on the page. Links are the V1 pages only
+       (Home is the logo), three and three; Legal fills the sixth row. -->
+  <header class="site-header" data-header>
+    <div class="site-header__inner container">
+      <div class="masthead-labels">
+        <span class="masthead-city masthead-city--la">Los Angeles</span>
+        <span class="masthead-city masthead-city--sj">San Juan</span>
+        <!-- One clock: Los Angeles time; hover San Juan to see its time -->
+        <p class="masthead-clock">
+          <span class="masthead-clock__time masthead-clock__time--la"><span class="visually-hidden">Los Angeles </span><span data-clock="America/Los_Angeles">Pacific Time</span></span>
+          <span class="masthead-clock__time masthead-clock__time--sj"><span class="visually-hidden">San Juan </span><span data-clock="America/Puerto_Rico">Atlantic Time</span></span>
+        </p>
+        <p class="masthead-label masthead-labels__site" aria-hidden="true">Site map</p>
+        <p class="masthead-label masthead-labels__company" aria-hidden="true">Company</p>
+      </div>
+
+      <div class="masthead-main">
+        <a class="masthead-mark" href="index.html" aria-label="Arcovia, home">
+          <svg viewBox="0 0 72 57" aria-hidden="true"><use href="#a-mark"/></svg>
+        </a>
+        <a class="masthead-word" href="index.html" tabindex="-1" aria-hidden="true"><svg viewBox="0 0 72 11"><use href="#wordmark"/></svg></a>
+        <!-- [COPY NEEDED] Draft line, to confirm with Lilla -->
+        <p class="masthead-note">We build investor conviction, then run the process that turns it into capital.</p>
+        <nav class="nav" aria-label="Main">
+          <ul class="nav__list nav__list--site">
+            <li class="nav__item" style="--i:0"><a class="nav__link" href="services.html">What We Do</a></li>
+            <li class="nav__item" style="--i:1"><a class="nav__link" href="track-record.html">Track Record</a></li>
+            <li class="nav__item" style="--i:2"><a class="nav__link" href="team.html">Team</a></li>
+          </ul>
+          <ul class="nav__list nav__list--company">
+            <li class="nav__item" style="--i:0"><a class="nav__link" href="about.html" aria-current="page">About</a></li>
+            <li class="nav__item" style="--i:1"><a class="nav__link" href="contact.html">Contact</a></li>
+            <li class="nav__item" style="--i:2"><a class="nav__link" href="legal.html">Legal</a></li>
+          </ul>
+          <button class="menu-btn" type="button" aria-expanded="false" aria-controls="menu" data-menu-open>
+            Menu
+            <span class="menu-btn__plus" aria-hidden="true"></span>
+          </button>
+        </nav>
+        <span class="masthead-rule" aria-hidden="true"></span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== Full-screen menu (component: menu) ===== -->
+  <div class="menu" id="menu" data-menu aria-hidden="true" role="dialog" aria-modal="true" aria-label="Menu">
+    <div class="menu__top container">
+      <a class="logo" href="index.html" aria-label="Arcovia, home">
+        <svg class="logo__mark" viewBox="0 0 72 57" aria-hidden="true"><use href="#a-mark"/></svg>
+        <svg class="logo__word" viewBox="0 0 72 11" aria-hidden="true"><use href="#wordmark"/></svg>
+      </a>
+      <button class="menu__close" type="button" data-menu-close>Close</button>
+    </div>
+    <div class="menu__body container">
+      <ol class="menu__list">
+        <li class="menu__item" style="--i:0"><a class="menu__link" href="services.html"><span class="menu__index">1.</span>What We Do</a></li>
+        <li class="menu__item" style="--i:1"><a class="menu__link" href="track-record.html"><span class="menu__index">2.</span>Track Record</a></li>
+        <li class="menu__item" style="--i:2"><a class="menu__link" href="team.html"><span class="menu__index">3.</span>Team</a></li>
+        <li class="menu__item" style="--i:3"><a class="menu__link" href="about.html" aria-current="page"><span class="menu__index">4.</span>About</a></li>
+        <li class="menu__item" style="--i:4"><a class="menu__link" href="contact.html"><span class="menu__index">5.</span>Contact</a></li>
+      </ol>
+      <div class="menu__foot">
+        <p><strong>Los Angeles</strong>2029 Century Park East, CA 90067</p>
+        <p><strong>San Juan</strong>450 Ave. 200, Puerto Rico 00901</p>
+        <p><a href="#" data-todo="LinkedIn company page URL [TO CONFIRM]">LinkedIn</a></p>
+        <a class="btn btn--primary" href="contact.html">Start a conversation</a>
+      </div>
+    </div>
+  </div>
+
+  <main id="main">
+
+    <!-- SECTION:about-hero START · styles: sections/about-hero.css · scripts: concrete.js, main.js
+         About, block 1. Structure after the user's Mahadeva template (its About opening), layout
+         only: a short opening, the headline low on the left, its line on the right on the
+         headline's baseline. On the home hero's live concrete (main.js starts it via data-hero). -->
+    <section class="about-hero" data-hero aria-labelledby="about-title">
+      <canvas class="hero__canvas" aria-hidden="true"></canvas>
+
+      <div class="about-hero__inner container">
+        <div class="about-hero__heading">
+          <p class="chip">About Arcovia</p>
+          <h1 class="about-hero__title" id="about-title">
+            <span class="about-hero__line">Conviction builds companies.</span>
+            <span class="about-hero__line">Capital accelerates them.</span>
+          </h1>
+        </div>
+        <p class="about-hero__lede">Arcovia is an independent capital markets advisory. We help ambitious founders, funds and foundations raise from investors who understand what they are building and why it matters.</p>
+      </div>
+    </section>
+    <!-- SECTION:about-hero END -->
+
+    <!-- SECTION:story START · styles: sections/story.css · scripts: story.js
+         About, block 2 ("Our story"). Layout after the user's process-section reference video:
+         the story scrolls on the left in four steps of three points; on the right one photo stays
+         pinned and turns over to the next step's photo as each step crosses the middle of the
+         screen (in the video a big number turned): four steps, four photos.
+         Copy is the user's "Our story", set into four steps; every fact and figure is theirs.
+         Photos are stand-ins made with Magnific: [IMAGE NEEDED] real LPP Media and Arcovia photos. -->
+    <section class="story" data-story aria-labelledby="story-title">
+      <div class="story__inner container">
+        <header class="story__head">
+          <p class="chip">Our story</p>
+          <h2 class="story__title" id="story-title">From a studio in Los Angeles<br> to a capital markets advisory</h2>
+        </header>
+
+        <ol class="story__steps">
+          <li class="story-step" data-story-step data-image="assets/story/studio.jpg">
+            <div class="story-step__head">
+              <h3 class="story-step__title">A studio in Los Angeles</h3>
+              <p class="story-step__meta">LPP Media · founded by Colin Pham</p>
+            </div>
+            <ul class="story-step__points">
+              <li class="story-point">
+                <svg class="story-point__icon" aria-hidden="true"><use href="#icon-story-camera"/></svg>
+                <h4 class="story-point__title">The studio</h4>
+                <p class="story-point__text">Arcovia began here as LPP Media, a creative studio.</p>
+              </li>
+              <li class="story-point">
+                <svg class="story-point__icon" aria-hidden="true"><use href="#icon-story-views"/></svg>
+                <h4 class="story-point__title">600M+ organic views</h4>
+                <p class="story-point__text">The studio’s work for Google, Microsoft, PepsiCo and Mercedes-Benz.</p>
+              </li>
+              <li class="story-point">
+                <svg class="story-point__icon" aria-hidden="true"><use href="#icon-story-lesson"/></svg>
+                <h4 class="story-point__title">The lesson</h4>
+                <p class="story-point__text">Something most agencies never learn: attention is not the product. Belief is.</p>
+              </li>
+            </ul>
+          </li>
+          <li class="story-step" data-story-step data-image="assets/story/screening.jpg">
+            <div class="story-step__head">
+              <h3 class="story-step__title">A story moves capital</h3>
+              <p class="story-step__meta">From LPP Media to Arcovia</p>
+            </div>
+            <ul class="story-step__points">
+              <li class="story-point">
+                <svg class="story-point__icon" aria-hidden="true"><use href="#icon-story-turn"/></svg>
+                <h4 class="story-point__title">The turn</h4>
+                <p class="story-point__text">We watched a story move capital the way it moves an audience.</p>
+              </li>
+              <li class="story-point">
+                <svg class="story-point__icon" aria-hidden="true"><use href="#icon-story-outgrow"/></svg>
+                <h4 class="story-point__title">Outgrowing the studio</h4>
+                <p class="story-point__text">The capital work outgrew the studio.</p>
+              </li>
+              <li class="story-point">
+                <svg class="story-point__icon" aria-hidden="true"><use href="#icon-story-firm"/></svg>
+                <h4 class="story-point__title">Arcovia</h4>
+                <p class="story-point__text">LPP Media evolved into Arcovia, an independent capital markets advisory.</p>
+              </li>
+            </ul>
+          </li>
+          <li class="story-step" data-story-step data-image="assets/story/table.jpg">
+            <div class="story-step__head">
+              <h3 class="story-step__title">Arcovia today</h3>
+              <p class="story-step__meta">24 transactions closed · $330M+ raised</p>
+            </div>
+            <ul class="story-step__points">
+              <li class="story-point">
+                <svg class="story-point__icon" aria-hidden="true"><use href="#icon-story-point"/></svg>
+                <h4 class="story-point__title">Where we work</h4>
+                <p class="story-point__text">The point where investor judgment and narrative meet.</p>
+              </li>
+              <li class="story-point">
+                <svg class="story-point__icon" aria-hidden="true"><use href="#icon-story-map"/></svg>
+                <h4 class="story-point__title">The preparation</h4>
+                <p class="story-point__text">We prepare the story, the evidence and the investor map.</p>
+              </li>
+              <li class="story-point">
+                <svg class="story-point__icon" aria-hidden="true"><use href="#icon-story-process"/></svg>
+                <h4 class="story-point__title">The process</h4>
+                <p class="story-point__text">Then we run the process through to close.</p>
+              </li>
+            </ul>
+          </li>
+          <li class="story-step" data-story-step data-image="assets/story/edit.jpg">
+            <div class="story-step__head">
+              <h3 class="story-step__title">Two houses</h3>
+              <p class="story-step__meta">Arcovia and LPP Media</p>
+            </div>
+            <ul class="story-step__points">
+              <li class="story-point">
+                <svg class="story-point__icon" aria-hidden="true"><use href="#icon-story-money"/></svg>
+                <h4 class="story-point__title">If it moves money</h4>
+                <p class="story-point__text">It is Arcovia.</p>
+              </li>
+              <li class="story-point">
+                <svg class="story-point__icon" aria-hidden="true"><use href="#icon-story-people"/></svg>
+                <h4 class="story-point__title">If it moves people</h4>
+                <p class="story-point__text">It is LPP Media, the creative house of Arcovia, which makes the films, brands and motion behind our work.</p>
+              </li>
+              <li class="story-point">
+                <svg class="story-point__icon" aria-hidden="true"><use href="#icon-story-door"/></svg>
+                <h4 class="story-point__title">Next</h4>
+                <p class="story-point__text">LPP Media will open its own doors soon.</p>
+              </li>
+            </ul>
+          </li>
+        </ol>
+
+        <!-- Component: story-card. One photo, pinned; story.js turns it over to each step's photo.
+             Decorative here: the text carries the story on its own. -->
+        <div class="story__media" aria-hidden="true">
+          <div class="story__card" data-story-card>
+            <div class="story__face story__face--front"><img src="assets/story/studio.jpg" alt="" width="1216" height="1520"></div>
+            <div class="story__face story__face--back"><img src="assets/story/studio.jpg" alt="" width="1216" height="1520"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- SECTION:story END -->
+
+    <!-- SECTION:beliefs START · styles: sections/beliefs.css
+         About, block 3 ("What we believe"). Layout after the user's reference (four columns
+         between vertical hairlines, each a small number, a fine line drawing, a title and one
+         line), in our language: Montserrat, ink on white; the drawings are all in the style of the
+         reference's third (fine-lined 3D, one isometric angle), each tied to its principle, in
+         our colours: ink lines, white tops and fronts, concrete sides, one charcoal accent.
+         Still: no motion.
+         Copy is the user's: four principles, 01–04, each with one line. -->
+    <section class="beliefs" aria-labelledby="beliefs-title">
+      <div class="beliefs__inner container">
+        <h2 class="beliefs__title" id="beliefs-title">What we believe</h2>
+
+        <ol class="beliefs__list">
+          <li class="belief">
+            <p class="belief__num" aria-hidden="true">01</p>
+            <!-- Four slabs stacked into one solid block (positioning, timing, evidence and belief reinforcing one another), the top in charcoal -->
+            <svg class="belief__art" viewBox="0 0 160 120" aria-hidden="true"><path class="belief__front" d="M49 52.2L97.1 79.9L49 107.7L1 79.9Z"/><path class="belief__front" d="M49 35.8L97.1 63.5L49 91.3L1 63.5Z"/><path class="belief__face" d="M97.1 91.3L49 119L49 107.7L97.1 79.9Z"/><path class="belief__front" d="M1 91.3L1 79.9L49 107.7L49 119Z"/><path class="belief__front" d="M49 19.4L97.1 47.1L49 74.9L1 47.1Z"/><path class="belief__face" d="M97.1 74.9L49 102.6L49 91.3L97.1 63.5Z"/><path class="belief__front" d="M1 74.9L1 63.5L49 91.3L49 102.6Z"/><path class="belief__fill" d="M49 3L97.1 30.7L49 58.5L1 30.7Z"/><path class="belief__face" d="M97.1 58.5L49 86.2L49 74.9L97.1 47.1Z"/><path class="belief__front" d="M1 58.5L1 47.1L49 74.9L49 86.2Z"/><path class="belief__face" d="M97.1 42.1L49 69.8L49 58.5L97.1 30.7Z"/><path class="belief__front" d="M1 42.1L1 30.7L49 58.5L49 69.8Z"/></svg>
+            <h3 class="belief__name">Capital follows conviction</h3>
+            <p class="belief__text">Access alone does not close a round. Investors move when positioning, timing, evidence and belief reinforce one another.</p>
+          </li>
+          <li class="belief">
+            <p class="belief__num" aria-hidden="true">02</p>
+            <!-- A cube in two pieces that fit: the top piece held straight above its notch, lined up before they join -->
+            <svg class="belief__art" viewBox="0 0 160 120" aria-hidden="true"><path class="belief__face" d="M72.3 77.8L24.8 105.3L24.8 50.4L72.3 23Z"/><path class="belief__front" d="M48.5 9.2L72.3 23L24.8 50.4L1 36.7Z"/><path class="belief__front" d="M1 91.6L1 36.7L24.8 50.4L24.8 105.3Z"/><path class="belief__front" d="M72.3 50.4L96.1 64.1L48.5 91.6L24.8 77.8Z"/><path class="belief__face" d="M96.1 91.6L48.5 119L48.5 91.6L96.1 64.1Z"/><path class="belief__front" d="M24.8 105.3L24.8 77.8L48.5 91.6L48.5 119Z"/><path class="belief__fill" d="M72.3 3L96.1 16.7L48.5 44.2L24.8 30.4Z"/><path class="belief__face" d="M96.1 44.2L48.5 71.6L48.5 44.2L96.1 16.7Z"/><path class="belief__front" d="M24.8 57.9L24.8 30.4L48.5 44.2L48.5 71.6Z"/></svg>
+            <h3 class="belief__name">Alignment before transaction</h3>
+            <p class="belief__text">The strongest capital relationships begin with shared understanding. The right investor, not just any cheque.</p>
+          </li>
+          <li class="belief">
+            <p class="belief__num" aria-hidden="true">03</p>
+            <!-- The company's own core, a solid cube topped in charcoal, held inside an open frame (the capital built around it): supported, not replaced. The frame's edges behind the core are dashed -->
+            <svg class="belief__art" viewBox="0 0 160 120" aria-hidden="true"><path class="belief__hidden" d="M51.2 61L51.2 3"/><path class="belief__hidden" d="M51.2 61L1 90"/><path class="belief__hidden" d="M51.2 61L101.5 90"/><path d="M51.2 3L1 32"/><path d="M51.2 3L101.5 32"/><path d="M1 90L1 32"/><path d="M1 90L51.2 119"/><path d="M101.5 90L101.5 32"/><path d="M101.5 90L51.2 119"/><path class="belief__fill" d="M51.2 38.3L70.9 49.7L51.2 61L31.6 49.7Z"/><path class="belief__face" d="M70.9 72.3L51.2 83.7L51.2 61L70.9 49.7Z"/><path class="belief__front" d="M31.6 72.3L31.6 49.7L51.2 61L51.2 83.7Z"/><path d="M1 32L51.2 61"/><path d="M101.5 32L51.2 61"/><path d="M51.2 119L51.2 61"/></svg>
+            <h3 class="belief__name">Founders keep their vision</h3>
+            <p class="belief__text">Capital should accelerate a company’s mission, not replace it with someone else’s agenda.</p>
+          </li>
+          <li class="belief">
+            <p class="belief__num" aria-hidden="true">04</p>
+            <!-- Columns that grow taller one after another, the tallest topped in charcoal -->
+            <svg class="belief__art" viewBox="0 0 160 120" aria-hidden="true"><path class="belief__front" d="M21.7 23.5L42.4 35.4L21.7 47.4L1 35.4Z"/><path class="belief__face" d="M42.4 55.9L21.7 67.8L21.7 47.4L42.4 35.4Z"/><path class="belief__front" d="M1 55.9L1 35.4L21.7 47.4L21.7 67.8Z"/><path class="belief__face" d="M71.9 72.9L51.2 84.9L51.2 47.4L71.9 35.4Z"/><path class="belief__front" d="M30.5 72.9L30.5 35.4L51.2 47.4L51.2 84.9Z"/><path class="belief__front" d="M51.2 23.5L71.9 35.4L51.2 47.4L30.5 35.4Z"/><path class="belief__face" d="M101.5 90L80.8 101.9L80.8 40.5L101.5 28.6Z"/><path class="belief__front" d="M60.1 90L60.1 28.6L80.8 40.5L80.8 101.9Z"/><path class="belief__front" d="M80.8 16.6L101.5 28.6L80.8 40.5L60.1 28.6Z"/><path class="belief__face" d="M131 107.1L110.3 119L110.3 26.9L131 14.9Z"/><path class="belief__front" d="M89.6 107.1L89.6 14.9L110.3 26.9L110.3 119Z"/><path class="belief__fill" d="M110.3 3L131 14.9L110.3 26.9L89.6 14.9Z"/></svg>
+            <h3 class="belief__name">Trust compounds</h3>
+            <p class="belief__text">Useful introductions, accurate follow-up and kept commitments build relationships that outlast a single deal.</p>
+          </li>
+        </ol>
+      </div>
+    </section>
+    <!-- SECTION:beliefs END -->
+
+    <!-- SECTION:process START · styles: sections/process.css · scripts: process.js
+         About, block 4 ("How we work"). After the user's reference video (a stacking process
+         list): each row a number, a large title with a 3D drawing under it (in the style of What we
+         believe), its line on the right, under a hairline
+         that draws in from the left as the row comes up; each row stops near the top of the
+         screen just under the one before, and the next slides up over it, so the rows pile up
+         as a stack of title strips, then the whole stack scrolls away together. In our language:
+         Montserrat in sentence case, ink on the neutral ground.
+         Copy is the user's: the headline and four points, each with its line. -->
+    <section class="process" data-process aria-labelledby="process-title">
+      <div class="process__inner container">
+        <h2 class="process__title" id="process-title">How we work</h2>
+
+        <ol class="process__list">
+          <li class="process__row" style="--i:0">
+            <span class="process__num" aria-hidden="true">01</span>
+            <h3 class="process__name">Parallel execution</h3>
+            <!-- Two lanes side by side, a block on each at the same point: both workstreams from day one -->
+            <svg class="process__art" viewBox="0 0 160 120" aria-hidden="true"><path class="process__front" d="M50 25.1L157 86.8L136.9 98.4L30 36.7Z"/><path class="process__front" d="M30 40.5L30 36.7L136.9 98.4L136.9 102.3Z"/><path class="process__front" d="M21.1 41.8L128 103.6L108 115.1L1 53.4Z"/><path class="process__front" d="M1 57.2L1 53.4L108 115.1L108 119Z"/><path class="process__face" d="M157 90.7L136.9 102.3L136.9 98.4L157 86.8Z"/><path class="process__face" d="M128 107.4L108 119L108 115.1L128 103.6Z"/><path class="process__front" d="M91.3 68.2L91.3 51.5L106.9 60.5L106.9 77.2Z"/><path class="process__front" d="M104.6 43.7L120.2 52.7L106.9 60.5L91.3 51.5Z"/><path class="process__face" d="M120.2 69.5L106.9 77.2L106.9 60.5L120.2 52.7Z"/><path class="process__front" d="M62.3 84.9L62.3 68.2L77.9 77.2L77.9 93.9Z"/><path class="process__fill" d="M75.7 60.5L91.3 69.5L77.9 77.2L62.3 68.2Z"/><path class="process__face" d="M91.3 86.2L77.9 93.9L77.9 77.2L91.3 69.5Z"/></svg>
+            <p class="process__text">Materials and investor targeting start on day one.</p>
+          </li>
+          <li class="process__row" style="--i:1">
+            <span class="process__num" aria-hidden="true">02</span>
+            <h3 class="process__name">Conflict-free</h3>
+            <!-- A level beam on a pivot, equal blocks at both ends: balanced, nothing tipping it -->
+            <svg class="process__art" viewBox="0 0 160 120" aria-hidden="true"><path class="process__face" d="M98.5 97.2L88.1 68.7L69.9 79.2L80.3 107.7Z"/><path class="process__front" d="M59.5 95.7L80.3 107.7L69.9 79.2Z"/><path class="process__front" d="M32.2 24.4L157 96.5L125.8 114.5L1 42.4Z"/><path class="process__front" d="M1 46.9L1 42.4L125.8 114.5L125.8 119Z"/><path class="process__face" d="M157 101L125.8 119L125.8 114.5L157 96.5Z"/><path class="process__front" d="M32.2 6.4L53 18.4L32.2 30.4L11.4 18.4Z"/><path class="process__face" d="M53 42.4L32.2 54.5L32.2 30.4L53 18.4Z"/><path class="process__front" d="M11.4 42.4L11.4 18.4L32.2 30.4L32.2 54.5Z"/><path class="process__fill" d="M125.8 60.5L146.6 72.5L125.8 84.5L105 72.5Z"/><path class="process__face" d="M146.6 96.5L125.8 108.5L125.8 84.5L146.6 72.5Z"/><path class="process__front" d="M105 96.5L105 72.5L125.8 84.5L125.8 108.5Z"/></svg>
+            <p class="process__text">No proprietary trading, no balance-sheet risk.</p>
+          </li>
+          <li class="process__row" style="--i:2">
+            <span class="process__num" aria-hidden="true">03</span>
+            <h3 class="process__name">Senior access</h3>
+            <!-- Steps rising to a block at the top: senior people, all the way through -->
+            <svg class="process__art" viewBox="0 0 160 120" aria-hidden="true"><path class="process__front" d="M49.5 23.7L30.1 12.5L1 29.3L20.4 40.5Z"/><path class="process__face" d="M49.5 34.9L49.5 23.7L20.4 40.5L20.4 51.8Z"/><path class="process__front" d="M68.9 46.1L49.5 34.9L20.4 51.8L39.8 63Z"/><path class="process__face" d="M68.9 57.4L68.9 46.1L39.8 63L39.8 74.2Z"/><path class="process__front" d="M88.4 68.6L68.9 57.4L39.8 74.2L59.2 85.4Z"/><path class="process__front" d="M1 74.2L78.6 119L78.6 107.8L59.2 96.6L59.2 85.4L39.8 74.2L39.8 63L20.4 51.8L20.4 40.5L1 29.3Z"/><path class="process__face" d="M88.4 79.8L88.4 68.6L59.2 85.4L59.2 96.6Z"/><path class="process__front" d="M107.8 91L88.4 79.8L59.2 96.6L78.6 107.8Z"/><path class="process__face" d="M107.8 102.2L107.8 91L78.6 107.8L78.6 119Z"/><path class="process__fill" d="M25.3 3L38.9 10.8L25.3 18.7L11.7 10.8Z"/><path class="process__face" d="M38.9 26.5L25.3 34.4L25.3 18.7L38.9 10.8Z"/><path class="process__front" d="M11.7 26.5L11.7 10.8L25.3 18.7L25.3 34.4Z"/></svg>
+            <p class="process__text">Named senior advisors on every mandate, from engagement through close.</p>
+          </li>
+          <li class="process__row" style="--i:3">
+            <span class="process__num" aria-hidden="true">04</span>
+            <h3 class="process__name">Global reach</h3>
+            <!-- Four blocks across one base: the four regions -->
+            <svg class="process__art" viewBox="0 0 160 120" aria-hidden="true"><path class="process__front" d="M79 24.6L157 69.7L79 114.7L1 69.7Z"/><path class="process__face" d="M157 74L79 119L79 114.7L157 69.7Z"/><path class="process__front" d="M1 74L1 69.7L79 114.7L79 119Z"/><path class="process__front" d="M79 18.2L99.4 30L79 41.8L58.6 30Z"/><path class="process__face" d="M99.4 47.2L79 59L79 41.8L99.4 30Z"/><path class="process__front" d="M58.6 47.2L58.6 30L79 41.8L79 59Z"/><path class="process__front" d="M118 40.7L138.4 52.5L118 64.3L97.6 52.5Z"/><path class="process__front" d="M40 40.7L60.4 52.5L40 64.3L19.6 52.5Z"/><path class="process__face" d="M138.4 69.7L118 81.5L118 64.3L138.4 52.5Z"/><path class="process__front" d="M97.6 69.7L97.6 52.5L118 64.3L118 81.5Z"/><path class="process__face" d="M60.4 69.7L40 81.5L40 64.3L60.4 52.5Z"/><path class="process__front" d="M19.6 69.7L19.6 52.5L40 64.3L40 81.5Z"/><path class="process__fill" d="M79 63.2L99.4 75L79 86.8L58.6 75Z"/><path class="process__face" d="M99.4 92.2L79 104L79 86.8L99.4 75Z"/><path class="process__front" d="M58.6 92.2L58.6 75L79 86.8L79 104Z"/></svg>
+            <p class="process__text">North America, Europe, the Middle East and Asia-Pacific.</p>
+          </li>
+        </ol>
+      </div>
+    </section>
+    <!-- SECTION:process END -->
+
+    <!-- SECTION:mark-v2 START · styles: sections/mark-v2.css · scripts: concrete.js, mark-v2.js
+         About, block 5 ("The mark", the approved second version, The mark · V2).
+         The A-mark sits in the middle of the screen the whole time and is drawn the way a designer
+         builds a logo sheet (after the user's references: pen-tool anchor points, a clear-space grid
+         with × cells, faint construction lines along the edges): 1 the frame and the left line,
+         2 the right line, 3 the circle, whose radius turns out to be the frame's unit, 4 the
+         drawing gives way to the mark pressed into the concrete, with one line centred under it. One note per line, on a hairline.
+         Copy from the user's brief for this version: [TO CONFIRM wording with Lilla]. -->
+    <section class="mark-v2" data-mark-v2 data-header-theme="dark" aria-labelledby="mark-v2-title">
+      <div class="mark-v2__stage">
+        <div class="mark-v2__overlay" aria-hidden="true"></div>
+        <!-- The wall in WebGL (concrete.js, as The mark above): dark concrete, and in the last step
+             the same beam of sunlight with dust sweeping across the mark. Without WebGL the CSS
+             concrete and overlay stay, with a soft light instead. -->
+        <canvas class="mark-v2__canvas" aria-hidden="true"></canvas>
+
+        <div class="mark-v2__frame container">
+          <h2 class="visually-hidden" id="mark-v2-title">The mark</h2>
+
+          <div class="mark-v2__figure" aria-hidden="true">
+            <!-- The official brandmark (assets/logo/brandmark.svg) in its own 72 × 57 box: left leg,
+                 right leg and circle as separate paths so each can be drawn. Each path starts at the
+                 outer foot (the circle at its bottom), so the line rises first. -->
+            <svg class="mark-v2__svg" viewBox="0 0 72 57" focusable="false">
+              <defs>
+                <g id="mark-v2-shape">
+                  <path d="M6.4043 56.272L12.0606 45.653L29.6286 14.4009C31.1725 15.7479 32.9219 16.7924 35.0366 17.4288L14.1267 56.2321C12.4458 56.3605 11.096 56.3148 9.58059 56.3005Z"/>
+                  <path d="M65.3551 56.243C64.3192 54.3652 63.3831 52.7499 62.5327 50.738L42.9184 14.1807C41.2461 15.8616 39.5509 16.9432 37.3164 17.1743L57.8439 56.243Z"/>
+                  <path d="M36.201 16.0215C40.6267 16.0215 44.2145 12.4351 44.2145 8.0109C44.2145 3.58674 40.6267 0.000244141 36.201 0.000244141C31.7753 0.000244141 28.1875 3.58674 28.1875 8.0109C28.1875 12.4351 31.7753 16.0215 36.201 16.0215Z"/>
+                </g>
+                <!-- Pressed in, lit from above: the walls under the top edges fall into shade, the walls
+                     above the bottom edges catch a little light -->
+                <filter id="mark-v2-walls" filterUnits="userSpaceOnUse" x="-6" y="-6" width="84" height="69" color-interpolation-filters="sRGB">
+                  <feComponentTransfer in="SourceAlpha" result="outside"><feFuncA type="table" tableValues="1 0"/></feComponentTransfer>
+                  <feOffset in="outside" dy="0.85" result="down"/>
+                  <feGaussianBlur in="down" stdDeviation="0.38" result="downSoft"/>
+                  <feComposite in="downSoft" in2="SourceAlpha" operator="in" result="shadeMask"/>
+                  <feFlood flood-color="#000" flood-opacity="0.78"/>
+                  <feComposite in2="shadeMask" operator="in" result="shade"/>
+                  <feOffset in="outside" dy="-0.24" result="up"/>
+                  <feGaussianBlur in="up" stdDeviation="0.05" result="upSoft"/>
+                  <feComposite in="upSoft" in2="SourceAlpha" operator="in" result="litMask"/>
+                  <feFlood flood-color="#fff" flood-opacity="0.3"/>
+                  <feComposite in2="litMask" operator="in" result="lit"/>
+                  <feMerge><feMergeNode in="shade"/><feMergeNode in="lit"/></feMerge>
+                </filter>
+                <!-- The thin light lip along the top edges, where the light catches the edge of the cut -->
+                <filter id="mark-v2-lip" filterUnits="userSpaceOnUse" x="-6" y="-6" width="84" height="69" color-interpolation-filters="sRGB">
+                  <feOffset in="SourceAlpha" dy="-0.2" result="raised"/>
+                  <feComposite in="raised" in2="SourceAlpha" operator="out" result="rim"/>
+                  <feGaussianBlur in="rim" stdDeviation="0.04" result="rimSoft"/>
+                  <feFlood flood-color="#fff" flood-opacity="0.62"/>
+                  <feComposite in2="rimSoft" operator="in"/>
+                </filter>
+              </defs>
+
+              <!-- 4 · Without WebGL: the mark pressed into the concrete in SVG (floor, walls, lip) -->
+              <g class="mark-v2__deboss">
+                <use class="mark-v2__floor" href="#mark-v2-shape"/>
+                <use class="mark-v2__walls" href="#mark-v2-shape" filter="url(#mark-v2-walls)"/>
+                <use class="mark-v2__lip" href="#mark-v2-shape" filter="url(#mark-v2-lip)"/>
+              </g>
+
+              <!-- 1-3 · The drawing -->
+              <g class="mark-v2__sketch">
+                <!-- Clear space: a frame one circle-radius (×) round the mark, ruled into a 3 × 3 grid -->
+                <g class="mark-v2__grid">
+                  <line class="mark-v2__rule" data-rule x1="-1.607" y1="-8.011" x2="-1.607" y2="64.283"/>
+                  <line class="mark-v2__rule" data-rule x1="-1.607" y1="-8.011" x2="73.366" y2="-8.011"/>
+                  <line class="mark-v2__rule" data-rule x1="6.404" y1="-8.011" x2="6.404" y2="64.283"/>
+                  <line class="mark-v2__rule" data-rule x1="-1.607" y1="0" x2="73.366" y2="0"/>
+                  <line class="mark-v2__rule" data-rule x1="65.355" y1="-8.011" x2="65.355" y2="64.283"/>
+                  <line class="mark-v2__rule" data-rule x1="-1.607" y1="56.272" x2="73.366" y2="56.272"/>
+                  <line class="mark-v2__rule" data-rule x1="73.366" y1="-8.011" x2="73.366" y2="64.283"/>
+                  <line class="mark-v2__rule" data-rule x1="-1.607" y1="64.283" x2="73.366" y2="64.283"/>
+                </g>
+                <!-- × in the corner cells: the frame's unit -->
+                <path class="mark-v2__cross" data-cross d="M1.648 -4.755L3.148 -3.255M3.148 -4.755L1.648 -3.255M68.611 -4.755L70.111 -3.255M70.111 -4.755L68.611 -3.255M1.648 59.528L3.148 61.028M3.148 59.528L1.648 61.028M68.611 59.528L70.111 61.028M70.111 59.528L68.611 61.028"/>
+
+                <!-- Construction: each leg's two long edges run on across the frame, through its corner anchors; the axis through the circle -->
+                <line class="mark-v2__cons" data-cons="left" x1="1.961" y1="64.283" x2="37.617" y2="0"/>
+                <line class="mark-v2__cons" data-cons="left" x1="9.788" y1="64.283" x2="44.430" y2="0"/>
+                <line class="mark-v2__cons" data-cons="right" x1="69.644" y1="64.283" x2="35.354" y2="0"/>
+                <line class="mark-v2__cons" data-cons="right" x1="62.068" y1="64.283" x2="28.290" y2="0"/>
+                <line class="mark-v2__cons" data-cons="axis" x1="36.201" y1="64.283" x2="36.201" y2="-8.011"/>
+
+                <!-- The outlines, drawn the way the pen tool places points: anchors (added by mark-v2.js) at the corners -->
+                <path class="mark-v2__line" data-draw="left" data-anchors="6.4043,56.272 29.6286,14.4009 35.0366,17.4288 14.1267,56.2321" d="M6.4043 56.272L12.0606 45.653L29.6286 14.4009C31.1725 15.7479 32.9219 16.7924 35.0366 17.4288L14.1267 56.2321C12.4458 56.3605 11.096 56.3148 9.58059 56.3005Z"/>
+                <path class="mark-v2__line" data-draw="right" data-anchors="65.3551,56.243 42.9184,14.1807 37.3164,17.1743 57.8439,56.243" d="M65.3551 56.243C64.3192 54.3652 63.3831 52.7499 62.5327 50.738L42.9184 14.1807C41.2461 15.8616 39.5509 16.9432 37.3164 17.1743L57.8439 56.243Z"/>
+                <path class="mark-v2__line" data-draw="circle" data-anchors="36.201,16.0215 28.1904,8.011 36.201,0.0003 44.2116,8.011" d="M36.201 16.0215A8.0106 8.0106 0 0 1 28.1904 8.011A8.0106 8.0106 0 0 1 36.201 0.0003A8.0106 8.0106 0 0 1 44.2116 8.011A8.0106 8.0106 0 0 1 36.201 16.0215"/>
+
+                <!-- Hairlines out to the notes -->
+                <line class="mark-v2__leader" data-leader="1" x1="17.488" y1="36" x2="-8" y2="36"/>
+                <line class="mark-v2__leader" data-leader="2" x1="54.626" y1="36" x2="80" y2="36"/>
+                <line class="mark-v2__leader" data-leader="3" x1="44.2116" y1="8.011" x2="80" y2="8.011"/>
+                <circle class="mark-v2__dot" data-dot="1" cx="17.488" cy="36" r="0.3"/>
+                <circle class="mark-v2__dot" data-dot="2" cx="54.626" cy="36" r="0.3"/>
+
+                <g data-anchor-layer></g>
+              </g>
+            </svg>
+            <!-- 4 · The mark carved into the wall by concrete.js, as in The mark above: flush (invisible)
+                 while the logo is drawn, pressed in with scroll in the last step. The SVG only marks the place. -->
+            <svg class="mark-v2__carve" viewBox="0 0 72 57" data-carve="mark" focusable="false"><use href="#a-mark"/></svg>
+            <!-- 4 · Without WebGL: soft daylight raking slowly across the wall and the mark -->
+            <span class="mark-v2__light"></span>
+          </div>
+
+          <div class="mark-v2__notes">
+            <!-- The frame's unit, as on a logo sheet -->
+            <p class="mark-v2__tag" data-tag><svg class="mark-v2__tag-x" viewBox="0 0 10 10" aria-hidden="true"><path d="M2 2L8 8M8 2L2 8"/></svg> = radius of the circle</p>
+            <ol class="mark-v2__list">
+              <li class="mark-v2__note mark-v2__note--1" data-note="1">
+                <h3 class="mark-v2__name">Capital</h3>
+                <p class="mark-v2__text">If it moves money, it is Arcovia.</p>
+              </li>
+              <li class="mark-v2__note mark-v2__note--2" data-note="2">
+                <h3 class="mark-v2__name">Creative</h3>
+                <p class="mark-v2__text">If it moves people, it is LPP Media, the creative house of Arcovia.</p>
+              </li>
+              <li class="mark-v2__note mark-v2__note--3" data-note="3">
+                <h3 class="mark-v2__name">One idea</h3>
+                <p class="mark-v2__text">Two lines rising to meet at one point.</p>
+              </li>
+            </ol>
+          </div>
+
+          <p class="mark-v2__closing" data-closing><span>The Arcovia mark is an arc: two lines rising to meet at one point.</span> <span>The two houses of our work, joined by one idea.</span></p>
+        </div>
+      </div>
+    </section>
+    <!-- SECTION:mark-v2 END -->
+
+  </main>
+
+  <!-- SECTION:footer START · styles: sections/footer.css
+       Component: site-footer. After the user's references: defiant.vc's footer (the main
+       inspiration, not a copy) and their own Native Foreign footer. A small horizontal logo
+       top left (the official brandmark beside the wordmark, as in the client's horizontal
+       logo); two columns of links set large, no labels over them; the two offices side by
+       side over hairlines with their live local time (main.js keeps every [data-clock] live);
+       then © on the left and the legal pages on the right. The legal pages are one link each,
+       so one or two of them fit without changes. -->
+  <footer class="site-footer" aria-labelledby="footer-title">
+    <h2 class="visually-hidden" id="footer-title">Site footer</h2>
+    <div class="site-footer__inner container">
+      <!-- Component: logo (the shared .logo: brandmark beside wordmark), sized for the footer -->
+      <a class="logo site-footer__logo" href="index.html" aria-label="Arcovia, home">
+        <svg class="logo__mark" viewBox="0 0 72 57" aria-hidden="true"><use href="#a-mark"/></svg>
+        <svg class="logo__word" viewBox="0 0 72 11" aria-hidden="true"><use href="#wordmark"/></svg>
+      </a>
+
+      <nav class="site-footer__col site-footer__col--site" aria-label="Site map">
+        <ul class="site-footer__links">
+          <li><a class="site-footer__link" href="services.html">What We Do</a></li>
+          <li><a class="site-footer__link" href="track-record.html">Track Record</a></li>
+          <li><a class="site-footer__link" href="team.html">Team</a></li>
+        </ul>
+      </nav>
+      <nav class="site-footer__col site-footer__col--company" aria-label="Company">
+        <ul class="site-footer__links">
+          <li><a class="site-footer__link" href="about.html">About</a></li>
+          <li><a class="site-footer__link" href="contact.html">Contact</a></li>
+          <li><a class="site-footer__link" href="#" data-todo="LinkedIn company page URL [TO CONFIRM]">LinkedIn</a></li>
+        </ul>
+      </nav>
+
+      <div class="site-footer__offices">
+        <div class="site-footer__office">
+          <p class="site-footer__city">Los Angeles</p>
+          <p class="site-footer__time"><span class="visually-hidden">Local time </span><span data-clock="America/Los_Angeles">Pacific Time</span></p>
+          <address class="site-footer__address">2029 Century Park East<br>Los Angeles, CA 90067</address>
+        </div>
+        <div class="site-footer__office">
+          <p class="site-footer__city">San Juan</p>
+          <p class="site-footer__time"><span class="visually-hidden">Local time </span><span data-clock="America/Puerto_Rico">Atlantic Time</span></p>
+          <address class="site-footer__address">450 Ave. 200<br>San Juan, Puerto Rico 00901</address>
+        </div>
+      </div>
+
+      <div class="site-footer__bar">
+        <p class="site-footer__copy">© 2026 Arcovia. All rights reserved.</p>
+        <ul class="site-footer__legal">
+          <li><a class="site-footer__legal-link" href="privacy.html">Privacy Policy</a></li>
+          <li><a class="site-footer__legal-link" href="terms.html">Terms</a></li>
+        </ul>
+      </div>
+    </div>
+  </footer>
+  <!-- SECTION:footer END -->
+
+  <script src="concrete.js"></script>
+  <script src="main.js"></script>
+  <script src="story.js"></script>
+  <script src="process.js"></script>
+  <script src="mark-v2.js"></script>
+</body>
+</html>

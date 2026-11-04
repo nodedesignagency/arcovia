@@ -13,6 +13,7 @@
   --color-concrete-shade: #c2c2c2;
   --color-charcoal: #565656;
   --color-charcoal-deep: #3e3e3e;
+  --color-black: #0b0b0b;          /* black sections (why founders choose Arcovia) */
   /* Text: a deep ink so type doesn't sink into the concrete.
      The softer set we had before is kept below as data-ink="soft" (or ?ink=soft). */
   --color-ink: #151515;            /* headlines, nav */
@@ -20,6 +21,7 @@
   --color-text-muted: #3a3a3a;     /* small text and labels */
   --color-white: #ffffff;          /* cards */
   --color-well: #f2f2f2;           /* inset number wells inside cards */
+  --color-neutral: #efefee;        /* flat neutral ground for quiet sections (the sectors line) */
   --color-line: rgba(43, 43, 43, 0.14);
   --color-on-dark: #f4f4f3;
   --color-on-dark-muted: rgba(244, 244, 243, 0.72);
@@ -243,10 +245,13 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   box-shadow: var(--shadow-btn);
 }
 .btn--quiet { background: var(--color-white); color: var(--color-ink); box-shadow: var(--shadow-card); }
+/* Light: plain white, for dark or photographic grounds (the CTA's sunrise wall). No shadow, ring or border. */
+.btn--light { background: var(--color-white); color: var(--color-ink); }
 
 @media (hover: hover) {
   .btn--primary:hover { background: linear-gradient(180deg, rgba(207, 207, 207, 0.22) 0%, rgba(207, 207, 207, 0.15) 100%), var(--btn-dark); }
   .btn--quiet:hover { background: var(--color-well); }
+  .btn--light:hover { background: var(--color-well); }
 }
 .btn--primary:active { box-shadow: var(--shadow-btn-pressed); }
 
@@ -805,6 +810,59 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   text-align: center;
 }
 .section-next p { font-size: var(--fs-small); letter-spacing: var(--ls-caps); text-transform: uppercase; }
+
+/* ---------- White pages (Contact) ----------
+   No concrete: the page is plain white. The header needs nothing else: it has no background. */
+.page--white {
+  background: #ffffff;
+  background-image: none;
+}
+
+/* ---------- Form parts (component: check, trap) ----------
+   Shared by every form. Native inputs stay in the page for keyboard and screen readers;
+   only their look changes. Field names are kept clean for GoHighLevel. */
+
+/* Check: a square box with a drawn tick, for consent */
+.check {
+  display: inline-grid;
+  grid-template-columns: 20px 1fr;
+  column-gap: 12px;
+  align-items: start;
+  font-size: var(--fs-small);
+  line-height: 20px;
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+.check input { position: absolute; opacity: 0; width: 20px; height: 20px; margin: 0; cursor: pointer; }
+.check__box {
+  position: relative;
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  box-shadow: inset 0 0 0 1.5px rgba(21, 21, 21, 0.32);
+  transition: background-color var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out);
+}
+.check__box::after {
+  content: "";
+  position: absolute;
+  left: 7px;
+  top: 3.5px;
+  width: 5px;
+  height: 10px;
+  border: solid var(--color-white);
+  border-width: 0 1.75px 1.75px 0;
+  transform: rotate(45deg) scale(0.4);
+  opacity: 0;
+  transition: transform var(--dur-fast) var(--ease-out), opacity var(--dur-fast) var(--ease-out);
+}
+.check input:checked + .check__box { background: var(--color-ink); box-shadow: inset 0 0 0 1.5px var(--color-ink); }
+.check input:checked + .check__box::after { opacity: 1; transform: rotate(45deg) scale(1); }
+.check input:focus-visible + .check__box { outline: 2px solid var(--color-ink); outline-offset: 3px; }
+.check a { color: var(--color-ink); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+.check.is-invalid .check__box { box-shadow: inset 0 0 0 2px var(--color-ink); }
+
+/* Spam trap: a field people never see; bots fill it in */
+.trap { position: absolute !important; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
 
 /* ---------- Reduced motion ---------- */
 @media (prefers-reduced-motion: reduce) {
