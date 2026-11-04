@@ -148,8 +148,9 @@
    headline, and the "Choose your path" button gives way to the three paths, stacked in
    the right-hand column as rows like the masthead's links
    (the user's reference): hairlines above, between and below, medium type in ink, an arrow
-   at the end. Hover (the user's spec, kept simple): the row takes a white wash at 10%
-   and the arrow swaps: a fixed 18px box holds two arrows on a strip, aligned right at rest
+   at the end, 12px in from both ends. Hover (the user's spec, kept simple): the row takes a
+   white wash at 20% with depth (the primary button's recipe turned light: top highlight,
+   bottom rim, faint ring, soft shadow; 4px corners) and the arrow swaps: a fixed 18px box holds two arrows on a strip, aligned right at rest
    (the right arrow shows); on hover the strip aligns left, so that arrow slides out to the
    right while the other slides in from the left. (Set aside: everything centred with the
    paths three across, commit 7fc639f; 3D hovers after the user's references, a box rolling
@@ -174,19 +175,37 @@
   list-style: none;
   border-top: 1px solid var(--mh-line);
 }
+/* Each row's hairline sits on the list item, so the lit row can round its corners */
+.path-rows__list > li { border-bottom: 1px solid var(--mh-line); }
 .path-rows__option {
   display: flex;
   align-items: center;
   gap: var(--space-4);
-  height: 56px;
-  border-bottom: 1px solid var(--mh-line);
+  height: 55px;                     /* + the 1px hairline: a 56px row */
+  padding: 0 12px;
+  border-radius: 4px;
   font-size: 20px;
   font-weight: var(--weight-medium);
   letter-spacing: -0.005em;
   color: var(--color-ink);
   background-color: rgba(255, 255, 255, 0);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0),
+    inset 0 -1px 0 rgba(0, 0, 0, 0),
+    0 0 0 1px rgba(0, 0, 0, 0),
+    0 4px 12px -3px rgba(0, 0, 0, 0);
   outline-offset: 2px;
-  transition: background-color 240ms var(--ease-out);
+  transition: background-color 240ms var(--ease-out), box-shadow 240ms var(--ease-out);
+}
+/* Lit: a white wash at 20% with the primary button's depth, turned light: a bright top
+   highlight, a faint dark rim along the bottom, a whisper of a ring and a soft shadow */
+.path-rows__option:focus-visible {
+  background-color: rgba(255, 255, 255, 0.2);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.55),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.05),
+    0 0 0 1px rgba(0, 0, 0, 0.035),
+    0 4px 12px -3px rgba(0, 0, 0, 0.12);
 }
 .path-rows__label { white-space: nowrap; }
 /* The arrow swap: a fixed box, two arrows on a strip (12px apart, so one has left before
@@ -207,10 +226,16 @@
 }
 .path-rows__arrow { flex: none; width: 18px; height: 18px; }
 
-.path-rows__option:focus-visible { background-color: rgba(255, 255, 255, 0.1); }
 .path-rows__option:focus-visible .path-rows__arrows-track { transform: translateX(0); }
 @media (hover: hover) {
-  .path-rows__option:hover { background-color: rgba(255, 255, 255, 0.1); }
+  .path-rows__option:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.55),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.05),
+      0 0 0 1px rgba(0, 0, 0, 0.035),
+      0 4px 12px -3px rgba(0, 0, 0, 0.12);
+  }
   .path-rows__option:hover .path-rows__arrows-track { transform: translateX(0); }   /* left-aligned */
 }
 @media (prefers-reduced-motion: reduce) {
