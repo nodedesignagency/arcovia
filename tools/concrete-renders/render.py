@@ -452,6 +452,51 @@ def scene_fund(mat):
     studio(target=(0.5, 0.5, -0.1))
 
 
+def scene_equity_bold(mat):
+    """Equity, option A: one row of six broad, thick fins rising left to right,
+    big in the tile, standing whole on the charcoal."""
+    base, t = -1.15, 0.14
+    heights = (0.95, 1.30, 1.65, 2.00, 2.35, 2.70)
+    for j, hgt in enumerate(heights):
+        w, x = 0.46, -1.45 + j * 0.62
+        box(f"fin{j}", (w, t, hgt), (x + w / 2, 0.0, base + hgt / 2), mat, bevel=0.03, segs=10)
+    camera((-1.6, -5.6, -0.55), (0.35, 0.0, 0.35), lens=50)
+    studio(target=(0.3, 0.0, 0.3))
+
+
+def scene_equity_close(mat):
+    """Equity, option B: the layered three-row fins of the user's reference,
+    much closer, so they fill the tile; the base line sits just above the
+    bottom edge, on a strip of charcoal."""
+    base = -0.95
+    rows = (
+        (1.10, -0.72, 0.62, (0.48, 0.36, 0.52, 0.40, 0.46, 0.38, 0.50), 1.75, 0.23),
+        (0.55, -0.98, 0.58, (0.30, 0.44, 0.34, 0.48, 0.30, 0.42, 0.36), 1.30, 0.24),
+        (0.00, -1.22, 0.55, (0.26, 0.32, 0.24, 0.36, 0.28, 0.34, 0.30, 0.26), 0.85, 0.24),
+    )
+    k = 0
+    for depth, x0, step, widths, h0, dh in rows:
+        for j, w in enumerate(widths):
+            top = base + h0 + j * dh
+            box(f"fin{k}", (w, 0.045, top - base), (x0 + j * step + w / 2, depth, (top + base) / 2), mat,
+                bevel=0.014, segs=8)
+            k += 1
+    camera((-1.2, -4.3, -0.55), (0.25, 0.5, 0.55), lens=40)
+    studio(target=(0.3, 0.5, 0.4))
+
+
+def scene_equity_row(mat):
+    """Equity, option C: a row of plates running back into the picture, rising
+    towards the viewer, seen from the side, whole on the charcoal."""
+    base, n = -1.1, 9
+    for j in range(n):
+        hgt = 0.75 + (n - 1 - j) * 0.24  # the nearest is the tallest, so the row rises to the right
+        y = j * 0.42
+        box(f"fin{j}", (0.62, 0.07, hgt), (0.0, y, base + hgt / 2), mat, bevel=0.02, segs=8)
+    camera((-3.6, -3.2, -0.2), (0.0, 1.7, 0.2), lens=50)
+    studio(target=(0.0, 1.7, 0.0))
+
+
 SCENES = {
     "narrative": scene_narrative,
     "strategy": scene_strategy,
@@ -459,6 +504,9 @@ SCENES = {
     "debt": scene_debt,
     "mna": scene_mna,
     "fund": scene_fund,
+    "equity_bold": scene_equity_bold,
+    "equity_close": scene_equity_close,
+    "equity_row": scene_equity_row,
 }
 
 
