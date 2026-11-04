@@ -146,7 +146,7 @@
           <ul class="nav__list nav__list--company">
             <li class="nav__item" style="--i:0"><a class="nav__link" href="about.html">About</a></li>
             <li class="nav__item" style="--i:1"><a class="nav__link" href="contact.html">Contact</a></li>
-            <li class="nav__item" style="--i:2"><a class="nav__link" href="legal.html">Legal</a></li>
+            <li class="nav__item" style="--i:2"><a class="nav__link" href="disclosures.html">Legal</a></li>
           </ul>
           <button class="menu-btn" type="button" aria-expanded="false" aria-controls="menu" data-menu-open>
             Menu
@@ -314,7 +314,7 @@
               </div>
             </li>
           </ul>
-          <p class="data__note">Advisor figures include experience at prior firms. See <a href="#" data-todo="Disclosures page or section [TO CONFIRM]">Disclosures</a>.</p>
+          <p class="data__note">Advisor figures include experience at prior firms. See <a href="disclosures.html#prior-experience">Disclosures</a>.</p>
         </div>
       </div>
     </section>
@@ -769,8 +769,8 @@
        top left (the official brandmark beside the wordmark, as in the client's horizontal
        logo); two columns of links set large, no labels over them; the two offices side by
        side over hairlines with their live local time (main.js keeps every [data-clock] live);
-       then © on the left and the legal pages on the right. The legal pages are one link each,
-       so one or two of them fit without changes. -->
+       then the regulatory line (from the brief, small) and a bar: © on the left, the four legal
+       pages on the right (Disclosures, Privacy, Cookies, Terms). -->
   <footer class="site-footer" aria-labelledby="footer-title">
     <h2 class="visually-hidden" id="footer-title">Site footer</h2>
     <div class="site-footer__inner container">
@@ -808,10 +808,16 @@
         </div>
       </div>
 
+      <!-- Regulatory line from the brief, small, on every page. [TO CONFIRM by counsel]: is LemVega
+           Capital still the broker-dealer, the exact wording, and is a BrokerCheck link needed? -->
+      <p class="site-footer__reg">Securities are offered through LemVega Capital, a registered broker-dealer. Arcovia works with LemVega Capital and other licensed partners where required. Nothing on this website is an offer to sell, or a solicitation of an offer to buy, any security.</p>
+
       <div class="site-footer__bar">
         <p class="site-footer__copy">© 2026 Arcovia. All rights reserved.</p>
         <ul class="site-footer__legal">
-          <li><a class="site-footer__legal-link" href="privacy.html">Privacy Policy</a></li>
+          <li><a class="site-footer__legal-link" href="disclosures.html">Disclosures</a></li>
+          <li><a class="site-footer__legal-link" href="privacy.html">Privacy</a></li>
+          <li><a class="site-footer__legal-link" href="cookies.html">Cookies</a></li>
           <li><a class="site-footer__legal-link" href="terms.html">Terms</a></li>
         </ul>
       </div>

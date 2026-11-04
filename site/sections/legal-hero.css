@@ -1,0 +1,92 @@
+/* ==========================================================================
+   SECTION: legal-hero — the opening of every legal page
+   (Disclosures, Privacy Policy, Cookie Policy, Terms of Use)
+   The About hero's structure, so the two read as one family (a shared
+   "page hero" component in Framer): a short opening on the home hero's live
+   concrete (concrete.js, started by main.js through [data-hero]), the chip
+   and the page title low on the left, one line on the right sitting on the
+   title's baseline. A little shorter than About's, so the text comes up sooner.
+   Uses shared tokens and components from styles.css (chip, container).
+   ========================================================================== */
+
+.legal-hero {
+  /* The title is a share of the grid width, as on About, so it sets the same at every desktop width */
+  --legal-fs: calc((min(100vw, var(--container-max)) - 2 * var(--gutter)) * 0.044);
+
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  align-items: end;
+  min-height: 56vh;
+  min-height: 56svh;
+  padding-top: calc(var(--header-h) + var(--space-8));
+  padding-bottom: var(--space-8);
+  overflow: hidden;
+  /* Static fallback: no JS, no WebGL. The home hero's soft diagonal light band on concrete. */
+  background-color: var(--color-concrete);
+  background-image:
+    linear-gradient(112deg, rgba(0, 0, 0, 0.06) 0%, rgba(0, 0, 0, 0.02) 38%, rgba(255, 255, 255, 0.22) 52%, rgba(255, 255, 255, 0.14) 66%, rgba(0, 0, 0, 0.05) 100%),
+    url("../assets/concrete.jpg");
+  background-size: auto, 1024px;
+}
+
+.legal-hero .hero__canvas {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 900ms var(--ease-out);
+}
+.legal-hero.hero--gl .hero__canvas { opacity: 1; }
+
+.legal-hero__inner {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--grid-gap);
+  align-items: end;
+}
+
+.legal-hero__heading {
+  grid-column: 1 / span 8;
+  display: grid;
+  justify-items: start;
+  gap: var(--space-6);
+}
+
+.legal-hero__title {
+  font-size: var(--legal-fs);
+  font-weight: var(--weight-medium);
+  line-height: 1.06;
+  letter-spacing: var(--ls-hero);
+  color: var(--color-ink);
+}
+
+.legal-hero__lede {
+  grid-column: 9 / span 4;
+  max-width: 24em;
+  font-size: var(--fs-lede);
+  line-height: var(--lh-lede);
+  color: var(--color-text);
+  text-wrap: pretty;
+  /* The last line sits on the title's baseline (same sums as the About hero) */
+  margin-bottom: calc(var(--legal-fs) * 0.18 - var(--fs-lede) * 0.39);
+}
+
+/* Tablet and phone: not reviewed yet (desktop first); keep it stacked and readable */
+@media (max-width: 1199px) {
+  .legal-hero { --legal-fs: 44px; min-height: 0; }
+  .legal-hero__heading { grid-column: 1 / -1; margin-bottom: var(--space-6); }
+  .legal-hero__lede { grid-column: 1 / span 9; margin-bottom: 0; }
+  .legal-hero__inner { align-items: start; }
+}
+@media (max-width: 809px) {
+  .legal-hero { --legal-fs: 34px; }
+  .legal-hero__lede { grid-column: 1 / -1; }
+}
+
+@media print {
+  .legal-hero { min-height: 0; padding: 0 0 24px; background: none; }
+  .legal-hero .hero__canvas { display: none; }
+}
