@@ -106,41 +106,43 @@
   <main id="main">
 
     <!-- SECTION:legal-doc START · styles: sections/legal-doc.css · scripts: legal.js
-         Component: legal-doc. V2, the Contact page's layout on a plain white page (no concrete
-         hero, no card): the chip and a large title top left, then two columns: left (cols 1-3,
-         sticky) the page's line, "Last updated" and "On this page" (legal.js marks the section
-         you are reading); right (cols 5-12) one clause per row, title on 5-7, text on 8-12.
-         V1 (concrete hero, same columns) is frozen in versions/legal-v1/.
+         Component: legal-doc. V2, the Contact page as it is now in Framer (ArcoviaContact):
+         a plain white page; the chip on its side up the left edge and the title on cols 5-12;
+         the page's line under it; then left (cols 1-3, sticky) one box with "Last updated"
+         and "On this page" (legal.js marks the section you are reading), right (cols 5-12)
+         one clause per row. The page ends on a hairline just above the (white) footer.
+         V1 (concrete hero) is frozen in versions/legal-v1/.
          [COPY NEEDED] The line is a draft, to confirm with Lilla.
          Status: Draft from the brief, awaiting counsel. Copy from the brief (adapted from the deck's disclosures page). [TO CONFIRM by counsel]: the regulatory statement (is LemVega Capital still the broker-dealer, the exact wording, a BrokerCheck link?) and every clause below. -->
     <section class="legal-doc" aria-labelledby="legal-title">
       <div class="legal-doc__inner container">
         <div class="legal-doc__head">
-          <p class="chip">Legal</p>
+          <p class="chip chip--side">Legal</p>
           <h1 class="legal-doc__title" id="legal-title">Disclosures</h1>
         </div>
+        <p class="legal-doc__lede">How to read the figures, cases and statements on this website.</p>
 
         <aside class="legal-aside" aria-label="About this document">
-          <p class="legal-aside__lede">How to read the figures, cases and statements on this website.</p>
-
-          <dl class="legal-aside__block legal-aside__meta">
-            <div><dt>Last updated</dt><dd><span class="legal-todo">date of approval</span></dd></div>
-          </dl>
-          <nav class="legal-aside__block" aria-labelledby="toc-label">
-            <p class="legal-nav__label" id="toc-label">On this page</p>
-            <ol class="legal-nav__toc" data-legal-toc>
-              <li><a class="legal-nav__link" href="#regulatory-statement">Regulatory statement</a></li>
-              <li><a class="legal-nav__link" href="#professional-advice">Professional advice</a></li>
-              <li><a class="legal-nav__link" href="#legal-entities">Legal entities</a></li>
-              <li><a class="legal-nav__link" href="#no-offer">No offer</a></li>
-              <li><a class="legal-nav__link" href="#forward-looking-statements">Forward-looking statements</a></li>
-              <li><a class="legal-nav__link" href="#market-data">Market data and sources</a></li>
-              <li><a class="legal-nav__link" href="#risk">Risk</a></li>
-              <li><a class="legal-nav__link" href="#technology-platform">Technology platform</a></li>
-              <li><a class="legal-nav__link" href="#prior-experience">Prior transaction experience</a></li>
-              <li><a class="legal-nav__link" href="#relationship-figures">Relationship figures</a></li>
-            </ol>
-          </nav>
+          <div class="legal-aside__card">
+            <dl class="legal-aside__meta">
+              <div><dt>Last updated</dt><dd><span class="legal-todo">date of approval</span></dd></div>
+            </dl>
+            <nav class="legal-aside__toc" aria-labelledby="toc-label">
+              <p class="legal-nav__label" id="toc-label">On this page</p>
+              <ol class="legal-nav__toc" data-legal-toc>
+                <li><a class="legal-nav__link" href="#regulatory-statement">Regulatory statement</a></li>
+                <li><a class="legal-nav__link" href="#professional-advice">Professional advice</a></li>
+                <li><a class="legal-nav__link" href="#legal-entities">Legal entities</a></li>
+                <li><a class="legal-nav__link" href="#no-offer">No offer</a></li>
+                <li><a class="legal-nav__link" href="#forward-looking-statements">Forward-looking statements</a></li>
+                <li><a class="legal-nav__link" href="#market-data">Market data and sources</a></li>
+                <li><a class="legal-nav__link" href="#risk">Risk</a></li>
+                <li><a class="legal-nav__link" href="#technology-platform">Technology platform</a></li>
+                <li><a class="legal-nav__link" href="#prior-experience">Prior transaction experience</a></li>
+                <li><a class="legal-nav__link" href="#relationship-figures">Relationship figures</a></li>
+              </ol>
+            </nav>
+          </div>
         </aside>
 
         <div class="legal-doc__body">

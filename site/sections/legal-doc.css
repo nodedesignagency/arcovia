@@ -1,21 +1,27 @@
 /* ==========================================================================
    SECTION: legal-doc — every legal page (component: legal-doc)
-   V2: the Contact page throughout (the user: "match contact, no hero"): a
-   plain white page (body.page--white), the chip and a large title top left,
-   then two columns on the open page, no card.
-     left 1-3 (sticky, as on Contact): the page's line, then over hairlines
-           "Last updated" and "On this page", the sections of this document
-           (legal.js marks the one you are reading with the masthead's dash)
-     right 5-12: one clause per row over hairlines, its title hanging on
-           cols 5-7, its text on cols 8-12 at a comfortable measure
-   V1 (the About hero's live concrete over these same columns) is frozen in
+   V2: the Contact page as it is now in Framer (ArcoviaContact, 4 Nov 2026), the
+   user: "see the new version of contact and fix things in our build". A plain
+   white page (body.page--white) whose footer stays white too.
+     head      the chip on its side up the left edge (.chip--side), its top on the
+               title's cap height; the title on cols 5-12, 32px in, as Contact's
+     line      under the title, cols 5-12, 32px in (Contact's line)
+     left 1-3  sticky: one box (a hairline, square corners, 16px inside) with
+               "Last updated" and, over a hairline running edge to edge, "On this
+               page" (legal.js marks the section you are reading with the dash);
+               its first label's cap height sits on the first clause title's
+     right     cols 5-12, 32px in: one clause per row over hairlines (the first
+               line is Contact's line over the note), title on the left third,
+               text on the right
+     end       the page ends on a hairline 12px over the footer, as Contact does
+   V1 (the About hero's live concrete over plain columns) is frozen in
    versions/legal-v1/ for comparison.
-   Rejected: the text on a white sheet with a shadow, a list of the four
-   legal documents in the left column (the footer already lists them) and
-   a visible "draft" status line. Drafts are marked in the HTML comments.
+   Rejected: the text on a white sheet with a shadow, a list of the four legal
+   documents in the left column (the footer lists them) and a visible "draft"
+   status line. Drafts are marked in the HTML comments.
    Placeholders inside the text (entity name, dates, emails) are wrapped in
-   .legal-todo so they read as blanks to fill. No numbering: the user
-   rejected numbered labels and counters.
+   .legal-todo so they read as blanks to fill. No numbering: the user rejected
+   numbered labels and counters.
    ========================================================================== */
 
 .legal-doc {
@@ -23,10 +29,20 @@
   --legal-top: calc(var(--mh-labels) + var(--mh-compact) + var(--space-6));
   --legal-line: rgba(21, 21, 21, 0.12);
   --legal-soft: #6e6e6e;      /* small labels on the left: 5.1:1 on white (Contact's) */
+  /* The title: a share of the grid's width (Contact's), so it sets the same at every desktop width */
+  --legal-title: calc((min(100vw, var(--container-max)) - 2 * var(--gutter)) * 0.07);
 
   background: var(--color-white);
-  /* As on Contact: the title starts 64px under the masthead */
-  padding: calc(var(--header-h) + var(--space-8)) 0 var(--space-10);
+  /* As on Contact: the title starts 64px under the masthead; little bottom padding, since the
+     page ends on a hairline just above the footer (below) */
+  padding: calc(var(--header-h) + var(--space-8)) 0 var(--space-3);
+}
+.legal-doc::after {
+  content: "";
+  display: block;
+  width: calc(min(100%, var(--container-max)) - 2 * var(--gutter));
+  margin: var(--space-10) auto 0;
+  border-top: 1px solid rgba(21, 21, 21, 0.16);
 }
 
 .legal-doc__inner {
@@ -36,38 +52,65 @@
   align-items: start;
 }
 
-/* ---------- Headline: Contact's chip and large title ---------- */
+/* ---------- Head: the chip on its side, the title on the right (Contact's) ---------- */
 .legal-doc__head {
   grid-column: 1 / -1;
+  grid-row: 1;
   display: grid;
-  justify-items: start;
-  gap: 22px;
-  margin-bottom: 80px;
+  grid-template-columns: subgrid;
+  align-items: start;
+  row-gap: 22px;
+  margin-bottom: var(--space-6);
+}
+.legal-doc__head .chip {
+  grid-column: 1 / span 2;
+  grid-row: 1;
+  justify-self: start;
+  /* the top of the word sits on the title's cap height (Montserrat: 0.1585em under the top of
+     a line set solid), less the letter-spacing after the word's last letter */
+  margin-top: calc(var(--legal-title) * 0.1585 - 0.14em);
 }
 .legal-doc__title {
-  /* A share of the grid's width (Contact's), so it sets the same way at every desktop width */
-  font-size: calc((min(100vw, var(--container-max)) - 2 * var(--gutter)) * 0.07);
+  grid-column: 5 / -1;
+  grid-row: 1;
+  padding-left: var(--space-6);
+  font-size: var(--legal-title);
   font-weight: var(--weight-medium);
   line-height: 1;
   letter-spacing: -0.034em;
   color: var(--color-ink);
 }
 
-/* ---------- Left: the line, last updated, this document's sections ---------- */
-.legal-aside {
-  grid-column: 1 / span 3;
-  position: sticky;
-  top: var(--legal-top);
-  display: grid;
-  gap: var(--space-7);
-}
-/* Contact's line: 18px, its first line level with the first clause's title */
-.legal-aside__lede {
-  max-width: 20em;
-  font-size: 18px;
-  line-height: 28px;
+/* The page's line, under the title (Contact's) */
+.legal-doc__lede {
+  grid-column: 5 / -1;
+  grid-row: 2;
+  max-width: 34em;
+  margin-bottom: var(--space-8);
+  padding-left: var(--space-6);
+  font-size: 20px;
+  line-height: 1.55;
   color: var(--color-text);
   text-wrap: pretty;
+}
+
+/* ---------- Left: one box, "Last updated" and "On this page" ---------- */
+.legal-aside {
+  grid-column: 1 / span 3;
+  grid-row: 3;
+  position: sticky;
+  top: var(--legal-top);
+  /* the box's first label has its cap height on the first clause title's: under the body's
+     hairline and its 28px, less the box's 1px border and 16px inside (Montserrat's cap height
+     sits (line-height / 2 - 0.3415)em under the top of a line) */
+  padding-top: calc(1px + 28px + 20px * (28 / 20 / 2 - 0.3415) - 17px - 14px * (1.4 / 2 - 0.3415));
+}
+/* Contact's box: a hairline, square corners, 16px inside */
+.legal-aside__card {
+  display: grid;
+  gap: var(--space-5);
+  padding: 16px;
+  border: 1px solid var(--legal-line);
 }
 
 /* "Last updated", set like Contact's email list: a small grey label over the value */
@@ -77,8 +120,12 @@
 /* A blank here lines its text up with the label above (the grey well reaches out to the left) */
 .legal-aside__meta .legal-todo { margin-left: -6px; }
 
-.legal-aside__block { padding-top: var(--space-5); border-top: 1px solid var(--legal-line); }
-
+/* "On this page", under a hairline that runs from edge to edge of the box (as Contact's offices) */
+.legal-aside__toc {
+  margin-inline: -16px;
+  padding: var(--space-5) 16px 0;
+  border-top: 1px solid var(--legal-line);
+}
 .legal-nav__label {
   margin-bottom: var(--space-3);
   font-size: 14px;
@@ -110,15 +157,18 @@
   .legal-nav__link:hover { color: var(--color-ink); }
 }
 
-/* ---------- Right: the text on the open page ---------- */
+/* ---------- Right: the text on the open page, 32px in (Contact's note) ---------- */
 .legal-doc__body {
   grid-column: 5 / -1;
+  grid-row: 3;
   display: grid;
   grid-template-columns: subgrid;
   min-width: 0;
+  padding-left: var(--space-6);
 }
 
-/* Clauses: title on cols 5-7, text on cols 8-12, a hairline between them */
+/* Clauses: title on the left third, text on the right, a hairline over each. The first
+   clause's line is Contact's line over the note, with the same 28px under it. */
 .legal-clause {
   grid-column: 1 / -1;
   display: grid;
@@ -127,8 +177,7 @@
   border-top: 1px solid var(--legal-line);
   scroll-margin-top: var(--legal-top);
 }
-/* The first clause starts level with the left column, no line above it */
-.legal-clause:first-child { padding-top: 0; border-top: 0; }
+.legal-clause:first-child { padding-top: 28px; }
 .legal-clause:last-child { padding-bottom: 0; }
 
 .legal-clause__title {
@@ -223,18 +272,22 @@
 .legal-table__type { display: block; font-weight: var(--weight-book); color: var(--color-text-muted); }
 .legal-table .legal-todo { white-space: nowrap; }
 
-/* ---------- Tablet and phone (to refine once desktop is approved) ---------- */
+/* ---------- Tablet and phone (to refine once desktop is approved) ----------
+   One column, as Contact: chip, title, line, then "Last updated", then the text. */
 @media (max-width: 1199px) {
-  .legal-doc__title { font-size: 64px; }
-  .legal-doc__head { margin-bottom: var(--space-8); }
-  .legal-aside { grid-column: 1 / -1; position: static; margin-bottom: var(--space-8); }
-  nav.legal-aside__block { display: none; }
-  .legal-doc__body { grid-column: 1 / -1; }
-  .legal-clause__title { grid-column: 1 / span 4; }
-  .legal-clause__body { grid-column: 5 / -1; }
+  .legal-doc__head { grid-template-columns: none; }
+  .legal-doc__head .chip { grid-column: 1 / -1; margin-top: 0; }
+  .legal-doc__title { grid-column: 1 / -1; grid-row: 2; padding-left: 0; font-size: 72px; }
+  .legal-doc__lede { grid-column: 1 / span 9; padding-left: 0; font-size: 19px; }
+  .legal-aside { grid-column: 1 / -1; position: static; padding-top: 0; margin-bottom: var(--space-8); }
+  .legal-aside__card { padding: 0; border: 0; }
+  .legal-aside__toc { display: none; }
+  .legal-doc__body { grid-column: 1 / -1; grid-row: 4; padding-left: 0; }
 }
 @media (max-width: 809px) {
-  .legal-doc__title { font-size: 44px; }
+  .legal-doc::after { margin-top: var(--space-9); }
+  .legal-doc__title { font-size: 46px; letter-spacing: -0.03em; }
+  .legal-doc__lede { grid-column: 1 / -1; font-size: 17px; }
   .legal-clause__title,
   .legal-clause__body { grid-column: 1 / -1; }
   .legal-clause__body { margin-top: var(--space-3); }
@@ -245,9 +298,9 @@
 /* ---------- Print: just the document ---------- */
 @media print {
   .legal-doc { padding: 0; }
-  .legal-doc__head { margin-bottom: 24px; }
-  nav.legal-aside__block { display: none; }
-  .legal-aside { position: static; margin-bottom: 24px; }
-  .legal-doc__body { grid-column: 1 / -1; }
+  .legal-doc::after { content: none; }
+  .legal-doc__head .chip { writing-mode: horizontal-tb; transform: none; }
+  .legal-aside { position: static; padding-top: 0; }
+  .legal-aside__toc { display: none; }
   .legal-clause { break-inside: avoid; }
 }

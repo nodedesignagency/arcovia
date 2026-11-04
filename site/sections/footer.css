@@ -18,6 +18,9 @@
   background: var(--color-neutral);
   color: var(--color-text);
 }
+/* White pages (Contact, the legal pages): no CTA above it, so the footer stays on the page's
+   white, as in Framer (the Site template's "White footer" variable) */
+.page--white .site-footer { background: var(--color-white); }
 
 .site-footer__inner {
   display: grid;
