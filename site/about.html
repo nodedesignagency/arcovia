@@ -18,6 +18,7 @@
   <link rel="stylesheet" href="sections/story.css">
   <link rel="stylesheet" href="sections/beliefs.css">
   <link rel="stylesheet" href="sections/process.css">
+  <link rel="stylesheet" href="sections/mark-v2.css">
   <link rel="stylesheet" href="sections/footer.css">
 </head>
 <body>
@@ -356,6 +357,139 @@
     </section>
     <!-- SECTION:process END -->
 
+    <!-- SECTION:mark-v2 START · styles: sections/mark-v2.css · scripts: concrete.js, mark-v2.js
+         About, block 5 ("The mark", the approved second version, The mark · V2).
+         The A-mark sits in the middle of the screen the whole time and is drawn the way a designer
+         builds a logo sheet (after the user's references: pen-tool anchor points, a clear-space grid
+         with × cells, faint construction lines along the edges): 1 the frame and the left line,
+         2 the right line, 3 the circle, whose radius turns out to be the frame's unit, 4 the
+         drawing gives way to the mark pressed into the concrete, with one line centred under it. One note per line, on a hairline.
+         Copy from the user's brief for this version: [TO CONFIRM wording with Lilla]. -->
+    <section class="mark-v2" data-mark-v2 data-header-theme="dark" aria-labelledby="mark-v2-title">
+      <div class="mark-v2__stage">
+        <div class="mark-v2__overlay" aria-hidden="true"></div>
+        <!-- The wall in WebGL (concrete.js, as The mark above): dark concrete, and in the last step
+             the same beam of sunlight with dust sweeping across the mark. Without WebGL the CSS
+             concrete and overlay stay, with a soft light instead. -->
+        <canvas class="mark-v2__canvas" aria-hidden="true"></canvas>
+
+        <div class="mark-v2__frame container">
+          <h2 class="visually-hidden" id="mark-v2-title">The mark</h2>
+
+          <div class="mark-v2__figure" aria-hidden="true">
+            <!-- The official brandmark (assets/logo/brandmark.svg) in its own 72 × 57 box: left leg,
+                 right leg and circle as separate paths so each can be drawn. Each path starts at the
+                 outer foot (the circle at its bottom), so the line rises first. -->
+            <svg class="mark-v2__svg" viewBox="0 0 72 57" focusable="false">
+              <defs>
+                <g id="mark-v2-shape">
+                  <path d="M6.4043 56.272L12.0606 45.653L29.6286 14.4009C31.1725 15.7479 32.9219 16.7924 35.0366 17.4288L14.1267 56.2321C12.4458 56.3605 11.096 56.3148 9.58059 56.3005Z"/>
+                  <path d="M65.3551 56.243C64.3192 54.3652 63.3831 52.7499 62.5327 50.738L42.9184 14.1807C41.2461 15.8616 39.5509 16.9432 37.3164 17.1743L57.8439 56.243Z"/>
+                  <path d="M36.201 16.0215C40.6267 16.0215 44.2145 12.4351 44.2145 8.0109C44.2145 3.58674 40.6267 0.000244141 36.201 0.000244141C31.7753 0.000244141 28.1875 3.58674 28.1875 8.0109C28.1875 12.4351 31.7753 16.0215 36.201 16.0215Z"/>
+                </g>
+                <!-- Pressed in, lit from above: the walls under the top edges fall into shade, the walls
+                     above the bottom edges catch a little light -->
+                <filter id="mark-v2-walls" filterUnits="userSpaceOnUse" x="-6" y="-6" width="84" height="69" color-interpolation-filters="sRGB">
+                  <feComponentTransfer in="SourceAlpha" result="outside"><feFuncA type="table" tableValues="1 0"/></feComponentTransfer>
+                  <feOffset in="outside" dy="0.85" result="down"/>
+                  <feGaussianBlur in="down" stdDeviation="0.38" result="downSoft"/>
+                  <feComposite in="downSoft" in2="SourceAlpha" operator="in" result="shadeMask"/>
+                  <feFlood flood-color="#000" flood-opacity="0.78"/>
+                  <feComposite in2="shadeMask" operator="in" result="shade"/>
+                  <feOffset in="outside" dy="-0.24" result="up"/>
+                  <feGaussianBlur in="up" stdDeviation="0.05" result="upSoft"/>
+                  <feComposite in="upSoft" in2="SourceAlpha" operator="in" result="litMask"/>
+                  <feFlood flood-color="#fff" flood-opacity="0.3"/>
+                  <feComposite in2="litMask" operator="in" result="lit"/>
+                  <feMerge><feMergeNode in="shade"/><feMergeNode in="lit"/></feMerge>
+                </filter>
+                <!-- The thin light lip along the top edges, where the light catches the edge of the cut -->
+                <filter id="mark-v2-lip" filterUnits="userSpaceOnUse" x="-6" y="-6" width="84" height="69" color-interpolation-filters="sRGB">
+                  <feOffset in="SourceAlpha" dy="-0.2" result="raised"/>
+                  <feComposite in="raised" in2="SourceAlpha" operator="out" result="rim"/>
+                  <feGaussianBlur in="rim" stdDeviation="0.04" result="rimSoft"/>
+                  <feFlood flood-color="#fff" flood-opacity="0.62"/>
+                  <feComposite in2="rimSoft" operator="in"/>
+                </filter>
+              </defs>
+
+              <!-- 4 · Without WebGL: the mark pressed into the concrete in SVG (floor, walls, lip) -->
+              <g class="mark-v2__deboss">
+                <use class="mark-v2__floor" href="#mark-v2-shape"/>
+                <use class="mark-v2__walls" href="#mark-v2-shape" filter="url(#mark-v2-walls)"/>
+                <use class="mark-v2__lip" href="#mark-v2-shape" filter="url(#mark-v2-lip)"/>
+              </g>
+
+              <!-- 1-3 · The drawing -->
+              <g class="mark-v2__sketch">
+                <!-- Clear space: a frame one circle-radius (×) round the mark, ruled into a 3 × 3 grid -->
+                <g class="mark-v2__grid">
+                  <line class="mark-v2__rule" data-rule x1="-1.607" y1="-8.011" x2="-1.607" y2="64.283"/>
+                  <line class="mark-v2__rule" data-rule x1="-1.607" y1="-8.011" x2="73.366" y2="-8.011"/>
+                  <line class="mark-v2__rule" data-rule x1="6.404" y1="-8.011" x2="6.404" y2="64.283"/>
+                  <line class="mark-v2__rule" data-rule x1="-1.607" y1="0" x2="73.366" y2="0"/>
+                  <line class="mark-v2__rule" data-rule x1="65.355" y1="-8.011" x2="65.355" y2="64.283"/>
+                  <line class="mark-v2__rule" data-rule x1="-1.607" y1="56.272" x2="73.366" y2="56.272"/>
+                  <line class="mark-v2__rule" data-rule x1="73.366" y1="-8.011" x2="73.366" y2="64.283"/>
+                  <line class="mark-v2__rule" data-rule x1="-1.607" y1="64.283" x2="73.366" y2="64.283"/>
+                </g>
+                <!-- × in the corner cells: the frame's unit -->
+                <path class="mark-v2__cross" data-cross d="M1.648 -4.755L3.148 -3.255M3.148 -4.755L1.648 -3.255M68.611 -4.755L70.111 -3.255M70.111 -4.755L68.611 -3.255M1.648 59.528L3.148 61.028M3.148 59.528L1.648 61.028M68.611 59.528L70.111 61.028M70.111 59.528L68.611 61.028"/>
+
+                <!-- Construction: each leg's two long edges run on across the frame, through its corner anchors; the axis through the circle -->
+                <line class="mark-v2__cons" data-cons="left" x1="1.961" y1="64.283" x2="37.617" y2="0"/>
+                <line class="mark-v2__cons" data-cons="left" x1="9.788" y1="64.283" x2="44.430" y2="0"/>
+                <line class="mark-v2__cons" data-cons="right" x1="69.644" y1="64.283" x2="35.354" y2="0"/>
+                <line class="mark-v2__cons" data-cons="right" x1="62.068" y1="64.283" x2="28.290" y2="0"/>
+                <line class="mark-v2__cons" data-cons="axis" x1="36.201" y1="64.283" x2="36.201" y2="-8.011"/>
+
+                <!-- The outlines, drawn the way the pen tool places points: anchors (added by mark-v2.js) at the corners -->
+                <path class="mark-v2__line" data-draw="left" data-anchors="6.4043,56.272 29.6286,14.4009 35.0366,17.4288 14.1267,56.2321" d="M6.4043 56.272L12.0606 45.653L29.6286 14.4009C31.1725 15.7479 32.9219 16.7924 35.0366 17.4288L14.1267 56.2321C12.4458 56.3605 11.096 56.3148 9.58059 56.3005Z"/>
+                <path class="mark-v2__line" data-draw="right" data-anchors="65.3551,56.243 42.9184,14.1807 37.3164,17.1743 57.8439,56.243" d="M65.3551 56.243C64.3192 54.3652 63.3831 52.7499 62.5327 50.738L42.9184 14.1807C41.2461 15.8616 39.5509 16.9432 37.3164 17.1743L57.8439 56.243Z"/>
+                <path class="mark-v2__line" data-draw="circle" data-anchors="36.201,16.0215 28.1904,8.011 36.201,0.0003 44.2116,8.011" d="M36.201 16.0215A8.0106 8.0106 0 0 1 28.1904 8.011A8.0106 8.0106 0 0 1 36.201 0.0003A8.0106 8.0106 0 0 1 44.2116 8.011A8.0106 8.0106 0 0 1 36.201 16.0215"/>
+
+                <!-- Hairlines out to the notes -->
+                <line class="mark-v2__leader" data-leader="1" x1="17.488" y1="36" x2="-8" y2="36"/>
+                <line class="mark-v2__leader" data-leader="2" x1="54.626" y1="36" x2="80" y2="36"/>
+                <line class="mark-v2__leader" data-leader="3" x1="44.2116" y1="8.011" x2="80" y2="8.011"/>
+                <circle class="mark-v2__dot" data-dot="1" cx="17.488" cy="36" r="0.3"/>
+                <circle class="mark-v2__dot" data-dot="2" cx="54.626" cy="36" r="0.3"/>
+
+                <g data-anchor-layer></g>
+              </g>
+            </svg>
+            <!-- 4 · The mark carved into the wall by concrete.js, as in The mark above: flush (invisible)
+                 while the logo is drawn, pressed in with scroll in the last step. The SVG only marks the place. -->
+            <svg class="mark-v2__carve" viewBox="0 0 72 57" data-carve="mark" focusable="false"><use href="#a-mark"/></svg>
+            <!-- 4 · Without WebGL: soft daylight raking slowly across the wall and the mark -->
+            <span class="mark-v2__light"></span>
+          </div>
+
+          <div class="mark-v2__notes">
+            <!-- The frame's unit, as on a logo sheet -->
+            <p class="mark-v2__tag" data-tag><svg class="mark-v2__tag-x" viewBox="0 0 10 10" aria-hidden="true"><path d="M2 2L8 8M8 2L2 8"/></svg> = radius of the circle</p>
+            <ol class="mark-v2__list">
+              <li class="mark-v2__note mark-v2__note--1" data-note="1">
+                <h3 class="mark-v2__name">Capital</h3>
+                <p class="mark-v2__text">If it moves money, it is Arcovia.</p>
+              </li>
+              <li class="mark-v2__note mark-v2__note--2" data-note="2">
+                <h3 class="mark-v2__name">Creative</h3>
+                <p class="mark-v2__text">If it moves people, it is LPP Media, the creative house of Arcovia.</p>
+              </li>
+              <li class="mark-v2__note mark-v2__note--3" data-note="3">
+                <h3 class="mark-v2__name">One idea</h3>
+                <p class="mark-v2__text">Two lines rising to meet at one point.</p>
+              </li>
+            </ol>
+          </div>
+
+          <p class="mark-v2__closing" data-closing><span>The Arcovia mark is an arc: two lines rising to meet at one point.</span> <span>The two houses of our work, joined by one idea.</span></p>
+        </div>
+      </div>
+    </section>
+    <!-- SECTION:mark-v2 END -->
+
   </main>
 
   <!-- SECTION:footer START · styles: sections/footer.css
@@ -418,5 +552,6 @@
   <script src="main.js"></script>
   <script src="story.js"></script>
   <script src="process.js"></script>
+  <script src="mark-v2.js"></script>
 </body>
 </html>
