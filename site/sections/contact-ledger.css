@@ -1,0 +1,367 @@
+/* ==========================================================================
+   SECTION: contact-ledger — Contact, version A "Ledger"
+   A plain white page. The form reads like a term sheet: three numbered steps
+   under ink rules, then ruled rows with the question on the left and the
+   answer on the right. Row rules start at column 2, so the step numbers and
+   path icons hang in the first column (the masthead's rule does the same).
+   Step 1 is five large rows; choosing one opens steps 2 and 3 for that path.
+   Uses shared tokens and form parts (.choice, .check) from styles.css.
+   ========================================================================== */
+
+.contact--ledger {
+  --lg-line: rgba(21, 21, 21, 0.12);
+  --lg-soft: #a2a2a2;          /* paths not chosen, steps not open yet */
+  --lg-place: #949494;         /* placeholders */
+  --lg-hang: calc((100% - 11 * var(--grid-gap)) / 12 + var(--grid-gap)); /* column 1 and its gap */
+  padding: calc(var(--header-h) + var(--space-9)) 0 var(--space-10);
+}
+
+/* ---------- Intro: headline left, the line on the right (as in the hero) ---------- */
+.ledger-intro {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--grid-gap);
+  align-items: end;
+  margin-bottom: var(--space-9);
+}
+.ledger-intro__heading {
+  grid-column: 1 / span 8;
+  display: grid;
+  justify-items: start;
+  gap: 22px;
+}
+.ledger-intro__title {
+  font-size: var(--fs-hero);
+  font-weight: var(--weight-medium);
+  line-height: var(--lh-hero);
+  letter-spacing: var(--ls-hero);
+  color: var(--color-ink);
+}
+.ledger-intro__lede {
+  grid-column: 9 / span 4;
+  max-width: 22em;
+  padding-bottom: 4px;
+  font-size: var(--fs-lede);
+  line-height: var(--lh-lede);
+  color: var(--color-text);
+}
+
+/* ---------- Steps ---------- */
+.ledger-step + .ledger-step { margin-top: var(--space-8); }
+
+/* The step head: an ink rule across the full width, the number hanging in column 1 */
+.ledger-head {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--grid-gap);
+  align-items: baseline;
+  padding: 18px 0 22px;
+  border-top: 1px solid var(--color-ink);
+  scroll-margin-top: 150px;
+  transition: border-color var(--dur-slow) var(--ease-out);
+}
+.ledger-head__num {
+  grid-column: 1;
+  font-size: 14px;
+  font-weight: var(--weight-semibold);
+  font-variant-numeric: tabular-nums;
+  color: var(--color-ink);
+  transition: color var(--dur-slow) var(--ease-out);
+}
+.ledger-head__title {
+  grid-column: 2 / span 5;
+  grid-row: 1;
+  font-size: 22px;
+  font-weight: var(--weight-medium);
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  color: var(--color-ink);
+  transition: color var(--dur-slow) var(--ease-out);
+}
+.ledger-head__aside {
+  grid-column: 7 / -1;
+  grid-row: 1;
+  font-size: 15px;
+  line-height: 1.4;
+  color: var(--color-text-muted);
+  transition: opacity var(--dur-base) var(--ease-out);
+}
+.ledger-head__aside--path { display: flex; gap: 16px; opacity: 0; visibility: hidden; }
+.ledger-head__change {
+  color: var(--color-ink);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+.ledger.is-chosen .ledger-head__aside--wait { opacity: 0; }
+.ledger.is-chosen .ledger-head__aside--path { opacity: 1; visibility: visible; }
+
+/* Steps 2 and 3 stay pale until a path is chosen */
+.js .ledger:not(.is-chosen) [data-step="details"] .ledger-head,
+.js .ledger:not(.is-chosen) [data-step="send"] .ledger-head { border-top-color: var(--lg-line); }
+.js .ledger:not(.is-chosen) [data-step="details"] :is(.ledger-head__num, .ledger-head__title),
+.js .ledger:not(.is-chosen) [data-step="send"] :is(.ledger-head__num, .ledger-head__title) { color: var(--lg-soft); }
+
+/* Steps 2 and 3 open downwards once a path is chosen */
+.ledger-step__body {
+  display: grid;
+  grid-template-rows: 1fr;
+  transition: grid-template-rows var(--mh-dur) var(--mh-ease), opacity var(--dur-slow) var(--ease-out);
+}
+.ledger-step__inner { min-height: 0; }
+.js .ledger:not(.is-chosen) .ledger-step__body { grid-template-rows: 0fr; opacity: 0; }
+.js .ledger:not(.is-chosen) .ledger-step__inner { overflow: hidden; }
+.js .ledger:not(.is-chosen) .ledger-step + .ledger-step { margin-top: 0; }
+
+/* ---------- 01 · Five paths ---------- */
+.ledger-paths { position: relative; }
+.ledger-paths::before { content: ""; position: absolute; top: 0; left: var(--lg-hang); right: 0; height: 1px; background: var(--lg-line); }
+
+.ledger-path {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--grid-gap);
+  align-items: center;
+  min-height: 96px;
+  padding: 20px 0;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.ledger-path::after { content: ""; position: absolute; bottom: 0; left: var(--lg-hang); right: 0; height: 1px; background: var(--lg-line); }
+.ledger-path__input { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+
+.ledger-path__icon {
+  grid-column: 1;
+  width: 30px;
+  height: 30px;
+  color: var(--color-text);
+  transition: color var(--dur-base) var(--ease-out), transform var(--dur-base) var(--ease-out);
+}
+.ledger-path__label {
+  grid-column: 2 / span 5;
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  font-size: 30px;
+  font-weight: var(--weight-medium);
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+  color: var(--color-ink);
+  border-radius: 4px;
+  transition: color var(--dur-base) var(--ease-out);
+}
+/* A short dash draws in before the hovered or chosen path, as in the masthead links */
+.ledger-path__label::before {
+  content: "";
+  flex: none;
+  width: 0;
+  height: 1.5px;
+  margin-right: 0;
+  background: currentColor;
+  transition: width var(--dur-base) var(--ease-out), margin var(--dur-base) var(--ease-out);
+}
+.ledger-path__meta {
+  grid-column: 7 / span 5;
+  font-size: 16px;
+  line-height: 1.45;
+  color: var(--color-text-muted);
+  transition: color var(--dur-base) var(--ease-out);
+}
+/* The radio: a ring that fills with ink */
+.ledger-path__mark {
+  grid-column: 12;
+  justify-self: end;
+  position: relative;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 1.5px rgba(21, 21, 21, 0.24);
+  transition: background-color var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out);
+}
+.ledger-path__mark::after {
+  content: "";
+  position: absolute;
+  inset: 8px;
+  border-radius: 50%;
+  background: var(--color-white);
+  transform: scale(0);
+  transition: transform var(--dur-base) var(--ease-out);
+}
+
+.ledger-path:has(:checked) .ledger-path__label::before { width: 18px; margin-right: 14px; }
+.ledger-path:has(:checked) .ledger-path__mark { background: var(--color-ink); box-shadow: inset 0 0 0 1.5px var(--color-ink); }
+.ledger-path:has(:checked) .ledger-path__mark::after { transform: scale(1); }
+.ledger-path:has(:focus-visible) .ledger-path__label { outline: 2px solid var(--color-ink); outline-offset: 6px; }
+
+/* Once one is chosen, the others step back */
+.ledger.is-chosen .ledger-path:not(:has(:checked)) :is(.ledger-path__label, .ledger-path__meta, .ledger-path__icon) { color: var(--lg-soft); }
+
+@media (hover: hover) {
+  .ledger-path:hover .ledger-path__label::before { width: 18px; margin-right: 14px; }
+  .ledger-path:hover .ledger-path__icon { transform: scale(1.06); }
+  .ledger-path:hover:not(:has(:checked)) .ledger-path__mark { box-shadow: inset 0 0 0 1.5px rgba(21, 21, 21, 0.6); }
+  .ledger.is-chosen .ledger-path:hover :is(.ledger-path__label, .ledger-path__icon) { color: var(--color-ink); }
+  .ledger.is-chosen .ledger-path:hover .ledger-path__meta { color: var(--color-text-muted); }
+}
+
+/* ---------- 02 · Rows: the question on the left, the answer on the right ---------- */
+.ledger-rows { position: relative; }
+.ledger-rows::before { content: ""; position: absolute; top: 0; left: var(--lg-hang); right: 0; height: 1px; background: var(--lg-line); }
+.ledger-fields { margin: 0; padding: 0; border: 0; min-width: 0; }
+.ledger-fields:not([hidden]) { animation: ledger-in 520ms var(--ease-out) both; }
+@keyframes ledger-in { from { opacity: 0; transform: translateY(10px); } }
+
+.ledger-row {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--grid-gap);
+  align-items: baseline;
+  padding: 24px 0;
+}
+/* The row's hairline, and an ink line that draws across it while you answer */
+.ledger-row::before,
+.ledger-row::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: var(--lg-hang);
+  right: 0;
+  height: 1px;
+  background: var(--lg-line);
+}
+.ledger-row::after {
+  background: var(--color-ink);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform var(--dur-slow) var(--ease-out);
+}
+.ledger-row:focus-within::after,
+.ledger-row.is-invalid::after { transform: scaleX(1); }
+
+.ledger-row__label {
+  grid-column: 2 / span 4;
+  font-size: 18px;
+  font-weight: var(--weight-medium);
+  line-height: 1.35;
+  color: var(--color-ink);
+}
+.ledger-row__opt {
+  display: block;
+  margin-top: 4px;
+  font-size: 14px;
+  font-weight: var(--weight-book);
+  color: #6e6e6e;
+}
+.ledger-row__field { grid-column: 7 / -1; min-width: 0; }
+
+.ledger-input {
+  display: block;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  font: inherit;
+  font-size: 20px;
+  line-height: 1.4;
+  color: var(--color-ink);
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+}
+.ledger-input::placeholder { color: var(--lg-place); opacity: 1; }
+.ledger-input--area { min-height: 2.8em; resize: none; overflow: hidden; }
+
+/* Character count under the short texts */
+.ledger-row .field-count {
+  display: block;
+  margin-top: 10px;
+  font-size: 13px;
+  color: #8a8a8a;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+/* What's missing: one line under the answer, in ink (monochrome, no red) */
+.ledger .field-error {
+  grid-column: 7 / -1;
+  display: none;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  font-size: 14px;
+  font-weight: var(--weight-medium);
+  color: var(--color-ink);
+}
+.ledger .field-error::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.ledger .is-invalid > .field-error { display: flex; }
+.ledger-paths > .field-error { margin: 14px 0 0; padding-left: var(--lg-hang); }
+
+/* ---------- 03 · Send ---------- */
+.ledger-send {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--grid-gap);
+  align-items: center;
+  padding-top: 6px;
+}
+.ledger-send__consent { grid-column: 2 / span 5; }
+.ledger-send__consent .check { font-size: 15px; line-height: 1.5; column-gap: 14px; }
+.ledger-send__consent .check__box { margin-top: 1px; }
+.ledger-send__consent > .field-error { margin-left: 34px; }
+.ledger-send__btn { grid-column: 7 / -1; justify-self: start; --btn-h: 52px; padding: 0 28px; font-size: 16px; }
+.ledger-send__btn .btn__icon { transition: transform var(--dur-base) var(--ease-out); }
+@media (hover: hover) { .ledger-send__btn:hover .btn__icon { transform: translateX(3px); } }
+.ledger.is-sending .ledger-send__btn { opacity: 0.7; pointer-events: none; }
+.ledger-status { grid-column: 7 / -1; font-size: 14px; font-weight: var(--weight-medium); color: var(--color-ink); }
+.ledger-status:not(:empty) { margin-top: 16px; }
+
+/* ---------- Confirmation ---------- */
+.ledger-done { outline: none; animation: ledger-in 620ms var(--ease-out) both; }
+.ledger-done__body {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--grid-gap);
+  padding-top: var(--space-6);
+}
+.ledger-done__text {
+  grid-column: 2 / span 9;
+  font-size: var(--fs-h2);
+  font-weight: var(--weight-medium);
+  line-height: var(--lh-h2);
+  letter-spacing: var(--ls-h2);
+  color: var(--color-ink);
+  text-wrap: balance;
+}
+.ledger-done__meta { grid-column: 2 / span 6; margin-top: var(--space-5); font-size: var(--fs-lede); color: var(--color-text-muted); }
+.ledger-done__again {
+  grid-column: 2 / span 4;
+  justify-self: start;
+  margin-top: var(--space-7);
+  font-size: 16px;
+  font-weight: var(--weight-medium);
+  color: var(--color-ink);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+}
+
+/* ---------- Tablet and phone (to refine once desktop is approved) ---------- */
+@media (max-width: 1199px) {
+  .ledger-intro__heading { grid-column: 1 / -1; }
+  .ledger-intro__lede { grid-column: 1 / span 8; margin-top: var(--space-6); }
+  .ledger-path__label { grid-column: 2 / span 10; font-size: 24px; }
+  .ledger-path__meta { grid-column: 2 / span 10; grid-row: 2; margin-top: 4px; }
+  .ledger-path__mark { grid-row: 1 / span 2; }
+  .ledger-path__icon { grid-row: 1 / span 2; }
+  .ledger-row__label { grid-column: 2 / -1; }
+  .ledger-row__field,
+  .ledger .field-error,
+  .ledger-status { grid-column: 2 / -1; }
+  .ledger-row__field { margin-top: 12px; }
+  .ledger-send__consent { grid-column: 2 / -1; }
+  .ledger-send__btn { grid-column: 2 / -1; margin-top: var(--space-5); }
+}
