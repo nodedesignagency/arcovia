@@ -12,13 +12,14 @@
                           on across it; the outline is drawn anchor to anchor;
                           hairline and "Capital"
      step 2  p 0.24-0.48  the right leg the same way; "Creative"; Capital dims
-     step 3  p 0.48-0.70  the axis, the circle's centre, the circle through its
-                          four anchors, its radius; × in the corner cells and
-                          "× = radius of the circle"; "One idea"; 1 and 2 dim
+     step 3  p 0.48-0.70  the axis, the circle through its four anchors; × in
+                          the corner cells and "× = radius of the circle";
+                          "One idea"; 1 and 2 dim
      step 4  p 0.70-1.00  the drawing and the notes fade; the mark is pressed
-                          in (floor, then walls and lip); the wall lightens a
-                          little, the drifting light comes up, the closing
-                          line comes in at the bottom left
+                          in (floor, walls and lip together, so it never reads
+                          as a flat shape); soft daylight comes up and rakes
+                          slowly across the wall; the closing line comes in,
+                          centred under the mark
    Below 1200 (no pinning) and without JS: the finished mark, notes in a column.
    Reduced motion: each part appears whole at its point, the light stands still.
    Built to become a Framer code component (props: scroll length, mark width,
@@ -37,7 +38,7 @@
   var desktop = window.matchMedia("(min-width: 1200px)");
   var SMOOTHING = 0.12;              // seconds: how long the drawing takes to catch up with the scroll
   var DIM = 0.45;                    // an earlier note, once the next step starts
-  var OVERLAY = [0.74, 0.66];        // the dark overlay, before and after the mark is pressed in
+  var OVERLAY = [0.74, 0.7];         // the dark overlay, before and after the mark is pressed in
   var ANCHOR = 3.5;                  // anchor point radius, px
   var POP = 2.5;                     // an anchor grows in over this much of the line (mark units)
 
@@ -46,9 +47,9 @@
     grid: [0.00, 0.08],
     consL: [0.06, 0.10],  left: [0.09, 0.17],   lead1: [0.16, 0.19],  note1: [0.17, 0.21],
     consR: [0.25, 0.29],  right: [0.28, 0.37],  lead2: [0.37, 0.40],  note2: [0.38, 0.42],
-    axis: [0.48, 0.51],   centre: [0.50, 0.52], circle: [0.51, 0.59], radius: [0.585, 0.605],
-    cross: [0.60, 0.64],  lead3: [0.61, 0.64],  note3: [0.62, 0.66],
-    sketchOut: [0.71, 0.77], floor: [0.72, 0.81], press: [0.76, 0.85], light: [0.75, 0.88], closing: [0.83, 0.91]
+    axis: [0.48, 0.51],   circle: [0.50, 0.59],
+    cross: [0.59, 0.63],  lead3: [0.60, 0.63],  note3: [0.61, 0.65],
+    sketchOut: [0.71, 0.77], press: [0.73, 0.84], light: [0.80, 0.92], closing: [0.82, 0.90]
   };
 
   function clamp01(x) { return x < 0 ? 0 : x > 1 ? 1 : x; }
@@ -69,7 +70,7 @@
   var light = q(".mark-v2__light");
   var closing = q("[data-closing]");
   var tag = q("[data-tag]");
-  var cross = q("[data-cross]"), centre = q("[data-centre]"), radius = q("[data-radius]");
+  var cross = q("[data-cross]");
   var rules = qa("[data-rule]");
   var cons = { left: qa('[data-cons="left"]'), right: qa('[data-cons="right"]'), axis: qa('[data-cons="axis"]') };
   var leaders = [q('[data-leader="1"]'), q('[data-leader="2"]'), q('[data-leader="3"]')];
@@ -105,7 +106,7 @@
     el.style.strokeDasharray = L + " " + L;
   }
   function measure() {
-    rules.concat(cons.left, cons.right, cons.axis, leaders, [radius]).forEach(function (el) { prepDash(el, lineLength(el)); });
+    rules.concat(cons.left, cons.right, cons.axis, leaders).forEach(function (el) { prepDash(el, lineLength(el)); });
     draws.forEach(function (d) {
       d.len = d.el.getTotalLength();
       prepDash(d.el, d.len);
@@ -184,9 +185,7 @@
 
     drawOutline(byKey.left, at(p, T.left));
     drawOutline(byKey.right, at(p, T.right));
-    set(centre, "opacity", f(at(p, T.centre)));
     drawOutline(byKey.circle, at(p, T.circle));
-    drawn(radius, at(p, T.radius));
 
     var x = at(p, T.cross), out = at(p, T.sketchOut);
     set(cross, "opacity", f(x));
@@ -204,9 +203,9 @@
     noteState(notes[2], at(p, T.note3), 0, out);
     set(sketch, "opacity", f(1 - out));
 
-    // Step 4: pressed into the concrete
-    var fl = at(p, T.floor), pr = at(p, T.press);
-    set(floor, "opacity", f(0.28 * fl));
+    // Step 4: pressed into the concrete, floor, walls and lip together
+    var pr = at(p, T.press);
+    set(floor, "opacity", f(0.28 * pr));
     set(walls, "opacity", f(pr));
     set(lip, "opacity", f(pr));
     set(overlay, "opacity", f(OVERLAY[0] + (OVERLAY[1] - OVERLAY[0]) * pr));

@@ -8,13 +8,12 @@
      1  the clear-space frame rules itself in; the left leg's edges run on
         across it, then its outline is drawn anchor to anchor; "Capital"
      2  the right leg the same way; "Creative"
-     3  the axis, the circle's centre, the circle drawn through its four
-        anchors, its radius; × fills the corner cells and the annotation
-        says what it is; "One idea"
+     3  the axis, the circle drawn through its four anchors; × fills the
+        corner cells and the annotation says what it is; "One idea"
      4  the drawing gives way to the mark pressed into the concrete (darker
-        floor, shaded walls, a thin light lip on the top edges); the wall
-        lightens a little, a soft light drifts across the mark, and one line
-        comes in at the bottom left.
+        floor, shaded walls, a thin light lip on the top edges, all at once);
+        soft daylight rakes slowly across the wall, and one line comes in,
+        centred under the mark.
    Ground: the concrete texture under a dark overlay (74%), full bleed.
    Type: Montserrat only (no mono, no counters, no numbered labels).
    No JS: one screen with the finished mark and the closing line.
@@ -31,7 +30,7 @@
   --mv2-ink: rgba(244, 244, 243, 0.92);        /* outlines and anchors */
   --mv2-rule: rgba(244, 244, 243, 0.17);       /* the clear-space grid */
   --mv2-cons: rgba(244, 244, 243, 0.13);       /* construction lines */
-  --mv2-lead: rgba(244, 244, 243, 0.42);       /* hairlines to the notes, the radius, × */
+  --mv2-lead: rgba(244, 244, 243, 0.42);       /* hairlines to the notes, × */
 
   position: relative;
   height: 100vh;
@@ -104,9 +103,7 @@
 .mark-v2__cons { stroke: var(--mv2-cons); }
 .mark-v2__line { stroke: var(--mv2-ink); stroke-linejoin: round; }
 .mark-v2__cross,
-.mark-v2__radius,
 .mark-v2__leader { stroke: var(--mv2-lead); }
-.mark-v2__centre { stroke: var(--mv2-ink); }
 .mark-v2__dot { fill: var(--mv2-ink); }
 .mark-v2__anchor {
   fill: var(--mv2-ground);
@@ -115,28 +112,29 @@
 }
 .mark-v2__anchor.is-current { fill: var(--color-on-dark); }   /* the last point placed, as in a pen tool */
 
-/* 4 · a soft light drifting slowly across the mark (blends with the wall behind it) */
+/* 4 · Soft daylight raking across the wall: a wide band, barely brighter than the
+   wall, drifting slowly left to right and back. It lights the wall and the mark
+   alike (no halo round the mark); the stage clips it. */
 .mark-v2__light {
   position: absolute;
-  left: -40%;
-  top: -45%;
-  width: 180%;
-  height: 190%;
+  left: calc(50% - 90vw);
+  width: 180vw;
+  top: calc(50% - 70vh);
+  height: 140vh;
   pointer-events: none;
-  background: radial-gradient(closest-side, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.2) 45%, rgba(255, 255, 255, 0) 100%);
-  mix-blend-mode: soft-light;
-  animation: mark-v2-drift 16s var(--ease-in-out) infinite alternate;
-}
-.mark-v2__light::after {
-  content: "";
-  position: absolute;
-  inset: 22% 30%;
-  background: radial-gradient(closest-side, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0));
+  background: linear-gradient(112deg,
+    rgba(255, 255, 255, 0) 30%,
+    rgba(255, 255, 255, 0.05) 40%,
+    rgba(255, 255, 255, 0.09) 47%,
+    rgba(255, 255, 255, 0.09) 53%,
+    rgba(255, 255, 255, 0.05) 60%,
+    rgba(255, 255, 255, 0) 70%);
   mix-blend-mode: screen;
+  animation: mark-v2-drift 24s var(--ease-in-out) infinite alternate;
 }
 @keyframes mark-v2-drift {
-  from { transform: translate(-24%, -5%); }
-  to   { transform: translate(24%, 5%); }
+  from { transform: translateX(-16%); }
+  to   { transform: translateX(16%); }
 }
 
 /* ---------- Text laid over the drawing ---------- */
@@ -192,17 +190,18 @@
   text-wrap: pretty;
 }
 
-/* ---------- The closing line, bottom left ---------- */
+/* ---------- The closing line, centred under the mark, one sentence a line ---------- */
 .mark-v2__closing {
   position: absolute;
   left: var(--gutter);
-  bottom: var(--space-7);
-  max-width: 660px;              /* breaks after "one point." */
+  right: var(--gutter);
+  top: calc(50% + var(--mv2-h) / 2 + var(--space-8));
   font-size: 20px;
   line-height: 1.5;
+  text-align: center;
   color: var(--color-on-dark);
-  text-wrap: pretty;
 }
+.mark-v2__closing span { display: block; }
 
 @media (prefers-reduced-motion: reduce) {
   .mark-v2__light { animation: none; }
@@ -222,7 +221,8 @@
   .mark-v2__note { position: static; width: auto; text-align: left; }
   .mark-v2__note--1 { text-align: left; }
   .mark-v2__name { font-size: 32px; --title: 38px; }
-  .mark-v2__closing { position: static; margin-top: var(--space-8); }
+  .mark-v2__closing { position: static; margin-top: var(--space-8); text-align: left; }
+  .mark-v2__closing span { display: inline; }
 }
 @media (max-width: 809px) {
   .mark-v2__stage { padding-block: var(--space-8); }
