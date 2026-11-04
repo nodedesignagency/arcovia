@@ -69,7 +69,17 @@
   transition: opacity 600ms var(--ease-out);
 }
 .mark-v2.is-gl .mark-v2__canvas { opacity: 1; }
-.mark-v2.is-gl .mark-v2__light { display: none; }   /* the beam takes its place */
+.mark-v2.is-gl .mark-v2__light,                       /* the beam takes its place */
+.mark-v2.is-gl .mark-v2__deboss { display: none; }    /* the carving takes its place */
+/* Only marks the place for concrete.js to carve the mark */
+.mark-v2__carve {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  pointer-events: none;
+}
 
 /* a little shade towards the edges of the wall */
 .mark-v2__overlay::after {

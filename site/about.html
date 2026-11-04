@@ -470,7 +470,7 @@
                 </filter>
               </defs>
 
-              <!-- 4 · The mark pressed into the concrete: floor, walls, lip -->
+              <!-- 4 · Without WebGL: the mark pressed into the concrete in SVG (floor, walls, lip) -->
               <g class="mark-v2__deboss">
                 <use class="mark-v2__floor" href="#mark-v2-shape"/>
                 <use class="mark-v2__walls" href="#mark-v2-shape" filter="url(#mark-v2-walls)"/>
@@ -515,6 +515,9 @@
                 <g data-anchor-layer></g>
               </g>
             </svg>
+            <!-- 4 · The mark carved into the wall by concrete.js, as in The mark above: flush (invisible)
+                 while the logo is drawn, pressed in with scroll in the last step. The SVG only marks the place. -->
+            <svg class="mark-v2__carve" viewBox="0 0 72 57" data-carve="mark" focusable="false"><use href="#a-mark"/></svg>
             <!-- 4 · Without WebGL: soft daylight raking slowly across the wall and the mark -->
             <span class="mark-v2__light"></span>
           </div>

@@ -23,8 +23,11 @@
    The wall is a ConcreteSurface (concrete.js) on the stage, as in The mark:
    dark concrete, sun 0 while the logo is drawn (and paused: nothing moves),
    then the CTA's beam (22°, 18 s across and back) fitted to the mark. The
-   pressed-in mark itself stays the SVG deboss. Without WebGL: the CSS
-   concrete under an overlay, and a soft raking light instead of the beam.
+   mark is carved into the wall by concrete.js with wide walls, exactly as
+   The mark's: flush (mark depth 0, invisible) while the logo is drawn, then
+   pressed in with scroll, so the beam lights the floor of the cut and throws
+   shadows inside it. Without WebGL: the CSS concrete under an overlay, the
+   SVG deboss and a soft raking light instead.
    Below 1200 (no pinning) and without JS: the finished mark, notes in a column.
    Reduced motion: each part appears whole at its point, the light stands still.
    Built to become a Framer code component (props: scroll length, mark width,
@@ -208,7 +211,7 @@
     noteState(notes[2], at(p, T.note3), 0, out);
     set(sketch, "opacity", f(1 - out));
 
-    // Step 4: pressed into the concrete, floor, walls and lip together
+    // Step 4: pressed into the concrete (carved by concrete.js; without WebGL, the SVG floor, walls and lip together)
     var pr = at(p, T.press);
     set(floor, "opacity", f(0.28 * pr));
     set(walls, "opacity", f(pr));
@@ -231,6 +234,7 @@
     surface = new window.ConcreteSurface(stage, {
       canvas: ".mark-v2__canvas",
       tone: TONE[0],            // a dark wall, as The mark
+      bevel: 2.2,               // wide walls: a deep cut (The mark: 2.4 on a larger mark)
       vignette: 0.42,
       sun: 0,                   // no light until the logo is drawn
       cursor: 0,
@@ -240,6 +244,7 @@
       dust: 0,                  // no shade box: the beam fades out before the feet, clear of the closing line
       smooth: true
     });
+    surface.markDepth = 0;      // flush, so invisible, until the last step presses it in
     surface.setPaused(true);
     surface.init().then(function (ok) {
       if (!ok) { surface = null; return; }
@@ -287,6 +292,7 @@
     o.sun = SUN * li;
     o.dust = DUST * li;
     o.tone = TONE[0] + (TONE[1] - TONE[0]) * pr;
+    surface.markDepth = pr;     // the carved mark presses in
     surface.needsFrame = true;
     surface.setPaused(!on);    // nothing moves while the logo is drawn
     surface.kick();
