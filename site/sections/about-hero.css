@@ -1,0 +1,90 @@
+/* ==========================================================================
+   SECTION: about-hero — About, block 1
+   Structure after the user's Mahadeva template (its About opening), layout
+   only: a short opening (about two thirds of the screen) with the headline
+   low on the left and its line on the right, sitting on the headline's
+   baseline. On the home hero's live concrete (concrete.js, started by main.js
+   through [data-hero]). No bars, no text animation.
+   Uses shared tokens and components from styles.css (chip, container).
+   ========================================================================== */
+
+.about-hero {
+  /* The headline is a share of the grid width, so its lines break the same at every desktop width */
+  --about-fs: calc((min(100vw, var(--container-max)) - 2 * var(--gutter)) * 0.044);
+
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  align-items: end;
+  min-height: 65vh;
+  min-height: 65svh;
+  padding-top: calc(var(--header-h) + var(--space-8));
+  padding-bottom: var(--space-8);
+  overflow: hidden;
+  /* Static fallback: no JS, no WebGL. The home hero's soft diagonal light band on concrete. */
+  background-color: var(--color-concrete);
+  background-image:
+    linear-gradient(112deg, rgba(0, 0, 0, 0.06) 0%, rgba(0, 0, 0, 0.02) 38%, rgba(255, 255, 255, 0.22) 52%, rgba(255, 255, 255, 0.14) 66%, rgba(0, 0, 0, 0.05) 100%),
+    url("../assets/concrete.jpg");
+  background-size: auto, 1024px;
+}
+
+.about-hero .hero__canvas {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 900ms var(--ease-out);
+}
+.about-hero.hero--gl .hero__canvas { opacity: 1; }
+
+/* ---------- Heading and line ---------- */
+.about-hero__inner {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--grid-gap);
+  align-items: end;
+}
+
+.about-hero__heading {
+  grid-column: 1 / span 8;
+  display: grid;
+  justify-items: start;
+  gap: var(--space-6);
+}
+
+.about-hero__title {
+  font-size: var(--about-fs);
+  font-weight: var(--weight-medium);
+  line-height: 1.06;
+  letter-spacing: var(--ls-hero);
+  color: var(--color-ink);
+}
+/* One line each: the breaks are the design's (two sentences, two lines) */
+.about-hero__line { display: block; white-space: nowrap; }
+
+.about-hero__lede {
+  grid-column: 9 / span 4;
+  max-width: 24em;
+  font-size: var(--fs-lede);
+  line-height: var(--lh-lede);
+  color: var(--color-text);
+  /* Sit the last line on the headline's baseline, not the bottom of its line box:
+     the headline's baseline is ~0.18em above its box, the line's ~0.39em above its own */
+  margin-bottom: calc(var(--about-fs) * 0.18 - var(--fs-lede) * 0.39);
+}
+
+/* Tablet and phone: not reviewed yet (desktop first); keep it stacked and readable */
+@media (max-width: 1199px) {
+  .about-hero { --about-fs: 44px; }
+  .about-hero__heading { grid-column: 1 / -1; margin-bottom: var(--space-6); }
+  .about-hero__lede { grid-column: 1 / span 9; margin-bottom: 0; }
+  .about-hero__inner { align-items: start; }
+}
+@media (max-width: 809px) {
+  .about-hero { --about-fs: 30px; }
+  .about-hero__line { white-space: normal; }
+  .about-hero__lede { grid-column: 1 / -1; }
+}
