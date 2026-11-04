@@ -31,7 +31,7 @@ Four 4:5 portrait cards for the pinned photo in About's "Our story"
 | `story_mark` | Arcovia today | the Arcovia brandmark cast in concrete (official logo geometry), on a plinth |
 | `story_houses` | Two houses | two volumes on one plinth, Arcovia and LPP Media, each with a doorway |
 
-Output: `site/assets/story/<card>.jpg` and `.webp`, 1216 × 1520. Render with
+Output: `site/assets/story/<studio, turn, mark, houses>.jpg` and `.webp`, 1216 × 1520. Render with
 `--res 1216 --res-y 1520`.
 
 ## Re-rendering
