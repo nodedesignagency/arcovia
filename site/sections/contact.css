@@ -38,22 +38,57 @@
   align-items: start;
 }
 
-/* ---------- Headline ---------- */
+/* ---------- Headline ----------
+   After the user's reference (a studio's services heading): the chip runs up the left
+   edge on its side, a small square under it, and the headline sits on the right where
+   the note starts (column 5 plus the note's 32px), its cap height level with the top of
+   the chip. Tablet and phone stack them again (below). */
 .contact__head {
+  /* A share of the grid's width, so it sets the same way at every desktop width */
+  --ct-title: calc((min(100vw, var(--container-max)) - 2 * var(--gutter)) * 0.07);
   grid-column: 1 / -1;
   display: grid;
-  justify-items: start;
-  gap: 22px;
+  grid-template-columns: subgrid;
+  align-items: start;
+  row-gap: 22px;
   margin-bottom: 80px;
 }
+.contact__head .chip {
+  grid-column: 1 / span 2;
+  grid-row: 1;
+  justify-self: start;
+  /* the top of the word sits on the headline's cap height (Montserrat: 0.1585em under the
+     top of a line set solid), less the letter-spacing after the word's last letter */
+  margin-top: calc(var(--ct-title) * 0.1585 - 0.14em);
+}
 .contact__title {
-  /* A share of the grid's width, so it sets the same way at every desktop width */
-  font-size: calc((min(100vw, var(--container-max)) - 2 * var(--gutter)) * 0.07);
+  grid-column: 5 / -1;
+  grid-row: 1;
+  padding-left: var(--space-6);
+  font-size: var(--ct-title);
   font-weight: var(--weight-medium);
   line-height: 1;
   letter-spacing: -0.034em;
   color: var(--color-ink);
 }
+
+/* The chip on its side (component: chip--side): no brackets, a small square with square
+   corners (the user asked for no radius) under the word, which reads upwards from it */
+.contact .chip--side {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+}
+.contact .chip--side::before {
+  content: "";
+  flex: none;
+  width: 10px;
+  height: 10px;
+  background: currentColor;
+}
+.contact .chip--side::after { content: none; }
 
 /* ---------- Left: the line, direct email, offices ---------- */
 .contact__aside {
@@ -100,7 +135,8 @@
 /* ---------- Right: the note ---------- */
 /* 32px more room between the left column and the note, so the note doesn't crowd the lede */
 .contact__main { grid-column: 5 / -1; min-width: 0; padding-left: var(--space-6); }
-[data-sheet="card"] .contact__main { padding-left: 0; }
+[data-sheet="card"] .contact__main,
+[data-sheet="card"] .contact__title { padding-left: 0; }
 
 .note-form {
   font-size: var(--nt-size);
@@ -311,8 +347,11 @@
    side by side on tablet, stacked on phone. */
 @media (max-width: 1199px) {
   .contact { --nt-size: 26px; }
-  .contact__title { font-size: 72px; }
-  .contact__head { margin-bottom: var(--space-6); }
+  .contact__title { grid-column: 1 / -1; grid-row: 2; padding-left: 0; font-size: 72px; }
+  .contact__head { grid-template-columns: none; margin-bottom: var(--space-6); }
+  .contact__head .chip { grid-column: 1 / -1; margin-top: 0; }
+  .contact .chip--side { writing-mode: horizontal-tb; transform: none; gap: 10px; }
+  .contact .chip--side::before { width: 8px; height: 8px; }
   .contact__aside { display: contents; }
   .contact__lede { grid-column: 1 / span 9; grid-row: 2; max-width: 30em; margin-bottom: var(--space-8); font-size: 19px; }
   .contact__main { grid-column: 1 / -1; grid-row: 3; padding-left: 0; }

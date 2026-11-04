@@ -65,7 +65,7 @@ def token(name, pattern, group=1, value=None):
     a, b = hit.span(group)
     markup = markup[:a] + f'@@{name}@@' + markup[b:]
 
-token('chip', r'<p class="chip">(.*?)</p>')
+token('chip', r'<p class="chip[^"]*">(.*?)</p>')
 t = sec(r'<h1 class="contact__title" id="contact-title">(.*?)</h1>')
 title1, title2 = [text(x) for x in t.group(1).split('<br>')]
 markup = markup.replace(t.group(1), '@@title1@@<br> @@title2@@')
