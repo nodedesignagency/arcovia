@@ -28,7 +28,9 @@
    pressed in with scroll, so the beam lights the floor of the cut and throws
    shadows inside it. Without WebGL: the CSS concrete under an overlay, the
    SVG deboss and a soft raking light instead.
-   Below 1200 (no pinning) and without JS: the finished mark, notes in a column.
+   Below 1200 (no pinning; read from the stage's CSS position, so it works in a
+   Framer breakpoint frame too) and without JS: the finished state, the closing
+   line under the mark, then the notes.
    Reduced motion: each part appears whole at its point, the light stands still.
    Built to become a Framer code component (props: scroll length, mark width,
    the note copy).
@@ -43,7 +45,6 @@
   var NS = "http://www.w3.org/2000/svg";
 
   var reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
-  var desktop = window.matchMedia("(min-width: 1200px)");
   var SMOOTHING = 0.12;              // seconds: how long the drawing takes to catch up with the scroll
   var DIM = 0.45;                    // an earlier note, once the next step starts
   var OVERLAY = [0.74, 0.7];         // the dark overlay, before and after the mark is pressed in
@@ -323,13 +324,15 @@
     if (!raf) raf = requestAnimationFrame(frame);
   }
 
-  // Below 1200: no pinning; the finished mark, the notes and the closing line simply there
+  // Below 1200 the stage is not pinned (the CSS says so): the finished state, simply there.
+  // Read from the CSS rather than the window, so it follows container queries in a Framer frame too.
+  function pinned() { return getComputedStyle(stage).position === "sticky"; }
   function still() {
     render(1);
     notes.concat([closing, tag]).forEach(function (el) { el.style.opacity = ""; el.style.transform = ""; cache.delete(el); });
   }
   function setMode() {
-    var on = desktop.matches;
+    var on = pinned();
     if (on === live) return;
     live = on;
     root.classList.toggle("is-live", on);
@@ -345,7 +348,7 @@
     requestAnimationFrame(fitLight);
     if (live) { shown = -1; queue(); }
   });
-  if (desktop.addEventListener) desktop.addEventListener("change", setMode);
+  if (window.ResizeObserver) new ResizeObserver(function () { setMode(); }).observe(root);
   if (reduced.addEventListener) reduced.addEventListener("change", function () { shown = -1; queue(); });
 
   measure();
