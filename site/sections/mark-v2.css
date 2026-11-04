@@ -12,8 +12,9 @@
         corner cells and the annotation says what it is; "One idea"
      4  the drawing gives way to the mark pressed into the concrete (darker
         floor, shaded walls, a thin light lip on the top edges, all at once);
-        soft daylight rakes slowly across the wall, and one line comes in,
-        centred under the mark.
+        the beam of sunlight from The mark above comes in and sweeps across
+        it with dust in it (concrete.js), and one line comes in, centred
+        under the mark.
    Ground: the concrete texture under a dark overlay (74%), full bleed.
    Type: Montserrat only (no mono, no counters, no numbered labels).
    No JS: one screen with the finished mark and the closing line.
@@ -21,11 +22,12 @@
    ========================================================================== */
 
 .mark-v2 {
-  --mv2-w: 420px;                              /* the mark's width (72 × 57) */
+  /* the mark's width (72 × 57): 588px, smaller only on short screens, so the frame and the line under it fit */
+  --mv2-w: min(588px, calc((100vh - 360px) * 72 / 57));
   --mv2-h: calc(var(--mv2-w) * 57 / 72);
   --mv2-u: calc(var(--mv2-w) / 72);            /* one unit of the mark's box */
-  /* Line widths in the mark's units at 420px; mark-v2.js keeps them true to the pixel */
-  --mv2-px: 0.1714;                            /* 1px */
+  /* Line widths in the mark's units at 588px; mark-v2.js keeps them true to the pixel */
+  --mv2-px: 0.1224;                            /* 1px */
   --mv2-ground: #3d3d3d;                       /* the wall under the overlay, inside the anchors */
   --mv2-ink: rgba(244, 244, 243, 0.92);        /* outlines and anchors */
   --mv2-rule: rgba(244, 244, 243, 0.17);       /* the clear-space grid */
@@ -56,6 +58,19 @@
   background: #0d0d0d;
   opacity: 0.66;                 /* lifted a little once the mark is pressed in; mark-v2.js runs it from 0.74 */
 }
+/* The WebGL wall (concrete.js) covers the CSS concrete and overlay once it is ready */
+.mark-v2__canvas {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 600ms var(--ease-out);
+}
+.mark-v2.is-gl .mark-v2__canvas { opacity: 1; }
+.mark-v2.is-gl .mark-v2__light { display: none; }   /* the beam takes its place */
+
 /* a little shade towards the edges of the wall */
 .mark-v2__overlay::after {
   content: "";
@@ -112,9 +127,9 @@
 }
 .mark-v2__anchor.is-current { fill: var(--color-on-dark); }   /* the last point placed, as in a pen tool */
 
-/* 4 · Soft daylight raking across the wall: a wide band, barely brighter than the
-   wall, drifting slowly left to right and back. It lights the wall and the mark
-   alike (no halo round the mark); the stage clips it. */
+/* 4 · Without WebGL: soft daylight raking across the wall, a wide band barely
+   brighter than the wall, drifting slowly left to right and back. It lights the
+   wall and the mark alike (no halo round the mark); the stage clips it. */
 .mark-v2__light {
   position: absolute;
   left: calc(50% - 90vw);
@@ -168,12 +183,14 @@
 /* The three notes, each at the end of its hairline; the title's first line sits on the line */
 .mark-v2__note {
   position: absolute;
-  width: min(300px, calc(50vw - var(--mv2-w) / 2 - var(--mv2-u) * 18 - var(--gutter)));
+  /* the room between the end of a hairline and the edge of the grid */
+  width: min(300px, calc(min(50vw, var(--container-max) / 2) - var(--mv2-w) / 2 - var(--mv2-u) * 9.5 - var(--gutter)));
   --title: 44px;                                /* the title's line */
 }
-.mark-v2__note--1 { right: calc(var(--mv2-u) * 90); top: calc(var(--mv2-u) * 36 - var(--title) / 2); text-align: right; }
-.mark-v2__note--2 { left: calc(var(--mv2-u) * 90); top: calc(var(--mv2-u) * 36 - var(--title) / 2); }
-.mark-v2__note--3 { left: calc(var(--mv2-u) * 90); top: calc(var(--mv2-u) * 8.011 - var(--title) / 2); }
+/* hairlines end 8 units outside the mark's box; the notes start 1.5 units further on */
+.mark-v2__note--1 { right: calc(var(--mv2-u) * 81.5); top: calc(var(--mv2-u) * 36 - var(--title) / 2); text-align: right; }
+.mark-v2__note--2 { left: calc(var(--mv2-u) * 81.5); top: calc(var(--mv2-u) * 36 - var(--title) / 2); }
+.mark-v2__note--3 { left: calc(var(--mv2-u) * 81.5); top: calc(var(--mv2-u) * 8.011 - var(--title) / 2); }
 
 .mark-v2__name {
   font-size: 40px;
@@ -187,17 +204,21 @@
   font-size: 17px;
   line-height: 1.55;
   color: var(--color-on-dark-muted);
-  text-wrap: pretty;
+  text-wrap: balance;
 }
 
 /* ---------- The closing line, centred under the mark, one sentence a line ---------- */
 .mark-v2__closing {
   position: absolute;
-  left: var(--gutter);
-  right: var(--gutter);
+  left: 0;
+  right: 0;
+  width: fit-content;
+  max-width: calc(100% - 2 * var(--gutter));
+  margin-inline: auto;
   top: calc(50% + var(--mv2-h) / 2 + var(--space-8));
-  font-size: 20px;
-  line-height: 1.5;
+  font-size: 28px;
+  line-height: 1.4;
+  letter-spacing: -0.01em;
   text-align: center;
   color: var(--color-on-dark);
 }
@@ -209,7 +230,7 @@
 
 /* ---------- Tablet and phone: no pinning, the finished mark and the notes in a column ---------- */
 @media (max-width: 1199px) {
-  .mark-v2 { --mv2-w: min(420px, 72vw); }
+  .mark-v2 { --mv2-w: min(588px, 72vw); }
   .mark-v2,
   .mark-v2.is-live { height: auto; }
   .mark-v2__stage { position: relative; height: auto; min-height: 100svh; padding-block: var(--space-9); }
@@ -221,7 +242,7 @@
   .mark-v2__note { position: static; width: auto; text-align: left; }
   .mark-v2__note--1 { text-align: left; }
   .mark-v2__name { font-size: 32px; --title: 38px; }
-  .mark-v2__closing { position: static; margin-top: var(--space-8); text-align: left; }
+  .mark-v2__closing { position: static; width: auto; max-width: none; margin: var(--space-8) 0 0; text-align: left; font-size: 24px; }
   .mark-v2__closing span { display: inline; }
 }
 @media (max-width: 809px) {
@@ -229,5 +250,5 @@
   .mark-v2__figure { margin-block: var(--space-4) var(--space-7); }
   .mark-v2__list { grid-template-columns: 1fr; }
   .mark-v2__name { font-size: 28px; --title: 34px; }
-  .mark-v2__closing { font-size: 19px; text-wrap: balance; }
+  .mark-v2__closing { font-size: 20px; text-wrap: balance; }
 }

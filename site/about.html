@@ -414,7 +414,7 @@
     </section>
     <!-- SECTION:mark END -->
 
-    <!-- SECTION:mark-v2 START · styles: sections/mark-v2.css · scripts: mark-v2.js
+    <!-- SECTION:mark-v2 START · styles: sections/mark-v2.css · scripts: concrete.js, mark-v2.js
          About, block 5, second version ("The mark · V2"), to compare with the one above.
          The A-mark sits in the middle of the screen the whole time and is drawn the way a designer
          builds a logo sheet (after the user's references: pen-tool anchor points, a clear-space grid
@@ -425,6 +425,10 @@
     <section class="mark-v2" data-mark-v2 data-header-theme="dark" aria-labelledby="mark-v2-title">
       <div class="mark-v2__stage">
         <div class="mark-v2__overlay" aria-hidden="true"></div>
+        <!-- The wall in WebGL (concrete.js, as The mark above): dark concrete, and in the last step
+             the same beam of sunlight with dust sweeping across the mark. Without WebGL the CSS
+             concrete and overlay stay, with a soft light instead. -->
+        <canvas class="mark-v2__canvas" aria-hidden="true"></canvas>
 
         <div class="mark-v2__frame container">
           <h2 class="visually-hidden" id="mark-v2-title">The mark</h2>
@@ -502,16 +506,16 @@
                 <path class="mark-v2__line" data-draw="circle" data-anchors="36.201,16.0215 28.1904,8.011 36.201,0.0003 44.2116,8.011" d="M36.201 16.0215A8.0106 8.0106 0 0 1 28.1904 8.011A8.0106 8.0106 0 0 1 36.201 0.0003A8.0106 8.0106 0 0 1 44.2116 8.011A8.0106 8.0106 0 0 1 36.201 16.0215"/>
 
                 <!-- Hairlines out to the notes -->
-                <line class="mark-v2__leader" data-leader="1" x1="17.488" y1="36" x2="-16" y2="36"/>
-                <line class="mark-v2__leader" data-leader="2" x1="54.626" y1="36" x2="88" y2="36"/>
-                <line class="mark-v2__leader" data-leader="3" x1="44.2116" y1="8.011" x2="88" y2="8.011"/>
+                <line class="mark-v2__leader" data-leader="1" x1="17.488" y1="36" x2="-8" y2="36"/>
+                <line class="mark-v2__leader" data-leader="2" x1="54.626" y1="36" x2="80" y2="36"/>
+                <line class="mark-v2__leader" data-leader="3" x1="44.2116" y1="8.011" x2="80" y2="8.011"/>
                 <circle class="mark-v2__dot" data-dot="1" cx="17.488" cy="36" r="0.3"/>
                 <circle class="mark-v2__dot" data-dot="2" cx="54.626" cy="36" r="0.3"/>
 
                 <g data-anchor-layer></g>
               </g>
             </svg>
-            <!-- 4 · Soft daylight raking slowly across the wall and the mark -->
+            <!-- 4 · Without WebGL: soft daylight raking slowly across the wall and the mark -->
             <span class="mark-v2__light"></span>
           </div>
 

@@ -17,9 +17,14 @@
                           "One idea"; 1 and 2 dim
      step 4  p 0.70-1.00  the drawing and the notes fade; the mark is pressed
                           in (floor, walls and lip together, so it never reads
-                          as a flat shape); soft daylight comes up and rakes
-                          slowly across the wall; the closing line comes in,
-                          centred under the mark
+                          as a flat shape); the beam of sunlight from The mark
+                          above comes up and sweeps across it, with dust in it;
+                          the closing line comes in, centred under the mark
+   The wall is a ConcreteSurface (concrete.js) on the stage, as in The mark:
+   dark concrete, sun 0 while the logo is drawn (and paused: nothing moves),
+   then the CTA's beam (22°, 18 s across and back) fitted to the mark. The
+   pressed-in mark itself stays the SVG deboss. Without WebGL: the CSS
+   concrete under an overlay, and a soft raking light instead of the beam.
    Below 1200 (no pinning) and without JS: the finished mark, notes in a column.
    Reduced motion: each part appears whole at its point, the light stands still.
    Built to become a Framer code component (props: scroll length, mark width,
@@ -209,10 +214,82 @@
     set(walls, "opacity", f(pr));
     set(lip, "opacity", f(pr));
     set(overlay, "opacity", f(OVERLAY[0] + (OVERLAY[1] - OVERLAY[0]) * pr));
-    set(light, "opacity", f(at(p, T.light)));
+    var li = at(p, T.light);
+    set(light, "opacity", f(li));
+    setLight(li, pr);
     var c = at(p, T.closing);
     set(closing, "opacity", f(c));
     set(closing, "transform", "translateY(" + f((1 - c) * 8) + "px)");
+  }
+
+  // ---------- The wall and the beam of sunlight (concrete.js) ----------
+  var stage = q(".mark-v2__stage");
+  var SUN = 1.0, DUST = 0.4, TONE = [0.42, 0.45];   // the beam at full; the wall before and after the press
+  var beam = { angle: 22, width: 80, soft: 26, from: -300, to: 300, fadeFrom: -900, fadeTo: -400 };
+  var surface = null, beamOn = false, lightNow = [-1, -1];
+  if (window.ConcreteSurface && q(".mark-v2__canvas")) {
+    surface = new window.ConcreteSurface(stage, {
+      canvas: ".mark-v2__canvas",
+      tone: TONE[0],            // a dark wall, as The mark
+      vignette: 0.42,
+      sun: 0,                   // no light until the logo is drawn
+      cursor: 0,
+      period: 18,               // across and back, in seconds (the CTA's and The mark's)
+      staticBand: 0.5,          // with reduced motion: across the middle of the mark
+      beam: beam,
+      dust: 0,                  // no shade box: the beam fades out before the feet, clear of the closing line
+      smooth: true
+    });
+    surface.setPaused(true);
+    surface.init().then(function (ok) {
+      if (!ok) { surface = null; return; }
+      fitLight();
+      root.classList.add("is-gl");
+      var l = lightNow; lightNow = [-1, -1];
+      setLight(Math.max(0, l[0]), Math.max(0, l[1]));
+    });
+  }
+
+  // The beam measured on the mark, as in The mark: as wide as the CTA's beam on its
+  // lockup, sweeping from across the circle down to the lower legs, full from the left leg on
+  function fitLight() {
+    if (!surface) return;
+    var hr = stage.getBoundingClientRect(), r = svg.getBoundingClientRect();
+    if (!r.width) return;
+    var mw = r.width, mh = r.height;
+    var cx = r.left - hr.left + mw / 2 - hr.width / 2;   // the mark's centre, from the slab's centre
+    var cy = r.top - hr.top + mh / 2 - hr.height / 2;
+    var a = beam.angle * Math.PI / 180;
+    var nx = Math.sin(a), ny = Math.cos(a);              // across the beam (y down)
+    var dx = Math.cos(a), dy = -Math.sin(a);             // along it, towards the upper right
+    var across = cx * nx + cy * ny;
+    var half = (mw / 2) * nx + (mh / 2) * ny;
+    beam.width = mh * 0.17;
+    beam.soft = mh * 0.055;
+    beam.from = across - half * 0.66;
+    beam.to = across + half * 0.42;                      // ...down to the lower legs, clear of the closing line
+    var along = cx * dx + cy * dy;
+    beam.fadeFrom = along - mw * 0.72;
+    beam.fadeTo = along - mw * 0.18;
+    surface.needsFrame = true;
+    surface.kick();
+  }
+
+  // li: how far the light has come up (0-1); pr: how far the mark is pressed in
+  function setLight(li, pr) {
+    if (li === lightNow[0] && pr === lightNow[1]) return;
+    lightNow = [li, pr];
+    if (!surface || !surface.ready) return;
+    var o = surface.opts, on = li > 0;
+    // Each time the light comes in, the beam starts a quarter of the way across, moving down the mark
+    if (on && !beamOn) surface.t0 = performance.now() - o.period * 1000 / 6;
+    beamOn = on;
+    o.sun = SUN * li;
+    o.dust = DUST * li;
+    o.tone = TONE[0] + (TONE[1] - TONE[0]) * pr;
+    surface.needsFrame = true;
+    surface.setPaused(!on);    // nothing moves while the logo is drawn
+    surface.kick();
   }
 
   // ---------- Scroll → progress, lightly smoothed ----------
@@ -251,17 +328,22 @@
     live = on;
     root.classList.toggle("is-live", on);
     measure();
+    requestAnimationFrame(fitLight);
     if (on) { shown = -1; queue(); }
     else { if (raf) { cancelAnimationFrame(raf); raf = 0; } still(); }
   }
 
   window.addEventListener("scroll", queue, { passive: true });
-  window.addEventListener("resize", function () { measure(); if (live) { shown = -1; queue(); } });
+  window.addEventListener("resize", function () {
+    measure();
+    requestAnimationFrame(fitLight);
+    if (live) { shown = -1; queue(); }
+  });
   if (desktop.addEventListener) desktop.addEventListener("change", setMode);
   if (reduced.addEventListener) reduced.addEventListener("change", function () { shown = -1; queue(); });
 
   measure();
   setMode();
   if (!live) still();
-  window.arcoviaMarkV2 = { render: render, T: T };
+  window.arcoviaMarkV2 = { render: render, T: T, surface: surface };
 })();
