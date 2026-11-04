@@ -2,10 +2,10 @@
    SECTION: offices — About, block 7 (brief section 7, "Offices and closing")
    Layout after the user's reference: the heading on the left (one sentence
    per line) and its line on the right, ending on the heading's baseline;
-   the two offices side by side, each a black-and-white photo, the city
-   beside the map's square marker with "Office" on the right, over a
-   hairline, then the address and the live local time with the
-   coordinates, and a link for directions; then a hairline and the closing
+   the two offices side by side, each a street plan of its address (the
+   office's building under the map's square marker), the city beside the
+   same marker with "Office" on the right, over a hairline, then the
+   address and the live local time, and a link for directions; then a hairline and the closing
    line with the button to Contact.
    In our language: Montserrat in sentence case, ink on the neutral ground
    (the footer's, so the page runs on into it as Home's CTA does). The
@@ -38,7 +38,7 @@
   margin-bottom: var(--space-5);
 }
 .offices__title {
-  grid-column: 1 / span 8;
+  grid-column: 1 / span 6;
   grid-row: 2;
   font-size: var(--offices-fs);
   font-weight: var(--weight-medium);
@@ -48,9 +48,10 @@
 }
 .offices__title span { display: block; }
 .offices__lede {
-  grid-column: 9 / span 4;
+  grid-column: 7 / span 6;
   grid-row: 2;
-  max-width: 24em;
+  justify-self: end; /* against the right edge of the grid, as in the reference */
+  max-width: 25em;
   /* its last line sits on the heading's last baseline */
   margin-bottom: calc(var(--offices-fs) * 0.1815 - 7.8px);
   font-size: var(--fs-lede);
@@ -73,20 +74,34 @@
   min-width: 0;
 }
 
-/* The photo: black and white, whatever is dropped in */
-.office__photo {
+/* The map: a street plan of the address in our greys, the office's building in charcoal under
+   the map's square marker (tools/office-map.py); it opens Google Maps, like "Get directions" */
+.office__map {
+  position: relative;
+  display: block;
   width: 100%;
   aspect-ratio: 4 / 3;
-  margin: 0;
   overflow: hidden;
   border-radius: var(--radius-m);
-  background: var(--color-concrete);
+  background: #e4e4e3; /* the map's ground, while it loads */
 }
-.office__photo img {
+.office__map img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  filter: grayscale(1) contrast(1.04);
+  filter: grayscale(1);
+}
+/* The data credit OpenStreetMap asks for, small in the corner */
+.office__credit {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: rgba(239, 239, 238, 0.86);
+  font-size: 11px;
+  line-height: 1.4;
+  color: var(--color-text-muted);
 }
 
 /* The city, with the map's square marker, and "Office" on the right, over a hairline */
@@ -151,13 +166,6 @@
   white-space: nowrap;
 }
 .office__time .office__tz { font-weight: var(--weight-book); color: var(--color-text-muted); }
-.office__coords {
-  margin: 2px 0 0;
-  font-size: var(--fs-small);
-  line-height: var(--lh-small);
-  font-variant-numeric: tabular-nums;
-  color: var(--color-text-muted);
-}
 
 /* Directions: a quiet underlined link; the arrow moves on hover, as in the map's pill */
 .office__directions {
@@ -212,7 +220,7 @@
   .offices { --offices-fs: 40px; padding-block: var(--space-9) var(--space-8); }
   .offices__head { margin-bottom: var(--space-7); }
   .offices__title { grid-column: 1 / -1; }
-  .offices__lede { grid-column: 1 / span 8; grid-row: 3; margin: var(--space-5) 0 0; }
+  .offices__lede { grid-column: 1 / span 8; grid-row: 3; justify-self: start; margin: var(--space-5) 0 0; }
   .office__city { font-size: 24px; }
   .office__details { grid-template-columns: minmax(0, 1fr); }
   .offices__close { margin-top: var(--space-9); padding-top: var(--space-7); }

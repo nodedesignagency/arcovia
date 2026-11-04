@@ -405,12 +405,15 @@
     <!-- SECTION:map END -->
     <!-- SECTION:offices START · styles: sections/offices.css · scripts: main.js (office clocks)
          About, block 7 (brief section 7, "Offices and closing"). Layout after the user's
-         reference: the heading and its line, the two offices side by side (photo, city
-         over a hairline, address, live local time and coordinates, directions), then a
+         reference: the heading and its line, the two offices side by side (map, city
+         over a hairline, address, live local time, directions), then a
          hairline and the closing line with the button to Contact.
          Copy: the addresses and the button are the brief's; the heading, its line and the
          closing line are from the user's reference [TO CONFIRM with Lilla].
-         The photos are stand-ins: [IMAGE NEEDED] the client's own photos of each office. -->
+         Each office shows a street plan of its address (tools/office-map.py, OpenStreetMap
+         data, credited on the map); the map opens Google Maps, like "Get directions".
+         The San Juan address in the brief ("450 Ave. 200") does not resolve to a street:
+         its map shows 450 Ave. de la Constitución [TO CONFIRM with the client]. -->
     <section class="offices" aria-labelledby="offices-title">
       <div class="offices__inner container">
         <div class="offices__head">
@@ -422,9 +425,10 @@
         <ul class="offices__list">
           <!-- Component: office-card -->
           <li class="office">
-            <figure class="office__photo">
-              <img src="assets/offices/los-angeles.jpg" alt="A striped office tower between palm trees in Century City, Los Angeles" width="1600" height="1200" loading="lazy" decoding="async">
-            </figure>
+            <a class="office__map" href="https://www.google.com/maps/search/?api=1&amp;query=2029+Century+Park+East%2C+Los+Angeles%2C+CA+90067" target="_blank" rel="noopener" tabindex="-1" aria-hidden="true">
+              <img src="assets/offices/los-angeles-map.svg" alt="" width="1600" height="1200" loading="lazy" decoding="async">
+              <span class="office__credit">© OpenStreetMap contributors</span>
+            </a>
             <div class="office__head">
               <h3 class="office__city">Los Angeles</h3>
               <span class="office__tag">Office</span>
@@ -437,15 +441,15 @@
               <div class="office__detail">
                 <dt class="office__label">Local time</dt>
                 <dd class="office__value office__time"><span data-clock="America/Los_Angeles">Pacific Time</span></dd>
-                <dd class="office__coords">34.05°N, 118.24°W</dd>
               </div>
             </dl>
             <a class="office__directions" href="https://www.google.com/maps/search/?api=1&amp;query=2029+Century+Park+East%2C+Los+Angeles%2C+CA+90067" target="_blank" rel="noopener">Get directions<span class="visually-hidden"> to the Los Angeles office (Google Maps)</span><svg class="office__arrow" aria-hidden="true"><use href="#icon-arrow"/></svg></a>
           </li>
           <li class="office">
-            <figure class="office__photo">
-              <img src="assets/offices/san-juan.jpg" alt="A sentry box on the old city wall over the sea, San Juan" width="1600" height="1200" loading="lazy" decoding="async">
-            </figure>
+            <a class="office__map" href="https://www.google.com/maps/search/?api=1&amp;query=450+Ave.+200%2C+San+Juan%2C+Puerto+Rico+00901" target="_blank" rel="noopener" tabindex="-1" aria-hidden="true">
+              <img src="assets/offices/san-juan-map.svg" alt="" width="1600" height="1200" loading="lazy" decoding="async">
+              <span class="office__credit">© OpenStreetMap contributors</span>
+            </a>
             <div class="office__head">
               <h3 class="office__city">San Juan</h3>
               <span class="office__tag">Office</span>
@@ -458,7 +462,6 @@
               <div class="office__detail">
                 <dt class="office__label">Local time</dt>
                 <dd class="office__value office__time"><span data-clock="America/Puerto_Rico">Atlantic Time</span></dd>
-                <dd class="office__coords">18.47°N, 66.11°W</dd>
               </div>
             </dl>
             <a class="office__directions" href="https://www.google.com/maps/search/?api=1&amp;query=450+Ave.+200%2C+San+Juan%2C+Puerto+Rico+00901" target="_blank" rel="noopener">Get directions<span class="visually-hidden"> to the San Juan office (Google Maps)</span><svg class="office__arrow" aria-hidden="true"><use href="#icon-arrow"/></svg></a>
