@@ -1,0 +1,129 @@
+/* ==========================================================================
+   SECTION: team-hero — Team, block 1
+   The About hero's structure (sections/about-hero.css), as the user asked:
+   a short opening on the home hero's live concrete (concrete.js, started by
+   main.js through [data-hero]), the chip and headline low on the left
+   (cols 1-8), the subline on the right (cols 9-12) with its last line on the
+   headline's baseline. Under them the brief's stat band: three figures, each
+   over a hairline, four columns apiece, so the third lines up with the
+   subline. No text animation.
+   Uses shared tokens and components from styles.css (chip, container).
+   ========================================================================== */
+
+.team-hero {
+  /* The headline is a share of the grid width, so its lines break the same at every desktop width (as About) */
+  --team-hero-fs: calc((min(100vw, var(--container-max)) - 2 * var(--gutter)) * 0.044);
+  --team-hero-line: rgba(21, 21, 21, 0.18);
+
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  align-items: end;
+  min-height: 65vh;
+  min-height: 65svh;
+  padding-top: calc(var(--header-h) + var(--space-8));
+  padding-bottom: var(--space-8);
+  overflow: hidden;
+  /* Static fallback: no JS, no WebGL. The home hero's soft diagonal light band on concrete. */
+  background-color: var(--color-concrete);
+  background-image:
+    linear-gradient(112deg, rgba(0, 0, 0, 0.06) 0%, rgba(0, 0, 0, 0.02) 38%, rgba(255, 255, 255, 0.22) 52%, rgba(255, 255, 255, 0.14) 66%, rgba(0, 0, 0, 0.05) 100%),
+    url("../assets/concrete.jpg");
+  background-size: auto, 1024px;
+}
+
+.team-hero .hero__canvas {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 900ms var(--ease-out);
+}
+.team-hero.hero--gl .hero__canvas { opacity: 1; }
+
+/* ---------- Heading and line ---------- */
+.team-hero__inner {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--grid-gap);
+  align-items: end;
+}
+
+.team-hero__heading {
+  grid-column: 1 / span 8;
+  grid-row: 1;
+  display: grid;
+  justify-items: start;
+  gap: var(--space-6);
+}
+
+.team-hero__title {
+  font-size: var(--team-hero-fs);
+  font-weight: var(--weight-medium);
+  line-height: 1.06;
+  letter-spacing: var(--ls-hero);
+  color: var(--color-ink);
+}
+/* One line each: the break is the design's */
+.team-hero__line { display: block; white-space: nowrap; }
+
+.team-hero__lede {
+  grid-column: 9 / span 4;
+  grid-row: 1;
+  max-width: 24em;
+  font-size: var(--fs-lede);
+  line-height: var(--lh-lede);
+  color: var(--color-text);
+  text-wrap: pretty;
+  /* Sit the last line on the headline's baseline, not the bottom of its line box:
+     the headline's baseline is ~0.18em above its box, the line's ~0.39em above its own */
+  margin-bottom: calc(var(--team-hero-fs) * 0.18 - var(--fs-lede) * 0.39);
+}
+
+/* ---------- Stat band: three figures over hairlines ---------- */
+.team-hero__stats {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  display: grid;
+  grid-template-columns: subgrid;
+  margin-top: var(--space-9);
+}
+
+.team-stat {
+  grid-column: span 4;
+  display: grid;
+  gap: var(--space-2);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--team-hero-line);
+}
+.team-stat__figure {
+  font-size: 44px;
+  font-weight: var(--weight-medium);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--color-ink);
+}
+.team-stat__label {
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--color-text-muted);
+}
+
+/* Tablet and phone: not reviewed yet (desktop first); keep it stacked and readable */
+@media (max-width: 1199px) {
+  .team-hero { --team-hero-fs: 44px; }
+  .team-hero__inner { align-items: start; }
+  .team-hero__heading { grid-column: 1 / -1; margin-bottom: var(--space-6); }
+  .team-hero__lede { grid-column: 1 / span 9; grid-row: 2; margin-bottom: 0; }
+  .team-hero__stats { grid-row: 3; margin-top: var(--space-8); }
+  .team-stat__figure { font-size: 36px; }
+}
+@media (max-width: 809px) {
+  .team-hero { --team-hero-fs: 30px; }
+  .team-hero__line { white-space: normal; }
+  .team-hero__lede { grid-column: 1 / -1; }
+  .team-hero__stats { row-gap: var(--space-5); }
+  .team-stat { grid-column: 1 / -1; }
+}
