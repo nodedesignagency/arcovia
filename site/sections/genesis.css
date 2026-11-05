@@ -114,12 +114,24 @@
   color: var(--color-text-muted);
 }
 
-/* Tablet and phone: not reviewed yet (desktop first) */
+/* Tablet: two columns, still lined up across each row (subgrid). The cards keep
+   no gap of their own (row-gap: 0), so the list's row gap only falls between the
+   two rows of cards, not between a card's number, drawing, title and text. */
 @media (max-width: 1199px) {
-  .genesis { --genesis-fs: 40px; }
-  .genesis__list { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: var(--space-8); }
+  .genesis { --genesis-fs: var(--fs-h2); padding-block: var(--space-9); }
+  .genesis__head { margin-bottom: var(--space-8); }
+  .genesis__list { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: repeat(8, auto); row-gap: var(--space-8); }
+  .genesis-card { row-gap: 0; }
+  .genesis-card__art { margin-top: var(--space-6); }
+  .genesis-card__name { margin-top: var(--space-6); }
 }
+/* Phone: one card under the other, each behind its hairline, closer together */
 @media (max-width: 809px) {
-  .genesis { --genesis-fs: 30px; }
-  .genesis__list { grid-template-columns: minmax(0, 1fr); }
+  .genesis { padding-block: var(--space-8); }
+  .genesis__head { margin-bottom: var(--space-7); }
+  .genesis__list { grid-template-columns: minmax(0, 1fr); grid-template-rows: none; row-gap: var(--space-7); }
+  .genesis-card { grid-row: auto; grid-template-rows: none; padding-left: 20px; }
+  .genesis-card__art { width: 176px; height: 132px; margin-top: var(--space-4); }
+  .genesis-card__name { margin-top: var(--space-5); }
+  .genesis__note { margin-top: var(--space-7); }
 }

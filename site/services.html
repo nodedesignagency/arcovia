@@ -273,7 +273,9 @@
          across the 12 columns (Your situation cols 1-4, What we do cols 5-12), column labels on a
          band, a hairline on every cell edge. Component data-table (styles.css). Every word from the
          brief, in its order. The brief wants each row to open into a short panel, an accordion on
-         mobile: on desktop every panel is open. -->
+         mobile: on desktop and tablet every panel is open (the table); on phones the same rows are
+         an accordion (component situation-list: native details/summary, the first one open), and
+         the table is hidden. -->
     <section class="situations" id="situations" aria-labelledby="situations-title">
       <div class="container">
         <h2 class="situations__title" id="situations-title">Start from where you are</h2>
@@ -295,6 +297,30 @@
               <tr><th scope="row">Launching or growing a fund</th><td><span class="situations__text">Fund formation and partnerships: support for emerging managers on fund formation, LP strategy and capital raising, plus fund-to-fund and co-investment partnerships alongside lead funds.</span></td></tr>
             </tbody>
           </table>
+        </div>
+
+        <!-- Phones: the same rows as an accordion (component situation-list) -->
+        <div class="situation-list">
+          <details class="situation-list__item" open>
+            <summary class="situation-list__head"><span class="situation-list__name">Raising a growth round</span><span class="situation-list__icon" aria-hidden="true"></span></summary>
+            <p class="situation-list__text">Equity capital raising: round sizing, valuation anchoring, equity and SAFE structures, cap table and dilution analysis from seed through Series D, then a targeted process across growth equity, PIPEs and registered directs.</p>
+          </details>
+          <details class="situation-list__item">
+            <summary class="situation-list__head"><span class="situation-list__name">Raising debt or refinancing</span><span class="situation-list__icon" aria-hidden="true"></span></summary>
+            <p class="situation-list__text">Debt advisory and placement: venture debt, growth lending, unitranche, mezzanine and subordinated debt, led by senior advisors with $20B+ in LBO experience for KKR, Blackstone, TPG, Carlyle, Apollo and Bain Capital.</p>
+          </details>
+          <details class="situation-list__item">
+            <summary class="situation-list__head"><span class="situation-list__name">Selling, buying or merging</span><span class="situation-list__icon" aria-hidden="true"></span></summary>
+            <p class="situation-list__text">M&amp;A on the sell side and the buy side, including cross-border transactions, from preparation and positioning to negotiation and close.</p>
+          </details>
+          <details class="situation-list__item">
+            <summary class="situation-list__head"><span class="situation-list__name">Financing a project</span><span class="situation-list__icon" aria-hidden="true"></span></summary>
+            <p class="situation-list__text">Project finance with milestone-based structures, for infrastructure, energy and real assets.</p>
+          </details>
+          <details class="situation-list__item">
+            <summary class="situation-list__head"><span class="situation-list__name">Launching or growing a fund</span><span class="situation-list__icon" aria-hidden="true"></span></summary>
+            <p class="situation-list__text">Fund formation and partnerships: support for emerging managers on fund formation, LP strategy and capital raising, plus fund-to-fund and co-investment partnerships alongside lead funds.</p>
+          </details>
         </div>
       </div>
     </section>

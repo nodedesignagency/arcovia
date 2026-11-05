@@ -8,8 +8,8 @@
    first path in the opening above), What we do cols 5-12. The table is the
    shared component data-table (styles.css).
    The brief: "each opening into a short panel (accordion on mobile)". On
-   desktop every panel is open (the second column); the phone accordion
-   comes with the tablet and phone pass.
+   desktop and tablet every panel is open (the second column); on phones the
+   rows are an accordion (situation-list, below) and the table is hidden.
    Uses shared tokens and components from styles.css (container, data-table).
    ========================================================================== */
 
@@ -28,6 +28,7 @@
   line-height: 1.08;
   letter-spacing: var(--ls-h2);
   color: var(--color-ink);
+  text-wrap: balance;
 }
 
 /* Your situation: cols 1-4 (four columns and three gaps, less the gap before What we do) */
@@ -40,23 +41,80 @@
   text-wrap: pretty;
 }
 
-/* Tablet and phone: not reviewed yet (desktop first). The table slides
-   sideways in its own strip, as the Team table does, until the accordion. */
 .situations__scroll { outline-offset: 4px; }
+
+/* Component: situation-list. The phone accordion (the brief: each row opens
+   into a short panel, an accordion on mobile): the same rows as native
+   details/summary, so it works without a script. The table's hairlines and
+   type: each row a box with a hairline on every edge (shared edges), the
+   situation in medium ink with a plus that turns into a minus when open, the
+   panel's text under it. Hidden above phones, where the table shows. */
+.situation-list { display: none; }
+.situation-list__item {
+  --sl-line: rgba(21, 21, 21, 0.1);
+  border: 1px solid var(--sl-line);
+}
+.situation-list__item + .situation-list__item { border-top: 0; }
+.situation-list__head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  min-height: 60px;
+  padding: 16px 20px;
+  font-size: var(--fs-body);
+  font-weight: var(--weight-medium);
+  line-height: 24px;
+  color: var(--color-ink);
+  cursor: pointer;
+  list-style: none;
+  outline-offset: -2px;
+}
+.situation-list__head::-webkit-details-marker { display: none; }
+.situation-list__name { flex: 1; }
+/* The plus: two 1.5px bars; the upright one turns flat when open (a minus) */
+.situation-list__icon {
+  position: relative;
+  flex: none;
+  width: 14px;
+  height: 14px;
+}
+.situation-list__icon::before,
+.situation-list__icon::after {
+  content: "";
+  position: absolute;
+  inset: 50% 0 auto;
+  height: 1.5px;
+  margin-top: -0.75px;
+  background: currentColor;
+  transition: transform 300ms var(--ease-out);
+}
+.situation-list__icon::after { transform: rotate(90deg); }
+.situation-list__item[open] .situation-list__icon::after { transform: rotate(0deg); }
+.situation-list__text {
+  padding: 0 20px 20px;
+  font-size: var(--fs-body);
+  line-height: 24px;
+  color: var(--color-text);
+  text-wrap: pretty;
+}
+@media (prefers-reduced-motion: reduce) {
+  .situation-list__icon::before,
+  .situation-list__icon::after { transition: none; }
+}
+
+/* Tablet: the table fits the grid as on desktop (Your situation on the first
+   four columns), with the cells set in a little closer */
 @media (max-width: 1199px) {
   .situations { --st-fs: var(--fs-h2); padding-block: var(--space-9); }
   .situations__title { margin-bottom: var(--space-7); }
-  .situations__scroll {
-    overflow-x: auto;
-    margin-right: calc(-1 * var(--gutter));
-    padding-right: var(--gutter);
-  }
-  .situations .data-table { --dt-pad-x: 20px; width: 1000px; }
-  .situations__col--situation { width: 333px; }
+  .situations .data-table { --dt-pad-x: 20px; }
   .situations .data-table th,
   .situations .data-table td { padding-block: 18px; }
 }
+/* Phone: the accordion instead of the table */
 @media (max-width: 809px) {
   .situations { padding-block: var(--space-8); }
-  .situations__title { margin-bottom: 40px; }
+  .situations__title { margin-bottom: var(--space-6); }
+  .situations__scroll { display: none; }
+  .situation-list { display: block; }
 }

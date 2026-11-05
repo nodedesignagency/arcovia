@@ -97,13 +97,30 @@
   object-fit: cover;
 }
 
-/* Tablet and phone: not reviewed yet (desktop first); the text, then the panel */
+/* Tablet and phone: one column, the panel first and its text under it, the same
+   for all three (no alternating), so each image leads its own block instead of
+   sitting after its button where it reads as the start of the next one */
 @media (max-width: 1199px) {
   .paths { --pf-fs: var(--fs-h2); padding-block: var(--space-9); }
   .path-feature { row-gap: var(--space-7); }
   .path-feature + .path-feature { margin-top: var(--space-9); }
-  .path-feature__text,
-  .path-feature--flip .path-feature__text { grid-column: 1 / -1; grid-row: 1; }
   .path-feature__media,
-  .path-feature--flip .path-feature__media { grid-column: 1 / -1; grid-row: 2; }
+  .path-feature--flip .path-feature__media { grid-column: 1 / -1; grid-row: 1; aspect-ratio: 16 / 9; }
+  /* A full-width 6:5 panel would be ~950px tall at 1199: the panel goes wide and
+     the whole render sits in its middle; the render's backdrop is the charcoal
+     itself (#565656), so the panel's sides continue it without a seam */
+  .path-feature__media img { object-fit: contain; }
+  .path-feature__text,
+  .path-feature--flip .path-feature__text { grid-column: 1 / -1; grid-row: 2; }
+  .path-feature__title { margin-top: var(--space-4); }
+}
+@media (max-width: 809px) {
+  .paths { padding-block: var(--space-8); }
+  .path-feature { row-gap: var(--space-6); }
+  .path-feature + .path-feature { margin-top: var(--space-8); }
+  .path-feature__media { aspect-ratio: 6 / 5; border-radius: var(--radius-m); }
+  .path-feature__media img { object-fit: cover; }
+  .path-feature__lede { margin-top: var(--space-4); }
+  .path-feature__list { margin-top: var(--space-5); }
+  .path-feature__btn { margin-top: var(--space-6); }
 }
