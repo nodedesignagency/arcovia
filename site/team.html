@@ -451,31 +451,33 @@
     </section>
     <!-- SECTION:team-list END -->
 
-    <!-- SECTION:residency START · styles: sections/residency.css · scripts: residency.js
-         Team, block 5: the Residency Program. After the user's screen recording (a "data coverage"
-         line: a small label, one large sentence, a chevron, then a vertical wheel of names: the
-         current one bright, the one above and the one below dim, rolling up one row at a time).
-         Here: the heading as the chip, the brief's own words as the sentence ("A selective program
-         for professionals from"), and the three fields it names rolling in the wheel; since there
-         are three, all three are always in view, the current one in ink. Screen readers get the
-         sentence whole. Under it, the button (Contact with the Residency path chosen,
-         contact.html?path=talent) and the brief's text. Copy verbatim from the brief (Team,
-         section 5). -->
+    <!-- SECTION:residency START · styles: sections/residency.css · scripts: concrete.js, residency.js
+         Team, block 5: the Residency Program. After the user's screen recording (a centred two-line
+         headline whose last word sits in a coloured tag and changes every few seconds, the line
+         re-centring to the new word; a short centred line under it). The user asked for our
+         debossed style instead of the tag: the field is carved into the neutral ground by
+         concrete.js (plain material, exactly like the sectors line), and instead of the tag's blur
+         it rises flush into the surface, the line re-centres, and the next field presses in
+         (residency.js). The heading is the chip, the headline is the brief's own words, then the
+         brief's text and the button (Contact with the Residency path chosen,
+         contact.html?path=talent). Screen readers get the sentence whole. Copy verbatim from the
+         brief (Team, section 5). -->
     <section class="residency" id="residency" aria-labelledby="residency-title">
       <div class="container">
-        <h2 class="chip residency__title" id="residency-title">The Residency Program</h2>
+        <div class="residency__inner">
+          <h2 class="chip residency__title" id="residency-title">The Residency Program</h2>
 
-        <p class="residency__claim">
-          A selective program<br>
-          <span class="residency__line">for professionals from<svg class="residency__chevron" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M6 3.5 10.5 8 6 12.5"/></svg><span class="residency__slot"><span class="visually-hidden">venture capital, private equity and investment banking.</span><span class="residency__sizer" aria-hidden="true">Investment banking</span><span class="residency__wheel" aria-hidden="true" data-residency-wheel><span class="residency__track"><span class="residency__item is-on">Venture capital</span><span class="residency__item is-near">Private equity</span><span class="residency__item">Investment banking</span></span></span></span></span>
-        </p>
+          <p class="residency__head" data-residency-head>
+            <canvas class="residency__canvas" aria-hidden="true"></canvas>
+            <span class="visually-hidden">A selective program for professionals from venture capital, private equity and investment banking.</span>
+            <span class="residency__lines" aria-hidden="true">A selective program for<br>professionals from <span class="residency__slot"><span class="residency__word" data-carve="text">Venture capital</span></span></span>
+          </p>
 
-        <div class="residency__foot">
+          <p class="residency__body">The Arcovia Residency Program is a selective program for professionals from venture capital, private equity and investment banking. Residents expand our origination and market intelligence.</p>
           <a class="btn btn--primary residency__btn" href="contact.html?path=talent">
             Interested? Write to us
             <svg class="btn__icon residency__arrow" aria-hidden="true"><use href="#icon-arrow"/></svg>
           </a>
-          <p class="residency__body">The Arcovia Residency Program is a selective program for professionals from venture capital, private equity and investment banking. Residents expand our origination and market intelligence.</p>
         </div>
       </div>
     </section>

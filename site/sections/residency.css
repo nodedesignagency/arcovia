@@ -1,132 +1,98 @@
 /* ==========================================================================
    SECTION: residency — Team, block 5 (the Residency Program)
-   After the user's screen recording (a "data coverage" line): a small label,
-   one large sentence, a chevron, then a vertical wheel of names, the current
-   one bright and the one above and below it dim, rolling up one row at a
-   time. Here the heading is the label (the site's bracketed chip), the
-   sentence is the brief's own words ("A selective program / for
-   professionals from"), and the wheel holds the three fields it names
-   (residency.js rolls it). With three names, all three are always in view:
-   the current one in ink in the middle line, the others at 20%. The wheel
-   sits right after the second line, which is longer than the first, so the
-   dim name above it never meets the text. Under it, the brief's text and the
-   button. The reference's flags and orange chevron are not used.
+   After the user's screen recording: a centred two-line headline whose last
+   word sits in a coloured tag and changes every few seconds (the line
+   re-centring to the new word), a short centred line under it. The user
+   asked for our debossed style instead of the tag: the field is carved into
+   the neutral ground by concrete.js, the plain material, exactly as the
+   sectors line on Home (same sky light: dark rim and inner shadow top left,
+   light rim bottom right; no drifting sun and no cursor light, so the ground
+   stays perfectly flat and the canvas's edge never shows). residency.js
+   swaps the fields: the word rises flush into the surface, the line
+   re-centres to the next word's width, the next word presses in.
+   Over it the heading as the chip, under it the brief's text and the
+   button, all centred like the reference. Without WebGL the word is pressed
+   in with CSS (the hero's fallback look) and fades between fields.
    Uses shared tokens and components from styles.css (container, chip, btn).
    ========================================================================== */
 
 .residency {
   --res-grid: calc(min(100vw, var(--container-max)) - 2 * var(--gutter));
-  --res-claim: calc(var(--res-grid) * 0.0455);      /* 62px at 1440: the second line and the longest name fill the grid */
-  --res-lh: 1.14;
-  --res-row: calc(var(--res-claim) * var(--res-lh)); /* one line, one step of the wheel */
-  --res-dim: rgba(21, 21, 21, 0.2);
+  --res-head: calc(var(--res-grid) * 0.044);       /* 60px at 1440: "professionals from Investment banking" fits the grid */
   background: var(--color-neutral);
   padding-top: var(--space-6);      /* with the table's 96px above: the page's 128px between sections */
-  padding-bottom: var(--space-9);
+  padding-bottom: var(--space-10);
 }
 
-.residency__title { display: block; width: max-content; }
+.residency__inner {
+  display: grid;
+  justify-items: center;
+  text-align: center;
+}
 
-/* ---------- The sentence and its wheel ---------- */
-.residency__claim {
-  margin-top: var(--space-6);
-  font-size: var(--res-claim);
+/* ---------- The headline and its carved word ---------- */
+/* The headline is the concrete.js host: the canvas covers it exactly, behind the ink text.
+   A little padding gives the carving's rims room; the negative margin takes it back. */
+.residency__head {
+  --res-pad: 0.25em;
+  position: relative;
+  isolation: isolate;
+  width: 100%;
+  margin-top: calc(var(--space-6) - var(--res-pad));
+  padding-block: var(--res-pad);
+  font-size: var(--res-head);
   font-weight: var(--weight-medium);
-  line-height: var(--res-lh);
+  line-height: 1.1;
   letter-spacing: var(--ls-h2);
   color: var(--color-ink);
 }
-.residency__line { white-space: nowrap; }
-
-.residency__chevron {
-  display: inline-block;
-  width: 0.44em;
-  height: 0.44em;
-  margin: 0 0.3em 0 0.32em;
-  vertical-align: 0.02em;
-  fill: none;
-  stroke: var(--color-text-muted);
-  stroke-width: 1.9;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-/* The slot holds the line's place (as wide as the longest name); the wheel hangs from it,
-   one row above and one below, so the middle row sits exactly on the sentence's line */
-.residency__slot {
-  position: relative;
-  display: inline-block;
-}
-.residency__sizer { visibility: hidden; }
-/* Clipped as in the reference, with a little room (--res-pad) above and below the three rows so
-   no ascender or descender is cut; names further out are faded out, so none of them shows there */
-.residency__wheel {
-  --res-pad: 0.16em;
+.residency__canvas {
   position: absolute;
-  left: 0;
-  right: -0.1em;
-  top: calc(-1 * var(--res-row) - var(--res-pad));
-  height: calc(3 * var(--res-row) + 2 * var(--res-pad));
-  overflow: hidden;
+  inset: 0;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 700ms var(--ease-out);
 }
-.residency__track {
-  --k: 0;                            /* the name in the middle row */
-  display: block;
-  transform: translateY(calc((1 - var(--k)) * var(--res-row) + var(--res-pad)));
-  transition: transform 700ms var(--ease-out);
-}
-.residency__item {
-  display: block;
-  height: var(--res-row);
+.residency__head.is-live .residency__canvas { opacity: 1; }
+
+/* The word's place on the line: residency.js sets its width to the word's and eases it to the next
+   word's, so the line re-centres as in the reference */
+.residency__slot {
+  display: inline-block;
+  text-align: left;
   white-space: nowrap;
-  opacity: 0;                        /* two or more rows out: gone (fades as it rolls out) */
-  color: var(--res-dim);
-  transition: color 700ms var(--ease-out), opacity 500ms var(--ease-out);
+  transition: width 420ms var(--ease-in-out);   /* MOVE in residency.js */
 }
-.residency__item.is-near { opacity: 1; }
-.residency__item.is-on { opacity: 1; color: var(--color-ink); }
-/* Wrapping round to the same names a set further up: no motion */
-.residency__track.is-jump,
-.residency__track.is-jump .residency__item { transition: none; }
+.residency__word {
+  /* Without WebGL: pressed in with CSS, as the hero's fallback */
+  color: rgba(0, 0, 0, 0.05);
+  text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.75), -1px -1px 1px rgba(0, 0, 0, 0.2);
+  transition: opacity 400ms var(--ease-out);
+}
+/* Live: concrete.js carves it; the text only marks its place */
+.residency__head.is-live .residency__word { color: transparent; text-shadow: none; transition: none; }
 
 /* ---------- The brief's text and the button ---------- */
-.residency__foot {
-  display: grid;
-  grid-template-columns: repeat(12, minmax(0, 1fr));
-  column-gap: var(--grid-gap);
-  align-items: start;
-  /* the wheel's lower name hangs a row under the sentence */
-  margin-top: calc(var(--res-row) + var(--space-7));
-}
 .residency__body {
-  grid-column: 1 / span 6;
-  grid-row: 1;
-  max-width: 30em;
+  max-width: 34em;
+  margin-top: var(--space-7);
   font-size: var(--fs-lede);
   line-height: var(--lh-lede);
-  text-wrap: pretty;
+  text-wrap: balance;
   color: var(--color-text);
 }
-.residency__btn {
-  grid-column: 1 / span 6;
-  grid-row: 2;
-  justify-self: start;
-  margin-top: var(--space-6);
-}
+.residency__btn { margin-top: var(--space-6); }
 @media (hover: hover) {
   .residency__btn:hover .residency__arrow { transform: translateX(3px); }
 }
 
 /* ---------- Tablet and phone (not reviewed yet: desktop first; kept readable) ---------- */
 @media (max-width: 1199px) {
-  .residency { --res-claim: var(--fs-h2); }
-  /* the wheel takes its own line, with a row of room above it for the dim name */
-  .residency__slot { display: block; width: max-content; margin-top: var(--res-row); }
-  .residency__body { grid-column: 1 / span 9; }
+  .residency { --res-head: var(--fs-h2); padding-bottom: var(--space-9); }
 }
 @media (max-width: 809px) {
   .residency { padding-bottom: var(--space-8); }
-  .residency__line { white-space: normal; }
-  .residency__body,
-  .residency__btn { grid-column: 1 / -1; }
 }

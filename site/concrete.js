@@ -666,7 +666,11 @@
         var k = Math.min(r.width / vb[2], r.height / vb[3]);
         out.push({ kind: kind, paths: paths, x: x + (r.width - vb[2] * k) / 2, y: y + (r.height - vb[3] * k) / 2, k: k });
       } else if (kind === "text") {
-        out.push(textGlyphs(el, origin));
+        var glyphs = textGlyphs(el, origin);
+        // data-carve-depth (0–1, default 1): how far this text is pressed in; 0 is flush, so invisible
+        var dAttr = parseFloat(el.getAttribute("data-carve-depth"));
+        glyphs.depth = isNaN(dAttr) ? 1 : Math.max(0, Math.min(1, dAttr));
+        out.push(glyphs);
       } else {
         out.push({ kind: kind, x: x, y: y, w: r.width, h: r.height });
       }
@@ -715,7 +719,7 @@
         ctx.restore();
       } else if (c.kind === "text") {
         ctx.font = c.font;
-        ctx.fillStyle = "rgb(0,0,0)";
+        ctx.fillStyle = "rgb(" + Math.round(255 * (1 - (c.depth == null ? 1 : c.depth))) + ",0,0)";
         ctx.textBaseline = "alphabetic";
         c.glyphs.forEach(function (g) { ctx.fillText(g.ch, g.x, g.y); });
       }
@@ -777,6 +781,16 @@
     d = Math.max(0, Math.min(1, d));
     if (Math.abs(d - this.markDepth) < 0.0005) return;
     this.markDepth = d;
+    this.needsFrame = true;
+    this.kick();
+  };
+
+  /* Read the carvings again (their positions, text and data-carve-depth) and redraw: for carvings that
+     move or change between layouts (the Team page's Residency word). One height-map repaint. */
+  ConcreteSurface.prototype.recarve = function () {
+    if (!this.ready) return;
+    this.carves = this.collect();
+    this.heightDirty = true;
     this.needsFrame = true;
     this.kick();
   };
