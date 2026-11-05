@@ -5,7 +5,8 @@
    right; each card a number, a title and a list over hairlines beside a
    black-and-white render; as a card comes up it slides in from the right and
    brightens from dim to full). In our language, after the deck: white rounded
-   cards floating on the concrete, each with a concrete render on the
+   cards floating on the flat neutral grey (concrete at first; the user asked
+   for grey), each with a concrete render on the
    charcoal (made in Blender like Home's and About's, tools/concrete-renders),
    Montserrat in sentence case (no mono, no capitals). The heading on cols 1-4
    stays in view (sticky) while the cards go by on cols 5-12.
@@ -19,9 +20,8 @@
   --md-line: rgba(21, 21, 21, 0.12);
   position: relative;
   padding-block: var(--space-10);
-  background-color: var(--color-concrete);
-  background-image: url("../assets/concrete.jpg");
-  background-size: 1024px;
+  /* The flat neutral grey (the user: grey instead of concrete), as the table and the sectors line */
+  background: var(--color-neutral);
 }
 
 .mandate__inner {
@@ -68,7 +68,7 @@
   list-style: none;
 }
 
-/* Component: mandate-card. A white card on the concrete: the number, title and
+/* Component: mandate-card. A white card on the grey: the number, title and
    list on the left, the render on the right */
 .mandate-card {
   display: grid;
