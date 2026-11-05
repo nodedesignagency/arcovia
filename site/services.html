@@ -19,6 +19,8 @@
   <link rel="stylesheet" href="sections/narrative.css">
   <link rel="stylesheet" href="sections/mandate.css">
   <link rel="stylesheet" href="sections/genesis.css">
+  <link rel="stylesheet" href="sections/sectors.css">
+  <link rel="stylesheet" href="sections/closing.css">
   <link rel="stylesheet" href="sections/footer.css">
 </head>
 <body>
@@ -28,7 +30,47 @@
     <!-- Official Arcovia logo (site/assets/logo/, from the client): brandmark and wordmark -->
     <symbol id="a-mark" viewBox="0 0 72 57"><path d="M12.0606 45.653L6.4043 56.272L9.58059 56.3005C11.096 56.3148 12.4458 56.3605 14.1267 56.2321L35.0366 17.4288C32.9219 16.7924 31.1725 15.7479 29.6286 14.4009L12.0606 45.653Z"/><path d="M62.5327 50.738L42.9184 14.1807C41.2461 15.8616 39.5509 16.9432 37.3164 17.1743L57.8439 56.243H65.3551C64.3192 54.3652 63.3831 52.7499 62.5327 50.738Z"/><path d="M36.201 16.0215C40.6267 16.0215 44.2145 12.4351 44.2145 8.0109C44.2145 3.58674 40.6267 0.000244141 36.201 0.000244141C31.7753 0.000244141 28.1875 3.58674 28.1875 8.0109C28.1875 12.4351 31.7753 16.0215 36.201 16.0215Z"/></symbol>
     <symbol id="wordmark" viewBox="0 0 72 11"><path d="M60.8672 10.8151L65.4337 0.362549H67.1239L71.6903 10.8151H69.7629L68.7103 8.30942H63.8028L62.7353 10.8151H60.8672ZM64.47 6.69336H68.0431L66.2491 2.54201L64.47 6.69336Z"/><path d="M57.1562 10.8149V0.436523H58.9799V10.8149H57.1562Z"/><path d="M49.3426 10.889L45.043 0.436523H47.0593L50.1877 8.41305L53.3012 0.436523H55.2731L50.9735 10.889H49.3426Z"/><path d="M38.9389 10.993C35.7513 10.993 33.5273 8.57632 33.5273 5.65554V5.62589C33.5273 2.71995 35.7809 0.258789 38.9686 0.258789C42.1562 0.258789 44.3802 2.67547 44.3802 5.59624V5.62589C44.3802 8.53184 42.1266 10.993 38.9389 10.993ZM38.9686 9.3028C41.0294 9.3028 42.4676 7.67191 42.4676 5.65554V5.62589C42.4676 3.60952 41.0146 1.94898 38.9389 1.94898C36.8781 1.94898 35.4399 3.57987 35.4399 5.59624V5.62589C35.4399 7.64226 36.8929 9.3028 38.9686 9.3028Z"/><path d="M28.1356 10.993C25.111 10.993 22.8574 8.63562 22.8574 5.65554V5.62589C22.8574 2.67547 25.0665 0.258789 28.1949 0.258789C30.1223 0.258789 31.2787 0.92597 32.2721 1.87485L31.1008 3.22404C30.2557 2.45307 29.381 1.94898 28.18 1.94898C26.223 1.94898 24.77 3.56504 24.77 5.59624V5.62589C24.77 7.65709 26.2082 9.3028 28.1949 9.3028C29.4551 9.3028 30.2854 8.79871 31.1749 7.96844L32.3462 9.15454C31.2936 10.2962 30.063 10.993 28.1356 10.993Z"/><path d="M12.6016 10.8149V0.436523H17.2274C18.5321 0.436523 19.5551 0.822006 20.2223 1.47436C20.7708 2.05259 21.0822 2.80872 21.0822 3.71313V3.74278C21.0822 5.4478 20.0592 6.47081 18.621 6.88594L21.4232 10.8149H19.2585L16.7084 7.19729H14.4252V10.8149H12.6016ZM14.4252 5.58123H17.0939C18.3986 5.58123 19.2289 4.91405 19.2289 3.84656V3.81691C19.2289 2.69011 18.4431 2.09706 17.0791 2.09706H14.4252V5.58123Z"/><path d="M0 10.8151L4.56649 0.362549H6.25668L10.8232 10.8151H8.89575L7.84309 8.30942H2.9356L1.86811 10.8151H0ZM3.60278 6.69336H7.17591L5.38193 2.54201L3.60278 6.69336Z"/></symbol>
-    <!-- The path rows' arrow, as on Home -->
+    <!-- The official lockup (assets/logo/lockup.svg): brandmark over wordmark, 72 x 72 -->
+    <symbol id="lockup" viewBox="0 0 72 72"><path d="M12.0606 45.6527L6.4043 56.2718L9.58059 56.3003C11.096 56.3146 12.4458 56.3602 14.1267 56.2318L35.0366 17.4285C32.9219 16.7921 31.1725 15.7476 29.6286 14.4006L12.0606 45.6527Z"/><path d="M62.5327 50.7377L42.9184 14.1804C41.2461 15.8613 39.5509 16.9429 37.3164 17.1741L57.8439 56.2428H65.3551C64.3192 54.3649 63.3831 52.7497 62.5327 50.7377Z"/><path d="M36.201 16.0213C40.6267 16.0213 44.2145 12.4348 44.2145 8.01065C44.2145 3.58649 40.6267 0 36.201 0C31.7753 0 28.1875 3.58649 28.1875 8.01065C28.1875 12.4348 31.7753 16.0213 36.201 16.0213Z"/><path d="M60.8672 71.8148L65.4337 61.3623H67.1239L71.6903 71.8148H69.7629L68.7103 69.3092H63.8028L62.7353 71.8148H60.8672ZM64.47 67.6931H68.0431L66.2491 63.5418L64.47 67.6931Z"/><path d="M57.1562 71.8147V61.4363H58.9799V71.8147H57.1562Z"/><path d="M49.3426 71.8888L45.043 61.4363H47.0593L50.1877 69.4128L53.3012 61.4363H55.2731L50.9735 71.8888H49.3426Z"/><path d="M38.9389 71.9928C35.7513 71.9928 33.5273 69.5761 33.5273 66.6553V66.6256C33.5273 63.7197 35.7809 61.2585 38.9686 61.2585C42.1562 61.2585 44.3802 63.6752 44.3802 66.596V66.6256C44.3802 69.5316 42.1266 71.9928 38.9389 71.9928ZM38.9686 70.3026C41.0294 70.3026 42.4676 68.6717 42.4676 66.6553V66.6256C42.4676 64.6093 41.0146 62.9487 38.9389 62.9487C36.8781 62.9487 35.4399 64.5796 35.4399 66.596V66.6256C35.4399 68.642 36.8929 70.3026 38.9686 70.3026Z"/><path d="M28.1356 71.9928C25.111 71.9928 22.8574 69.6354 22.8574 66.6553V66.6256C22.8574 63.6752 25.0665 61.2585 28.1949 61.2585C30.1223 61.2585 31.2787 61.9257 32.2721 62.8746L31.1008 64.2238C30.2557 63.4528 29.381 62.9487 28.18 62.9487C26.223 62.9487 24.77 64.5648 24.77 66.596V66.6256C24.77 68.6568 26.2082 70.3026 28.1949 70.3026C29.4551 70.3026 30.2854 69.7985 31.1749 68.9682L32.3462 70.1543C31.2936 71.2959 30.063 71.9928 28.1356 71.9928Z"/><path d="M12.6016 71.8147V61.4363H17.2274C18.5321 61.4363 19.5551 61.8218 20.2223 62.4741C20.7708 63.0523 21.0822 63.8085 21.0822 64.7129V64.7425C21.0822 66.4476 20.0592 67.4706 18.621 67.8857L21.4232 71.8147H19.2585L16.7084 68.1971H14.4252V71.8147H12.6016ZM14.4252 66.581H17.0939C18.3986 66.581 19.2289 65.9138 19.2289 64.8463V64.8167C19.2289 63.6899 18.4431 63.0968 17.0791 63.0968H14.4252V66.581Z"/><path d="M0 71.8148L4.56649 61.3623H6.25668L10.8232 71.8148H8.89575L7.84309 69.3092H2.9356L1.86811 71.8148H0ZM3.60278 67.6931H7.17591L5.38193 63.5418L3.60278 67.6931Z"/></symbol>
+    <!-- Deboss: turns any shape (text, the A-mark) into a recess in the concrete behind it, lit
+         from the upper left like the carving in concrete.js: a slightly darker floor, a shadow
+         under the upper-left wall, light on the lower-right wall. Used with CSS filter: url(#deboss). -->
+    <filter id="deboss" x="-2%" y="-10%" width="104%" height="120%" color-interpolation-filters="sRGB">
+      <feFlood flood-color="#1a1a1a" flood-opacity="0.16"/>
+      <feComposite in2="SourceAlpha" operator="in" result="floor"/>
+      <feComponentTransfer in="SourceAlpha" result="outside"><feFuncA type="table" tableValues="1 0"/></feComponentTransfer>
+      <feOffset in="outside" dx="1.4" dy="1.8"/>
+      <feGaussianBlur stdDeviation="0.9"/>
+      <feComposite in2="SourceAlpha" operator="in" result="shadeMask"/>
+      <feFlood flood-color="#000" flood-opacity="0.55"/>
+      <feComposite in2="shadeMask" operator="in" result="shade"/>
+      <feOffset in="outside" dx="-0.9" dy="-1.2"/>
+      <feGaussianBlur stdDeviation="0.5"/>
+      <feComposite in2="SourceAlpha" operator="in" result="lightMask"/>
+      <feFlood flood-color="#fff" flood-opacity="0.75"/>
+      <feComposite in2="lightMask" operator="in" result="light"/>
+      <feMerge><feMergeNode in="floor"/><feMergeNode in="shade"/><feMergeNode in="light"/></feMerge>
+    </filter>
+    <!-- Soft deboss for flat light grounds (the sectors line, after the user's Trove reference):
+         a slightly deeper floor, a wide soft shadow under the upper-left wall and a crisp white
+         lip along the lower-right wall, so the type reads as pressed in, clean and quiet. -->
+    <filter id="deboss-soft" x="-2%" y="-12%" width="104%" height="124%" color-interpolation-filters="sRGB">
+      <feFlood flood-color="#000" flood-opacity="0.12"/>
+      <feComposite in2="SourceAlpha" operator="in" result="floor"/>
+      <feComponentTransfer in="SourceAlpha" result="outside"><feFuncA type="table" tableValues="1 0"/></feComponentTransfer>
+      <feOffset in="outside" dx="1.4" dy="2.2"/>
+      <feGaussianBlur stdDeviation="2.2"/>
+      <feComposite in2="SourceAlpha" operator="in" result="shadeMask"/>
+      <feFlood flood-color="#000" flood-opacity="0.42"/>
+      <feComposite in2="shadeMask" operator="in" result="shade"/>
+      <feOffset in="outside" dx="-0.9" dy="-1.3"/>
+      <feGaussianBlur stdDeviation="0.35"/>
+      <feComposite in2="SourceAlpha" operator="in" result="lightMask"/>
+      <feFlood flood-color="#fff" flood-opacity="1"/>
+      <feComposite in2="lightMask" operator="in" result="light"/>
+      <feMerge><feMergeNode in="floor"/><feMergeNode in="shade"/><feMergeNode in="light"/></feMerge>
+    </filter>
+    <!-- The arrow (path rows, the CTA button), as on Home -->
     <symbol id="icon-arrow" viewBox="0 0 16 16"><path d="M2.5 8h11M9 3.5 13.5 8 9 12.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
   </svg>
 
@@ -334,6 +376,81 @@
     </section>
     <!-- SECTION:genesis END -->
 
+    <!-- SECTION:sectors START · styles: sections/sectors.css · scripts: sectors.js
+         What We Do, block 7 (the brief's section 7, Sectors): Home's sectors line, the same
+         component (the user asked for it), with the brief's eight sectors for this page. Carved into
+         the plain neutral surface by concrete.js between two formwork seams, a tie hole between
+         sectors, sliding slowly left; it slows to a stop under the pointer. ?sectors=band shows the
+         charcoal band. See index.html for the full notes. -->
+    <section class="sectors" data-sectors aria-labelledby="sectors-title">
+      <canvas class="sectors__canvas" aria-hidden="true"></canvas>
+      <h2 class="visually-hidden" id="sectors-title">Sectors we work in</h2>
+      <div class="sectors__band">
+        <div class="sectors__frame container">
+          <div class="seam sectors__seam" data-carve="seam" aria-hidden="true">
+            <span class="seam__hole seam__hole--start" data-carve="hole"></span>
+            <span class="seam__hole seam__hole--end" data-carve="hole"></span>
+          </div>
+          <div class="sectors__viewport" data-carve-clip="72">
+            <!-- Component: marquee. The first list is the content; sectors.js adds copies (aria-hidden) to fill the width. -->
+            <div class="sectors__track" data-sectors-track>
+              <ul class="sectors__list" data-carve-slide>
+                <li class="sectors__item" data-carve="text">SaaS &amp; AI</li>
+                <li class="sectors__sep" data-carve="hole" aria-hidden="true"><svg class="sectors__mark" viewBox="0 0 72 57"><use href="#a-mark"/></svg></li>
+                <li class="sectors__item" data-carve="text">Energy &amp; Natural Resources</li>
+                <li class="sectors__sep" data-carve="hole" aria-hidden="true"><svg class="sectors__mark" viewBox="0 0 72 57"><use href="#a-mark"/></svg></li>
+                <li class="sectors__item" data-carve="text">Infrastructure</li>
+                <li class="sectors__sep" data-carve="hole" aria-hidden="true"><svg class="sectors__mark" viewBox="0 0 72 57"><use href="#a-mark"/></svg></li>
+                <li class="sectors__item" data-carve="text">Healthcare &amp; Life Sciences</li>
+                <li class="sectors__sep" data-carve="hole" aria-hidden="true"><svg class="sectors__mark" viewBox="0 0 72 57"><use href="#a-mark"/></svg></li>
+                <li class="sectors__item" data-carve="text">Real Estate &amp; PropTech</li>
+                <li class="sectors__sep" data-carve="hole" aria-hidden="true"><svg class="sectors__mark" viewBox="0 0 72 57"><use href="#a-mark"/></svg></li>
+                <li class="sectors__item" data-carve="text">FinTech</li>
+                <li class="sectors__sep" data-carve="hole" aria-hidden="true"><svg class="sectors__mark" viewBox="0 0 72 57"><use href="#a-mark"/></svg></li>
+                <li class="sectors__item" data-carve="text">Media &amp; Entertainment</li>
+                <li class="sectors__sep" data-carve="hole" aria-hidden="true"><svg class="sectors__mark" viewBox="0 0 72 57"><use href="#a-mark"/></svg></li>
+                <li class="sectors__item" data-carve="text">Consumer</li>
+                <li class="sectors__sep" data-carve="hole" aria-hidden="true"><svg class="sectors__mark" viewBox="0 0 72 57"><use href="#a-mark"/></svg></li>
+              </ul>
+            </div>
+          </div>
+          <div class="seam sectors__seam" data-carve="seam" aria-hidden="true">
+            <span class="seam__hole seam__hole--start" data-carve="hole"></span>
+            <span class="seam__hole seam__hole--end" data-carve="hole"></span>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- SECTION:sectors END -->
+
+    <!-- SECTION:closing START · styles: sections/closing.css · scripts: concrete.js, closing.js
+         What We Do, block 8 (the brief's section 8, Closing): Home's CTA, the same component (the
+         user asked for it), with this page's copy from the brief: the rounded box on the client's
+         sunrise wall (assets/cta-wall.jpg), the beam sweeping across and back every 18 s with dust
+         in it, the official lockup carved into the wall and pressed in as the box comes up. See
+         index.html for the full notes. -->
+    <section class="closing" aria-labelledby="closing-title">
+      <div class="closing__inner container">
+        <div class="closing__card" data-closing data-header-theme="dark">
+          <canvas class="closing__canvas" aria-hidden="true"></canvas>
+          <div class="closing__content">
+            <h2 class="closing__title" id="closing-title">Discuss a mandate</h2>
+            <p class="closing__body">Tell us about the raise, the transaction or the fund. A senior member of the team will reply within two working days.</p>
+            <a class="btn btn--light closing__btn" href="contact.html">
+              Start a conversation
+              <svg class="btn__icon closing__arrow" aria-hidden="true"><use href="#icon-arrow"/></svg>
+            </a>
+          </div>
+
+          <div class="closing__figure" aria-hidden="true">
+            <!-- The official lockup, carved into the wall by concrete.js -->
+            <svg class="closing__mark" viewBox="0 0 72 72" data-carve="mark"><use href="#lockup"/></svg>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- SECTION:closing END -->
+
   </main>
 
   <!-- SECTION:footer START · styles: sections/footer.css
@@ -402,5 +519,7 @@
   <script src="main.js"></script>
   <script src="narrative.js"></script>
   <script src="mandate.js"></script>
+  <script src="sectors.js"></script>
+  <script src="closing.js"></script>
 </body>
 </html>
