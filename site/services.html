@@ -16,6 +16,7 @@
   <!-- One stylesheet per section, so a section can be approved and moved to main on its own -->
   <link rel="stylesheet" href="sections/services-hero.css">
   <link rel="stylesheet" href="sections/situations.css">
+  <link rel="stylesheet" href="sections/narrative.css">
   <link rel="stylesheet" href="sections/footer.css">
 </head>
 <body>
@@ -179,6 +180,22 @@
     </section>
     <!-- SECTION:situations END -->
 
+    <!-- SECTION:narrative START · styles: sections/narrative.css · scripts: narrative.js
+         What We Do, block 3: the brief's "Narrative and positioning", set like Home's second
+         section, the statement (the user asked for it): a white room, the body large across the
+         full grid with its first line indented three columns; the brief's headline is the chip
+         (the user's call). The stage pins while the text writes itself in, letter by letter, as on
+         Home. Every word from the brief. -->
+    <section class="narrative" id="narrative" data-narrative aria-labelledby="narrative-title">
+      <div class="narrative__stage">
+        <div class="narrative__inner">
+          <h2 class="chip narrative__chip" id="narrative-title">The story comes before the spreadsheet</h2>
+          <p class="narrative__text" data-reveal>Every mandate starts with the narrative. We build the investor memo, teaser and deck as one positioning system, match the founder’s thesis to specific investor criteria, and stress-test the story against real investor objections before outreach begins.</p>
+        </div>
+      </div>
+    </section>
+    <!-- SECTION:narrative END -->
+
   </main>
 
   <!-- SECTION:footer START · styles: sections/footer.css
@@ -245,5 +262,6 @@
 
   <script src="concrete.js"></script>
   <script src="main.js"></script>
+  <script src="narrative.js"></script>
 </body>
 </html>

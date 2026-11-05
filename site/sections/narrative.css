@@ -1,0 +1,71 @@
+/* ==========================================================================
+   SECTION: narrative — What We Do, block 3 (the brief's "Narrative and positioning")
+   Like Home's second section, the statement (sections/statement.css; the user
+   asked for it): a pure white room, the body set large like an editorial page
+   across the full grid (a share of the grid width, so lines break the same at
+   every desktop width), regular weight, the first line indented three grid
+   columns. The brief's headline is the chip above it (the user's call). As on
+   Home, the text writes itself in, letter by letter, with a soft fading front
+   while the stage is pinned (narrative.js); scrolling back runs it backwards.
+   Without the script, or with reduced motion: one screen, the text in full.
+   Uses shared tokens and components from styles.css (chip).
+   ========================================================================== */
+
+.narrative {
+  /* Scroll that the stage stays pinned for while the text writes itself in */
+  --narrative-travel: 120vh;
+  position: relative;
+  background: #ffffff;
+  color: var(--color-ink);
+}
+
+.narrative__stage {
+  display: grid;
+  align-items: center;
+  min-height: 100vh;
+  min-height: 100svh;
+  padding: var(--space-10) var(--gutter);
+  overflow: hidden;
+}
+
+/* On the page grid, like Home's statement */
+.narrative__inner {
+  width: 100%;
+  max-width: calc(var(--container-max) - 2 * var(--gutter));
+  margin-inline: auto;
+  display: grid;
+  justify-items: start;
+  gap: var(--space-7);
+  /* one column of the 12-column grid, plus its gap */
+  --col: calc((100% - 11 * var(--grid-gap)) / 12 + var(--grid-gap));
+}
+
+.narrative__text {
+  /* The statement's type: the full width of the grid, a share of its width */
+  font-size: calc((min(100vw, var(--container-max)) - 2 * var(--gutter)) * 0.0445);
+  font-weight: var(--weight-book);
+  line-height: 1.12;
+  letter-spacing: -0.025em;
+  /* The editorial indent: the first line starts three columns in */
+  text-indent: calc(var(--col) * 3);
+}
+
+.narrative .w { white-space: nowrap; }
+
+/* With narrative.js: the stage pins for --narrative-travel and each letter starts invisible */
+.narrative--on { height: calc(100vh + var(--narrative-travel)); }
+.narrative--on .narrative__stage {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100svh;
+}
+.narrative [data-reveal].is-split .c { opacity: 0; }
+
+/* Tablet and phone: not reviewed yet (desktop first); as Home's statement */
+@media (max-width: 1199px) {
+  .narrative__text { font-size: 44px; }
+}
+@media (max-width: 809px) {
+  .narrative__text { font-size: 30px; line-height: 1.16; text-indent: calc(var(--col) * 2); }
+}
