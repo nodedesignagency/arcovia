@@ -18,6 +18,7 @@
   <link rel="stylesheet" href="sections/situations.css">
   <link rel="stylesheet" href="sections/narrative.css">
   <link rel="stylesheet" href="sections/mandate.css">
+  <link rel="stylesheet" href="sections/genesis.css">
   <link rel="stylesheet" href="sections/footer.css">
 </head>
 <body>
@@ -283,6 +284,55 @@
       </div>
     </section>
     <!-- SECTION:mandate END -->
+
+    <!-- SECTION:genesis START · styles: sections/genesis.css
+         What We Do, block 5: the brief's "The technology behind the process", laid out like About's
+         "What we believe" (the user asked for it): on white, the heading and the brief's body, then
+         four columns behind vertical hairlines, each a number, a fine isometric drawing (drawn by
+         tools/iso-art.py genesis, in What we believe's style), a title and its line; then the brief's
+         footnote. Still: no motion. Every word from the brief. -->
+    <section class="genesis" id="genesis" aria-labelledby="genesis-title">
+      <div class="genesis__inner container">
+        <div class="genesis__head">
+          <h2 class="genesis__title" id="genesis-title">GENESIS, our capital platform</h2>
+          <p class="genesis__lede">GENESIS is Arcovia’s proprietary investor targeting and outreach platform. It supports our senior team; it never replaces judgment.</p>
+        </div>
+
+        <ol class="genesis__list">
+          <li class="genesis-card">
+            <p class="genesis-card__num" aria-hidden="true">01</p>
+            <!-- Four plates, each smaller than the one below (thesis, sector, stage, check size), narrowing to one block topped in charcoal: the qualified target -->
+            <svg class="genesis-card__art" viewBox="0 0 160 120" aria-hidden="true"><path class="genesis__front" d="M77.3 23.6L153.6 67.6L77.3 111.7L1 67.6Z"/><path class="genesis__front" d="M77.3 23.6L135.8 57.3L77.3 91.1L18.8 57.3Z"/><path class="genesis__front" d="M77.3 23.6L118 47.1L77.3 70.5L36.6 47.1Z"/><path class="genesis__front" d="M77.3 23.6L100.2 36.8L77.3 50L54.4 36.8Z"/><path class="genesis__face" d="M153.6 74.9L77.3 119L77.3 111.7L153.6 67.6Z"/><path class="genesis__front" d="M1 74.9L1 67.6L77.3 111.7L77.3 119Z"/><path class="genesis__face" d="M135.8 64.7L77.3 98.4L77.3 91.1L135.8 57.3Z"/><path class="genesis__front" d="M18.8 64.7L18.8 57.3L77.3 91.1L77.3 98.4Z"/><path class="genesis__face" d="M118 54.4L77.3 77.9L77.3 70.5L118 47.1Z"/><path class="genesis__front" d="M36.6 54.4L36.6 47.1L77.3 70.5L77.3 77.9Z"/><path class="genesis__face" d="M100.2 44.1L77.3 57.3L77.3 50L100.2 36.8Z"/><path class="genesis__front" d="M54.4 44.1L54.4 36.8L77.3 50L77.3 57.3Z"/><path class="genesis__fill" d="M77.3 3L95.1 13.3L77.3 23.6L59.5 13.3Z"/><path class="genesis__face" d="M95.1 33.8L77.3 44.1L77.3 23.6L95.1 13.3Z"/><path class="genesis__front" d="M59.5 33.8L59.5 13.3L77.3 23.6L77.3 44.1Z"/></svg>
+            <h3 class="genesis-card__name">Investor targeting</h3>
+            <p class="genesis-card__text">AI-assisted matching on thesis, sector, stage and check size. A qualified target list in 2–3 days instead of 2–4 weeks.</p>
+          </li>
+          <li class="genesis-card">
+            <p class="genesis-card__num" aria-hidden="true">02</p>
+            <!-- One low source wall and three lanes leaving it, each to a different investor (a tall block topped in charcoal, a cube, a low wide one): no generic blasts -->
+            <svg class="genesis-card__art" viewBox="0 0 160 120" aria-hidden="true"><path class="genesis__front" d="M70.2 29.6L138.2 68.9L130 73.6L62 34.4Z"/><path class="genesis__front" d="M62 37.1L62 34.4L130 73.6L130 76.3Z"/><path class="genesis__front" d="M46.7 43.2L114.8 82.4L106.6 87.2L38.5 47.9Z"/><path class="genesis__front" d="M38.5 50.6L38.5 47.9L106.6 87.2L106.6 89.9Z"/><path class="genesis__face" d="M138.2 71.6L130 76.3L130 73.6L138.2 68.9Z"/><path class="genesis__front" d="M23.3 56.7L91.3 96L83.1 100.7L15.1 61.4Z"/><path class="genesis__front" d="M15.1 64.1L15.1 61.4L83.1 100.7L83.1 103.4Z"/><path class="genesis__face" d="M114.8 85.1L106.6 89.9L106.6 87.2L114.8 82.4Z"/><path class="genesis__face" d="M91.3 98.7L83.1 103.4L83.1 100.7L91.3 96Z"/><path class="genesis__face" d="M73.7 30.3L12.7 65.5L12.7 49.2L73.7 14Z"/><path class="genesis__front" d="M62 7.3L73.7 14L12.7 49.2L1 42.5Z"/><path class="genesis__front" d="M1 58.7L1 42.5L12.7 49.2L12.7 65.5Z"/><path class="genesis__face" d="M157 78.4L141.8 87.2L141.8 46.5L157 37.7Z"/><path class="genesis__front" d="M126.5 78.4L126.5 37.7L141.8 46.5L141.8 87.2Z"/><path class="genesis__fill" d="M141.8 28.9L157 37.7L141.8 46.5L126.5 37.7Z"/><path class="genesis__front" d="M118.3 65.5L133.5 74.3L118.3 83.1L103 74.3Z"/><path class="genesis__face" d="M133.5 91.9L118.3 100.7L118.3 83.1L133.5 74.3Z"/><path class="genesis__front" d="M103 91.9L103 74.3L118.3 83.1L118.3 100.7Z"/><path class="genesis__front" d="M94.8 87.2L118.3 100.7L103 109.5L79.6 96Z"/><path class="genesis__front" d="M79.6 105.5L79.6 96L103 109.5L103 119Z"/><path class="genesis__face" d="M118.3 110.2L103 119L103 109.5L118.3 100.7Z"/></svg>
+            <h3 class="genesis-card__name">Personalised outreach</h3>
+            <p class="genesis-card__text">Sequences mapped to each investor’s thesis and portfolio. No generic blasts.</p>
+          </li>
+          <li class="genesis-card">
+            <p class="genesis-card__num" aria-hidden="true">03</p>
+            <!-- A field of columns at different heights (the signals), the tallest, the most likely investor, topped in charcoal -->
+            <svg class="genesis-card__art" viewBox="0 0 160 120" aria-hidden="true"><path class="genesis__front" d="M64 27.7L148.3 76.5L85.4 112.8L1 64.1Z"/><path class="genesis__front" d="M1 70.3L1 64.1L85.4 112.8L85.4 119Z"/><path class="genesis__face" d="M148.3 82.7L85.4 119L85.4 112.8L148.3 76.5Z"/><path class="genesis__front" d="M64 21.6L78.7 30.1L64 38.6L49.2 30.1Z"/><path class="genesis__face" d="M78.7 42.4L64 50.9L64 38.6L78.7 30.1Z"/><path class="genesis__front" d="M49.2 42.4L49.2 30.1L64 38.6L64 50.9Z"/><path class="genesis__face" d="M100.1 54.8L85.4 63.3L85.4 41.7L100.1 33.2Z"/><path class="genesis__front" d="M70.7 54.8L70.7 33.2L85.4 41.7L85.4 63.3Z"/><path class="genesis__front" d="M85.4 24.7L100.1 33.2L85.4 41.7L70.7 33.2Z"/><path class="genesis__face" d="M57.3 54.8L42.5 63.3L42.5 35.5L57.3 27Z"/><path class="genesis__front" d="M27.8 54.8L27.8 27L42.5 35.5L42.5 63.3Z"/><path class="genesis__front" d="M42.5 18.5L57.3 27L42.5 35.5L27.8 27Z"/><path class="genesis__front" d="M106.8 43.2L121.6 51.7L106.8 60.2L92.1 51.7Z"/><path class="genesis__face" d="M121.6 67.2L106.8 75.7L106.8 60.2L121.6 51.7Z"/><path class="genesis__front" d="M92.1 67.2L92.1 51.7L106.8 60.2L106.8 75.7Z"/><path class="genesis__face" d="M35.8 67.2L21.1 75.7L21.1 57.1L35.8 48.6Z"/><path class="genesis__front" d="M6.4 67.2L6.4 48.6L21.1 57.1L21.1 75.7Z"/><path class="genesis__front" d="M21.1 40.1L35.8 48.6L21.1 57.1L6.4 48.6Z"/><path class="genesis__face" d="M78.7 67.2L64 75.7L64 29.3L78.7 20.8Z"/><path class="genesis__front" d="M49.2 67.2L49.2 20.8L64 29.3L64 75.7Z"/><path class="genesis__front" d="M128.2 61.8L143 70.3L128.2 78.8L113.5 70.3Z"/><path class="genesis__face" d="M143 79.6L128.2 88.1L128.2 78.8L143 70.3Z"/><path class="genesis__front" d="M113.5 79.6L113.5 70.3L128.2 78.8L128.2 88.1Z"/><path class="genesis__face" d="M100.1 79.6L85.4 88.1L85.4 63.3L100.1 54.8Z"/><path class="genesis__front" d="M70.7 79.6L70.7 54.8L85.4 63.3L85.4 88.1Z"/><path class="genesis__front" d="M64 12.3L78.7 20.8L64 29.3L49.2 20.8Z"/><path class="genesis__front" d="M85.4 46.3L100.1 54.8L85.4 63.3L70.7 54.8Z"/><path class="genesis__front" d="M106.8 69.5L121.6 78L106.8 86.5L92.1 78Z"/><path class="genesis__face" d="M121.6 91.9L106.8 100.4L106.8 86.5L121.6 78Z"/><path class="genesis__front" d="M92.1 91.9L92.1 78L106.8 86.5L106.8 100.4Z"/><path class="genesis__face" d="M57.3 79.6L42.5 88.1L42.5 20L57.3 11.5Z"/><path class="genesis__front" d="M27.8 79.6L27.8 11.5L42.5 20L42.5 88.1Z"/><path class="genesis__face" d="M78.7 91.9L64 100.4L64 66.4L78.7 57.9Z"/><path class="genesis__front" d="M49.2 91.9L49.2 57.9L64 66.4L64 100.4Z"/><path class="genesis__front" d="M64 49.4L78.7 57.9L64 66.4L49.2 57.9Z"/><path class="genesis__face" d="M100.1 104.3L85.4 112.8L85.4 94.3L100.1 85.7Z"/><path class="genesis__front" d="M70.7 104.3L70.7 85.7L85.4 94.3L85.4 112.8Z"/><path class="genesis__fill" d="M42.5 3L57.3 11.5L42.5 20L27.8 11.5Z"/><path class="genesis__front" d="M85.4 77.2L100.1 85.7L85.4 94.3L70.7 85.7Z"/></svg>
+            <h3 class="genesis-card__name">Engagement analytics</h3>
+            <p class="genesis-card__text">Real-time signals on replies and meeting acceptance, and a continuous ranking of investor likelihood.</p>
+          </li>
+          <li class="genesis-card">
+            <p class="genesis-card__num" aria-hidden="true">04</p>
+            <!-- Two blocks joined by a bridge flush with their tops, a small block topped in charcoal crossing it to the meeting -->
+            <svg class="genesis-card__art" viewBox="0 0 160 120" aria-hidden="true"><path class="genesis__front" d="M33.3 3L65.7 21.7L33.3 40.3L1 21.7Z"/><path class="genesis__face" d="M65.7 53.7L33.3 72.3L33.3 40.3L65.7 21.7Z"/><path class="genesis__front" d="M1 53.7L1 21.7L33.3 40.3L33.3 72.3Z"/><path class="genesis__front" d="M56.4 27L104.9 55L91.1 63L42.6 35Z"/><path class="genesis__front" d="M42.6 40.3L42.6 35L91.1 63L91.1 68.3Z"/><path class="genesis__front" d="M63.4 44.3L63.4 32.3L73.7 38.3L73.7 50.3Z"/><path class="genesis__fill" d="M72.6 27L83 33L73.7 38.3L63.4 32.3Z"/><path class="genesis__face" d="M83 45L73.7 50.3L73.7 38.3L83 33Z"/><path class="genesis__face" d="M104.9 60.3L91.1 68.3L91.1 63L104.9 55Z"/><path class="genesis__front" d="M114.2 49.7L146.5 68.3L114.2 87L81.8 68.3Z"/><path class="genesis__face" d="M146.5 100.3L114.2 119L114.2 87L146.5 68.3Z"/><path class="genesis__front" d="M81.8 100.3L81.8 68.3L114.2 87L114.2 119Z"/></svg>
+            <h3 class="genesis-card__name">Pipeline conversion</h3>
+            <p class="genesis-card__text">Qualified investors routed to founder meetings with objections handled in advance, plus warm introductions through our 200+ active relationships.</p>
+          </li>
+        </ol>
+
+        <p class="genesis__note">Performance metrics are based on internal data and management estimates. Technology does not guarantee transaction success.</p>
+      </div>
+    </section>
+    <!-- SECTION:genesis END -->
 
   </main>
 

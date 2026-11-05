@@ -1,5 +1,6 @@
 """
-Isometric line drawings for the About page (What we believe, How we work).
+Isometric line drawings for the About page (What we believe, How we work) and the What We Do
+page (GENESIS, our capital platform).
 
 All the 3D drawings share one 30-degree isometric angle, fine ink lines, white tops and
 fronts, concrete right-hand sides and one charcoal top. This draws them from boxes and
@@ -9,6 +10,7 @@ site/about.html (the CSS lives in sections/beliefs.css and sections/process.css)
 
     python3 tools/iso-art.py beliefs     # What we believe: 01-04 (class prefix belief__)
     python3 tools/iso-art.py process     # How we work: 01-04 (class prefix process__)
+    python3 tools/iso-art.py genesis     # What We Do, GENESIS: 01-04 (class prefix genesis__)
 """
 import math, json, sys
 C30, S30 = math.cos(math.radians(30)), math.sin(math.radians(30))
@@ -141,8 +143,45 @@ def process():
     arts['04'] = render(blocks, accent='a', under=base)
     return arts
 
+def genesis():
+    """What We Do, "GENESIS, our capital platform": the four cards (class prefix genesis__)."""
+    global PREFIX
+    PREFIX = 'genesis'
+    arts = {}
+    # 01 Investor targeting: four plates, each smaller than the one below (thesis, sector, stage,
+    # check size), narrowing to one block: the qualified target, topped in charcoal
+    f = []
+    sizes = [60, 46, 32, 18]
+    for i, s in enumerate(sizes):
+        o = (60 - s) / 2
+        f += box(o, o, i * 7, s, s, 5)
+    f += box(23, 23, 28, 14, 14, 14, tag='a')
+    arts['01'] = render(f, accent='a')
+    # 02 Personalised outreach: one source and three lanes, each to a different investor
+    # (a tall block topped in charcoal, a cube, a low wide one): no generic blasts
+    lanes = box(10, 3, 0, 58, 7, 2) + box(10, 23, 0, 58, 7, 2) + box(10, 43, 0, 58, 7, 2)
+    blocks = (box(0, 0, 0, 10, 52, 12)                        # the source: one low wall the three lanes leave from
+              + box(68, 0, 0, 13, 13, 30, tag='a')            # a tall block, topped in charcoal (at the back)
+              + box(68, 20, 0, 13, 13, 13)                    # a cube
+              + box(68, 40, 0, 20, 13, 7))                    # a low wide one (in front)
+    arts['02'] = render(blocks, accent='a', under=lanes)
+    # 03 Engagement analytics: a field of columns at different heights (the signals), the
+    # tallest, the most likely investor, topped in charcoal
+    hs = [[8, 14, 10, 6], [18, 30, 16, 9], [12, 44, 22, 12]]
+    f = []
+    for r, row in enumerate(hs):
+        for c, h in enumerate(row):
+            f += box(c * 16, r * 16, 4, 11, 11, h, tag='a' if h == 44 else None)
+    arts['03'] = render(f, accent='a', under=box(-4, -4, 0, 63, 47, 4))
+    # 04 Pipeline conversion: two blocks joined by a bridge flush with their tops, a small
+    # block crossing it to the meeting: qualified investors routed to founders, warm introductions
+    f = box(0, 0, 0, 28, 28, 24) + box(70, 0, 0, 28, 28, 24)
+    bridge = box(28, 8, 20, 42, 12, 4)
+    arts['04'] = render(f + bridge + box(44, 10, 24, 9, 8, 9, tag='a'), accent='a')
+    return arts
+
 if __name__ == '__main__':
     which = sys.argv[1] if len(sys.argv) > 1 else 'beliefs'
-    for k, v in (beliefs() if which == 'beliefs' else process()).items():
+    for k, v in {'beliefs': beliefs, 'process': process, 'genesis': genesis}[which]().items():
         print('<!-- %s %s -->' % (which, k))
         print(v)

@@ -1,0 +1,125 @@
+/* ==========================================================================
+   SECTION: genesis — What We Do, block 5 (the brief's "The technology behind
+   the process": "GENESIS, our capital platform")
+   Laid out like About's "What we believe" (sections/beliefs.css; the user
+   asked for it): on white, the heading (here with the brief's body under it),
+   then four columns behind vertical hairlines, each a small number, a fine
+   isometric drawing, a title and its line, lined up across the columns
+   (subgrid); then the brief's footnote. The drawings come from the same
+   renderer as About's (tools/iso-art.py genesis): one 30° angle, ink lines,
+   white tops and fronts, concrete sides, one charcoal top. Still: no motion.
+   Own genesis__ classes, so it can be approved on its own.
+   Uses shared tokens from styles.css (container).
+   ========================================================================== */
+
+.genesis {
+  --genesis-line: rgba(21, 21, 21, 0.16);
+  --genesis-fs: calc((min(100vw, var(--container-max)) - 2 * var(--gutter)) * 0.04);
+  background: var(--color-white);
+  padding-block: var(--space-10);
+}
+
+.genesis__head {
+  display: grid;
+  gap: var(--space-5);
+  margin-bottom: var(--space-9);
+}
+
+.genesis__title {
+  font-size: var(--genesis-fs);
+  font-weight: var(--weight-medium);
+  line-height: 1.08;
+  letter-spacing: var(--ls-h2);
+  color: var(--color-ink);
+}
+
+.genesis__lede {
+  max-width: 34em;
+  font-size: var(--fs-lede);
+  line-height: var(--lh-lede);
+  color: var(--color-text);
+  text-wrap: pretty;
+}
+
+/* Four columns on the 12-column grid (three each); rows shared so the parts line up */
+.genesis__list {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-rows: repeat(4, auto);
+  column-gap: var(--grid-gap);
+  list-style: none;
+}
+
+/* Component: genesis-card (What we believe's column) */
+.genesis-card {
+  grid-row: span 4;
+  display: grid;
+  grid-template-rows: subgrid;
+  padding: 0 var(--space-5) var(--space-2);
+  border-left: 1px solid var(--genesis-line);
+}
+
+.genesis-card__num {
+  font-size: 13px;
+  font-weight: var(--weight-medium);
+  letter-spacing: 0.08em;
+  line-height: 18px;
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* The drawing: a fine ink line that stays 1px at any size, as in What we believe */
+.genesis-card__art {
+  width: 200px;
+  height: 150px;
+  margin-top: var(--space-7);
+  overflow: visible;
+  fill: none;
+  stroke: var(--color-ink);
+  stroke-width: 1;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.genesis-card__art * { vector-effect: non-scaling-stroke; }
+.genesis-card__art .genesis__fill { fill: var(--color-charcoal); }     /* the one filled part, in charcoal */
+.genesis-card__art .genesis__face { fill: var(--color-concrete); }    /* sides with depth, in concrete */
+.genesis-card__art .genesis__front { fill: var(--color-white); }      /* faces that cover what is behind */
+.genesis-card__art .genesis__hidden { stroke-dasharray: 2 3; }         /* edges behind a solid */
+
+.genesis-card__name {
+  margin-top: var(--space-8);
+  font-size: var(--fs-h3);
+  font-weight: var(--weight-medium);
+  line-height: var(--lh-h3);
+  letter-spacing: var(--ls-h3);
+  color: var(--color-ink);
+  text-wrap: balance;
+}
+
+.genesis-card__text {
+  margin-top: var(--space-3);
+  max-width: 22em;
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--color-text);
+  text-wrap: pretty;
+}
+
+/* The brief's footnote, small and muted, under the columns */
+.genesis__note {
+  margin-top: var(--space-8);
+  max-width: 60em;
+  font-size: var(--fs-small);
+  line-height: var(--lh-small);
+  color: var(--color-text-muted);
+}
+
+/* Tablet and phone: not reviewed yet (desktop first) */
+@media (max-width: 1199px) {
+  .genesis { --genesis-fs: 40px; }
+  .genesis__list { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: var(--space-8); }
+}
+@media (max-width: 809px) {
+  .genesis { --genesis-fs: 30px; }
+  .genesis__list { grid-template-columns: minmax(0, 1fr); }
+}
