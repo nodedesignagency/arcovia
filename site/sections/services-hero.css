@@ -3,18 +3,17 @@
    The About hero's structure (sections/about-hero.css), as on the Team page:
    a short opening on the home hero's live concrete (concrete.js, started by
    main.js through [data-hero]), the chip and headline low on the left
-   (cols 1-8), the line on the right (cols 9-12) with its last line on the
-   headline's baseline. Under them the three paths from Home's path picker,
-   each over a hairline, four columns apiece (like the Team page's stat
-   band), each a jump to its section on this page. ?hero=plain hides them.
-   No text animation.
+   (cols 1-8). The line and the buttons are placed as on Home's hero in
+   Framer (ArcoviaHero, Paths: Rows; the user asked for it): the line under
+   the headline, 32px down; the three paths stacked in the right-hand column
+   (cols 9-12) as rows like the masthead's links, the last row's line on the
+   line's last baseline. No text animation.
    Uses shared tokens and components from styles.css (chip, container).
    ========================================================================== */
 
 .services-hero {
   /* The headline is a share of the grid width, so its lines break the same at every desktop width (as About) */
   --services-hero-fs: calc((min(100vw, var(--container-max)) - 2 * var(--gutter)) * 0.044);
-  --services-hero-line: rgba(21, 21, 21, 0.18);
 
   position: relative;
   isolation: isolate;
@@ -44,7 +43,7 @@
 }
 .services-hero.hero--gl .hero__canvas { opacity: 1; }
 
-/* ---------- Heading and line ---------- */
+/* ---------- Heading, with the line under it (as Home's hero) ---------- */
 .services-hero__inner {
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
@@ -54,7 +53,6 @@
 
 .services-hero__heading {
   grid-column: 1 / span 8;
-  grid-row: 1;
   display: grid;
   justify-items: start;
   gap: var(--space-6);
@@ -71,97 +69,75 @@
 .services-hero__line { display: block; white-space: nowrap; }
 
 .services-hero__lede {
-  grid-column: 9 / span 4;
-  grid-row: 1;
-  max-width: 24em;
+  max-width: 22em;
   font-size: var(--fs-lede);
   line-height: var(--lh-lede);
   color: var(--color-text);
-  text-wrap: pretty;
-  /* Sit the last line on the headline's baseline, not the bottom of its line box:
-     the headline's baseline is ~0.18em above its box, the line's ~0.39em above its own */
-  margin-bottom: calc(var(--services-hero-fs) * 0.18 - var(--fs-lede) * 0.39);
 }
 
-/* ---------- The three paths, over hairlines ---------- */
+/* ---------- The three paths, cols 9-12 ---------- */
 .services-hero__paths {
-  grid-column: 1 / -1;
-  grid-row: 2;
-  display: grid;
-  grid-template-columns: subgrid;
-  margin-top: var(--space-9);
+  grid-column: 9 / span 4;
+  /* The last row's line sits on the line's last baseline (0.4em above its line box) */
+  margin-bottom: calc(var(--fs-lede) * 0.4);
 }
 
-/* Component: service-path. The path picker's row, laid flat on the concrete:
-   icon, title and one line, a chevron turned down (it jumps down the page) */
-.service-path {
-  grid-column: span 4;
+/* Component: path-rows, as Home's hero in Framer (ArcoviaHero, Paths: Rows) and
+   its HTML on claude/wizardly-dirac-nlgrd0 (sections/hero.css): rows like the
+   masthead's links, hairlines above, between and below, medium type in ink, an
+   arrow at the end. Hover: no fill; the label slides 12px in from the left and
+   the arrow 12px in from the right (transforms, so nothing re-lays out).
+   Move it to styles.css once Home's version reaches main. */
+.path-rows__list {
   display: grid;
-  grid-template-columns: 30px 1fr 16px;
-  grid-template-rows: auto auto;
-  column-gap: var(--space-4);
-  row-gap: 3px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--mh-line);
+}
+/* Each row's hairline sits on its list item */
+.path-rows__list > li { border-bottom: 1px solid var(--mh-line); }
+.path-rows__option {
+  display: flex;
   align-items: center;
-  padding-top: var(--space-5);
-  border-top: 1px solid var(--services-hero-line);
-  color: inherit;
-  text-decoration: none;
-  transition: border-color var(--dur-fast) var(--ease-out);
-}
-.service-path__icon {
-  grid-row: 1 / span 2;
-  display: grid;
-  place-items: center;
-  width: 30px;
-  height: 30px;
-  color: var(--color-text);
-}
-.service-path__icon svg { width: 30px; height: 30px; }
-.service-path__label {
-  grid-column: 2;
-  align-self: end;
+  gap: var(--space-4);
+  height: 55px;                     /* + the 1px hairline: a 56px row */
   font-size: 20px;
   font-weight: var(--weight-medium);
-  line-height: 1.3;
+  letter-spacing: -0.005em;
   color: var(--color-ink);
+  outline-offset: 2px;
 }
-.service-path__meta {
-  grid-column: 2;
-  align-self: start;
-  font-size: 15px;
-  line-height: 1.45;
-  color: var(--color-text-muted);
+.path-rows__label {
+  white-space: nowrap;
+  transition: transform 420ms var(--ease-out);
 }
-.service-path__arrow {
-  grid-column: 3;
-  grid-row: 1 / span 2;
-  width: 16px;
-  height: 16px;
-  color: var(--color-text-muted);
-  transform: rotate(90deg);
-  transition: transform var(--dur-base) var(--ease-out), color var(--dur-fast) var(--ease-out);
+.path-rows__arrow {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  margin-left: auto;
+  transition: transform 420ms var(--ease-out);
 }
-.service-path:focus-visible { outline-offset: 6px; }
+.path-rows__option:focus-visible .path-rows__label { transform: translateX(12px); }
+.path-rows__option:focus-visible .path-rows__arrow { transform: translateX(-12px); }
 @media (hover: hover) {
-  .service-path:hover { border-top-color: var(--color-ink); }
-  .service-path:hover .service-path__arrow { color: var(--color-ink); transform: translateY(2px) rotate(90deg); }
+  .path-rows__option:hover .path-rows__label { transform: translateX(12px); }
+  .path-rows__option:hover .path-rows__arrow { transform: translateX(-12px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .path-rows__label,
+  .path-rows__arrow { transition: none; }
 }
 
-/* Version A (?hero=plain): the opening on its own, as About */
-.services-hero[data-version="plain"] .services-hero__paths { display: none; }
-
-/* Tablet and phone: not reviewed yet (desktop first); keep it stacked and readable */
+/* Tablet and phone: not reviewed yet (desktop first); as Home's: the line, then the rows full width */
 @media (max-width: 1199px) {
   .services-hero { --services-hero-fs: 44px; }
   .services-hero__inner { align-items: start; }
-  .services-hero__heading { grid-column: 1 / -1; margin-bottom: var(--space-6); }
-  .services-hero__lede { grid-column: 1 / span 9; grid-row: 2; margin-bottom: 0; }
-  .services-hero__paths { grid-row: 3; margin-top: var(--space-8); row-gap: var(--space-5); }
-  .service-path { grid-column: span 6; }
+  .services-hero__heading { grid-column: 1 / -1; margin-bottom: var(--space-7); }
+  .services-hero__paths { grid-column: 1 / -1; margin-bottom: 0; }
 }
 @media (max-width: 809px) {
   .services-hero { --services-hero-fs: 30px; }
   .services-hero__line { white-space: normal; }
-  .services-hero__lede { grid-column: 1 / -1; }
-  .service-path { grid-column: 1 / -1; }
 }
