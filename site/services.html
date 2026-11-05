@@ -19,6 +19,7 @@
   <link rel="stylesheet" href="sections/narrative.css">
   <link rel="stylesheet" href="sections/mandate.css">
   <link rel="stylesheet" href="sections/genesis.css">
+  <link rel="stylesheet" href="sections/paths.css">
   <link rel="stylesheet" href="sections/sectors.css">
   <link rel="stylesheet" href="sections/closing.css">
   <link rel="stylesheet" href="sections/footer.css">
@@ -375,6 +376,80 @@
       </div>
     </section>
     <!-- SECTION:genesis END -->
+
+    <!-- SECTION:paths START · styles: sections/paths.css
+         What We Do, block 6: the brief's three paths (Founders, Investors, Institutions), the anchors
+         the opening's rows and Home's path picker lead to. After the user's reference (a large headline
+         and its line beside a big rounded panel): Founders text left and image right, Investors image
+         left and text right, Institutions as Founders (the user asked for this). In our language: the
+         chip, the headline, the brief's line, the four points over hairlines, the primary button; the
+         panel a Blender concrete render on the charcoal (assets/paths/, tools/concrete-renders path_*).
+         Every word from the brief. The buttons go to contact.html (the form can't open on a path from a
+         link yet). -->
+    <section class="paths" aria-label="Who we work with">
+      <div class="container">
+      <article class="path-feature" id="founders" aria-labelledby="founders-title">
+        <div class="path-feature__text">
+          <p class="chip">Founders</p>
+          <h2 class="path-feature__title" id="founders-title">Raise with conviction</h2>
+          <p class="path-feature__lede">For growth-stage companies raising equity or debt. We build the story investors need to see, then put it in front of the ones most likely to commit.</p>
+          <ul class="path-feature__list">
+              <li>Investor narrative: memo, teaser and deck built as one story</li>
+              <li>Capital strategy: round size, valuation and structure</li>
+              <li>Outreach to investors matched to your sector, stage and check size</li>
+              <li>We run the process with you through diligence and close</li>
+          </ul>
+          <a class="btn btn--primary path-feature__btn" href="contact.html">
+            Start a conversation
+            <svg class="btn__icon" aria-hidden="true"><use href="#icon-arrow"/></svg>
+          </a>
+        </div>
+        <!-- Three square columns rising in steps from one plinth: the path picker's bar chart, cast in concrete -->
+        <div class="path-feature__media"><img src="assets/paths/founders.jpg" alt="" width="1440" height="1200" loading="lazy"></div>
+      </article>
+
+      <article class="path-feature path-feature--flip" id="investors" aria-labelledby="investors-title">
+        <div class="path-feature__text">
+          <p class="chip">Investors</p>
+          <h2 class="path-feature__title" id="investors-title">Opportunities worth your time</h2>
+          <p class="path-feature__lede">For family offices, funds and private investors looking for vetted deal flow. We bring you opportunities that fit your mandate, not a generic list.</p>
+          <ul class="path-feature__list">
+              <li>Matched to your thesis, sector and ticket size</li>
+              <li>Technology &amp; AI, energy &amp; natural resources, infrastructure, healthcare, real estate, media</li>
+              <li>Full information under NDA, with direct access to management</li>
+              <li>Co-investment alongside lead investors</li>
+          </ul>
+          <a class="btn btn--primary path-feature__btn" href="contact.html">
+            Join our investor network
+            <svg class="btn__icon" aria-hidden="true"><use href="#icon-arrow"/></svg>
+          </a>
+        </div>
+        <!-- A solid block with a shallow round dish in its top, holding one sphere: one opportunity, chosen and held -->
+        <div class="path-feature__media"><img src="assets/paths/investors.jpg" alt="" width="1440" height="1200" loading="lazy"></div>
+      </article>
+
+      <article class="path-feature" id="institutions" aria-labelledby="institutions-title">
+        <div class="path-feature__text">
+          <p class="chip">Institutions</p>
+          <h2 class="path-feature__title" id="institutions-title">Complex mandates, end to end</h2>
+          <p class="path-feature__lede">For funds, asset managers and corporates with larger or multi-party transactions.</p>
+          <ul class="path-feature__list">
+              <li>Fund formation and LP strategy for emerging managers</li>
+              <li>Fund-to-fund and co-investment partnerships</li>
+              <li>Debt advisory and placement: venture debt, growth lending, mezzanine</li>
+              <li>M&amp;A and project finance</li>
+          </ul>
+          <a class="btn btn--primary path-feature__btn" href="contact.html">
+            Discuss a mandate
+            <svg class="btn__icon" aria-hidden="true"><use href="#icon-arrow"/></svg>
+          </a>
+        </div>
+        <!-- A vault: a thick wall with a round opening, its heavy round door standing open on its hinge -->
+        <div class="path-feature__media"><img src="assets/paths/institutions.jpg" alt="" width="1440" height="1200" loading="lazy"></div>
+      </article>
+      </div>
+    </section>
+    <!-- SECTION:paths END -->
 
     <!-- SECTION:sectors START · styles: sections/sectors.css · scripts: sectors.js
          What We Do, block 7 (the brief's section 7, Sectors): Home's sectors line, the same

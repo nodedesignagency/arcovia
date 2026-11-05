@@ -51,6 +51,21 @@ Output: `site/assets/mandate/<prepare, outreach, diligence, close>.jpg` and
 Render with `--res 1200 --samples 48`, then `finish.py … --size 1200`; each
 takes under two minutes on 4 CPU cores.
 
+## What We Do: the three paths
+
+Three 6:5 panels for Founders, Investors and Institutions (`SECTION:paths`),
+echoing the path picker's icons on Home:
+
+| Panel | Path | Form |
+| --- | --- | --- |
+| `path_founders` | Founders, raise with conviction | three square columns rising in steps on a plinth: the bar chart |
+| `path_investors` | Investors, opportunities worth your time | a solid block with a shallow round dish in its top, holding one sphere |
+| `path_institutions` | Institutions, complex mandates end to end | a vault: a thick wall with a round opening, its heavy round door open on its hinge |
+
+Output: `site/assets/paths/<founders, investors, institutions>.jpg` and `.webp`,
+1440 × 1200. Render with `--res 1440 --res-y 1200 --samples 48`, then
+`finish.py … --size 1440`; each takes about two minutes on 4 CPU cores.
+
 ## Re-rendering
 
 Blender as a Python module, then Pillow for the finish:

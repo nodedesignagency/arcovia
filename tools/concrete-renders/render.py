@@ -698,6 +698,108 @@ def scene_mandate_close(mat):
     studio(target=(0, 0, -0.1))
 
 
+# ---------------------------------------------------------------------------
+# What We Do: the three paths (Founders, Investors, Institutions), one large
+# 6:5 panel each (render at --res 1440 --res-y 1200), echoing the path picker's
+# icons on Home: a bar chart, a hand with cash, a vault.
+
+
+def _sphere(name, r, loc, mat, segs=96, rings=48):
+    bm = bmesh.new()
+    bmesh.ops.create_uvsphere(bm, u_segments=segs, v_segments=rings, radius=r)
+    ob = _finish(name, bm, loc, (0, 0, 0), 0, 0, mat)
+    ob.data.shade_smooth()
+    return ob
+
+
+def _cylinder_cutter(name, r, depth, loc, rot, segs=128):
+    bm = bmesh.new()
+    bmesh.ops.create_cone(bm, cap_ends=True, segments=segs, radius1=r, radius2=r, depth=depth)
+    me = bpy.data.meshes.new(name)
+    bm.to_mesh(me)
+    bm.free()
+    ob = bpy.data.objects.new(name, me)
+    bpy.context.scene.collection.objects.link(ob)
+    ob.location = loc
+    ob.rotation_euler = rot
+    ob.hide_render = True
+    ob.display_type = "WIRE"
+    return ob
+
+
+def _cut(ob, cutter, k=0):
+    """Take a cutter out of a form before its bevel rounds the new edges."""
+    mod = ob.modifiers.new(f"Cut{k}", "BOOLEAN")
+    mod.operation = "DIFFERENCE"
+    mod.object = cutter
+    bev = ob.modifiers.get("Bevel")
+    if bev:   # the boolean must come first, so the opening's edges are rounded too
+        while ob.modifiers[0] != mod:
+            bpy.context.view_layer.objects.active = ob
+            bpy.ops.object.modifier_move_up(modifier=mod.name)
+    return ob
+
+
+def scene_path_founders(mat):
+    """Founders, raise with conviction: three square columns rising in steps from one
+    plinth, the path picker's bar chart cast in concrete."""
+    top = -1.1
+    box("plinth", (2.7, 1.5, 0.24), (0.1, 0.15, top - 0.12), mat, bevel=0.035, segs=10)
+    side = 0.62
+    for k, h in enumerate((0.85, 1.45, 2.15)):
+        x = -0.72 + k * 0.78
+        box(f"bar{k}", (side, side, h), (x, 0.15, top + h / 2), mat, bevel=0.035, segs=10)
+    camera((-2.6, -6.2, 1.15), (0.08, 0.1, -0.05), lens=52)
+    studio(target=(0, 0.1, -0.1))
+
+
+def scene_path_investors(mat):
+    """Investors, opportunities worth your time: a solid block with a shallow round
+    dish cut into its top, holding one sphere: one opportunity, chosen and held."""
+    top = -0.95
+    r = 0.6
+    h = 0.95
+    block = box("cradle", (1.9, 1.9, h), (0.0, 0.0, top + h / 2), mat, bevel=0.04, segs=10)
+    dish = bmesh.new()
+    bmesh.ops.create_uvsphere(dish, u_segments=96, v_segments=48, radius=r + 0.03)
+    me = bpy.data.meshes.new("dish")
+    dish.to_mesh(me)
+    dish.free()
+    cutter = bpy.data.objects.new("dish", me)
+    bpy.context.scene.collection.objects.link(cutter)
+    seat = top + h + r - 0.34          # the sphere's centre: it sits 0.34 deep in its dish
+    cutter.location = (0.0, 0.0, seat)
+    cutter.hide_render = True
+    _cut(block, cutter)
+    _sphere("sphere", r, (0.0, 0.0, seat), mat)
+    camera((-2.9, -5.9, 2.3), (0.0, 0.0, -0.1), lens=56)
+    studio(target=(0, 0, -0.2))
+
+
+def scene_path_institutions(mat):
+    """Institutions, complex mandates end to end: a vault. A thick wall with a round
+    opening, its heavy round door standing open on its hinge, all on a plinth."""
+    top = -1.2
+    wall_w, wall_d, wall_h = 3.0, 0.62, 2.55
+    cz = top + 1.28                       # the opening's centre
+    R = 0.86                              # the opening
+    wall = box("wall", (wall_w, wall_d, wall_h), (0.25, 0.3, top + wall_h / 2), mat, bevel=0.035, segs=10)
+    _cut(wall, _cylinder_cutter("opening", R, 2.0, (0.25, 0.3, cz), (math.radians(90), 0, 0)))
+    box("plinth", (3.6, 2.0, 0.24), (0.1, 0.0, top - 0.12), mat, bevel=0.035, segs=10)
+    # the door: a thick disc with a stepped face, hinged at the opening's right edge and swung
+    # out towards the viewer, so the opening shows beside it
+    t = 0.42
+    prof = [(0.0, 0.0), (R - 0.06, 0.0), (R - 0.02, 0.04), (R - 0.02, t - 0.04), (R - 0.06, t),
+            (0.62, t), (0.6, t + 0.08), (0.36, t + 0.08), (0.34, t + 0.16), (0.0, t + 0.16)]
+    door = lathe("door", prof, mat, closed=True)
+    theta = math.radians(180 + 75)        # closed it would point back along -x from the hinge; open 75°
+    hinge = (0.25 + R, 0.3 - wall_d / 2 - 0.02)
+    door.rotation_euler = (math.radians(-90), 0, theta)   # its stepped face turned towards the viewer
+    door.location = (hinge[0] + math.cos(theta) * R, hinge[1] + math.sin(theta) * R, cz)
+    camera((-2.2, -6.4, 1.0), (0.2, -0.1, -0.05), lens=44)
+    studio(target=(0, 0, 0))
+
+
 SCENES = {
     "narrative": scene_narrative,
     "strategy": scene_strategy,
@@ -718,6 +820,10 @@ SCENES = {
     "mandate_outreach": scene_mandate_outreach,
     "mandate_diligence": scene_mandate_diligence,
     "mandate_close": scene_mandate_close,
+    # What We Do, the three paths (6:5: render at --res 1440 --res-y 1200)
+    "path_founders": scene_path_founders,
+    "path_investors": scene_path_investors,
+    "path_institutions": scene_path_institutions,
 }
 
 

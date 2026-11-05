@@ -1,0 +1,107 @@
+/* ==========================================================================
+   SECTION: paths — What We Do, block 6 (the brief's three paths: Founders,
+   Investors, Institutions; the anchors #founders, #investors, #institutions
+   that the opening's rows and Home's path picker lead to)
+   After the user's reference (a studio's split section: a large headline and
+   its line on the left, beside a big rounded panel holding an illustration),
+   one block per path, alternating as the user asked: Founders text left and
+   image right, Investors image left and text right, Institutions as Founders.
+   In our language: on the neutral ground, the chip (the path's name), the
+   headline at the site's section-heading size, the brief's line, the four
+   points over hairlines (like the mandate cards' lists), the primary button;
+   the panel is a concrete render on the charcoal made in Blender like the
+   rest of the page's images (tools/concrete-renders, path_*), echoing the
+   path picker's icons on Home: a bar chart, a held sphere, a vault.
+   Still: no motion. Component: path-feature (and path-feature--flip).
+   Uses shared tokens and components from styles.css (chip, btn, container).
+   ========================================================================== */
+
+.paths {
+  --pf-line: rgba(21, 21, 21, 0.14);
+  --pf-fs: calc((min(100vw, var(--container-max)) - 2 * var(--gutter)) * 0.04);
+  background: var(--color-neutral);
+  padding-block: var(--space-10);
+}
+
+.path-feature {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--grid-gap);
+  align-items: center;
+  scroll-margin-top: var(--space-6);
+}
+.path-feature + .path-feature { margin-top: var(--space-10); }
+
+/* ---------- The text: cols 1-5 (flipped: cols 8-12) ---------- */
+.path-feature__text {
+  grid-column: 1 / span 5;
+  grid-row: 1;
+  display: grid;
+  justify-items: start;
+}
+.path-feature--flip .path-feature__text { grid-column: 8 / span 5; }
+
+.path-feature__title {
+  margin-top: var(--space-5);
+  font-size: var(--pf-fs);
+  font-weight: var(--weight-medium);
+  line-height: 1.08;
+  letter-spacing: var(--ls-h2);
+  color: var(--color-ink);
+  text-wrap: balance;
+}
+
+.path-feature__lede {
+  margin-top: var(--space-5);
+  max-width: 26em;
+  font-size: var(--fs-lede);
+  line-height: var(--lh-lede);
+  color: var(--color-text);
+  text-wrap: pretty;
+}
+
+/* The four points, over hairlines */
+.path-feature__list {
+  width: 100%;
+  margin: var(--space-6) 0 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--pf-line);
+}
+.path-feature__list li {
+  padding-block: 12px;
+  border-bottom: 1px solid var(--pf-line);
+  font-size: var(--fs-body);
+  line-height: 24px;
+  color: var(--color-text);
+}
+
+.path-feature__btn { margin-top: var(--space-7); }
+
+/* ---------- The panel: cols 7-12 (flipped: cols 1-6) ---------- */
+.path-feature__media {
+  grid-column: 7 / span 6;
+  grid-row: 1;
+  overflow: hidden;
+  border-radius: var(--radius-l);
+  background: var(--color-charcoal);
+  aspect-ratio: 6 / 5;
+}
+.path-feature--flip .path-feature__media { grid-column: 1 / span 6; }
+.path-feature__media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Tablet and phone: not reviewed yet (desktop first); the text, then the panel */
+@media (max-width: 1199px) {
+  .paths { --pf-fs: var(--fs-h2); padding-block: var(--space-9); }
+  .path-feature { row-gap: var(--space-7); }
+  .path-feature + .path-feature { margin-top: var(--space-9); }
+  .path-feature__text,
+  .path-feature--flip .path-feature__text { grid-column: 1 / -1; grid-row: 1; }
+  .path-feature__media,
+  .path-feature--flip .path-feature__media { grid-column: 1 / -1; grid-row: 2; }
+}
