@@ -451,56 +451,38 @@
     </section>
     <!-- SECTION:team-list END -->
 
-    <!-- SECTION:residency START · styles: sections/residency.css · scripts: residency.js (only switches to the panel version)
-         Team, block 5: the Residency Program. Version A, "Invitation" (the default). Layout after
-         two Mobbin references: Apollo's partner section (the heading on the left, the text on the
-         right) and Dropbox's "Join us" band (the invitation itself set large, underlined, with an
-         arrow). On the neutral ground after the table, running on into the footer: "The Residency
-         Program" on cols 1-6 at the Team page's heading size, the brief's text on cols 7-12, then
-         the invitation as one row across the 12 columns between two hairlines, as large as the
-         heading, the arrow on the right edge; on hover an ink line draws along its foot and the
-         arrow moves on. It opens Contact with the "Join the team or the Residency" path chosen
-         (contact.html?path=talent). Copy verbatim from the brief (Team, section 5). -->
-    <section class="residency" id="residency" aria-labelledby="residency-title" data-residency>
+    <!-- SECTION:residency START · styles: sections/residency.css · scripts: concrete.js, residency.js
+         Team, block 5: the Residency Program. Layout after Until's "Join our team" on Mobbin (a row
+         of four pictures in staggered heights, then a large statement with one button on the left
+         and a short paragraph on the right). The user chose no photos: the pictures are four
+         cast-concrete slabs (assets/concrete-cast.jpg), the three fields residents come from carved
+         into the first three and the official A-mark into the last (residency.js: one ConcreteSurface
+         per slab, carved exactly like the hero; a faint light follows the pointer). Then "The
+         Residency Program" and the button on cols 1-6, the brief's text on cols 8-12. The button opens
+         Contact with "Join the team or the Residency" chosen (contact.html?path=talent). Copy verbatim
+         from the brief (Team, section 5); the carved fields are its own words. -->
+    <section class="residency" id="residency" aria-labelledby="residency-title">
       <div class="container">
+        <ul class="residency__slabs" aria-hidden="true">
+          <li class="residency__slab" data-residency-slab><canvas class="residency__canvas"></canvas><span class="residency__word" data-carve="text">Venture capital</span></li>
+          <li class="residency__slab" data-residency-slab><canvas class="residency__canvas"></canvas><span class="residency__word" data-carve="text">Private equity</span></li>
+          <li class="residency__slab residency__slab--short" data-residency-slab><canvas class="residency__canvas"></canvas><span class="residency__word" data-carve="text">Investment banking</span></li>
+          <li class="residency__slab residency__slab--mark" data-residency-slab><canvas class="residency__canvas"></canvas><svg class="residency__mark" viewBox="0 0 72 57" data-carve="mark" focusable="false"><use href="#a-mark"/></svg></li>
+        </ul>
+
         <div class="residency__inner">
-          <h2 class="residency__title" id="residency-title">The Residency Program</h2>
+          <div class="residency__lead">
+            <h2 class="residency__title" id="residency-title">The Residency Program</h2>
+            <a class="btn btn--primary residency__btn" href="contact.html?path=talent">
+              Interested? Write to us
+              <svg class="btn__icon residency__arrow" aria-hidden="true"><use href="#icon-arrow"/></svg>
+            </a>
+          </div>
           <p class="residency__body">The Arcovia Residency Program is a selective program for professionals from venture capital, private equity and investment banking. Residents expand our origination and market intelligence.</p>
         </div>
-        <a class="residency__link" href="contact.html?path=talent">
-          <span class="residency__link-text">Interested? Write to us</span>
-          <svg class="residency__arrow" aria-hidden="true"><use href="#icon-arrow"/></svg>
-        </a>
       </div>
     </section>
     <!-- SECTION:residency END -->
-
-    <!-- SECTION:residency-panel START · styles: sections/residency.css · scripts: concrete.js, residency.js
-         Team, block 5: the Residency Program. Version B, "Panel" (preview with ?residency=panel;
-         hidden otherwise). Layout after Jasper's careers band on Mobbin (a dark rounded box, the
-         text and one button on the left, a picture on the right) and the October deck's charcoal
-         panels with the A-mark pressed into them: on the neutral ground, a charcoal box like the
-         Home CTA's (same radius and inset), the heading, the brief's text and a light button on
-         cols 1-6; on the right the official A-mark carved large into the panel by concrete.js
-         (plain material, charcoal), running off the box's right and bottom edges, with a slow soft
-         light drifting across it. Without WebGL the mark is a flat, slightly darker inlay. -->
-    <section class="residency-panel" aria-labelledby="residency-panel-title" data-residency-panel hidden>
-      <div class="container">
-        <div class="residency-panel__card" data-header-theme="dark">
-          <canvas class="residency-panel__canvas" aria-hidden="true"></canvas>
-          <svg class="residency-panel__mark" viewBox="0 0 72 57" data-carve="mark" aria-hidden="true" focusable="false"><use href="#a-mark"/></svg>
-          <div class="residency-panel__content">
-            <h2 class="residency-panel__title" id="residency-panel-title">The Residency Program</h2>
-            <p class="residency-panel__body">The Arcovia Residency Program is a selective program for professionals from venture capital, private equity and investment banking. Residents expand our origination and market intelligence.</p>
-            <a class="btn btn--light residency-panel__btn" href="contact.html?path=talent">
-              Interested? Write to us
-              <svg class="btn__icon residency-panel__arrow" aria-hidden="true"><use href="#icon-arrow"/></svg>
-            </a>
-          </div>
-        </div>
-      </div>
-    </section>
-    <!-- SECTION:residency-panel END -->
 
   </main>
 
