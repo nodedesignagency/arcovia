@@ -1,0 +1,62 @@
+/* ==========================================================================
+   SECTION: situations — What We Do, block 2 ("Start from where you are")
+   The brief's five rows, "Your situation / What we do", laid out like the
+   Team page's table (the user asked for it): on the neutral ground, the h2
+   top left at the Team table's size, then a real table across all 12
+   columns, its column labels on a band, a hairline on every cell edge.
+   Columns on the page grid: Your situation cols 1-4 (it lines up with the
+   first path in the opening above), What we do cols 5-12. The table is the
+   shared component data-table (styles.css).
+   The brief: "each opening into a short panel (accordion on mobile)". On
+   desktop every panel is open (the second column); the phone accordion
+   comes with the tablet and phone pass.
+   Uses shared tokens and components from styles.css (container, data-table).
+   ========================================================================== */
+
+.situations {
+  /* The heading is a share of the grid width, as the Team table's */
+  --st-fs: calc((min(100vw, var(--container-max)) - 2 * var(--gutter)) * 0.04);
+  background: var(--color-neutral);
+  padding-top: var(--space-10);
+  padding-bottom: var(--space-9);
+}
+
+.situations__title {
+  margin-bottom: var(--space-8);
+  font-size: var(--st-fs);
+  font-weight: var(--weight-medium);
+  line-height: 1.08;
+  letter-spacing: var(--ls-h2);
+  color: var(--color-ink);
+}
+
+/* Your situation: cols 1-4 (four columns and three gaps, less the gap before What we do) */
+.situations__col--situation { width: calc(var(--dt-w) / 3 - 2 / 3 * var(--grid-gap)); }
+
+/* What we do keeps a reading measure, even where its column is wider */
+.situations__text {
+  display: block;
+  max-width: 46em;
+  text-wrap: pretty;
+}
+
+/* Tablet and phone: not reviewed yet (desktop first). The table slides
+   sideways in its own strip, as the Team table does, until the accordion. */
+.situations__scroll { outline-offset: 4px; }
+@media (max-width: 1199px) {
+  .situations { --st-fs: var(--fs-h2); padding-block: var(--space-9); }
+  .situations__title { margin-bottom: var(--space-7); }
+  .situations__scroll {
+    overflow-x: auto;
+    margin-right: calc(-1 * var(--gutter));
+    padding-right: var(--gutter);
+  }
+  .situations .data-table { --dt-pad-x: 20px; width: 1000px; }
+  .situations__col--situation { width: 333px; }
+  .situations .data-table th,
+  .situations .data-table td { padding-block: 18px; }
+}
+@media (max-width: 809px) {
+  .situations { padding-block: var(--space-8); }
+  .situations__title { margin-bottom: 40px; }
+}

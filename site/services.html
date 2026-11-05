@@ -15,6 +15,7 @@
   <link rel="stylesheet" href="styles.css">
   <!-- One stylesheet per section, so a section can be approved and moved to main on its own -->
   <link rel="stylesheet" href="sections/services-hero.css">
+  <link rel="stylesheet" href="sections/situations.css">
   <link rel="stylesheet" href="sections/footer.css">
 </head>
 <body>
@@ -163,6 +164,39 @@
       if (/[?&]hero=plain\b/.test(location.search)) document.querySelector("[data-services-hero]").setAttribute("data-version", "plain");
     </script>
     <!-- SECTION:services-hero END -->
+
+    <!-- SECTION:situations START · styles: sections/situations.css
+         What We Do, block 2: "Start from where you are", the brief's five rows, laid out like the
+         Team page's table (the user asked for it): on the neutral ground, the h2, then a real table
+         across the 12 columns (Your situation cols 1-4, What we do cols 5-12), column labels on a
+         band, a hairline on every cell edge. Component data-table (styles.css). Every word from the
+         brief, in its order. The brief wants each row to open into a short panel, an accordion on
+         mobile: on desktop every panel is open. -->
+    <section class="situations" id="situations" aria-labelledby="situations-title">
+      <div class="container">
+        <h2 class="situations__title" id="situations-title">Start from where you are</h2>
+
+        <div class="situations__scroll" role="region" aria-labelledby="situations-title" tabindex="0">
+          <table class="data-table">
+            <colgroup>
+              <col class="situations__col--situation">
+              <col class="situations__col--service">
+            </colgroup>
+            <thead>
+              <tr><th scope="col">Your situation</th><th scope="col">What we do</th></tr>
+            </thead>
+            <tbody>
+              <tr><th scope="row">Raising a growth round</th><td><span class="situations__text">Equity capital raising: round sizing, valuation anchoring, equity and SAFE structures, cap table and dilution analysis from seed through Series D, then a targeted process across growth equity, PIPEs and registered directs.</span></td></tr>
+              <tr><th scope="row">Raising debt or refinancing</th><td><span class="situations__text">Debt advisory and placement: venture debt, growth lending, unitranche, mezzanine and subordinated debt, led by senior advisors with $20B+ in LBO experience for KKR, Blackstone, TPG, Carlyle, Apollo and Bain Capital.</span></td></tr>
+              <tr><th scope="row">Selling, buying or merging</th><td><span class="situations__text">M&amp;A on the sell side and the buy side, including cross-border transactions, from preparation and positioning to negotiation and close.</span></td></tr>
+              <tr><th scope="row">Financing a project</th><td><span class="situations__text">Project finance with milestone-based structures, for infrastructure, energy and real assets.</span></td></tr>
+              <tr><th scope="row">Launching or growing a fund</th><td><span class="situations__text">Fund formation and partnerships: support for emerging managers on fund formation, LP strategy and capital raising, plus fund-to-fund and co-investment partnerships alongside lead funds.</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+    <!-- SECTION:situations END -->
 
   </main>
 

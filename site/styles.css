@@ -878,6 +878,43 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 /* Spam trap: a field people never see; bots fill it in */
 .trap { position: absolute !important; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
 
+/* ---------- Data table (component: data-table) ----------
+   First built for the Team page's "The Arcovia team" (sections/team-list.css on
+   claude/intelligent-davinci-6xbl64), after the user's table reference: a band row
+   for the column labels, a 1px hairline on every cell edge, text set in from the
+   lines. Moved here now that What We Do uses it too ("Start from where you are").
+   Each section sets its own column widths on <col> elements, from the grid width
+   (--dt-w), so a cell's text starts on its grid column and the line before it sits
+   one gap to its left. Lengths, not percentages: Chrome drops calc(% - px) on
+   table columns and falls back to equal widths. */
+.data-table {
+  --dt-line: rgba(21, 21, 21, 0.1);
+  --dt-band: rgba(21, 21, 21, 0.035);
+  --dt-pad-x: var(--grid-gap);
+  --dt-w: calc(min(100vw, var(--container-max)) - 2 * var(--gutter));
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  font-size: var(--fs-body);
+  line-height: 24px;
+  text-align: left;
+}
+.data-table th,
+.data-table td {
+  padding: 20px var(--dt-pad-x);
+  border: 1px solid var(--dt-line);
+  vertical-align: top;
+  font-weight: var(--weight-book);
+}
+/* The band: column labels on a slightly darker strip */
+.data-table thead th {
+  background: var(--dt-band);
+  font-weight: var(--weight-medium);
+  color: var(--color-ink);
+}
+.data-table tbody th { font-weight: var(--weight-medium); color: var(--color-ink); }
+.data-table td { color: var(--color-text); }
+
 /* ---------- Reduced motion ---------- */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
