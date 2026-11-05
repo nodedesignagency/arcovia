@@ -9,7 +9,8 @@
               masthead's short dash draws in on hover
      offices 6-8 · 9-12: side by side over hairlines, city, live local
               time (main.js), address
-     regulatory line (from the brief, small, every page): 1-8, under the offices
+     regulatory line (from the brief, small, every page): cols 1-5, beside the
+              offices, its last line on the addresses' last line
      bar: © on the left, the four legal pages on the right, over a hairline
    ========================================================================== */
 
@@ -117,12 +118,17 @@
   color: var(--color-text-muted);
 }
 
-/* ---------- Regulatory line: small print under the offices ---------- */
+/* ---------- Regulatory line: small print beside the offices ----------
+   In the empty columns left of the offices (cols 1-5, at most 33em: four lines from
+   1200 to 1728, at least 48px clear of the offices), bottom-aligned in their row so
+   its last line sits on the addresses' last line (the user's markup, 5 Nov 2026).
+   Below 1200 it stays under the offices. */
 .site-footer__reg {
-  grid-column: 1 / span 8;
-  grid-row: 3;
-  max-width: 64em;
-  margin-top: var(--space-9);
+  grid-column: 1 / span 5;
+  grid-row: 2;
+  align-self: end;
+  max-width: 33em;
+  margin-top: 0;
   font-size: 13px;
   line-height: 20px;
   color: var(--color-text-muted);
@@ -138,7 +144,7 @@
   justify-content: space-between;
   gap: var(--space-5);
   height: 72px;
-  margin-top: var(--space-5);
+  margin-top: var(--space-7);   /* 48px under the offices and the regulatory line */
   border-top: 1px solid var(--ft-line);
   font-size: 14px;
   line-height: 20px;
@@ -159,8 +165,8 @@
   .site-footer__offices { grid-column: 1 / -1; grid-row: 3; }
   .site-footer__office:nth-child(1) { grid-column: 1 / span 6; }
   .site-footer__office:nth-child(2) { grid-column: 7 / span 6; }
-  .site-footer__reg { grid-column: 1 / -1; grid-row: 4; }
-  .site-footer__bar { grid-row: 5; }
+  .site-footer__reg { grid-column: 1 / -1; grid-row: 4; align-self: auto; max-width: 64em; margin-top: var(--space-9); }
+  .site-footer__bar { grid-row: 5; margin-top: var(--space-5); }
 }
 @media (max-width: 809px) {
   .site-footer__link { font-size: 26px; }
