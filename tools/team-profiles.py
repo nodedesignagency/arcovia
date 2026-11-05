@@ -48,7 +48,8 @@ def between(start, end, include_end=True):
 sprite = between("  <!-- Sprite:", "  </svg>\n")
 # The arrow for the Contact button and Previous / Next (as on the Contact page)
 ARROW = '    <symbol id="icon-arrow" viewBox="0 0 16 16"><path d="M2.5 8h11M9 3.5 13.5 8 9 12.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>\n'
-sprite = sprite.replace("  </svg>\n", ARROW + "  </svg>\n")
+if 'id="icon-arrow"' not in sprite:   # team.html carries it itself since the Residency invitation
+    sprite = sprite.replace("  </svg>\n", ARROW + "  </svg>\n")
 chrome = up(between('  <a class="visually-hidden" href="#main">', "  <main id=\"main\">", include_end=False))
 footer = up(between("  <!-- SECTION:footer START", "  <!-- SECTION:footer END -->"))
 

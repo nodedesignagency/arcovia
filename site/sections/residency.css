@@ -1,0 +1,200 @@
+/* ==========================================================================
+   SECTION: residency — Team, block 5 (the Residency Program)
+   Two versions for the user to choose between (residency.js switches them;
+   keep only the chosen one once it is approved):
+
+   A · Invitation (default, .residency): after two Mobbin references, Apollo's
+   partner section (heading on the left, text on the right) and Dropbox's
+   "Join us" band (the invitation itself set large, underlined, with an
+   arrow). On the neutral ground after the table, running on into the footer:
+   the heading on cols 1-6 at the Team page's heading size, the brief's text
+   on cols 7-12, then the invitation as one row across all 12 columns between
+   two hairlines (it echoes the table's lines above), as large as the heading,
+   the arrow on the right edge. Hover or focus: an ink line draws along the
+   row's foot and the arrow moves on.
+
+   B · Panel (?residency=panel, .residency-panel): after Jasper's careers band
+   (a dark rounded box, text and one button on the left, a picture on the
+   right) and the October deck's charcoal panels with the A-mark pressed into
+   them: a charcoal box shaped like the Home CTA's, the text and a light button
+   on the left, the official A-mark carved large into the panel on the right
+   (concrete.js, plain material), running off its right and bottom edges.
+
+   Both open Contact with the Residency path chosen (contact.html?path=talent).
+   Uses shared tokens and components from styles.css (container, btn).
+   ========================================================================== */
+
+/* ---------- A · Invitation ---------- */
+.residency {
+  /* The heading is a share of the grid width, like the Team page's other headings */
+  --res-fs: calc((min(100vw, var(--container-max)) - 2 * var(--gutter)) * 0.04);
+  background: var(--color-neutral);
+  padding-top: var(--space-6);      /* with the table's 96px under it: the page's 128px between sections */
+  padding-bottom: var(--space-9);
+}
+
+.residency__inner {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--grid-gap);
+  align-items: start;
+}
+
+.residency__title {
+  grid-column: 1 / span 6;
+  font-size: var(--res-fs);
+  font-weight: var(--weight-medium);
+  line-height: 1.08;
+  letter-spacing: var(--ls-h2);
+  color: var(--color-ink);
+}
+
+/* Its first line shares the heading's cap height (Montserrat: 24px / 36 against the heading's 54px / 1.08) */
+.residency__body {
+  grid-column: 7 / -1;
+  max-width: 28em;
+  font-size: 24px;
+  line-height: 1.5;
+  letter-spacing: -0.006em;
+  text-wrap: pretty;
+  color: var(--color-text);
+}
+
+/* The invitation: one row across the grid, between two hairlines */
+.residency__link {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-6);
+  margin-top: var(--space-9);
+  padding-block: 44px;
+  border-top: 1px solid var(--color-line);
+  border-bottom: 1px solid var(--color-line);
+  font-size: var(--res-fs);
+  font-weight: var(--weight-medium);
+  line-height: 1.08;
+  letter-spacing: var(--ls-h2);
+  color: var(--color-ink);
+  text-decoration: none;
+  outline: none;
+}
+/* An ink line draws along the foot of the row on hover or focus */
+.residency__link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 1px;
+  background: var(--color-ink);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 700ms var(--ease-out);
+}
+.residency__arrow {
+  flex: none;
+  width: 0.72em;
+  height: 0.72em;
+  margin-right: 10px;               /* on hover it moves on 10px and lands flush with the grid's edge */
+  transition: transform var(--dur-slow) var(--ease-out);
+}
+@media (hover: hover) {
+  .residency__link:hover::after { transform: scaleX(1); }
+  .residency__link:hover .residency__arrow { transform: translateX(10px); }
+}
+.residency__link:focus-visible::after { transform: scaleX(1); height: 2px; }
+.residency__link:focus-visible .residency__arrow { transform: translateX(10px); }
+
+/* ---------- B · Panel ---------- */
+.residency-panel {
+  --res-fs: calc((min(100vw, var(--container-max)) - 2 * var(--gutter)) * 0.04);
+  background: var(--color-neutral);
+  padding-top: var(--space-6);      /* with the table's 96px: 128px */
+  padding-bottom: 0;                /* the footer sets the space under the box, as after the Home CTA */
+}
+
+.residency-panel__card {
+  --card-pad: 96px;                 /* the Home CTA's inset */
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--grid-gap);
+  align-items: center;
+  min-height: 560px;
+  padding: var(--card-pad);
+  border-radius: var(--radius-l);
+  background: var(--color-charcoal-deep);
+  color: var(--color-on-dark);
+}
+
+.residency-panel__canvas {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 700ms var(--ease-out);
+}
+.residency-panel__card.is-live .residency-panel__canvas { opacity: 1; }
+
+/* The A-mark, large, running off the right and bottom edges. Without WebGL a flat, slightly darker
+   inlay; with live light concrete.js carves it into the panel and the SVG only marks the place. */
+.residency-panel__mark {
+  position: absolute;
+  z-index: -2;
+  right: -6%;
+  bottom: -22%;
+  height: 118%;
+  width: auto;
+  aspect-ratio: 72 / 57;
+  fill: currentColor;
+  color: rgba(0, 0, 0, 0.2);
+}
+.residency-panel__card.is-live .residency-panel__mark { opacity: 0; }
+
+.residency-panel__content {
+  grid-column: 1 / span 6;
+  display: grid;
+  justify-items: start;
+}
+.residency-panel__title {
+  font-size: var(--res-fs);
+  font-weight: var(--weight-medium);
+  line-height: 1.08;
+  letter-spacing: var(--ls-h2);
+  color: var(--color-on-dark);
+}
+.residency-panel__body {
+  max-width: 27em;
+  margin-top: var(--space-5);
+  font-size: var(--fs-lede);
+  line-height: var(--lh-lede);
+  text-wrap: pretty;
+  color: rgba(244, 244, 243, 0.82);
+}
+.residency-panel__btn { margin-top: var(--space-6); }
+@media (hover: hover) {
+  .residency-panel__btn:hover .residency-panel__arrow { transform: translateX(3px); }
+}
+
+/* ---------- Tablet and phone (not reviewed yet: desktop first; kept readable) ---------- */
+@media (max-width: 1199px) {
+  .residency,
+  .residency-panel { --res-fs: var(--fs-h2); }
+  .residency__title { grid-column: 1 / -1; margin-bottom: var(--space-6); }
+  .residency__body { grid-column: 1 / -1; font-size: var(--fs-lede); }
+  .residency__link { margin-top: var(--space-8); padding-block: 32px; }
+  .residency-panel__card { --card-pad: 64px; min-height: 480px; }
+  .residency-panel__content { grid-column: 1 / span 9; }
+}
+@media (max-width: 809px) {
+  .residency { padding-bottom: var(--space-8); }
+  .residency__link { font-size: 26px; padding-block: 24px; }
+  .residency-panel__card { --card-pad: 28px; align-items: start; padding-block: var(--space-8) 260px; }
+  .residency-panel__content { grid-column: 1 / -1; }
+  .residency-panel__mark { height: 300px; right: -18%; bottom: -60px; }
+}

@@ -295,7 +295,10 @@
       });
     }
 
-    // Start: a browser may bring back a choice from before a reload
+    // Start: a link can choose the path (contact.html?path=talent, the Team page's Residency
+    // invitation); a browser may also bring back a choice from before a reload
+    var asked = new URLSearchParams(location.search).get("path");
+    if (asked && !current()) paths.forEach(function (p) { if (p.value === asked) p.checked = true; });
     setPath(current(), false);
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(refresh);
     var queued = false;
