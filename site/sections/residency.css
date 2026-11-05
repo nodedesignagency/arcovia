@@ -1,146 +1,132 @@
 /* ==========================================================================
    SECTION: residency — Team, block 5 (the Residency Program)
-   Layout after Until's "Join our team" on Mobbin: a row of four pictures in
-   staggered heights across the page (the third shorter than the rest), then,
-   well below, a large statement with one button on the left and a short
-   paragraph on the right. The user chose no photos: the pictures are four
-   cast-concrete slabs (the Home team cards' concrete), the three fields
-   residents come from carved into the first three, top left, and the official
-   A-mark carved into the last. residency.js gives each slab its own
-   ConcreteSurface (carved exactly like the hero; a faint light follows the
-   pointer). Without WebGL the slabs show the photo with the words and the
-   mark pressed in with CSS.
-   Below: "The Residency Program" (the Team headings' size) and the primary
-   button on cols 1-6, the brief's text on cols 8-12, its first line on the
-   heading's cap height.
-   Uses shared tokens and components from styles.css (container, btn).
+   After the user's screen recording (a "data coverage" line): a small label,
+   one large sentence, a chevron, then a vertical wheel of names, the current
+   one bright and the one above and below it dim, rolling up one row at a
+   time. Here the heading is the label (the site's bracketed chip), the
+   sentence is the brief's own words ("A selective program / for
+   professionals from"), and the wheel holds the three fields it names
+   (residency.js rolls it). With three names, all three are always in view:
+   the current one in ink in the middle line, the others at 20%. The wheel
+   sits right after the second line, which is longer than the first, so the
+   dim name above it never meets the text. Under it, the brief's text and the
+   button. The reference's flags and orange chevron are not used.
+   Uses shared tokens and components from styles.css (container, chip, btn).
    ========================================================================== */
 
 .residency {
   --res-grid: calc(min(100vw, var(--container-max)) - 2 * var(--gutter));
-  --res-fs: calc(var(--res-grid) * 0.04);                          /* the Team headings' share of the grid */
-  --res-slab: calc((var(--res-grid) - 3 * var(--grid-gap)) / 4);   /* one slab: three grid columns */
+  --res-claim: calc(var(--res-grid) * 0.0455);      /* 62px at 1440: the second line and the longest name fill the grid */
+  --res-lh: 1.14;
+  --res-row: calc(var(--res-claim) * var(--res-lh)); /* one line, one step of the wheel */
+  --res-dim: rgba(21, 21, 21, 0.2);
   background: var(--color-neutral);
   padding-top: var(--space-6);      /* with the table's 96px above: the page's 128px between sections */
   padding-bottom: var(--space-9);
 }
 
-/* ---------- The slabs ---------- */
-.residency__slabs {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  column-gap: var(--grid-gap);
-  align-items: start;               /* top-aligned, so the short one ends early, as in the reference */
-}
+.residency__title { display: block; width: max-content; }
 
-.residency__slab {
-  position: relative;
-  isolation: isolate;
-  overflow: hidden;
-  aspect-ratio: 1;
-  border-radius: var(--radius-m);
-  /* Without WebGL: the cast concrete as a photo, each slab another patch of it */
-  background-color: #bdbdbd;
-  background-image:
-    linear-gradient(172deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0) 40%, rgba(0, 0, 0, 0.04)),
-    url("../assets/concrete-cast.jpg");
-  background-size: auto, 960px;
-  background-position: 0 0, calc(var(--i, 0) * -271px - 120px) calc(var(--i, 0) * -413px - 60px);
-}
-.residency__slab:nth-child(2) { --i: 1; }
-.residency__slab:nth-child(3) { --i: 2; }
-.residency__slab:nth-child(4) { --i: 3; }
-.residency__slab--short { aspect-ratio: 3 / 2; }
-
-.residency__canvas {
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  width: 100%;
-  height: 100%;
-  opacity: 0;
-  transition: opacity 700ms var(--ease-out);
-}
-.residency__slab.is-live .residency__canvas { opacity: 1; }
-
-/* The field, carved top left, one word a line */
-.residency__word {
-  position: absolute;
-  top: calc(var(--res-slab) * 0.08);
-  left: calc(var(--res-slab) * 0.08);
-  width: min-content;
-  font-size: calc(var(--res-slab) * 0.12);
+/* ---------- The sentence and its wheel ---------- */
+.residency__claim {
+  margin-top: var(--space-6);
+  font-size: var(--res-claim);
   font-weight: var(--weight-medium);
-  line-height: 1.08;
-  letter-spacing: -0.012em;
-  /* Without WebGL: pressed in with a light lower edge and a dark upper one */
-  color: rgba(0, 0, 0, 0.07);
-  text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.5), -1px -1px 1px rgba(0, 0, 0, 0.18);
-  user-select: none;
+  line-height: var(--res-lh);
+  letter-spacing: var(--ls-h2);
+  color: var(--color-ink);
+}
+.residency__line { white-space: nowrap; }
+
+.residency__chevron {
+  display: inline-block;
+  width: 0.44em;
+  height: 0.44em;
+  margin: 0 0.3em 0 0.32em;
+  vertical-align: 0.02em;
+  fill: none;
+  stroke: var(--color-text-muted);
+  stroke-width: 1.9;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
-/* The A-mark, carved in the middle of the last slab */
-.residency__mark {
+/* The slot holds the line's place (as wide as the longest name); the wheel hangs from it,
+   one row above and one below, so the middle row sits exactly on the sentence's line */
+.residency__slot {
+  position: relative;
+  display: inline-block;
+}
+.residency__sizer { visibility: hidden; }
+/* Clipped as in the reference, with a little room (--res-pad) above and below the three rows so
+   no ascender or descender is cut; names further out are faded out, so none of them shows there */
+.residency__wheel {
+  --res-pad: 0.16em;
   position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 48%;
-  height: auto;
-  aspect-ratio: 72 / 57;
-  transform: translate(-50%, -54%);
-  fill: rgba(0, 0, 0, 0.1);
+  left: 0;
+  right: -0.1em;
+  top: calc(-1 * var(--res-row) - var(--res-pad));
+  height: calc(3 * var(--res-row) + 2 * var(--res-pad));
+  overflow: hidden;
 }
+.residency__track {
+  --k: 0;                            /* the name in the middle row */
+  display: block;
+  transform: translateY(calc((1 - var(--k)) * var(--res-row) + var(--res-pad)));
+  transition: transform 700ms var(--ease-out);
+}
+.residency__item {
+  display: block;
+  height: var(--res-row);
+  white-space: nowrap;
+  opacity: 0;                        /* two or more rows out: gone (fades as it rolls out) */
+  color: var(--res-dim);
+  transition: color 700ms var(--ease-out), opacity 500ms var(--ease-out);
+}
+.residency__item.is-near { opacity: 1; }
+.residency__item.is-on { opacity: 1; color: var(--color-ink); }
+/* Wrapping round to the same names a set further up: no motion */
+.residency__track.is-jump,
+.residency__track.is-jump .residency__item { transition: none; }
 
-/* Live: concrete.js carves the words and the mark; the DOM only marks their place */
-.residency__slab.is-live .residency__word { color: transparent; text-shadow: none; }
-.residency__slab.is-live .residency__mark { opacity: 0; }
-
-/* ---------- Statement, button and text ---------- */
-.residency__inner {
+/* ---------- The brief's text and the button ---------- */
+.residency__foot {
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
   column-gap: var(--grid-gap);
   align-items: start;
-  margin-top: var(--space-9);
+  /* the wheel's lower name hangs a row under the sentence */
+  margin-top: calc(var(--res-row) + var(--space-7));
 }
-
-.residency__lead {
-  grid-column: 1 / span 6;
-  display: grid;
-  justify-items: start;
-}
-.residency__title {
-  font-size: var(--res-fs);
-  font-weight: var(--weight-medium);
-  line-height: 1.08;
-  letter-spacing: var(--ls-h2);
-  color: var(--color-ink);
-}
-.residency__btn { margin-top: var(--space-6); }
-@media (hover: hover) {
-  .residency__btn:hover .residency__arrow { transform: translateX(3px); }
-}
-
-/* 20px / 30 against the heading's 54px / 1.08: 3px down puts both cap heights on one line */
 .residency__body {
-  grid-column: 8 / -1;
-  max-width: 27em;
-  padding-top: 3px;
+  grid-column: 1 / span 6;
+  grid-row: 1;
+  max-width: 30em;
   font-size: var(--fs-lede);
   line-height: var(--lh-lede);
   text-wrap: pretty;
   color: var(--color-text);
 }
+.residency__btn {
+  grid-column: 1 / span 6;
+  grid-row: 2;
+  justify-self: start;
+  margin-top: var(--space-6);
+}
+@media (hover: hover) {
+  .residency__btn:hover .residency__arrow { transform: translateX(3px); }
+}
 
 /* ---------- Tablet and phone (not reviewed yet: desktop first; kept readable) ---------- */
 @media (max-width: 1199px) {
-  .residency { --res-fs: var(--fs-h2); }
-  .residency__inner { margin-top: var(--space-8); row-gap: var(--space-6); }
-  .residency__lead { grid-column: 1 / -1; }
-  .residency__body { grid-column: 1 / -1; padding-top: 0; }
+  .residency { --res-claim: var(--fs-h2); }
+  /* the wheel takes its own line, with a row of room above it for the dim name */
+  .residency__slot { display: block; width: max-content; margin-top: var(--res-row); }
+  .residency__body { grid-column: 1 / span 9; }
 }
 @media (max-width: 809px) {
-  .residency { --res-slab: calc((var(--res-grid) - var(--grid-gap)) / 2); padding-bottom: var(--space-8); }
-  .residency__slabs { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: var(--grid-gap); }
-  .residency__slab--short { aspect-ratio: 1; }
+  .residency { padding-bottom: var(--space-8); }
+  .residency__line { white-space: normal; }
+  .residency__body,
+  .residency__btn { grid-column: 1 / -1; }
 }

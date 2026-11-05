@@ -451,33 +451,30 @@
     </section>
     <!-- SECTION:team-list END -->
 
-    <!-- SECTION:residency START · styles: sections/residency.css · scripts: concrete.js, residency.js
-         Team, block 5: the Residency Program. Layout after Until's "Join our team" on Mobbin (a row
-         of four pictures in staggered heights, then a large statement with one button on the left
-         and a short paragraph on the right). The user chose no photos: the pictures are four
-         cast-concrete slabs (assets/concrete-cast.jpg), the three fields residents come from carved
-         into the first three and the official A-mark into the last (residency.js: one ConcreteSurface
-         per slab, carved exactly like the hero; a faint light follows the pointer). Then "The
-         Residency Program" and the button on cols 1-6, the brief's text on cols 8-12. The button opens
-         Contact with "Join the team or the Residency" chosen (contact.html?path=talent). Copy verbatim
-         from the brief (Team, section 5); the carved fields are its own words. -->
+    <!-- SECTION:residency START · styles: sections/residency.css · scripts: residency.js
+         Team, block 5: the Residency Program. After the user's screen recording (a "data coverage"
+         line: a small label, one large sentence, a chevron, then a vertical wheel of names: the
+         current one bright, the one above and the one below dim, rolling up one row at a time).
+         Here: the heading as the chip, the brief's own words as the sentence ("A selective program
+         for professionals from"), and the three fields it names rolling in the wheel; since there
+         are three, all three are always in view, the current one in ink. Screen readers get the
+         sentence whole. Under it, the button (Contact with the Residency path chosen,
+         contact.html?path=talent) and the brief's text. Copy verbatim from the brief (Team,
+         section 5). -->
     <section class="residency" id="residency" aria-labelledby="residency-title">
       <div class="container">
-        <ul class="residency__slabs" aria-hidden="true">
-          <li class="residency__slab" data-residency-slab><canvas class="residency__canvas"></canvas><span class="residency__word" data-carve="text">Venture capital</span></li>
-          <li class="residency__slab" data-residency-slab><canvas class="residency__canvas"></canvas><span class="residency__word" data-carve="text">Private equity</span></li>
-          <li class="residency__slab residency__slab--short" data-residency-slab><canvas class="residency__canvas"></canvas><span class="residency__word" data-carve="text">Investment banking</span></li>
-          <li class="residency__slab residency__slab--mark" data-residency-slab><canvas class="residency__canvas"></canvas><svg class="residency__mark" viewBox="0 0 72 57" data-carve="mark" focusable="false"><use href="#a-mark"/></svg></li>
-        </ul>
+        <h2 class="chip residency__title" id="residency-title">The Residency Program</h2>
 
-        <div class="residency__inner">
-          <div class="residency__lead">
-            <h2 class="residency__title" id="residency-title">The Residency Program</h2>
-            <a class="btn btn--primary residency__btn" href="contact.html?path=talent">
-              Interested? Write to us
-              <svg class="btn__icon residency__arrow" aria-hidden="true"><use href="#icon-arrow"/></svg>
-            </a>
-          </div>
+        <p class="residency__claim">
+          A selective program<br>
+          <span class="residency__line">for professionals from<svg class="residency__chevron" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M6 3.5 10.5 8 6 12.5"/></svg><span class="residency__slot"><span class="visually-hidden">venture capital, private equity and investment banking.</span><span class="residency__sizer" aria-hidden="true">Investment banking</span><span class="residency__wheel" aria-hidden="true" data-residency-wheel><span class="residency__track"><span class="residency__item is-on">Venture capital</span><span class="residency__item is-near">Private equity</span><span class="residency__item">Investment banking</span></span></span></span></span>
+        </p>
+
+        <div class="residency__foot">
+          <a class="btn btn--primary residency__btn" href="contact.html?path=talent">
+            Interested? Write to us
+            <svg class="btn__icon residency__arrow" aria-hidden="true"><use href="#icon-arrow"/></svg>
+          </a>
           <p class="residency__body">The Arcovia Residency Program is a selective program for professionals from venture capital, private equity and investment banking. Residents expand our origination and market intelligence.</p>
         </div>
       </div>
