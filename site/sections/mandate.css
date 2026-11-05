@@ -1,0 +1,152 @@
+/* ==========================================================================
+   SECTION: mandate — What We Do, block 4 ("How a mandate runs")
+   After the user's reference video (a template's services section: the
+   heading and a line held on the left while a column of cards goes by on the
+   right; each card a number, a title and a list over hairlines beside a
+   black-and-white render; as a card comes up it slides in from the right and
+   brightens from dim to full). In our language, after the deck: white rounded
+   cards floating on the concrete, each with a concrete render on the
+   charcoal (made in Blender like Home's and About's, tools/concrete-renders),
+   Montserrat in sentence case (no mono, no capitals). The heading on cols 1-4
+   stays in view (sticky) while the cards go by on cols 5-12.
+   The brief's four numbered steps; each step's line is split into its list.
+   The slide-in is scroll-linked (mandate.js), so it runs back when scrolling
+   up; at rest the cards have no transform, so text and images stay crisp.
+   Uses shared tokens from styles.css (container, radius, shadow).
+   ========================================================================== */
+
+.mandate {
+  --md-line: rgba(21, 21, 21, 0.12);
+  position: relative;
+  padding-block: var(--space-10);
+  background-color: var(--color-concrete);
+  background-image: url("../assets/concrete.jpg");
+  background-size: 1024px;
+}
+
+.mandate__inner {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--grid-gap);
+  align-items: start;
+}
+
+/* ---------- The heading, held in view while the cards go by ---------- */
+.mandate__head {
+  grid-column: 1 / span 4;
+  position: sticky;
+  /* Clear the small header bar when it comes back on scrolling up */
+  top: calc(var(--mh-labels) + var(--mh-compact) + var(--space-6));
+  display: grid;
+  gap: var(--space-5);
+}
+
+.mandate__title {
+  /* The site's section heading: a share of the grid width */
+  font-size: calc((min(100vw, var(--container-max)) - 2 * var(--gutter)) * 0.04);
+  font-weight: var(--weight-medium);
+  line-height: 1.08;
+  letter-spacing: var(--ls-h2);
+  color: var(--color-ink);
+  text-wrap: balance;
+}
+
+.mandate__lede {
+  max-width: 22em;
+  font-size: var(--fs-lede);
+  line-height: var(--lh-lede);
+  color: var(--color-text);
+}
+
+/* ---------- The steps ---------- */
+.mandate__steps {
+  grid-column: 5 / span 8;
+  display: grid;
+  gap: var(--space-6);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Component: mandate-card. A white card on the concrete: the number, title and
+   list on the left, the render on the right */
+.mandate-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0.92fr);
+  column-gap: var(--space-6);
+  padding: var(--space-5);
+  border-radius: var(--radius-l);
+  background: #ffffff;
+  box-shadow: var(--shadow-card);
+  will-change: auto;
+}
+
+.mandate-card__text {
+  display: grid;
+  grid-template-rows: auto auto 1fr;
+  align-content: start;
+  padding: var(--space-3) 0 var(--space-1) var(--space-3);
+}
+
+.mandate-card__num {
+  font-size: 13px;
+  font-weight: var(--weight-medium);
+  line-height: 1.4;
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.mandate-card__title {
+  margin-top: var(--space-3);
+  font-size: 32px;
+  font-weight: var(--weight-medium);
+  line-height: 1.15;
+  letter-spacing: -0.015em;
+  color: var(--color-ink);
+}
+
+/* The step's items, over hairlines (like the masthead's rows), at the foot of the text */
+.mandate-card__list {
+  align-self: end;
+  margin: var(--space-6) 0 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--md-line);
+}
+.mandate-card__list li {
+  padding-block: 10px;
+  border-bottom: 1px solid var(--md-line);
+  font-size: 16px;
+  line-height: 22px;
+  color: var(--color-text);
+}
+
+.mandate-card__media {
+  overflow: hidden;
+  border-radius: var(--radius-m);
+  background: var(--color-charcoal);
+  aspect-ratio: 1;
+  align-self: start;
+}
+.mandate-card__media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Tablet and phone: not reviewed yet (desktop first). The brief: the steps one
+   under the other (vertical on mobile); the heading lies flat above them. */
+@media (max-width: 1199px) {
+  .mandate { padding-block: var(--space-9); }
+  .mandate__head { grid-column: 1 / -1; position: static; margin-bottom: var(--space-7); }
+  .mandate__title { font-size: var(--fs-h2); }
+  .mandate__steps { grid-column: 1 / -1; }
+}
+@media (max-width: 809px) {
+  .mandate { padding-block: var(--space-8); }
+  .mandate-card { grid-template-columns: 1fr; row-gap: var(--space-5); }
+  .mandate-card__text { padding: var(--space-2) var(--space-2) 0; }
+  .mandate-card__media { grid-row: 1; }
+  .mandate-card__title { font-size: 26px; }
+}

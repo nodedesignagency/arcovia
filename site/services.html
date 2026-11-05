@@ -17,6 +17,7 @@
   <link rel="stylesheet" href="sections/services-hero.css">
   <link rel="stylesheet" href="sections/situations.css">
   <link rel="stylesheet" href="sections/narrative.css">
+  <link rel="stylesheet" href="sections/mandate.css">
   <link rel="stylesheet" href="sections/footer.css">
 </head>
 <body>
@@ -196,6 +197,93 @@
     </section>
     <!-- SECTION:narrative END -->
 
+    <!-- SECTION:mandate START · styles: sections/mandate.css · scripts: mandate.js
+         What We Do, block 4: "How a mandate runs", the brief's four numbered steps, laid out after
+         the user's reference video: the heading held on the left (cols 1-4) while the cards go by
+         on the right (cols 5-12), each sliding in from the right and brightening as it comes up.
+         In our language: white rounded cards on the concrete, each with a concrete render on the
+         charcoal (assets/mandate/, made with tools/concrete-renders like Home's and About's).
+         Every word of the steps from the brief; each step's line is split into its list. -->
+    <section class="mandate" id="how-a-mandate-runs" data-mandate aria-labelledby="mandate-title">
+      <div class="mandate__inner container">
+        <div class="mandate__head">
+          <h2 class="mandate__title" id="mandate-title">How a mandate runs</h2>
+          <!-- [COPY NEEDED] Draft line, to confirm with Lilla -->
+          <p class="mandate__lede">Four stages, from the first document to post-close support.</p>
+        </div>
+
+        <ol class="mandate__steps">
+          <li>
+            <article class="mandate-card" aria-labelledby="mandate-1">
+              <div class="mandate-card__text">
+                <p class="mandate-card__num" aria-hidden="true">01</p>
+                <h3 class="mandate-card__title" id="mandate-1">Preparation and launch</h3>
+                <ul class="mandate-card__list">
+                  <li>Deal team</li>
+                  <li>GENESIS setup</li>
+                  <li>Teaser and CIM</li>
+                  <li>Model and valuation</li>
+                  <li>Data room</li>
+                  <li>Investor targeting</li>
+                </ul>
+              </div>
+              <!-- A file rack: six plates standing in their slots, everything filed and ready -->
+              <div class="mandate-card__media"><img src="assets/mandate/prepare.jpg" alt="" width="1200" height="1200" loading="lazy"></div>
+            </article>
+          </li>
+          <li>
+            <article class="mandate-card" aria-labelledby="mandate-2">
+              <div class="mandate-card__text">
+                <p class="mandate-card__num" aria-hidden="true">02</p>
+                <h3 class="mandate-card__title" id="mandate-2">Marketing and outreach</h3>
+                <ul class="mandate-card__list">
+                  <li>Targeted institutional outreach</li>
+                  <li>NDAs</li>
+                  <li>Management presentations</li>
+                  <li>Investor qualification</li>
+                </ul>
+              </div>
+              <!-- A fan of plates spread from one pin: one story in front of many investors -->
+              <div class="mandate-card__media"><img src="assets/mandate/outreach.jpg" alt="" width="1200" height="1200" loading="lazy"></div>
+            </article>
+          </li>
+          <li>
+            <article class="mandate-card" aria-labelledby="mandate-3">
+              <div class="mandate-card__text">
+                <p class="mandate-card__num" aria-hidden="true">03</p>
+                <h3 class="mandate-card__title" id="mandate-3">Diligence and negotiation</h3>
+                <ul class="mandate-card__list">
+                  <li>Diligence coordination</li>
+                  <li>IOI and LOI analysis</li>
+                  <li>A competitive process</li>
+                  <li>Term negotiation</li>
+                </ul>
+              </div>
+              <!-- Two blocks cut to fit along a comb joint, lined up but still apart -->
+              <div class="mandate-card__media"><img src="assets/mandate/diligence.jpg" alt="" width="1200" height="1200" loading="lazy"></div>
+            </article>
+          </li>
+          <li>
+            <article class="mandate-card" aria-labelledby="mandate-4">
+              <div class="mandate-card__text">
+                <p class="mandate-card__num" aria-hidden="true">04</p>
+                <h3 class="mandate-card__title" id="mandate-4">Closing</h3>
+                <ul class="mandate-card__list">
+                  <li>Definitive documents</li>
+                  <li>Closing conditions</li>
+                  <li>Regulatory compliance</li>
+                  <li>Post-close support</li>
+                </ul>
+              </div>
+              <!-- An arch with its keystone set: the last piece that locks the structure -->
+              <div class="mandate-card__media"><img src="assets/mandate/close.jpg" alt="" width="1200" height="1200" loading="lazy"></div>
+            </article>
+          </li>
+        </ol>
+      </div>
+    </section>
+    <!-- SECTION:mandate END -->
+
   </main>
 
   <!-- SECTION:footer START · styles: sections/footer.css
@@ -263,5 +351,6 @@
   <script src="concrete.js"></script>
   <script src="main.js"></script>
   <script src="narrative.js"></script>
+  <script src="mandate.js"></script>
 </body>
 </html>
