@@ -1,12 +1,14 @@
 /* ==========================================================================
-   SECTION: paths — What We Do, block 6 (the brief's three paths: Founders,
+   SECTION: paths — What We Do, block 2 (the brief's section 6, moved up
+   after the opening at the user's request; the three paths: Founders,
    Investors, Institutions; the anchors #founders, #investors, #institutions
    that the opening's rows and Home's path picker lead to)
    After the user's reference (a studio's split section: a large headline and
    its line on the left, beside a big rounded panel holding an illustration),
    one block per path, alternating as the user asked: Founders text left and
    image right, Investors image left and text right, Institutions as Founders.
-   In our language: on the neutral ground, the chip (the path's name), the
+   In our language: on white (between the concrete opening and the neutral
+   table, as the reference's white page), the chip (the path's name), the
    headline at the site's section-heading size, the brief's line, the four
    points over hairlines (like the mandate cards' lists), the primary button;
    the panel is a concrete render on the charcoal made in Blender like the
@@ -19,7 +21,7 @@
 .paths {
   --pf-line: rgba(21, 21, 21, 0.14);
   --pf-fs: calc((min(100vw, var(--container-max)) - 2 * var(--gutter)) * 0.04);
-  background: var(--color-neutral);
+  background: var(--color-white);
   padding-block: var(--space-10);
 }
 
