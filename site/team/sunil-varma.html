@@ -14,6 +14,7 @@
   <link rel="stylesheet" href="../styles.css">
   <!-- One stylesheet per section, so a section can be approved and moved to main on its own -->
   <link rel="stylesheet" href="../sections/profile.css">
+  <link rel="stylesheet" href="../sections/contact.css">
   <link rel="stylesheet" href="../sections/footer.css">
   <script type="application/ld+json">
 {
@@ -125,11 +126,11 @@
 
   <main id="main">
 
-    <!-- SECTION:profile START · styles: sections/profile.css · scripts: people.js
+    <!-- SECTION:profile START · styles: sections/profile.css (+ sections/contact.css for the note) · scripts: people.js
          The profile template, one page per person (team/<slug>.html; in Framer, the Team CMS
          template). Portrait on cols 1-4, held in view; the group as a chip back to the Team page,
          the name, the title, the bio from the brief, then the Contact button and LinkedIn.
-         The button writes to the direct email, which people.js puts together. Senior advisors: the brief's legal line under the bio.
+         Contact via Arcovia: the short note below. Senior advisors: the brief's legal line under the bio.
          Previous / All team members / Next at the end. -->
     <article class="profile" aria-labelledby="profile-name">
       <div class="profile__grid container">
@@ -146,12 +147,62 @@
           <p class="profile__bio">30+ years across family offices, investment banking, asset management and treasury; managed and deployed $2bn+ across public markets, private investments, real estate and alternatives. Strategic Investment Advisor to the Chairman of an Abu Dhabi single-family office; previously Director of Investments, Al Qassimi Group.</p>
           <p class="profile__legal">Senior advisors are independent professionals, not employees or registered representatives of Arcovia unless stated otherwise.</p>
           <div class="profile__contact">
-            <a class="btn btn--primary profile__cta" href="#" data-mailto="sunil" data-todo="The advisor's email address [TO CONFIRM]">Email Sunil<svg class="btn__icon" aria-hidden="true"><use href="#icon-arrow"/></svg></a>
+            <a class="btn btn--primary profile__cta" href="#contact">Contact via Arcovia<svg class="btn__icon" aria-hidden="true"><use href="#icon-arrow"/></svg></a>
             <a class="profile__social" href="#" aria-label="Sunil Varma on LinkedIn" data-todo="LinkedIn URL [TO CONFIRM]">
               <svg aria-hidden="true"><use href="#icon-linkedin"/></svg>
             </a>
-            <a class="profile__email" data-email="sunil" data-todo="The advisor's email address [TO CONFIRM]">sunil [at] arcovia.io</a>
           </div>
+          <!-- Contact via Arcovia: the brief's short form that reaches the team and names the advisor
+               (advisors are independent). Written like the Contact page's note; people.js sends it.
+               [COPY NEEDED] Draft heading, line and thank-you, to confirm with Lilla.
+               [TO CONFIRM] the GoHighLevel tag ("advisor") and each advisor's contact preference. -->
+          <section class="profile-note" id="contact" aria-labelledby="note-title" data-profile-note>
+            <h2 class="profile-note__title" id="note-title">Contact Sunil via Arcovia</h2>
+            <p class="profile-note__lede">Write a few lines here and the Arcovia team will pass your note on to Sunil.</p>
+
+            <form class="profile-note__form" data-note-form data-endpoint="" novalidate>
+              <input type="hidden" name="tag" value="advisor">
+              <input type="hidden" name="advisor" value="Sunil Varma">
+              <input type="hidden" name="advisor_slug" value="sunil-varma">
+
+              <p>Dear Sunil,</p>
+              <p>My name is <span class="nowrap"><input class="note-input" data-autosize name="full_name" type="text" autocomplete="name" placeholder="your name" aria-label="Your name" data-error-name="your name" required>,</span> <input class="note-input" data-autosize name="role" type="text" autocomplete="organization-title" placeholder="your role" aria-label="Your role"> at <span class="nowrap"><input class="note-input" data-autosize name="company_name" type="text" autocomplete="organization" placeholder="company" aria-label="Company" data-error-name="your company" required>.</span></p>
+              <div class="note__block">
+                <label class="note__ask" for="pn-note">I’d like to talk about</label>
+                <textarea class="note-area" id="pn-note" name="note" rows="1" maxlength="600" placeholder="What you have in mind" data-autogrow data-error-name="what you’d like to talk about" required></textarea>
+              </div>
+              <p>You can reach me at <span class="nowrap"><input class="note-input" data-autosize name="email" type="email" autocomplete="email" inputmode="email" placeholder="email address" aria-label="Email" data-error-name="your email address" required>.</span></p>
+
+              <div class="note__foot">
+                <label class="check" data-field data-error-alone="Please agree to the Privacy Policy so we can reply.">
+                  <input type="checkbox" name="consent" value="yes" required>
+                  <span class="check__box" aria-hidden="true"></span>
+                  <span class="check__text">I agree to the <a href="../privacy.html">Privacy Policy</a> and to Arcovia keeping these details to reply to me.</span>
+                </label>
+                <button class="btn btn--primary note__send" type="submit"><span data-submit-label>Send note</span><svg class="btn__icon" aria-hidden="true"><use href="#icon-arrow"/></svg></button>
+              </div>
+              <p class="note__status" role="status" aria-live="polite" data-status></p>
+
+              <!-- Visit source, saved with the lead (filled in by people.js) -->
+              <input type="hidden" name="utm_source">
+              <input type="hidden" name="utm_medium">
+              <input type="hidden" name="utm_campaign">
+              <input type="hidden" name="utm_term">
+              <input type="hidden" name="utm_content">
+              <input type="hidden" name="landing_page">
+              <input type="hidden" name="referrer">
+              <!-- Spam trap: hidden from people, filled in by bots -->
+              <div class="trap" aria-hidden="true"><label>Leave this empty <input type="text" name="fax" tabindex="-1" autocomplete="off"></label></div>
+            </form>
+
+            <!-- Confirmation, in place of the note -->
+            <div class="note-done" data-note-done hidden tabindex="-1">
+              <svg class="note-done__mark" viewBox="0 0 72 57" aria-hidden="true"><use href="#a-mark"/></svg>
+              <p class="note-done__text">Thank you. Your note is on its way to Sunil.</p>
+              <p class="note-done__meta">We’ll reply to <span data-done-email></span>.</p>
+              <button class="note-done__again" type="button" data-note-again>Write another note</button>
+            </div>
+          </section>
         </div>
       </div>
 

@@ -6,7 +6,8 @@ menu, sprite and footer are taken from site/team.html, so every profile carries
 the same shared markup (links rewritten one folder up). The profile itself is
 SECTION:profile (sections/profile.css, people.js). A person whose contact is
 "form" in team.json gets "Contact via Arcovia" and the short note instead of the
-email (their page then also loads sections/contact.css); for now nobody does.
+email (their page then also loads sections/contact.css): the senior advisors, as
+the brief sets it; leadership writes by email.
 
     python3 tools/team-profiles.py        writes all fifteen pages
 
@@ -101,7 +102,7 @@ def note(p):
                [TO CONFIRM] the GoHighLevel tag ("advisor") and each advisor's contact preference. -->
           <section class="profile-note" id="contact" aria-labelledby="note-title" data-profile-note>
             <h2 class="profile-note__title" id="note-title">Contact {first} via Arcovia</h2>
-            <p class="profile-note__lede">Senior advisors are independent, so notes to them come to the Arcovia team first. We’ll pass yours on to {first}.</p>
+            <p class="profile-note__lede">Write a few lines here and the Arcovia team will pass your note on to {first}.</p>
 
             <form class="profile-note__form" data-note-form data-endpoint="" novalidate>
               <input type="hidden" name="tag" value="advisor">
@@ -168,7 +169,7 @@ def jsonld(p):
 def page(i, p):
     prev_p, next_p = people[i - 1], people[(i + 1) % len(people)]
     is_adv = section_of(p) == "advisors"
-    by_note = p["contact"] == "form"   # "Contact via Arcovia": the short note (none for now: everyone writes by email)
+    by_note = p["contact"] == "form"   # "Contact via Arcovia": the short note (the senior advisors, as the brief sets it)
     group_label = "Senior advisors" if is_adv else "Leadership"
     group_href = "../team.html#advisors" if is_adv else "../team.html#leadership"
     first_sentence = re.split(r"(?<=[.;])\s", p["bio"], maxsplit=1)[0].rstrip(";")
