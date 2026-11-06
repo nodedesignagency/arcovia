@@ -154,7 +154,8 @@ for c in CASES:
                   f'  <link rel="preload" href="assets/books/cover-{c["tone"]}.jpg" as="image">\n')
     h = h.replace("</head>", INTRO + "</head>")
     body_cls = "page--white case-page"   # every case on white (the user)
-    meta = " · ".join(f"<span>{m}</span>" for m in c["meta"])
+    # each separator stays with the item before it, so a wrapped line never starts with "·"
+    meta = " ".join(f"<span>{m}&nbsp;·</span>" if i < len(c["meta"]) - 1 else f"<span>{m}</span>" for i, m in enumerate(c["meta"]))
     section = f'''  <main id="main">
 
     <!-- SECTION:case START · styles: sections/selected-work.css (the book), sections/case.css · scripts: case.js
