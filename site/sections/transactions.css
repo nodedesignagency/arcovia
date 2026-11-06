@@ -1,0 +1,223 @@
+/* ==========================================================================
+   SECTION: transactions — Track Record, block 3 of the brief
+   "Selected transactions": the brief's table, newest first, on white.
+   The head is the hero's structure: the H2 on the left (cols 1-8), its line
+   on the right (cols 9-12) on the H2's baseline. The table is ARIA roles on
+   the page grid: every row is a subgrid of the 12 columns, so each column
+   starts on a grid line (Year 1, Transaction 2-4, Size 5, Type 6-7, Sector
+   8-9, Lead 10-12). Rows with a case page are links (the whole row; a light
+   well on hover, the arrow nudges).
+   Two versions (?table=years, .transactions--years): the year set large on
+   the left (cols 1-2), pinned under the small bar while its transactions
+   pass on cols 3-12; the row's own year cell stays for screen readers.
+   Below 810px each row becomes a compact card (desktop only for now).
+   Uses shared tokens from styles.css.
+   ========================================================================== */
+
+.transactions {
+  --tx-fs: calc((min(100vw, var(--container-max)) - 2 * var(--gutter)) * 0.04);  /* the About h2 size */
+  --tx-line: rgba(21, 21, 21, 0.12);   /* between rows */
+  --tx-rule: rgba(21, 21, 21, 0.4);    /* under the column names, and between years */
+  background: var(--color-white);
+  padding-block: var(--space-10);
+}
+
+/* ---------- Head ---------- */
+.transactions__head {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--grid-gap);
+  align-items: end;
+  margin-bottom: var(--space-8);
+}
+.transactions__title {
+  grid-column: 1 / span 8;
+  font-size: var(--tx-fs);
+  font-weight: var(--weight-medium);
+  line-height: 1.08;
+  letter-spacing: var(--ls-h2);
+  color: var(--color-ink);
+}
+.transactions__lede {
+  grid-column: 9 / span 4;
+  font-size: var(--fs-lede);
+  line-height: var(--lh-lede);
+  color: var(--color-text);
+  /* its last line on the H2's baseline (~0.18em above its box; the line's ~0.39em above its own) */
+  margin-bottom: calc(var(--tx-fs) * 0.18 - var(--fs-lede) * 0.39);
+}
+
+/* ---------- The table: rows on the page grid ---------- */
+.deals {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--grid-gap);
+}
+.deals__head,
+.deals__group,
+.deals__rows,
+.deal {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: subgrid;
+}
+.deals__year { display: none; }
+
+/* Component: track record row */
+.deal {
+  position: relative;
+  isolation: isolate;
+  align-items: baseline;
+  padding-block: 20px;
+  border-bottom: 1px solid var(--tx-line);
+  font-size: 17px;
+  line-height: 1.45;
+  color: var(--color-text);
+}
+.deal__year { grid-column: 1; }
+.deal__name { grid-column: 2 / span 3; }
+.deal__size { grid-column: 5; }
+.deal__type { grid-column: 6 / span 2; }
+.deal__sector { grid-column: 8 / span 2; }
+.deal__lead { grid-column: 10 / span 3; }
+
+.deal__year,
+.deal__size { font-variant-numeric: tabular-nums; }
+.deal__name {
+  font-weight: var(--weight-medium);
+  color: var(--color-ink);
+}
+/* Two leads break between the names, never inside one */
+.deal__person { white-space: nowrap; }
+
+/* The column names */
+.deal--head {
+  padding-block: 0 14px;
+  border-bottom-color: var(--tx-rule);
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--color-text-muted);
+}
+.deal--head .deal__name { font-weight: var(--weight-book); color: inherit; }
+
+/* Rows with a case page: the whole row is the link */
+.deal__link {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 10px;
+  color: inherit;
+}
+.deal__link::after {              /* stretches the link over the row */
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+.deal__arrow {
+  flex: none;
+  width: 14px;
+  height: 14px;
+  align-self: center;
+  transition: transform var(--dur-base) var(--ease-out);
+}
+.deal--case::before {             /* the hover well, a little wider than the text */
+  content: "";
+  position: absolute;
+  inset: 0 -16px;
+  z-index: -1;
+  border-radius: 4px;
+  background: var(--color-well);
+  opacity: 0;
+  transition: opacity var(--dur-fast) var(--ease-out);
+}
+@media (hover: hover) {
+  .deal--case:hover::before { opacity: 1; }
+  .deal--case:hover .deal__arrow { transform: translateX(3px); }
+}
+.deal__link:focus-visible { outline: none; }
+.deal--case:has(.deal__link:focus-visible)::before { opacity: 1; box-shadow: inset 0 0 0 2px var(--color-ink); }
+
+/* ---------- Version: years (?table=years) ----------
+   The year leads each group, large, on cols 1-2, pinned under the small bar
+   while its transactions pass on cols 3-12 */
+.transactions--years .deals__group {
+  border-bottom: 1px solid var(--tx-rule);
+}
+.transactions--years .deals__year {
+  display: block;
+  grid-column: 1 / span 2;
+  grid-row: 1;
+  align-self: start;
+  position: sticky;
+  top: calc(var(--mh-compact) + var(--space-5));
+  padding-top: 14px;
+  font-size: 40px;
+  font-weight: var(--weight-medium);
+  line-height: 1;
+  letter-spacing: var(--ls-h2);
+  font-variant-numeric: tabular-nums;
+  color: var(--color-ink);
+}
+.transactions--years .deals__rows {
+  grid-column: 3 / -1;
+  grid-row: 1;
+}
+.transactions--years .deals__rows .deal {
+  border-bottom: 0;
+  border-top: 1px solid var(--tx-line);
+}
+.transactions--years .deals__rows .deal:first-child { border-top: 0; }
+.transactions--years .deals__rows .deal__year {
+  position: absolute;          /* kept for screen readers, not shown */
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+/* Within the rows (cols 3-12): Transaction 3-5, Size 6, Type 7-8, Sector 9-10, Lead 11-12 */
+.transactions--years .deals__rows .deal__name { grid-column: 1 / span 3; }
+.transactions--years .deals__rows .deal__size { grid-column: 4; }
+.transactions--years .deals__rows .deal__type { grid-column: 5 / span 2; }
+.transactions--years .deals__rows .deal__sector { grid-column: 7 / span 2; }
+.transactions--years .deals__rows .deal__lead { grid-column: 9 / span 2; }
+/* The column names over the same columns */
+.transactions--years .deal--head .deal__year { grid-column: 1 / span 2; }
+.transactions--years .deal--head .deal__name { grid-column: 3 / span 3; }
+.transactions--years .deal--head .deal__size { grid-column: 6; }
+.transactions--years .deal--head .deal__type { grid-column: 7 / span 2; }
+.transactions--years .deal--head .deal__sector { grid-column: 9 / span 2; }
+.transactions--years .deal--head .deal__lead { grid-column: 11 / span 2; }
+
+/* ---------- Tablet and phone: not reviewed yet (desktop first) ---------- */
+@media (max-width: 1199px) {
+  .transactions { --tx-fs: 40px; }
+  .transactions__title,
+  .transactions__lede { grid-column: 1 / -1; margin-bottom: 0; }
+  .transactions__lede { margin-top: var(--space-4); }
+  .deal { font-size: 15px; }
+}
+/* Phones: each row a compact card (the brief) */
+@media (max-width: 809px) {
+  .transactions { --tx-fs: 30px; padding-block: var(--space-9); }
+  .deals,
+  .deals__group,
+  .deals__rows { display: block; }
+  .deals__head { display: none; }
+  .transactions--years .deals__year { display: none; }
+  .deal {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    column-gap: var(--space-4);
+    row-gap: 4px;
+    padding-block: 18px;
+    border-top: 0;
+    border-bottom: 1px solid var(--tx-line);
+  }
+  .deal .deal__name { grid-column: 1; grid-row: 1; }
+  .deal .deal__size { grid-column: 2; grid-row: 1; }
+  .deal .deal__type,
+  .deal .deal__sector,
+  .deal .deal__year,
+  .deal .deal__lead { grid-column: 1 / -1; font-size: 14px; color: var(--color-text-muted); }
+  .transactions--years .deals__rows .deal__year { position: static; width: auto; height: auto; clip: auto; }
+}

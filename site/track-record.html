@@ -16,11 +16,12 @@
   <!-- One stylesheet per section, so a section can be approved and moved to main on its own -->
   <link rel="stylesheet" href="sections/track-hero.css">
   <link rel="stylesheet" href="sections/selected-work.css">
+  <link rel="stylesheet" href="sections/transactions.css">
   <link rel="stylesheet" href="sections/footer.css">
 </head>
 <body>
 
-  <!-- Sprite: logo, the book covers' deboss. One source for header, menu, books and footer -->
+  <!-- Sprite: logo, the book covers' deboss, the arrow. One source for header, menu, books, table and footer -->
   <svg class="sprite" aria-hidden="true" focusable="false">
     <!-- Official Arcovia logo (site/assets/logo/, from the client): brandmark and wordmark -->
     <symbol id="a-mark" viewBox="0 0 72 57"><path d="M12.0606 45.653L6.4043 56.272L9.58059 56.3005C11.096 56.3148 12.4458 56.3605 14.1267 56.2321L35.0366 17.4288C32.9219 16.7924 31.1725 15.7479 29.6286 14.4009L12.0606 45.653Z"/><path d="M62.5327 50.738L42.9184 14.1807C41.2461 15.8616 39.5509 16.9432 37.3164 17.1743L57.8439 56.243H65.3551C64.3192 54.3652 63.3831 52.7499 62.5327 50.738Z"/><path d="M36.201 16.0215C40.6267 16.0215 44.2145 12.4351 44.2145 8.0109C44.2145 3.58674 40.6267 0.000244141 36.201 0.000244141C31.7753 0.000244141 28.1875 3.58674 28.1875 8.0109C28.1875 12.4351 31.7753 16.0215 36.201 16.0215Z"/></symbol>
@@ -49,6 +50,7 @@
       <feFlood flood-color="#fff" flood-opacity="0.16"/><feComposite in2="e2" operator="in" result="light"/>
       <feMerge><feMergeNode in="floor"/><feMergeNode in="shade"/><feMergeNode in="light"/></feMerge>
     </filter>
+    <symbol id="icon-arrow" viewBox="0 0 16 16"><path d="M2.5 8h11M9 3.5 13.5 8 9 12.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
   </svg>
 
   <a class="visually-hidden" href="#main">Skip to content</a>
@@ -249,6 +251,216 @@
       </div>
     </section>
     <!-- SECTION:selected-work END -->
+
+    <!-- SECTION:transactions START · styles: sections/transactions.css
+         Track Record, block 3 of the brief ("Selected transactions"): the brief's table, newest
+         first, on white. A table in ARIA roles on the page grid (each row a subgrid, so the
+         columns sit on the grid lines); the three rows with a case page link to it (the whole
+         row is the link; hover shows a light well). Two versions for review (?table=years
+         switches): the ledger (default: Year, Transaction, Size, Type, Sector, Lead), and
+         "years": the year set large on the left and pinned while its transactions pass
+         (the rows grouped under it). Rows are grouped by year in the markup for both.
+         No filters: the V1 scope is a simple static table (the brief's build note asks for a
+         sector filter; to decide with the user). In Framer: a CMS collection (the brief).
+         Below 810px each row becomes a compact card (desktop only for now: not reviewed).
+         Copy and figures from the brief (Track Record, section 3). -->
+    <section class="transactions" data-transactions aria-labelledby="transactions-title">
+      <div class="transactions__inner container">
+        <header class="transactions__head">
+          <h2 class="transactions__title" id="transactions-title">Selected transactions</h2>
+          <p class="transactions__lede">Led by Arcovia principals and partners</p>
+        </header>
+
+        <!-- Component: track record row (.deal) -->
+        <div class="deals" role="table" aria-labelledby="transactions-title">
+          <div class="deals__head" role="rowgroup">
+            <div class="deal deal--head" role="row">
+              <span class="deal__c deal__year" role="columnheader">Year</span>
+              <span class="deal__c deal__name" role="columnheader">Transaction</span>
+              <span class="deal__c deal__size" role="columnheader">Size</span>
+              <span class="deal__c deal__type" role="columnheader">Type</span>
+              <span class="deal__c deal__sector" role="columnheader">Sector</span>
+              <span class="deal__c deal__lead" role="columnheader">Lead</span>
+            </div>
+          </div>
+            <div class="deals__group" role="rowgroup">
+              <p class="deals__year" aria-hidden="true">2026</p>
+              <div class="deals__rows" role="none">
+                <div class="deal" role="row">
+                  <span class="deal__c deal__year" role="cell">2026</span>
+                  <span class="deal__c deal__name" role="rowheader">AIO Motors</span>
+                  <span class="deal__c deal__size" role="cell">$10M</span>
+                  <span class="deal__c deal__type" role="cell">Series A / Seed</span>
+                  <span class="deal__c deal__sector" role="cell">EV / Automotive</span>
+                  <span class="deal__c deal__lead" role="cell"><span class="deal__person">Colin Pham</span></span>
+                </div>
+              </div>
+            </div>
+            <div class="deals__group" role="rowgroup">
+              <p class="deals__year" aria-hidden="true">2025</p>
+              <div class="deals__rows" role="none">
+                <div class="deal deal--case" role="row">
+                  <span class="deal__c deal__year" role="cell">2025</span>
+                  <span class="deal__c deal__name" role="rowheader"><a class="deal__link" href="case-valr-energy-growth-round.html">VALR Energy<svg class="deal__arrow" aria-hidden="true"><use href="#icon-arrow"/></svg></a></span>
+                  <span class="deal__c deal__size" role="cell">~$35M</span>
+                  <span class="deal__c deal__type" role="cell">Growth capital</span>
+                  <span class="deal__c deal__sector" role="cell">Energy / CPG</span>
+                  <span class="deal__c deal__lead" role="cell"><span class="deal__person">Colin Pham</span></span>
+                </div>
+                <div class="deal" role="row">
+                  <span class="deal__c deal__year" role="cell">2025</span>
+                  <span class="deal__c deal__name" role="rowheader">ProActive Analytic</span>
+                  <span class="deal__c deal__size" role="cell">£30M</span>
+                  <span class="deal__c deal__type" role="cell">Growth equity</span>
+                  <span class="deal__c deal__sector" role="cell">Analytics</span>
+                  <span class="deal__c deal__lead" role="cell"><span class="deal__person">Colin Pham</span></span>
+                </div>
+                <div class="deal" role="row">
+                  <span class="deal__c deal__year" role="cell">2025</span>
+                  <span class="deal__c deal__name" role="rowheader">Alpha Motor Corporation</span>
+                  <span class="deal__c deal__size" role="cell">$25M</span>
+                  <span class="deal__c deal__type" role="cell">Growth equity</span>
+                  <span class="deal__c deal__sector" role="cell">EV / Automotive</span>
+                  <span class="deal__c deal__lead" role="cell"><span class="deal__person">Colin Pham &amp;</span> <span class="deal__person">Caroline Farah Lembck</span></span>
+                </div>
+                <div class="deal" role="row">
+                  <span class="deal__c deal__year" role="cell">2025</span>
+                  <span class="deal__c deal__name" role="rowheader">Automated Water Solutions</span>
+                  <span class="deal__c deal__size" role="cell">$12M</span>
+                  <span class="deal__c deal__type" role="cell">Equity + convertible</span>
+                  <span class="deal__c deal__sector" role="cell">Oilfield / ESG</span>
+                  <span class="deal__c deal__lead" role="cell"><span class="deal__person">Colin Pham</span></span>
+                </div>
+              </div>
+            </div>
+            <div class="deals__group" role="rowgroup">
+              <p class="deals__year" aria-hidden="true">2024</p>
+              <div class="deals__rows" role="none">
+                <div class="deal" role="row">
+                  <span class="deal__c deal__year" role="cell">2024</span>
+                  <span class="deal__c deal__name" role="rowheader">JustShrimp</span>
+                  <span class="deal__c deal__size" role="cell">$10M</span>
+                  <span class="deal__c deal__type" role="cell">Equity</span>
+                  <span class="deal__c deal__sector" role="cell">Aquaculture</span>
+                  <span class="deal__c deal__lead" role="cell"><span class="deal__person">Colin Pham &amp;</span> <span class="deal__person">Caroline Farah Lembck</span></span>
+                </div>
+                <div class="deal" role="row">
+                  <span class="deal__c deal__year" role="cell">2024</span>
+                  <span class="deal__c deal__name" role="rowheader">Drisha AI</span>
+                  <span class="deal__c deal__size" role="cell">$7M</span>
+                  <span class="deal__c deal__type" role="cell">Equity</span>
+                  <span class="deal__c deal__sector" role="cell">AI / Technology</span>
+                  <span class="deal__c deal__lead" role="cell"><span class="deal__person">Colin Pham &amp;</span> <span class="deal__person">Caroline Farah Lembck</span></span>
+                </div>
+                <div class="deal" role="row">
+                  <span class="deal__c deal__year" role="cell">2024</span>
+                  <span class="deal__c deal__name" role="rowheader">AIP Realty Trust</span>
+                  <span class="deal__c deal__size" role="cell">$5M</span>
+                  <span class="deal__c deal__type" role="cell">Equity</span>
+                  <span class="deal__c deal__sector" role="cell">Real estate</span>
+                  <span class="deal__c deal__lead" role="cell"><span class="deal__person">Colin Pham</span></span>
+                </div>
+                <div class="deal" role="row">
+                  <span class="deal__c deal__year" role="cell">2024</span>
+                  <span class="deal__c deal__name" role="rowheader">AeroFarms</span>
+                  <span class="deal__c deal__size" role="cell">$5M</span>
+                  <span class="deal__c deal__type" role="cell">Equity</span>
+                  <span class="deal__c deal__sector" role="cell">AgTech</span>
+                  <span class="deal__c deal__lead" role="cell"><span class="deal__person">Caroline Farah Lembck</span></span>
+                </div>
+              </div>
+            </div>
+            <div class="deals__group" role="rowgroup">
+              <p class="deals__year" aria-hidden="true">2020s</p>
+              <div class="deals__rows" role="none">
+                <div class="deal deal--case" role="row">
+                  <span class="deal__c deal__year" role="cell">2020s</span>
+                  <span class="deal__c deal__name" role="rowheader"><a class="deal__link" href="case-mandela-station.html">Mandela Station<svg class="deal__arrow" aria-hidden="true"><use href="#icon-arrow"/></svg></a></span>
+                  <span class="deal__c deal__size" role="cell">$54M+</span>
+                  <span class="deal__c deal__type" role="cell">Debt + equity</span>
+                  <span class="deal__c deal__sector" role="cell">Multi-asset portfolio</span>
+                  <span class="deal__c deal__lead" role="cell"><span class="deal__person">Colin Pham</span></span>
+                </div>
+                <div class="deal" role="row">
+                  <span class="deal__c deal__year" role="cell">2020s</span>
+                  <span class="deal__c deal__name" role="rowheader">Lodel Energy</span>
+                  <span class="deal__c deal__size" role="cell">$35M</span>
+                  <span class="deal__c deal__type" role="cell">Credit facility</span>
+                  <span class="deal__c deal__sector" role="cell">Energy</span>
+                  <span class="deal__c deal__lead" role="cell"><span class="deal__person">Colin Pham &amp;</span> <span class="deal__person">Caroline Farah Lembck</span></span>
+                </div>
+                <div class="deal" role="row">
+                  <span class="deal__c deal__year" role="cell">2020s</span>
+                  <span class="deal__c deal__name" role="rowheader">Pioneer Power Solutions</span>
+                  <span class="deal__c deal__size" role="cell">$27M</span>
+                  <span class="deal__c deal__type" role="cell">Debt</span>
+                  <span class="deal__c deal__sector" role="cell">Energy / Power</span>
+                  <span class="deal__c deal__lead" role="cell"><span class="deal__person">Colin Pham</span></span>
+                </div>
+                <div class="deal" role="row">
+                  <span class="deal__c deal__year" role="cell">2020s</span>
+                  <span class="deal__c deal__name" role="rowheader">Eco Modular</span>
+                  <span class="deal__c deal__size" role="cell">$25M</span>
+                  <span class="deal__c deal__type" role="cell">Credit facility</span>
+                  <span class="deal__c deal__sector" role="cell">Clean tech</span>
+                  <span class="deal__c deal__lead" role="cell"><span class="deal__person">Colin Pham</span></span>
+                </div>
+                <div class="deal" role="row">
+                  <span class="deal__c deal__year" role="cell">2020s</span>
+                  <span class="deal__c deal__name" role="rowheader">Infinity Stone Ventures</span>
+                  <span class="deal__c deal__size" role="cell">$21M</span>
+                  <span class="deal__c deal__type" role="cell">Equity</span>
+                  <span class="deal__c deal__sector" role="cell">Mining / Resources</span>
+                  <span class="deal__c deal__lead" role="cell"><span class="deal__person">Colin Pham</span></span>
+                </div>
+                <div class="deal" role="row">
+                  <span class="deal__c deal__year" role="cell">2020s</span>
+                  <span class="deal__c deal__name" role="rowheader">Volt Lithium</span>
+                  <span class="deal__c deal__size" role="cell">$10M</span>
+                  <span class="deal__c deal__type" role="cell">Equity</span>
+                  <span class="deal__c deal__sector" role="cell">Energy / Mining</span>
+                  <span class="deal__c deal__lead" role="cell"><span class="deal__person">Caroline Farah Lembck</span></span>
+                </div>
+                <div class="deal" role="row">
+                  <span class="deal__c deal__year" role="cell">2020s</span>
+                  <span class="deal__c deal__name" role="rowheader">Brigadier Gold</span>
+                  <span class="deal__c deal__size" role="cell">$5M</span>
+                  <span class="deal__c deal__type" role="cell">Equity</span>
+                  <span class="deal__c deal__sector" role="cell">Mining</span>
+                  <span class="deal__c deal__lead" role="cell"><span class="deal__person">Colin Pham</span></span>
+                </div>
+                <div class="deal" role="row">
+                  <span class="deal__c deal__year" role="cell">2020s</span>
+                  <span class="deal__c deal__name" role="rowheader">Indy Power Systems</span>
+                  <span class="deal__c deal__size" role="cell">$1.5M</span>
+                  <span class="deal__c deal__type" role="cell">Equity</span>
+                  <span class="deal__c deal__sector" role="cell">Energy / Power</span>
+                  <span class="deal__c deal__lead" role="cell"><span class="deal__person">Colin Pham</span></span>
+                </div>
+              </div>
+            </div>
+            <div class="deals__group" role="rowgroup">
+              <p class="deals__year" aria-hidden="true">2017</p>
+              <div class="deals__rows" role="none">
+                <div class="deal deal--case" role="row">
+                  <span class="deal__c deal__year" role="cell">2017</span> <!-- [TO CONFIRM] year, from the brief: "2017 [TO CONFIRM]" (the case page says 2023) -->
+                  <span class="deal__c deal__name" role="rowheader"><a class="deal__link" href="case-brazil-telecom-tower-raise.html">Brazil Infrastructure Co.<svg class="deal__arrow" aria-hidden="true"><use href="#icon-arrow"/></svg></a></span>
+                  <span class="deal__c deal__size" role="cell">$63M</span>
+                  <span class="deal__c deal__type" role="cell">Equity + debt</span>
+                  <span class="deal__c deal__sector" role="cell">Telecom infrastructure</span>
+                  <span class="deal__c deal__lead" role="cell"><span class="deal__person">Colin Pham</span></span>
+                </div>
+              </div>
+            </div>
+        </div>
+      </div>
+
+      <!-- Review switch, until a version is picked: ?table=years -->
+      <script>
+        if (/[?&]table=years\b/.test(location.search)) document.currentScript.parentNode.classList.add("transactions--years");
+      </script>
+    </section>
+    <!-- SECTION:transactions END -->
 
 
   </main>

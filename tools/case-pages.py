@@ -62,8 +62,10 @@ ICONS = "\n".join([
 
 # The arrow for the other editions' rows
 arrow = '    <symbol id="icon-arrow" viewBox="0 0 16 16"><path d="M2.5 8h11M9 3.5 13.5 8 9 12.5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>\n  </svg>'
+if 'id="icon-arrow"' in pre_main:   # track-record.html carries the arrow already (its table)
+    arrow = "  </svg>"
 pre_main = pre_main.replace("\n  </svg>", "\n" + ICONS + "\n" + arrow, 1)
-pre_main = pre_main.replace("<!-- Sprite: logo, the book covers' deboss. One source for header, menu, books and footer -->",
+pre_main = pre_main.replace("<!-- Sprite: logo, the book covers' deboss, the arrow. One source for header, menu, books, table and footer -->",
                             "<!-- Sprite: logo, the book cover's deboss, the arrow. One source for header, menu, book and footer -->")
 
 INTRO = '''  <!-- The case opens with the book coming across from Selected work (case.js). Decided here,
@@ -148,6 +150,7 @@ for c in CASES:
     h = re.sub(r'<meta name="description" content="[^"]*">',
                f'<meta name="description" content="Edition No. {c["no"]}: {c["name"]}. {html.escape(c["outcome"][0] + ". " + c["outcome"][1], quote=True)}">', h)
     h = h.replace('  <link rel="stylesheet" href="sections/track-hero.css">\n', "")
+    h = h.replace('  <link rel="stylesheet" href="sections/transactions.css">\n', "")
     h = h.replace('  <link rel="stylesheet" href="sections/selected-work.css">\n',
                   '  <link rel="stylesheet" href="sections/selected-work.css"><!-- the book component -->\n  <link rel="stylesheet" href="sections/case.css">\n')
     h = h.replace('  <link rel="preload" href="assets/concrete.jpg" as="image">\n',
