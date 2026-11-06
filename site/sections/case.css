@@ -235,7 +235,7 @@
 }
 .book--mini .book__mark { width: 11px; }
 .book--mini .book__figure {
-  margin-top: 12px;
+  margin-top: auto;   /* at the foot of the cover, under the A-mark at the top */
   font-size: 11px;
   letter-spacing: -0.02em;
 }
