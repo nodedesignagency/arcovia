@@ -320,10 +320,11 @@
     </section>
     <!-- SECTION:data END -->
 
-    <!-- SECTION:selected-work START · styles: sections/selected-work.css · scripts: books.js
-         Home, block 6 of the brief: three cases as books on black, each linking to its case
-         on the Track Record page. After the template's "Before vs After" (the outer words part
-         to either side) and the user's book video: "Selected" and "work" part left and right
+    <!-- SECTION:selected-work START · styles: sections/selected-work.css · scripts: books.js, case-link.js
+         Home, block 6 of the brief: three cases as books on black, each opening its case's
+         own page (case-<slug>.html; case-link.js hands the book over to it). After the
+         template's "Before vs After" (the outer words part to either side) and the user's
+         book video: "Selected" and "work" part left and right
          while three book spines rise into the gap between them; a little more scroll turns all
          three at once to face the front, and the two words move out to the corners as the
          heading. Hover lifts a book. Without JS, with reduced motion or below 1200px it is the
@@ -337,7 +338,7 @@
           <!-- Component: book (figure, title, line; spine for the closed state) -->
           <ul class="work__books">
             <li class="book book--concrete">
-              <a class="book__link" href="track-record.html#brazil-telecom-tower-raise">
+              <a class="book__link" href="case-brazil-telecom-tower-raise.html">
                 <div class="book__lift">
                   <div class="book__body">
                     <div class="book__spine" aria-hidden="true">
@@ -364,7 +365,7 @@
               </a>
             </li>
             <li class="book book--charcoal">
-              <a class="book__link" href="track-record.html#mandela-station">
+              <a class="book__link" href="case-mandela-station.html">
                 <div class="book__lift">
                   <div class="book__body">
                     <div class="book__spine" aria-hidden="true">
@@ -391,7 +392,7 @@
               </a>
             </li>
             <li class="book book--paper">
-              <a class="book__link" href="track-record.html#valr-energy-growth-round">
+              <a class="book__link" href="case-valr-energy-growth-round.html">
                 <div class="book__lift">
                   <div class="book__body">
                     <div class="book__spine" aria-hidden="true">
@@ -830,6 +831,7 @@
   <script src="zoom.js"></script>
   <script src="stack.js"></script>
   <script src="books.js"></script>
+  <script src="case-link.js"></script>
   <script src="team.js"></script>
   <script src="founders.js"></script>
   <script src="assets/land-dots.js"></script>
