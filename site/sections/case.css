@@ -286,12 +286,16 @@
 .case-intro [data-case-in] { opacity: 0; }
 .case-intro .site-header { opacity: 0; }
 
-/* Tablet and phone: not reviewed yet (desktop first); the book above the case */
+/* Tablet and phone: the book above the case, the case across the full width (the user:
+   "why it is not full width in tablet"; the 580px reading width and the title's 13em cap are
+   for the desktop's half-page column) */
 @media (max-width: 1199px) {
   .case {
     --book-h: 460px;
     --case-fs: 40px;
+    --case-measure: 100%;
   }
+  .case__title { max-width: none; }
   .case__media,
   .case__content { grid-column: 1 / -1; }
   .case__content { grid-row: 2; margin-top: var(--space-8); }
