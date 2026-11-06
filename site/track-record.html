@@ -132,40 +132,19 @@
   <main id="main">
 
     <!-- SECTION:track-hero START · styles: sections/track-hero.css · scripts: concrete.js, main.js
-         Track Record, block 1. Two versions for review (?hero=carved switches):
-         - Default, "Opening": the About hero's structure on the home hero's live concrete
-           (main.js starts it via data-hero): a short opening, chip and H1 low on the left, the
-           line on the right with its last line on the H1's baseline. Two words, so the H1 is
-           set at the Contact headline's size (7% of the grid width), not About's.
-         - ?hero=carved, "Carved": the H1 is carved into the concrete by concrete.js, whole and
-           across the full grid, under a formwork seam with its tie holes, like the home hero's
-           ARCOVIA; the chip and the line sit above the seam.
+         Track Record, block 1. The About hero's structure on the home hero's live concrete
+         (main.js starts it via data-hero): a short opening, chip and H1 low on the left, the
+         line on the right with its last line on the H1's baseline. Two words, so the H1 is set
+         at the Contact headline's size (7% of the grid width), not About's.
          Copy from the brief (Track Record hero: eyebrow, H1, subline); figures from the deck. -->
     <section class="track-hero" data-hero aria-labelledby="track-title">
       <canvas class="hero__canvas" aria-hidden="true"></canvas>
 
       <div class="track-hero__inner container">
         <p class="chip track-hero__chip">Track record</p>
-        <h1 class="track-hero__title" id="track-title"><span class="track-hero__words">Selected work</span></h1>
+        <h1 class="track-hero__title" id="track-title">Selected work</h1>
         <p class="track-hero__lede">24 transactions closed by the Arcovia team, $330M+ raised, across infrastructure, energy, mining, consumer, real estate and technology.</p>
-        <div class="seam track-hero__seam" aria-hidden="true">
-          <span class="seam__hole seam__hole--start"></span>
-          <span class="seam__hole seam__hole--end"></span>
-        </div>
       </div>
-
-      <!-- Review switch, until a version is picked. It runs here, before main.js starts the
-           concrete, because the concrete reads what to carve ([data-carve]) when it starts -->
-      <script>
-        (function () {
-          if (!/[?&]hero=carved\b/.test(location.search)) return;
-          var hero = document.currentScript.parentNode;
-          hero.classList.add("track-hero--carved");
-          hero.querySelector(".track-hero__words").setAttribute("data-carve", "text");
-          hero.querySelector(".track-hero__seam").setAttribute("data-carve", "seam");
-          hero.querySelectorAll(".seam__hole").forEach(function (el) { el.setAttribute("data-carve", "hole"); });
-        })();
-      </script>
     </section>
     <!-- SECTION:track-hero END -->
 

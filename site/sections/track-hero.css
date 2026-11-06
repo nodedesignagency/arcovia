@@ -1,18 +1,12 @@
 /* ==========================================================================
    SECTION: track-hero — Track Record, block 1
    Copy from the brief: eyebrow "Track record", H1 "Selected work", and the
-   subline with the deck's figures. On the home hero's live concrete
-   (concrete.js, started by main.js through [data-hero]). Two versions for
-   review, switched with ?hero=carved (the switch is a small inline script in
-   the section, which adds .track-hero--carved and the [data-carve] marks
-   before the concrete starts):
-   - Opening (default): the About hero's structure. A short opening, the chip
-     and H1 low on the left, the line on the right with its last line on the
-     H1's baseline. Two words, so the H1 is set at the Contact headline's size.
-   - Carved: the H1 carved into the concrete across the full grid, whole, under
-     a formwork seam with its tie holes, like the home hero's ARCOVIA; the chip
-     and the line sit above the seam.
-   Uses shared tokens and components from styles.css (chip, seam, container).
+   subline with the deck's figures. The About hero's structure: a short
+   opening on the home hero's live concrete (concrete.js, started by main.js
+   through [data-hero]), the chip and H1 low on the left, the line on the
+   right with its last line on the H1's baseline. Two words, so the H1 is set
+   at the Contact headline's size. No text animation.
+   Uses shared tokens and components from styles.css (chip, container).
    ========================================================================== */
 
 .track-hero {
@@ -48,7 +42,7 @@
 }
 .track-hero.hero--gl .hero__canvas { opacity: 1; }
 
-/* ---------- Opening (default) ---------- */
+/* ---------- Chip, H1 and line ---------- */
 .track-hero__inner {
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
@@ -73,7 +67,6 @@
   white-space: nowrap;
   color: var(--color-ink);
 }
-.track-hero__words { display: inline-block; }
 
 .track-hero__lede {
   grid-column: 9 / span 4;
@@ -87,72 +80,14 @@
   margin-bottom: calc(var(--track-fs) * 0.18 - var(--fs-lede) * 0.39);
 }
 
-/* The seam belongs to the carved version */
-.track-hero__seam { display: none; }
-
-/* ---------- Carved (?hero=carved) ---------- */
-.track-hero--carved {
-  /* "Selected work" is 6.92em wide from ink to ink (Montserrat 500, -0.02em),
-     so this size carves it exactly across the grid */
-  --track-fs: calc((min(100vw, var(--container-max)) - 2 * var(--gutter)) * 0.1444);
-  padding-bottom: var(--space-7);
-}
-.track-hero--carved .track-hero__inner { row-gap: 0; }
-
-/* Above the seam: the chip on the left on the line's last baseline, the line on the right */
-.track-hero--carved .track-hero__chip {
-  grid-column: 1 / span 6;
-  grid-row: 1;
-  /* chip baseline ~0.34em above its box (13px), the line's ~0.39em above its own */
-  margin-bottom: calc(var(--fs-lede) * 0.39 - 13px * 0.34);
-}
-.track-hero--carved .track-hero__lede {
-  grid-column: 9 / span 4;
-  grid-row: 1;
-  margin-bottom: 0;
-}
-.track-hero--carved .track-hero__seam {
-  display: block;
-  grid-column: 1 / -1;
-  grid-row: 2;
-  margin-top: var(--space-7);
-}
-.track-hero--carved .track-hero__title {
-  grid-column: 1 / -1;
-  grid-row: 3;
-  margin-top: var(--space-6);
-  line-height: 1;
-  letter-spacing: -0.02em;
-}
-/* The words themselves are carved (data-carve="text"): the text stays in the page for
-   reading and selection, and concrete.js cuts the same glyphs into the slab. The ink of
-   the S starts 0.04em in, so pull it back onto the grid's edge */
-.track-hero--carved .track-hero__words {
-  display: block;
-  width: max-content;
-  margin-left: -0.04em;
-  /* Before the concrete starts, or without WebGL: debossed with CSS, as the home ARCOVIA */
-  color: rgba(0, 0, 0, 0.035);
-  text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.55), -1px -1px 1px rgba(0, 0, 0, 0.16);
-}
-.track-hero--carved.hero--gl .track-hero__words { color: transparent; text-shadow: none; }
-.track-hero--carved.hero--gl .track-hero__seam { background: transparent; box-shadow: none; }
-.track-hero--carved.hero--gl .track-hero__seam .seam__hole { opacity: 0; }
-
 /* Tablet and phone: not reviewed yet (desktop first); keep it stacked and readable */
 @media (max-width: 1199px) {
   .track-hero { --track-fs: 64px; }
   .track-hero__chip,
   .track-hero__title { grid-column: 1 / -1; }
   .track-hero__lede { grid-column: 1 / span 9; grid-row: 3; margin-bottom: 0; margin-top: var(--space-4); }
-  .track-hero--carved { --track-fs: calc((100vw - 2 * var(--gutter)) * 0.1444); }
-  .track-hero--carved .track-hero__chip { grid-row: 1; margin-bottom: var(--space-5); }
-  .track-hero--carved .track-hero__lede { grid-column: 1 / span 9; grid-row: 2; }
-  .track-hero--carved .track-hero__seam { grid-row: 3; }
-  .track-hero--carved .track-hero__title { grid-row: 4; }
 }
 @media (max-width: 809px) {
   .track-hero { --track-fs: 44px; }
   .track-hero__lede { grid-column: 1 / -1; }
-  .track-hero--carved .track-hero__lede { grid-column: 1 / -1; }
 }
