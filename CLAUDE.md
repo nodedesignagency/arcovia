@@ -84,6 +84,8 @@ Map: 8 points (Los Angeles, San Francisco, New York, San Juan, São Paulo, Londo
 - Team profiles go in a CMS collection with one template page. The map and the concrete hero become code components.
 - Contact form: build it with the dropdown, and leave the GoHighLevel webhook as the last step (the user will give the URL).
 - Tell the user before anything destructive, like deleting pages or overwriting styles.
+- Framer project: "Arcovia" (Node Design's Workspace). Pages are built from code components (`Arcovia*.tsx`) plus canvas sections; Home, About, Team, What We Do, Contact, Legal, Track Record and the Case/Team member/Legal document CMS templates exist there.
+- Track Record (9 Nov 2026): it is the index of the work, so the books need no scroll reveal. The opening (`ArcoviaTrackHero`, Look: **Black**) keeps the White layout on black, and the books (`ArcoviaSelectedWork`) sit straight under it with **Scroll animation** off and **Heading** off. **Books** places them in the opening's text column (from column 5, under the H1 and line; the default here) or as the centred row. Home keeps the pinned animation (the new controls default to it).
 
 ## Checking pages in the container
 
