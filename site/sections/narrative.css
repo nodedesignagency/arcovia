@@ -82,13 +82,14 @@
 }
 .narrative [data-reveal].is-split .c { opacity: 0; }
 
-/* Tablet and phone: not reviewed yet (desktop first); as Home's statement, the chip
-   above the body across the full grid */
+/* Tablet and phone: the chip above the body across the full grid, and no indent:
+   the body starts flush left on every line (the user: "for tablet and phones
+   remove this indent") */
 @media (max-width: 1199px) {
   .narrative__inner { row-gap: var(--space-7); }
   .narrative__chip { margin-top: 0; }
-  .narrative__text { grid-row: 2; font-size: 44px; text-indent: calc(var(--col) * 3); }
+  .narrative__text { grid-row: 2; font-size: 44px; text-indent: 0; }
 }
 @media (max-width: 809px) {
-  .narrative__text { font-size: 30px; line-height: 1.16; text-indent: calc(var(--col) * 2); }
+  .narrative__text { font-size: 30px; line-height: 1.16; }
 }
