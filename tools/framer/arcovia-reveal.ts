@@ -26,7 +26,6 @@ export const INTRO_CSS = `@keyframes arc-rv { from { opacity: 0; filter: blur(va
       .team-hero__heading > *, .team-hero__title > *, .team-hero__lede, .team-stat,
       .contact__head > *, .contact__lede, .contact__aside, .contact__main,
       .legal-doc__head > *, .legal-doc__lede, .legal-aside, .legal-doc__text > :nth-child(-n+8),
-      .case__head > *, .case__media, .case__part:nth-of-type(-n+2),
       .work--full .work__books > .book) {
     animation: arc-rv 1000ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
     animation-delay: calc(150ms + var(--rv-i, 0) * 90ms);
@@ -39,11 +38,11 @@ export const INTRO_CSS = `@keyframes arc-rv { from { opacity: 0; filter: blur(va
   /* Headlines set in lines: the lines come in one after another, not the headline as a block */
   :root:not([data-reveal="off"]) :is(.services-hero__title, .about-hero__title, .team-hero__title) { animation: none; }
   :is(.services-hero__title, .about-hero__title, .team-hero__title) > :nth-child(1),
-  .track-hero__title, .contact__title, .legal-doc__title, .case__title { --rv-i: 1; --rv-b: 14px; --rv-y: 28px; }
+  .track-hero__title, .contact__title, .legal-doc__title { --rv-i: 1; --rv-b: 14px; --rv-y: 28px; }
   :is(.services-hero__title, .about-hero__title, .team-hero__title) > :nth-child(2) { --rv-i: 2; --rv-b: 14px; --rv-y: 28px; }
-  :is(.services-hero__lede, .about-hero__lede, .team-hero__lede, .track-hero__lede, .contact__lede, .legal-doc__lede, .case__meta) { --rv-i: 3; }
-  .services-hero__paths, .team-stat:nth-child(1), .contact__aside, .legal-aside, .case__media { --rv-i: 4; }
-  .team-stat:nth-child(2), .contact__main, .legal-doc__text > *, .case__part { --rv-i: 5; }
+  :is(.services-hero__lede, .about-hero__lede, .team-hero__lede, .track-hero__lede, .contact__lede, .legal-doc__lede) { --rv-i: 3; }
+  .services-hero__paths, .team-stat:nth-child(1), .contact__aside, .legal-aside { --rv-i: 4; }
+  .team-stat:nth-child(2), .contact__main, .legal-doc__text > * { --rv-i: 5; }
   .team-stat:nth-child(3) { --rv-i: 6; }
   /* Track Record's books (.work--full; Home's books keep their own scroll animation): one after another after the line */
   .work--full .work__books > .book { --rv-b: 12px; --rv-y: 32px; }
@@ -74,9 +73,9 @@ export const REVEAL_SELECTOR = [
     ".offices__head > *", ".office__head", ".office__details > *", ".offices__close > *",
     // Team
     ".residency__title", ".residency__body", ".residency__btn",
-    // Legal and case pages
+    // Legal pages (not the case pages: ArcoviaCase has its own opening, the book carried in from the
+    // shelf, then its text; the user saw this reveal spoil it, 11 Nov 2026)
     ".legal-doc__text > *",
-    ".case__part > *", ".case__others",
     // Footer, every page
     ".site-footer__inner > *",
 ].join(",")
