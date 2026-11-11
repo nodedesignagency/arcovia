@@ -115,9 +115,10 @@
          "Here's why I'm writing:" and five radio pills (the brief's five buttons, after the user's
          reference). Choosing one opens that path's questions below; the pills stay in view, so
          switching is one click.
-         The radio "tag" holds the GoHighLevel tag. Each path's questions sit in their own
+         The radio "tag" holds the type sent to Airtable. Each path's questions sit in their own
          fieldset; contact.js switches the chosen one on and disables the rest, so only it
-         validates and sends. data-endpoint takes the GoHighLevel webhook (the last step).
+         validates and sends. data-endpoint takes the Airtable webhook (the last step);
+         data-send="form" sends it form-encoded, which Airtable accepts from a browser.
          ?sheet=card sets the note on a floating white sheet instead of the open page. -->
     <section class="contact" data-contact aria-labelledby="contact-title">
       <div class="container contact__grid">
@@ -155,7 +156,7 @@
         </aside>
 
         <div class="contact__main">
-          <form class="note-form" data-contact-form data-endpoint="" action="#" method="post" novalidate>
+          <form class="note-form" data-contact-form data-endpoint="" data-send="form" action="#" method="post" novalidate>
             <div class="note" data-reveal-target>
               <p class="note__hello">Hello Arcovia,</p>
 

@@ -1,16 +1,18 @@
 /* Arcovia — contact form
 
    The note opens with the path: five radio pills named "tag", whose values are
-   the GoHighLevel tags (founder, investor, institution, partner-press, talent).
+   the types sent to Airtable (founder, investor, institution, partner-press, talent).
    The chosen path's fieldset is switched on; the others are disabled, so they
    neither validate nor send. Every note saves the visit source (UTM tags, first page, referrer), has a
    hidden spam trap and needs the Privacy Policy box ticked.
 
-   Sending: data-endpoint on the <form> takes the GoHighLevel webhook URL (the
-   last step, once the client gives it); it gets the note as JSON, or form-encoded
-   with data-send="form" if the webhook refuses requests from a browser (CORS).
-   Until then, the form logs what it would send to the console and shows the
-   confirmation. */
+   Sending: data-endpoint on the <form> takes the webhook URL: the link of the
+   client's Airtable automation ("When webhook received"; the last step). Every
+   field is sent, empty ones as "", so each note has the same keys.
+   data-send="form" (set, for Airtable) posts it form-encoded as a simple request,
+   since Airtable's webhook answers no CORS preflight; without it, it goes as JSON.
+   Until there is a URL, the form logs what it would send to the console and shows
+   the confirmation. */
 (function () {
   "use strict";
 
@@ -234,6 +236,10 @@
       ["website", "linkedin_url"].forEach(function (k) {
         if (data[k] && !/^https?:\/\//i.test(data[k])) data[k] = "https://" + data[k];
       });
+      // Every field goes out, empty ones as "", so each note has the same keys (Airtable maps columns by name)
+      Array.prototype.forEach.call(form.elements, function (el) {
+        if (el.name && el.name !== "fax" && !(el.name in data)) data[el.name] = "";
+      });
       data.page = location.href.split(/[?#]/)[0];
       data.submitted_at = new Date().toISOString();
       data.seconds_on_form = Math.round((Date.now() - started) / 1000);
@@ -247,7 +253,7 @@
 
       var endpoint = form.getAttribute("data-endpoint");
       if (!endpoint) {
-        console.info("[contact] No endpoint yet (the GoHighLevel webhook is the last step). This is what would be sent:", data);
+        console.info("[contact] No endpoint yet (the Airtable webhook is the last step). This is what would be sent:", data);
         finish(data);
         return;
       }
