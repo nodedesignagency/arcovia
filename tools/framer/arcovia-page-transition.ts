@@ -6,7 +6,7 @@
  * After the user's second reference video (11 Nov 2026): a black curtain between pages. Leaving,
  * the page lifts, is cut away from the bottom up and dims to black (a same-page View Transition
  * the click starts); the next page loads. Arriving, ARRIVE_SCRIPT (in the page's HTML, from every
- * section's BaseStyle; the header's runs first) paints the page black before the first paint, and
+ * section's BaseStyle; the header's runs first) adds .arc-arrive, so the page opens black, and
  * once it is ready the black lifts off from the bottom up while the page rises and brightens.
  *
  * Wiring in ArcoviaBase.tsx: BaseStyle adds PAGE_CSS to its style and renders ARRIVE_SCRIPT, off
@@ -21,23 +21,24 @@ html.arc-leaving::view-transition-new(root) { animation: none; opacity: 0; }
 /* clip-path needs both ends written out: from none it would jump instead of sliding */
 @keyframes arc-page-out { from { clip-path: inset(0 0 0 0); } to { translate: 0 -8vh; clip-path: inset(0 0 100% 0); filter: brightness(0.4); } }
 .arc-page-cover { position: fixed; inset: 0; z-index: 2147483000; background: #0b0b0b; }
-/* Arriving: black from the first paint (the inline script sets html.arc-arriving), then it lifts off
-   from the bottom up while the page under it brightens (html.arc-reveal, set once the page is ready).
-   If the script never gets there, it lifts by itself after 2.5 s. */
-html.arc-arriving body::before, html.arc-arriving body::after { content: ""; position: fixed; inset: 0; pointer-events: auto; }
-html.arc-arriving body::before { z-index: 2147483000; background: #0b0b0b; animation: arc-cover-late 720ms cubic-bezier(0.16, 1, 0.3, 1) 2500ms both; }
-html.arc-arriving body::after { z-index: 2147482999; background: #0b0b0b; opacity: 0.5; animation: arc-dim-late 720ms cubic-bezier(0.16, 1, 0.3, 1) 2500ms both; }
-html.arc-arriving.arc-reveal body::before { animation: arc-cover 720ms cubic-bezier(0.16, 1, 0.3, 1) both; }
-html.arc-arriving.arc-reveal body::after { animation: arc-dim 720ms cubic-bezier(0.16, 1, 0.3, 1) both; }
+/* Arriving: black from the first paint (.arc-arrive, added by the inline script), then the black lifts
+   off from the bottom up while the dim under it clears. If the script never gets there, it lifts by
+   itself after 2.5 s. An element of its own, outside the page, with no pointer events: the header finds
+   the section under it with elementsFromPoint and must see the page, not the black (the black used to be
+   a body::before with pointer events, which the header read instead of the page). */
+.arc-arrive { position: fixed; inset: 0; z-index: 2147483000; pointer-events: none; background: rgba(11, 11, 11, 0.5); animation: arc-dim-late 720ms cubic-bezier(0.16, 1, 0.3, 1) 2500ms both; }
+.arc-arrive::after { content: ""; position: absolute; inset: 0; background: #0b0b0b; animation: arc-cover-late 720ms cubic-bezier(0.16, 1, 0.3, 1) 2500ms both; }
+html.arc-reveal .arc-arrive { animation: arc-dim 720ms cubic-bezier(0.16, 1, 0.3, 1) both; }
+html.arc-reveal .arc-arrive::after { animation: arc-cover 720ms cubic-bezier(0.16, 1, 0.3, 1) both; }
 @keyframes arc-cover { from { clip-path: inset(0 0 0 0); } to { clip-path: inset(0 0 100% 0); } }
 @keyframes arc-cover-late { from { clip-path: inset(0 0 0 0); } to { clip-path: inset(0 0 100% 0); } }
-@keyframes arc-dim { to { opacity: 0; } }
-@keyframes arc-dim-late { to { opacity: 0; } }
-/* The page openings wait under the black and start as it lifts */
+@keyframes arc-dim { to { background-color: rgba(11, 11, 11, 0); } }
+@keyframes arc-dim-late { to { background-color: rgba(11, 11, 11, 0); } }
+/* The page openings (INTRO_CSS) wait under the black and start as it lifts */
 :root.arc-arriving:not(.arc-reveal) { --rv-play: paused; }`
 
 /** Runs in the page's HTML before the first paint (every section renders it; the first one decides). */
-export const ARRIVE_SCRIPT = `(function(){try{var k="arc-pt",t=+sessionStorage.getItem(k);if(!t)return;sessionStorage.removeItem(k);if(Date.now()-t<8000&&!(window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches))document.documentElement.classList.add("arc-arriving")}catch(e){}})()`
+export const ARRIVE_SCRIPT = `(function(){try{var k="arc-pt",t=+sessionStorage.getItem(k);if(!t)return;sessionStorage.removeItem(k);if(Date.now()-t<8000&&!(window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches)){var d=document;d.documentElement.classList.add("arc-arriving");var c=d.createElement("div");c.className="arc-arrive";c.setAttribute("aria-hidden","true");d.body.appendChild(c)}}catch(e){}})()`
 
 const PAGE_OUT_MS = 500
 const PAGE_IN_MS = 720
@@ -61,6 +62,9 @@ export function initPageTransition() {
             if (started) return
             started = true
             root.classList.add("arc-reveal")
+            // Everything that reads the page on scroll reads it now, before it starts to move
+            // (the header's light or dark type, the changing background)
+            window.dispatchEvent(new Event("scroll"))
             const main = document.getElementById("main")
             // The page rises into place (only at the top: further down, a moving page would shift the fixed header)
             if (main && window.scrollY < 2) {
@@ -71,7 +75,11 @@ export function initPageTransition() {
                     })
                 } catch (e) {}
             }
-            window.setTimeout(() => root.classList.remove("arc-arriving", "arc-reveal"), PAGE_IN_MS + 60)
+            window.setTimeout(() => {
+                root.classList.remove("arc-arriving", "arc-reveal")
+                document.querySelectorAll(".arc-arrive").forEach((el) => el.remove())
+                window.dispatchEvent(new Event("scroll"))
+            }, PAGE_IN_MS + 60)
         }
         // Once the fonts are in (at most 300 ms more), so the page under the black is the finished one
         const fonts = (document as any).fonts
