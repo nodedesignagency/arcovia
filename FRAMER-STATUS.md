@@ -29,6 +29,7 @@ Assets panel folders (11 Nov): Layout templates · Components · Text styles (He
 - Every page had the same title and description. What We Do, Track Record, Team, About, Contact and Legal now use the brief's SEO titles and descriptions.
 - About, "How we work": once the rows stacked, the second line of each description was cut in half. The stacked strip is now 96px tall (was 80px).
 - What We Do path buttons and the Residency button open the contact form on the matching path (`/contact?path=founder|investor|institution|talent`). The contact form now reads `?path=`.
+- Links inside code components went nowhere in Framer's Preview, and did a full page reload on the live site. They were plain `<a href="/page">`, and the menu was outside Framer's root. Internal links now use `SiteLink` (in `ArcoviaBase.tsx`), which wraps Framer's `Link` so they go through Framer's router. This covers the header, menu, footer, Home path picker, "See what we do", "Meet the team", team cards, "Explore the map", the CTA buttons, the disclosures note and the offices button. The menu closes when one of its links is followed, and the header's active-page dash follows the address. Still plain on purpose: external, `mailto:`, same-page `#…` and `?query` links (Paths, Residency), plus the Selected work books and case pages, whose own transition script handles navigation. Use `SiteLink` for every new internal link in code.
 
 ## Still open before launch
 
