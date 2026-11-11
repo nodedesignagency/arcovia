@@ -105,21 +105,23 @@
   color: var(--color-ink);
 }
 
-/* The step's items, over hairlines (like the masthead's rows), at the foot of the text */
+/* The step's items, hairlines between them only (none above the first or under the last; the
+   user's call), at the foot of the text */
 .mandate-card__list {
   align-self: end;
   margin: var(--space-6) 0 0;
   padding: 0;
   list-style: none;
-  border-top: 1px solid var(--md-line);
 }
 .mandate-card__list li {
   padding-block: 10px;
-  border-bottom: 1px solid var(--md-line);
   font-size: 16px;
   line-height: 22px;
   color: var(--color-text);
 }
+.mandate-card__list li + li { border-top: 1px solid var(--md-line); }
+/* With no line under it, the last item sits on the foot of the render */
+.mandate-card__list li:last-child { padding-bottom: 0; }
 
 .mandate-card__media {
   overflow: hidden;
