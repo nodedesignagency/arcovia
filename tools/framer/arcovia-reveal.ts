@@ -29,9 +29,11 @@ export const INTRO_CSS = `@keyframes arc-rv { from { opacity: 0; filter: blur(va
       .case__head > *, .case__media, .case__part:nth-of-type(-n+2)) {
     animation: arc-rv 1000ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
     animation-delay: calc(150ms + var(--rv-i, 0) * 90ms);
+    animation-play-state: var(--rv-play, running);
   }
   :root:not([data-reveal="off"]) :is(.about-hero__media, .team-hero__media) {
     animation: arc-rv-fade 1400ms cubic-bezier(0.22, 1, 0.36, 1) 500ms backwards;
+    animation-play-state: var(--rv-play, running);
   }
   /* Headlines set in lines: the lines come in one after another, not the headline as a block */
   :root:not([data-reveal="off"]) :is(.services-hero__title, .about-hero__title, .team-hero__title) { animation: none; }
@@ -176,4 +178,3 @@ export function initReveal(root: HTMLElement, life: Life /* from ArcoviaBase.tsx
         pending.clear()
     })
 }
-
