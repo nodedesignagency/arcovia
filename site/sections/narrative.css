@@ -4,9 +4,11 @@
    asked for it): a pure white room, the body set large like an editorial page
    (a share of the grid width, so lines break the same at every desktop width),
    regular weight. Laid out after the user's reference (a studio's about block:
-   the small tag on the left, the text on the right, its first line indented):
-   the brief's headline is the chip on cols 1-3, its top on the first line's
-   cap height; the body on cols 4-12, the first line one column further in.
+   the small tag at the top left, the text across the full width, its first
+   line indented past the tag): the brief's headline is the chip, on one line
+   on col 1, its top on the first line's cap height; the body across the full
+   grid, its first line starting at col 6 (five columns in: the chip is 411px,
+   so four would run into it below about 1290px wide).
    Tablet and phone: the chip above the body, as before. As on
    Home, the text writes itself in, letter by letter, with a soft fading front
    while the stage is pinned (narrative.js); scrolling back runs it backwards.
@@ -18,7 +20,7 @@
   /* Scroll that the stage stays pinned for while the text writes itself in */
   --narrative-travel: 120vh;
   /* The body's size: a share of the grid width, so it breaks the same at every desktop width */
-  --narrative-fs: calc((min(100vw, var(--container-max)) - 2 * var(--gutter)) * 0.034);
+  --narrative-fs: calc((min(100vw, var(--container-max)) - 2 * var(--gutter)) * 0.0445);
   position: relative;
   background: #ffffff;
   color: var(--color-ink);
@@ -33,7 +35,7 @@
   overflow: hidden;
 }
 
-/* On the page grid: the tag on the left, the body on the right */
+/* On the page grid: the chip and the body share the first row */
 .narrative__inner {
   width: 100%;
   max-width: calc(var(--container-max) - 2 * var(--gutter));
@@ -42,35 +44,30 @@
   grid-template-columns: repeat(12, minmax(0, 1fr));
   column-gap: var(--grid-gap);
   align-items: start;
-  /* one column of the 12-column grid, plus its gap (tablet and phone indents) */
+  /* one column of the 12-column grid, plus its gap */
   --col: calc((100% - 11 * var(--grid-gap)) / 12 + var(--grid-gap));
 }
 
-/* The tag: cols 1-3, wrapping onto two lines there, its square on the first line.
-   Its top sits on the body's first line: the body's cap top is 0.2185em below its
-   line box (Montserrat: ascent 0.968, cap height 0.7, line height 1.12), the chip's
-   0.3585em below its own (line height 1.4) */
+/* The chip: one line, at the top left, in the space the first line's indent
+   leaves. Its top sits on the body's first line: the body's cap top is 0.2185em
+   below its line box (Montserrat: ascent 0.968, cap height 0.7, line height
+   1.12), the chip's 0.3585em below its own (line height 1.4) */
 .narrative__chip {
-  grid-column: 1 / span 3;
+  grid-column: 1 / -1;
   grid-row: 1;
   justify-self: start;
-  align-items: flex-start;
-  white-space: normal;
-  text-wrap: balance;
   margin-top: calc(var(--narrative-fs) * 0.2185 - 0.3585em);
 }
-.narrative__chip::before { margin-top: calc((1.4em - 10px) / 2); }
 
 .narrative__text {
-  grid-column: 4 / -1;
+  grid-column: 1 / -1;
   grid-row: 1;
   font-size: var(--narrative-fs);
   font-weight: var(--weight-book);
   line-height: 1.12;
   letter-spacing: -0.025em;
-  /* The editorial indent: the first line starts one column further in (col 5);
-     the % is the body's own area, cols 4-12 (nine columns, eight gaps) */
-  text-indent: calc((100% - 8 * var(--grid-gap)) / 9 + var(--grid-gap));
+  /* The editorial indent: the first line starts five columns in (col 6) */
+  text-indent: calc(var(--col) * 5);
 }
 
 .narrative .w { white-space: nowrap; }
@@ -89,9 +86,8 @@
    above the body across the full grid */
 @media (max-width: 1199px) {
   .narrative__inner { row-gap: var(--space-7); }
-  .narrative__chip { grid-column: 1 / -1; margin-top: 0; align-items: center; white-space: nowrap; }
-  .narrative__chip::before { margin-top: 0; }
-  .narrative__text { grid-column: 1 / -1; grid-row: 2; font-size: 44px; text-indent: calc(var(--col) * 3); }
+  .narrative__chip { margin-top: 0; }
+  .narrative__text { grid-row: 2; font-size: 44px; text-indent: calc(var(--col) * 3); }
 }
 @media (max-width: 809px) {
   .narrative__text { font-size: 30px; line-height: 1.16; text-indent: calc(var(--col) * 2); }

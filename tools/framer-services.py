@@ -493,10 +493,10 @@ write('ArcoviaNarrative', '''/**
  * Set like Home's second section, the statement (the user asked for it): a white
  * room, a screen tall, the brief's body set large (a share of the grid width, so it
  * breaks the same at every desktop width), regular weight. After the user's
- * reference (a studio's about block): the brief's headline is the chip on cols
- * 1-3, its top on the body's first cap height; the body on cols 4-12, its first
- * line one column further in. Tablet and phone: the chip above the body across
- * the full grid, the first line indented. As on Home, the stage pins while the text writes
+ * reference: the brief's headline is the chip, on one line at the top left, its
+ * top on the body's first cap height; the body across the full grid, its first
+ * line indented five columns, past the chip. Tablet and phone: the chip above
+ * the body, the first line indented. As on Home, the stage pins while the text writes
  * itself in, letter by letter, with a soft fading front (28 letters, 24 opacity
  * steps), scroll-linked, so it runs back when scrolling up and fast scrolling
  * settles exactly. Off with reduced motion and below 1200 (the text in full); on
