@@ -16,6 +16,8 @@ The live build is in the Framer project **Arcovia** (published at `cautious-shar
 
 Almost every section is a code component (`Arcovia*.tsx`) sharing `ArcoviaBase.tsx` (tokens, chip, sprite, script lifecycle). The header and footer live in the "Site" layout template.
 
+Assets panel folders (11 Nov): Layout templates · Components · Text styles (Headings, Body, Labels and nav) · Link styles · Color styles (Surfaces, Text, Lines) · Code (Foundation, Header and footer, Shared sections used on more than one page, then one folder per page: Home, What We Do, Track Record, Team, About, Contact, Legal). Put every new asset in its folder.
+
 ## Fixed in the QA pass (11 Nov)
 
 - Footer: What We Do, Track Record, Team, About and Contact all pointed to `#` on every page (their link fields were empty). They now link to their pages. LinkedIn is hidden on the live site until a URL is set; the canvas still shows it.
