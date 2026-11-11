@@ -85,6 +85,10 @@ Map: 8 points (Los Angeles, San Francisco, New York, San Juan, São Paulo, Londo
 - Contact form: build it with the dropdown, and leave the GoHighLevel webhook as the last step (the user will give the URL).
 - Tell the user before anything destructive, like deleting pages or overwriting styles.
 
+## Moving to the client's Framer account
+
+The live build is in Framer; `FRAMER-STATUS.md` records what is built, what was fixed and what is still open. **When the user says they are moving the site to the client's Framer account** (or handing it over, transferring it, launching), stop and first go through every item under "Still open before launch" and "Waiting for a decision" in `FRAMER-STATUS.md` with them, one by one, so nothing is missed (the user asked for this on 11 Nov 2026). Keep that file up to date whenever an item is done or a new one appears.
+
 ## Checking pages in the container
 
 Chromium and Playwright are pre-installed. Serve `site/` with `python3 -m http.server`, then launch Chromium with `--use-angle=swiftshader --enable-unsafe-swiftshader --ignore-gpu-blocklist` so WebGL renders headless.

@@ -52,5 +52,23 @@ Almost every section is a code component (`Arcovia*.tsx`) sharing `ArcoviaBase.t
 
 **SEO and handover**
 - CMS page titles (profiles, cases, legal docs) still use the site title. In Framer, set each detail page's title from its fields (e.g. "{Name} · Arcovia").
-- Social share image (concrete with the A-mark) and schema.org Organization / Person markup.
+- Once the LinkedIn and Instagram URLs exist, add them to the "Structured data (Organization)" layer in the Site template, as well as to the footer and header.
 - Tablet and phone have not been QA'd (desktop only until approval).
+
+## Accessibility and SEO audit (11 Nov, axe-core WCAG 2.1 AA + best practice, 1440)
+
+Passed: one H1 on every page; heading levels in order; `lang="en-US"`; a canonical URL and `robots` index on every page; `sitemap.xml` (34 URLs) and `robots.txt`; colour contrast (no failures); form labels; visible keyboard focus (`:focus-visible`); every image has alt (decorative ones empty); OG and Twitter title and description on the main pages.
+
+Fixed:
+- No page had a `<main>` landmark. Every page breakpoint is now `main`.
+- Team: 11 portrait links had no accessible name. The portrait (which repeats the name link under it) is now hidden from screen readers and the tab order; the name link stays.
+- `/legal`: there was no H1 (the text style forced h2). It now has an H1, and the documents are h2.
+- Track Record: the books in the hero jumped from H1 to H3 and shared the landmark name "Selected work" with the hero. They are now h2, in a region called "Case studies".
+- What We Do: the situations table's scroll region repeated its section's name. It now has its own name.
+- No share image. The site default is now 1200×630: concrete with the debossed A-mark and wordmark.
+- No structured data. Organization JSON-LD is on every page (name, logo, both offices, email); Person JSON-LD is on every profile (name, title, photo, worksFor, LinkedIn when set).
+
+Left as is:
+- Home's H1 is hidden once the hero zoom has passed (the hero is `visibility: hidden`). It is present at the top, where search engines and screen readers start.
+- The `aside` blocks on Contact and the legal documents sit inside a section (an axe best-practice note, not a WCAG failure).
+- The "Made in Framer" badge sits outside the landmarks; it goes away with the paid plan.
