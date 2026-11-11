@@ -89,10 +89,40 @@
   .residency__btn:hover .residency__arrow { transform: translateX(3px); }
 }
 
-/* ---------- Tablet and phone (not reviewed yet: desktop first; kept readable) ---------- */
+/* ---------- Tablet and phone ----------
+   The field takes a line of its own (.residency__break shows), so the headline is always the same
+   three lines, "A selective program for / professionals from / [field]", whichever field is in:
+   on desktop's two lines the longest field would wrap below 1200 and the block would jump as the
+   fields change. Sized as a share of the grid so the first, longest line never wraps: 51px at 810,
+   up to 60px on wide tablets; 28px at 390 (the first line fills about 90% of the grid), at most
+   48px on large phones so it never outgrows the tablet size.
+   Spacing follows the page's smaller rhythm: the table's 96 / 64px above plus our 32px, then
+   96 / 64px under the button. */
+.residency__break { display: none; }
 @media (max-width: 1199px) {
-  .residency { --res-head: var(--fs-h2); padding-bottom: var(--space-9); }
+  .residency { --res-head: clamp(40px, calc(var(--res-grid) * 0.068), 60px); padding-bottom: var(--space-9); }
+  .residency__break { display: inline; }
+  .residency__head { line-height: 1.12; }
 }
 @media (max-width: 809px) {
-  .residency { padding-bottom: var(--space-8); }
+  .residency { --res-head: min(calc(var(--res-grid) * 0.08), 48px); padding-bottom: var(--space-8); }
+  .residency__head { margin-top: calc(var(--space-5) - var(--res-pad)); }
+  .residency__body { margin-top: var(--space-6); }
+  .residency__btn { margin-top: var(--space-5); }
+}
+
+/* ---------- Closing hairline (optional: .residency--closing) ----------
+   Framer's Team page ends as Contact does there (the user: "add line above footer like we have
+   in the contact page"): a hairline across the content width 128px under the button and 12px
+   over the footer. Desktop only, like the Team page's earlier closing hairline. The component's
+   "Closing hairline" control sets it; the HTML page doesn't use it. */
+.residency__close { display: none; }
+@media (min-width: 1200px) {
+  .residency--closing { padding-bottom: 12px; }
+  .residency--closing .residency__close {
+    display: block;
+    height: 1px;
+    margin-top: var(--space-10);
+    background: rgba(21, 21, 21, 0.16);
+  }
 }
