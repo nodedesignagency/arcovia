@@ -26,7 +26,8 @@ export const INTRO_CSS = `@keyframes arc-rv { from { opacity: 0; filter: blur(va
       .team-hero__heading > *, .team-hero__title > *, .team-hero__lede, .team-stat,
       .contact__head > *, .contact__lede, .contact__aside, .contact__main,
       .legal-doc__head > *, .legal-doc__lede, .legal-aside, .legal-doc__text > :nth-child(-n+8),
-      .case__head > *, .case__media, .case__part:nth-of-type(-n+2)) {
+      .case__head > *, .case__media, .case__part:nth-of-type(-n+2),
+      .work--full .work__books > .book) {
     animation: arc-rv 1000ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
     animation-delay: calc(150ms + var(--rv-i, 0) * 90ms);
     animation-play-state: var(--rv-play, running);
@@ -44,6 +45,11 @@ export const INTRO_CSS = `@keyframes arc-rv { from { opacity: 0; filter: blur(va
   .services-hero__paths, .team-stat:nth-child(1), .contact__aside, .legal-aside, .case__media { --rv-i: 4; }
   .team-stat:nth-child(2), .contact__main, .legal-doc__text > *, .case__part { --rv-i: 5; }
   .team-stat:nth-child(3) { --rv-i: 6; }
+  /* Track Record's books (.work--full; Home's books keep their own scroll animation): one after another after the line */
+  .work--full .work__books > .book { --rv-b: 12px; --rv-y: 32px; }
+  .work--full .work__books > .book:nth-child(1) { --rv-i: 4; }
+  .work--full .work__books > .book:nth-child(2) { --rv-i: 5; }
+  .work--full .work__books > .book:nth-child(3) { --rv-i: 6; }
 }`
 
 export const REVEAL_SELECTOR = [
