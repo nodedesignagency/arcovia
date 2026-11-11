@@ -42,13 +42,13 @@ Almost every section is a code component (`Arcovia*.tsx`) sharing `ArcoviaBase.t
 - Confirm the direct emails shown on profiles (`firstname@arcovia.io`) and `hello@` / `press@`.
 - Client names permission, the Brazil raise year (table says 2017, brief says 2023 or 2017), map hubs and consent, the wording of "The mark".
 
-**Differences from the brief to confirm (left as built)**
-- Raise range: the site says "$5M–$3B" (hero, path picker, meta description); the brief and deck say "$5M–$500M+".
-- Map: 19 cities; the brief and CLAUDE.md list 8 (LA, SF, NY, San Juan, São Paulo, London, Paris, Abu Dhabi).
-- What We Do hero subline differs from the brief ("Equity, debt, M&A, project finance and fund formation, from growth rounds to complex multi-party transactions.").
-- The Founders / Investors / Institutions sections use different copy from the brief's audience pages. Missing from the brief: the H1s, "How it works" in 3 steps, the proof items, "Who we work with", the investor discretion and legal lines, and the institutions' four advisor cards. Investors' button says "Join our investor network"; the brief says "Share your mandate".
-- Home "What we do" has no "See what we do" link (the brief asks for one).
-- Footer has no tagline, LPP Media line or Instagram (the brief's footer has them).
+**Differences from the brief (confirmed by the user, 11 Nov: they come from the client)**
+- Copy that differs from the brief is the client's: the "$5M–$3B" range, the What We Do hero line, and the Founders / Investors / Institutions copy. Keep it.
+- The map's 19 cities are approved. Keep them.
+- Home "What we do" now has the brief's "See what we do" link to the What We Do page (added 11 Nov). What We Do was already in the masthead's site map and in the menu.
+
+**Waiting for a decision**
+- Footer: the brief asks for the tagline "Where Capital Meets Conviction" (pages 6 and 29), Instagram "[TO CONFIRM: handle]" (pages 6 and 30), and "LPP Media, the creative house of Arcovia. Coming soon." (pages 2, 6 and 30). None is in the footer yet. Don't add them until the user says so; Instagram also needs the handle.
 
 **SEO and handover**
 - CMS page titles (profiles, cases, legal docs) still use the site title. In Framer, set each detail page's title from its fields (e.g. "{Name} · Arcovia").
