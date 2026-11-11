@@ -238,7 +238,8 @@ write('ArcoviaPaths', '''/**
  * alternating as the user asked: the first and third text left and image right,
  * the second image left and text right. In our language, on white: the chip (the
  * path's name), the headline at the site's section-heading size, the brief's line,
- * the four points over hairlines, the primary button with the arrow; the panel a
+ * the four points over hairlines, each with a tick (drawn in CSS: a mask on the
+ * row's ::before), the primary button with the arrow; the panel a
  * Blender concrete render on the charcoal (tools/concrete-renders, path_*),
  * echoing the path picker's icons on Home: a bar chart, a held sphere, a vault.
  * Each block is its anchor (#founders, #investors, #institutions), which the
