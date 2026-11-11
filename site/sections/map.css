@@ -28,6 +28,23 @@
 .map__cities { grid-column: 1 / span 5; grid-row: 2; align-self: start; }
 .map__figure { grid-column: 6 / -1; grid-row: 1 / span 2; align-self: center; margin: 0; }
 
+/* ---------- V2: heading left, line and link right; index left, globe right ----------
+   The globe is centred on the city index: map.js gives the figure margins so the
+   middle of the globe (not of its stage, which keeps room above for the arcs)
+   lines up with the middle of the index */
+.map--v2 .map__layout { row-gap: var(--space-7); }
+.map--v2 .map__head { grid-column: 1 / span 6; grid-row: 1; align-self: end; }
+.map--v2 .map__lede { grid-column: 8 / -1; grid-row: 1; align-self: end; }
+.map--v2 .map__cities { grid-column: 1 / span 5; grid-row: 2; align-self: center; }
+.map--v2 .map__figure { grid-column: 6 / -1; grid-row: 2; align-self: center; margin: 0; }
+.map__lede {
+  display: grid;
+  justify-items: start;
+  gap: var(--space-5);
+}
+.map--v2 .map__body { max-width: 28em; }
+.map--v2 .map__title { max-width: 12em; }
+
 /* ---------- Head ---------- */
 .map__head {
   display: grid;
@@ -239,8 +256,11 @@
   .map { padding-block: var(--space-10) var(--space-9); }
   .map__layout { row-gap: var(--space-6); }
   .map__head,
+  .map__lede,
   .map__figure,
   .map__cities { grid-column: 1 / -1; grid-row: auto; align-self: auto; }
+  .map--v2 .map__layout { row-gap: var(--space-6); }
+  .map--v2 .map__figure { margin-block: 0 !important; } /* stacked: no centring on the index */
   .map__title { max-width: 14em; }
   .map__cities { max-width: none; }
 }
@@ -248,7 +268,8 @@
 /* ---------- Phone ---------- */
 @media (max-width: 809px) {
   .map { padding-block: var(--space-9) var(--space-8); }
-  .map__head { gap: var(--space-4); }
+  .map__head,
+  .map__lede { gap: var(--space-4); }
   .map__body { font-size: 16px; }
   .map__layout { row-gap: var(--space-5); }
   .map__city-name { font-size: 14px; gap: 8px; }

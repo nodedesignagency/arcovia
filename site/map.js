@@ -606,6 +606,15 @@
     // Hubs small enough for the European cluster to stay apart; offices a size up, Los Angeles another
     this.size = this.R > 250 ? 5 : 4;
     this.cities.forEach(function (c) { c.lw = c.label.offsetWidth; c.lh = c.label.offsetHeight; });
+    // V2: centre the globe itself (not its stage) on the city index beside it
+    var fig = this.stage.parentNode;
+    if (this.root.classList.contains("map--v2") && wide && fig) {
+      var d = Math.round(h - 2 * top);
+      fig.style.marginTop = Math.max(d, 0) + "px";
+      fig.style.marginBottom = Math.max(-d, 0) + "px";
+    } else if (fig) {
+      fig.style.marginTop = fig.style.marginBottom = "";
+    }
     this.render();
   };
 

@@ -633,15 +633,20 @@
     <!-- SECTION:why-founders END -->
 
     <!-- SECTION:map START · styles: sections/map.css · scripts: assets/land-dots.js, map.js
-         Home, block 4: where we are in the world, laid out after Grok's offices
-         section: the text on the left, the concrete globe on the right (turn it
-         by dragging; land in stone relief; arcs drawn out from Los Angeles),
-         and a quiet index of the nineteen cities under the text. -->
-    <section class="map" data-world-map data-origin="la" data-center-lat="30" data-center-lon="-26" aria-labelledby="map-title">
+         Home, block 4: where we are in the world. V2 (map--v2): the heading on the
+         left, the line and the link to its right; below, the city index on the left
+         and the concrete globe on the right, centred on the index (turn it by
+         dragging; land in stone relief; arcs drawn out from Los Angeles).
+         Final V1 (text, link and index on the left, the globe on the right) is
+         frozen in versions/map-v1/. -->
+    <section class="map map--v2" data-world-map data-origin="la" data-center-lat="30" data-center-lon="-26" aria-labelledby="map-title">
       <div class="map__layout container">
         <div class="map__head">
           <p class="chip">Where we are</p>
           <h2 class="map__title" id="map-title">Rooted in <span class="nowrap">Los Angeles</span> and <span class="nowrap">San Juan.</span> Working across four regions.</h2>
+        </div>
+        <!-- V2: the line and the link sit to the right of the heading -->
+        <div class="map__lede">
           <p class="map__body">Our team and senior advisors work across North America, Europe, the Middle East and Asia-Pacific, with 3,000+ institutional relationships in more than 50 countries.</p>
           <a class="map__more" href="about.html#map">Explore the map<svg class="map__arrow" aria-hidden="true"><use href="#icon-arrow"/></svg></a>
         </div>
