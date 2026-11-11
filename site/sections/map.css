@@ -28,23 +28,38 @@
 .map__cities { grid-column: 1 / span 5; grid-row: 2; align-self: start; }
 .map__figure { grid-column: 6 / -1; grid-row: 1 / span 2; align-self: center; margin: 0; }
 
-/* ---------- V2: heading left, line right; index left, globe right ----------
-   The index starts 96px under the heading (as in What we believe). map.js sizes the
+/* ---------- V2 (desktop): heading left, line right; index left, globe right ----------
+   Rows: the chip; the heading with the line beside it (first lines level); then, 96px
+   under the heading (as in What we believe), the city index in three columns under
+   the heading (cols 1-6) and the globe under the line (cols 8-12). map.js sizes the
    globe to the index: its middle on the index's middle, as large as it can be while
-   its arcs stay 40px under the heading row, centred under the line's columns (8-12),
-   and pulls the figure up into the gap so the arcs can use it */
-.map--v2 .map__layout { row-gap: var(--space-9); }
-.map--v2 .map__head { grid-column: 1 / span 6; grid-row: 1; align-self: end; }
-.map--v2 .map__lede { grid-column: 8 / -1; grid-row: 1; align-self: end; }
-.map--v2 .map__cities { grid-column: 1 / span 5; grid-row: 2; align-self: start; }
-.map--v2 .map__figure { grid-column: 6 / -1; grid-row: 2; align-self: start; margin: 0; } /* globe under cols 8-12, room on its left for the LA label */
+   its arcs stay 40px under the line, and pulls the figure up so the arcs can rise
+   beside the heading */
 .map__lede {
   display: grid;
   justify-items: start;
   gap: var(--space-5);
 }
-.map--v2 .map__body { max-width: 28em; }
-.map--v2 .map__title { max-width: 12em; }
+@media (min-width: 1200px) {
+  .map--v2 .map__layout { row-gap: 0; }
+  .map--v2 .map__head { display: contents; }
+  .map--v2 .map__head > .chip { grid-column: 1 / span 6; grid-row: 1; margin-bottom: var(--space-5); }
+  .map--v2 .map__title { grid-column: 1 / span 6; grid-row: 2; }
+  .map--v2 .map__lede { grid-column: 8 / -1; grid-row: 2; align-self: start; margin-top: 6px; } /* the line's cap height on the heading's */
+  .map--v2 .map__body { max-width: none; }
+  .map--v2 .map__title { max-width: 12em; }
+  .map--v2 .map__cities {
+    grid-column: 1 / span 6; grid-row: 3; align-self: start;
+    margin-top: var(--space-9);
+    max-width: none;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-rows: repeat(7, auto); /* 19 cities: 7, 7 and 5 */
+  }
+  /* Each of the three columns ends on its own line (the two-column end, used below 1200, does not) */
+  .map--v2 .map__city--col-end:not(:last-child) { border-bottom: 0; }
+  .map--v2 .map__city--col-end3 { border-bottom: 1px solid var(--color-line); }
+  .map--v2 .map__figure { grid-column: 6 / -1; grid-row: 3; align-self: start; margin: 0; } /* globe under cols 8-12, room on its left for the LA label */
+}
 
 /* ---------- Head ---------- */
 .map__head {
@@ -260,7 +275,6 @@
   .map__lede,
   .map__figure,
   .map__cities { grid-column: 1 / -1; grid-row: auto; align-self: auto; }
-  .map--v2 .map__layout { row-gap: var(--space-6); }
   .map--v2 .map__figure { margin-block: 0 !important; } /* stacked: no centring on the index */
   .map__title { max-width: 14em; }
   .map__cities { max-width: none; }

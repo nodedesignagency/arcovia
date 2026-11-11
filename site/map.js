@@ -596,14 +596,26 @@
       this.R = 1; this.cx = 0; this.cy = 0;
       var rise = -this.arcTop();
       this.center = keep;
-      var gap = parseFloat(getComputedStyle(list.parentNode).rowGap) || 0;
-      var room = list.offsetHeight / 2 + gap - CLEAR;
+      // From the bottom of the line beside the heading down to the index's middle
+      var lede = this.root.querySelector(".map__lede");
+      var above = lede ? list.getBoundingClientRect().top - lede.getBoundingClientRect().bottom : parseFloat(getComputedStyle(list.parentNode).rowGap) || 0;
+      var room = list.offsetHeight / 2 + above - CLEAR;
       this.R = Math.max(140, Math.min(w * 0.34, 320, room / rise));
       // Centred under the line (grid columns 8-12; the figure spans 6-12, which keeps
       // room on the globe's left for the Los Angeles callout)
       var cg = parseFloat(getComputedStyle(list.parentNode).columnGap) || 0;
       var step = (w + cg) / 7;
       this.cx = 2 * step + (5 * step - cg) / 2;
+      // ...nudged right if the origin's callout (on its left) would come within 24px of the index
+      var o = this.origin;
+      if (o && o.label && o.side === "left") {
+        this.center = { lat: this.home.lat, lon: this.home.lon };
+        var ox = this.project(o.v)[0];
+        this.center = keep;
+        var listRight = list.getBoundingClientRect().right - this.stage.getBoundingClientRect().left;
+        var need = listRight + 24 - (ox - 12 - o.label.offsetWidth);
+        if (need > 0) this.cx = Math.min(this.cx + need, w - this.R - 8);
+      }
     }
     // Room above for the highest arc in the home view (and some more, as arcs
     // rise higher when the globe is turned), and below for the shadow
@@ -631,7 +643,7 @@
     // V2: the globe's middle (not its stage's, which keeps room above for the arcs)
     // on the index's middle; the figure moves up into the gap when it needs to
     var fig = this.stage.parentNode;
-    fig.style.marginTop = v2 ? Math.round(list.offsetHeight / 2 - top) + "px" : "";
+    fig.style.marginTop = v2 ? Math.round((parseFloat(getComputedStyle(list).marginTop) || 0) + list.offsetHeight / 2 - top) + "px" : "";
     this.render();
   };
 
