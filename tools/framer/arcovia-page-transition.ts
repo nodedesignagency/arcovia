@@ -104,6 +104,11 @@ export function initPageTransition() {
         if (url.origin !== location.origin || !/^https?:$/.test(url.protocol)) return null
         // The same page (an anchor on it, or itself): no transition
         if (url.pathname === location.pathname && url.search === location.search) return null
+        // A case page (/track-record/<slug>): it has its own way in. The books on Home and Track
+        // Record carry the clicked book onto its case page (ArcoviaSelectedWork, ArcoviaCase), and
+        // the case page stands its book up when opened any other way: no curtain (the user asked
+        // for this, 11 Nov 2026)
+        if (/^\/track-record\/[^/]+\/?$/.test(url.pathname)) return null
         return url
     }
 
