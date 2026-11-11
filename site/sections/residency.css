@@ -78,7 +78,11 @@
 /* ---------- The brief's text and the button ---------- */
 .residency__body {
   max-width: 34em;
-  margin-top: var(--space-7);
+  /* The same space under the headline as over it, measured as it reads, ink to ink (the user marked
+     both): chip to the headline's ascenders = the headline's descenders to the text's ascenders.
+     The glyphs sit higher in the headline's line box than they hang below it, so the margin is the
+     chip's 32px less a share of the headline size (about 44px each way at 1440, 43 at 810). */
+  margin-top: calc(var(--space-6) - 1px - 0.14 * var(--res-head));
   font-size: var(--fs-lede);
   line-height: var(--lh-lede);
   text-wrap: balance;
@@ -107,7 +111,7 @@
 @media (max-width: 809px) {
   .residency { --res-head: min(calc(var(--res-grid) * 0.08), 48px); padding-bottom: var(--space-8); }
   .residency__head { margin-top: calc(var(--space-5) - var(--res-pad)); }
-  .residency__body { margin-top: var(--space-6); }
+  .residency__body { margin-top: calc(var(--space-5) - 1px - 0.175 * var(--res-head)); }   /* the phone's 24px chip gap, the same way (about 32px each way at 390) */
   .residency__btn { margin-top: var(--space-5); }
 }
 
