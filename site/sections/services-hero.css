@@ -130,14 +130,19 @@
   .path-rows__arrow { transition: none; }
 }
 
-/* Tablet and phone: not reviewed yet (desktop first); as Home's: the line, then the rows full width */
+/* Tablet: the line, then the rows under it, only as wide as the headline and on
+   the left (the user: "make the buttons small like the heading in width and
+   left"). One column sized to its widest part, the headline's longer line
+   (both lines stay whole here), so the rows match it at every tablet width. */
 @media (max-width: 1199px) {
   .services-hero { --services-hero-fs: 44px; }
-  .services-hero__inner { align-items: start; }
-  .services-hero__heading { grid-column: 1 / -1; margin-bottom: var(--space-7); }
-  .services-hero__paths { grid-column: 1 / -1; margin-bottom: 0; }
+  .services-hero__inner { grid-template-columns: max-content; justify-content: start; align-items: start; }
+  .services-hero__heading { grid-column: 1; margin-bottom: var(--space-7); }
+  .services-hero__paths { grid-column: 1; margin-bottom: 0; }
 }
+/* Phone: the headline wraps to the screen, so the column fills it again */
 @media (max-width: 809px) {
   .services-hero { --services-hero-fs: 30px; }
+  .services-hero__inner { grid-template-columns: minmax(0, 1fr); }
   .services-hero__line { white-space: normal; }
 }
