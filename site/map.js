@@ -583,6 +583,28 @@
     // room on its left for the Los Angeles callout; stacked, it is centred.
     this.R = Math.min(w * (phone ? 0.42 : wide ? 0.34 : 0.3), 320);
     this.cx = wide ? w - this.R * 1.3 : w / 2;
+    // V2 (desktop): the globe is sized to the city index beside it. Its middle sits on
+    // the index's middle; it is as large as it can be while its highest arc stays
+    // CLEAR px under the heading row. Arcs scale with the globe, so measure their
+    // rise once on a globe of radius 1.
+    var list = this.root.querySelector(".map__cities");
+    var v2 = this.root.classList.contains("map--v2") && wide && list;
+    if (v2) {
+      var CLEAR = 40;
+      var keep = this.center;
+      this.center = { lat: this.home.lat, lon: this.home.lon };
+      this.R = 1; this.cx = 0; this.cy = 0;
+      var rise = -this.arcTop();
+      this.center = keep;
+      var gap = parseFloat(getComputedStyle(list.parentNode).rowGap) || 0;
+      var room = list.offsetHeight / 2 + gap - CLEAR;
+      this.R = Math.max(140, Math.min(w * 0.34, 320, room / rise));
+      // Centred under the line (grid columns 8-12; the figure spans 6-12, which keeps
+      // room on the globe's left for the Los Angeles callout)
+      var cg = parseFloat(getComputedStyle(list.parentNode).columnGap) || 0;
+      var step = (w + cg) / 7;
+      this.cx = 2 * step + (5 * step - cg) / 2;
+    }
     // Room above for the highest arc in the home view (and some more, as arcs
     // rise higher when the globe is turned), and below for the shadow
     var saved = this.center;
@@ -606,15 +628,10 @@
     // Hubs small enough for the European cluster to stay apart; offices a size up, Los Angeles another
     this.size = this.R > 250 ? 5 : 4;
     this.cities.forEach(function (c) { c.lw = c.label.offsetWidth; c.lh = c.label.offsetHeight; });
-    // V2: centre the globe itself (not its stage) on the city index beside it
+    // V2: the globe's middle (not its stage's, which keeps room above for the arcs)
+    // on the index's middle; the figure moves up into the gap when it needs to
     var fig = this.stage.parentNode;
-    if (this.root.classList.contains("map--v2") && wide && fig) {
-      var d = Math.round(h - 2 * top);
-      fig.style.marginTop = Math.max(d, 0) + "px";
-      fig.style.marginBottom = Math.max(-d, 0) + "px";
-    } else if (fig) {
-      fig.style.marginTop = fig.style.marginBottom = "";
-    }
+    fig.style.marginTop = v2 ? Math.round(list.offsetHeight / 2 - top) + "px" : "";
     this.render();
   };
 

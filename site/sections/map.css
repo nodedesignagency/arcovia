@@ -28,15 +28,16 @@
 .map__cities { grid-column: 1 / span 5; grid-row: 2; align-self: start; }
 .map__figure { grid-column: 6 / -1; grid-row: 1 / span 2; align-self: center; margin: 0; }
 
-/* ---------- V2: heading left, line and link right; index left, globe right ----------
-   The globe is centred on the city index: map.js gives the figure margins so the
-   middle of the globe (not of its stage, which keeps room above for the arcs)
-   lines up with the middle of the index */
-.map--v2 .map__layout { row-gap: var(--space-7); }
+/* ---------- V2: heading left, line right; index left, globe right ----------
+   The index starts 96px under the heading (as in What we believe). map.js sizes the
+   globe to the index: its middle on the index's middle, as large as it can be while
+   its arcs stay 40px under the heading row, centred under the line's columns (8-12),
+   and pulls the figure up into the gap so the arcs can use it */
+.map--v2 .map__layout { row-gap: var(--space-9); }
 .map--v2 .map__head { grid-column: 1 / span 6; grid-row: 1; align-self: end; }
 .map--v2 .map__lede { grid-column: 8 / -1; grid-row: 1; align-self: end; }
-.map--v2 .map__cities { grid-column: 1 / span 5; grid-row: 2; align-self: center; }
-.map--v2 .map__figure { grid-column: 6 / -1; grid-row: 2; align-self: center; margin: 0; }
+.map--v2 .map__cities { grid-column: 1 / span 5; grid-row: 2; align-self: start; }
+.map--v2 .map__figure { grid-column: 6 / -1; grid-row: 2; align-self: start; margin: 0; } /* globe under cols 8-12, room on its left for the LA label */
 .map__lede {
   display: grid;
   justify-items: start;
