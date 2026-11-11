@@ -1,5 +1,5 @@
 /* ==========================================================================
-   WorldMap — the compact world map: a concrete globe with the fifteen cities,
+   WorldMap — the compact world map: a concrete globe with the nineteen cities,
    arcs drawn out from Los Angeles. Built as one self-contained class so it
    can become a Framer code component later (props: cities, origin, view
    centre, texture).

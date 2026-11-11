@@ -3,7 +3,7 @@
    Laid out after Grok's offices section, on white: the text on the left
    (chip, headline, body, an outlined pill), the concrete globe on the right
    with SpaceXAI-style arcs and coordinate labels, and a quiet index of the
-   fifteen cities under the text. map.js draws the globe (WebGL canvas), the
+   nineteen cities under the text. map.js draws the globe (WebGL canvas), the
    arcs and markers (SVG) and the labels (HTML) from the index's data
    attributes. Desktop is two columns; tablet and phone stack text, globe,
    index.
@@ -191,11 +191,10 @@
 .map__cities {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  grid-template-rows: repeat(8, auto);
+  grid-template-rows: repeat(10, auto); /* 19 cities: ten in column one, nine in column two */
   grid-auto-flow: column;
   column-gap: var(--grid-gap);
   max-width: 30em;
-  border-bottom: 1px solid var(--color-line);
 }
 .map__city {
   display: flex;
@@ -209,6 +208,10 @@
   transition: background-color var(--dur-fast) var(--ease-out);
 }
 .map__city.is-active { background: var(--color-well); }
+/* Each column closes with its own line (the last row of column one is marked), so the
+   last line never runs across both columns and a short last column still ends on a line */
+.map__city--col-end,
+.map__city:last-child { border-bottom: 1px solid var(--color-line); }
 .map__city-name {
   display: flex;
   align-items: center;
