@@ -8,6 +8,8 @@ Website for Arcovia, an independent capital markets advisory (arcovia.io). Clien
 - **Phase 2 is Framer**, through the Framer MCP, only after the user confirms each page. Never touch Framer until the user says "move to Framer".
 - Go section by section. Show each section before moving on. For key sections (hero, what we do, proof) offer 2 versions.
 - Before handing anything over, check it in a browser at 1440, 810 and 390 wide and fix overflow, overlaps and broken wraps. Also check at 2x pixel density: the user reviews on a Retina Mac.
+- **Space around hairlines is always even.** Anything that sits between two hairlines (a row, a section, the "Next" row above the footer line) gets the same space above and below it, at every breakpoint. Before handing over, measure every pair of hairlines on the page. The user has had to point this out more than once.
+- **Check CMS pages with more than one item.** Look at the first and last item and at items with empty fields (no figures, no detail rows, no next item), not only the item in the screenshot: a removed row or a hidden block can leave a stray line or a gap.
 
 ## Branches: `main` is approved work only
 
