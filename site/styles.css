@@ -195,9 +195,14 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   color: var(--color-text-muted);
 }
 
-/* ---------- Chip: a short label between square brackets, set as plain text ---------- */
+/* ---------- Chip: a short label after a small square, set as plain text ----------
+   As in Framer (ArcoviaBase, 4 Nov 2026): a small square before the word replaced the
+   square brackets, after the user's reference; square corners, no radius (the user's
+   call); decoration only, it has no text. */
 .chip {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
   max-width: 100%;
   white-space: nowrap;
   font-size: 13px;
@@ -207,11 +212,17 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
   text-transform: uppercase;
   color: var(--color-text);
 }
-/* Brackets are decoration only: the "/ ''" keeps screen readers from announcing them */
-.chip::before { content: "[\00a0"; content: "[\00a0" / ""; }
-.chip::after { content: "\00a0]"; content: "\00a0]" / ""; }
+.chip::before { content: ""; flex: none; width: 10px; height: 10px; background: currentColor; }
 @media (max-width: 809px) {
-  .chip { font-size: 11px; letter-spacing: 0.08em; }
+  .chip { gap: 10px; font-size: 11px; letter-spacing: 0.08em; }
+  .chip::before { width: 8px; height: 8px; }
+}
+/* On its side (component: chip--side; some pages only: Contact, the legal pages): the chip
+   turned to read upwards from its square, up the left edge. Desktop only: below 1200 it
+   lies flat again. */
+.chip--side { writing-mode: vertical-rl; transform: rotate(180deg); }
+@media (max-width: 1199px) {
+  .chip--side { writing-mode: horizontal-tb; transform: none; }
 }
 
 /* ---------- Buttons ---------- */
@@ -247,11 +258,14 @@ button { font: inherit; color: inherit; background: none; border: 0; padding: 0;
 .btn--quiet { background: var(--color-white); color: var(--color-ink); box-shadow: var(--shadow-card); }
 /* Light: plain white, for dark or photographic grounds (the CTA's sunrise wall). No shadow, ring or border. */
 .btn--light { background: var(--color-white); color: var(--color-ink); }
+/* Outline: the outlined pill of the map and Selected work, as a button (cookie choices, legal pages) */
+.btn--outline { border: 1px solid rgba(43, 43, 43, 0.28); color: var(--color-ink); }
 
 @media (hover: hover) {
   .btn--primary:hover { background: linear-gradient(180deg, rgba(207, 207, 207, 0.22) 0%, rgba(207, 207, 207, 0.15) 100%), var(--btn-dark); }
   .btn--quiet:hover { background: var(--color-well); }
   .btn--light:hover { background: var(--color-well); }
+  .btn--outline:hover { border-color: var(--color-ink); }
 }
 .btn--primary:active { box-shadow: var(--shadow-btn-pressed); }
 
