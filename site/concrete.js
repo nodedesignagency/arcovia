@@ -340,7 +340,8 @@
       sun: opts.sun != null ? opts.sun : 0.2,
       cursor: opts.cursor != null ? opts.cursor : 0.22,
       staticBand: opts.staticBand != null ? opts.staticBand : 0.6,
-      burnWarmth: opts.burnWarmth != null ? opts.burnWarmth : 1      // 1: fire colours, 0: white heat only
+      burnWarmth: opts.burnWarmth != null ? opts.burnWarmth : 1,     // 1: fire colours, 0: white heat only
+      readyClass: opts.readyClass || "hero--gl"                       // added to the host once WebGL draws
     };
     this.mouse = { x: -9999, y: -9999, tx: -9999, ty: -9999, amt: 0, tamt: 0 };
     this.view = { ox: 0, oy: 0, tx: 0, ty: 0, s: 1, burn: null, shatter: null, drill: null };
@@ -390,7 +391,7 @@
       self.layout();
       self.bind();
       self.ready = true;
-      self.host.classList.add("hero--gl");
+      self.host.classList.add(self.opts.readyClass);
       self.kick();
       return true;
     }).catch(function () { return false; });

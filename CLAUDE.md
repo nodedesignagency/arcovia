@@ -33,10 +33,10 @@ cd ~/Desktop/arcovia-preview && ./preview.sh <branch>
 
 ## Files
 
-- `site/index.html`: one HTML file per page (only Home so far). Sections are wrapped in `SECTION:name START/END` markers.
+- `site/index.html`: one HTML file per page (Home, and `404.html`). Sections are wrapped in `SECTION:name START/END` markers.
 - `site/styles.css`: **all tokens** (colour, type scale, spacing, radius, shadows, motion) plus shared components: buttons, logo, header, menu, path picker, seam.
 - `site/sections/<name>.css`: one stylesheet per section. Asset paths in these files start with `../assets/` (don't use `var(--texture-concrete)` here: its URL resolves relative to the section file and breaks).
-- `site/main.js`: small shared JS (header, menu, path picker, office clocks, wordmark fit).
+- `site/main.js`: small shared JS (header, menu, path picker, office clocks, wordmark fit). Any element with `data-concrete="<canvas selector>"` gets the live concrete (used by the 404: 404 carved into the slab via `data-carve="text"`).
 - `site/zoom.js`: the hero → statement zoom-through (pinned scroll stage).
 - `site/concrete.js`: WebGL concrete for the hero (carved text and marks, drifting sunlight, cursor light). Built to become a Framer code component.
 - `site/assets/`: concrete texture (seamless, 90 KB); `logo/` holds the client's official logo SVGs (brandmark, wordmark, lockup, parts; white fills as delivered). The sprite in `index.html` inlines the brandmark (`#a-mark`, viewBox 0 0 72 57) and wordmark (`#wordmark`, 0 0 72 11) with `currentColor`; `a-mark.svg` is the favicon. Use these, never a typeset "ARCOVIA", for the logo.

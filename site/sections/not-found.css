@@ -1,0 +1,101 @@
+/* ==========================================================================
+   SECTION: not-found — the 404 page
+   The home hero's live concrete (concrete.js, started by main.js through
+   [data-concrete]) with 404 carved deep into the slab, the chip above it,
+   one line of copy and the way home, centred under the masthead.
+   Uses shared tokens and components from styles.css.
+   ========================================================================== */
+
+.not-found {
+  /* 404 is sized by the viewport's height as well as its width, so the page
+     fits one screen under the expanded masthead, even with browser bars, and
+     keeps at least ~48px clear under the masthead (285px at 1440×780,
+     430px at 1440×900, 520px at 1728×1000) */
+  --nf-size: clamp(200px, min(30vw, 125vh - 690px), 600px);
+  position: relative;
+  isolation: isolate;
+  min-height: 100vh;
+  min-height: 100svh;
+  overflow: hidden;
+  /* Static fallback: no JS, no WebGL. The hero's soft diagonal light band on concrete. */
+  background-color: var(--color-concrete);
+  background-image:
+    linear-gradient(112deg, rgba(0, 0, 0, 0.06) 0%, rgba(0, 0, 0, 0.02) 38%, rgba(255, 255, 255, 0.22) 52%, rgba(255, 255, 255, 0.14) 66%, rgba(0, 0, 0, 0.05) 100%),
+    url("../assets/concrete.jpg");
+  background-size: auto, 1024px;
+}
+
+.not-found__canvas {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 900ms var(--ease-out);
+}
+.not-found.is-gl .not-found__canvas { opacity: 1; }
+
+.not-found__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: inherit;
+  padding-top: var(--header-h);
+  /* A little more room below than above, so the group sits optically centred */
+  padding-bottom: var(--space-6);
+  text-align: center;
+}
+
+.not-found__title {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-6);
+  font-weight: var(--weight-medium);
+}
+
+/* The 404 itself: carved by the WebGL slab, so the text turns transparent once
+   it draws. Without WebGL it is pressed into the concrete with two soft shadows. */
+.not-found__code {
+  display: block;
+  font-size: var(--nf-size);
+  font-weight: var(--weight-medium);
+  line-height: 0.8;
+  letter-spacing: -0.02em;
+  margin-right: -0.02em;
+  white-space: nowrap;
+  color: rgba(0, 0, 0, 0.07);
+  text-shadow: 2px 2px 2px rgba(255, 255, 255, 0.6), -2px -2px 2px rgba(0, 0, 0, 0.22);
+  user-select: none;
+}
+.not-found.is-gl .not-found__code { color: transparent; text-shadow: none; }
+
+.not-found__text {
+  max-width: 26em;
+  margin-top: var(--space-7);
+  font-size: var(--fs-lede);
+  line-height: var(--lh-lede);
+  color: var(--color-text);
+  text-wrap: balance;
+}
+
+.not-found__btn { margin-top: var(--space-6); }
+@media (hover: hover) {
+  .not-found__btn:hover .btn__icon { transform: translateX(3px); }
+}
+
+/* Load-in: the copy fades up once the slab is there */
+@media (prefers-reduced-motion: no-preference) {
+  .not-found__chip,
+  .not-found__text,
+  .not-found__btn { animation: nf-rise 700ms var(--ease-out) backwards; }
+  .not-found__chip { animation-delay: 150ms; }
+  .not-found__text { animation-delay: 230ms; }
+  .not-found__btn { animation-delay: 310ms; }
+}
+@keyframes nf-rise {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: none; }
+}

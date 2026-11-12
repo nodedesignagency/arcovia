@@ -156,6 +156,13 @@
     setTimeout(function () { tickClocks(); setInterval(tickClocks, 60000); }, 60000 - (Date.now() % 60000) + 50);
   }
 
+  /* ---------- Concrete on other pages (e.g. 404): any [data-concrete] gets the live slab ---------- */
+  if (window.ConcreteSurface) {
+    document.querySelectorAll("[data-concrete]").forEach(function (el) {
+      new window.ConcreteSurface(el, { canvas: el.getAttribute("data-concrete") || "canvas", readyClass: "is-gl" }).init();
+    });
+  }
+
   /* ---------- Hero ---------- */
   var hero = document.querySelector("[data-hero]");
   if (!hero) return;
