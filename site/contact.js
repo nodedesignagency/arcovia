@@ -8,7 +8,9 @@
 
    Sending: data-endpoint on the <form> takes the webhook URL: the link of the
    client's Airtable automation ("When webhook received"; the last step). Every
-   field is sent, empty ones as "", so each note has the same keys.
+   field is sent, empty ones as "", so each note has the same keys, plus four
+   ready-made ones for the table: type_label, organisation_name, source and details
+   (every other answer as "Label: value" lines).
    data-send="form" (set, for Airtable) posts it form-encoded as a simple request,
    since Airtable's webhook answers no CORS preflight; without it, it goes as JSON.
    Until there is a URL, the form logs what it would send to the console and shows
@@ -240,6 +242,22 @@
       Array.prototype.forEach.call(form.elements, function (el) {
         if (el.name && el.name !== "fax" && !(el.name in data)) data[el.name] = "";
       });
+      // Ready-made columns for Airtable, so each automation maps a handful of fields: the type
+      // in words, one organisation, where the visit came from, and every other answer as text
+      var TYPES = { founder: "Raising capital", investor: "Investor", institution: "Institution", "partner-press": "Partnerships and press", talent: "Join the team or the Residency", advisor: "Note to a team member" };
+      var OWN = /^(tag|full_name|email|role|company_name|firm|organisation|current_firm|consent|fax|advisor|advisor_slug|utm_\w+|landing_page|referrer)$/;
+      var LABELS = { partner_type: "Enquiry" };
+      var lines = [];
+      Array.prototype.forEach.call(form.elements, function (el) {
+        if (!el.name || OWN.test(el.name) || el.type === "hidden" || el.type === "radio" || el.type === "checkbox" || el.matches(":disabled")) return;
+        if (!data[el.name]) return;
+        var label = LABELS[el.name] || el.getAttribute("aria-label") || ((el.id && form.querySelector('label[for="' + el.id + '"]')) || {}).textContent || el.name;
+        lines.push(label.trim() + ": " + data[el.name]);
+      });
+      data.type_label = TYPES[data.tag] || data.tag || "";
+      data.organisation_name = data.company_name || data.firm || data.organisation || data.current_firm || "";
+      data.source = [data.utm_source, data.utm_medium, data.utm_campaign].filter(Boolean).join(" / ") || data.referrer || "Direct";
+      data.details = lines.join("\n");
       data.page = location.href.split(/[?#]/)[0];
       data.submitted_at = new Date().toISOString();
       data.seconds_on_form = Math.round((Date.now() - started) / 1000);
