@@ -4,16 +4,17 @@ Both website forms post straight to an Airtable automation ("When webhook receiv
 (Airtable's webhook sends no CORS headers, so a browser JSON request is blocked; a form-encoded one is
 not). One table, two automations: **Contact page form** (`ArcoviaContact`, `contact.js`) and
 **Team page form** (the "Contact <name> via Arcovia" note on team profiles, `ArcoviaNote`). Every new
-enquiry emails lilla@arcovia.io and colin@arcovia.io. The base is "Website enquiries", shared with
-nodedesignagency@gmail.com (Creator); it is separate from Arcovia's own workspace, which holds their
-investor lists. No Airtable token is used anywhere.
+enquiry emails lilla@arcovia.io and colin@arcovia.io. The table **Website enquiries** lives in the
+client's **Investor Database** base (shared with nodedesignagency@gmail.com, Creator), next to their
+"Investors" table, which we never touch. No Airtable token is used anywhere.
 
 ## 1. The table
 
 1. In the base, **+ Add or import → CSV file**, upload `website-enquiries.csv`, import as a new table
-   and name it **Website enquiries** (delete the empty "Table 1" afterwards).
+   and name it **Website enquiries**. Skip Airtable's offer to "extract data" from the Page links.
 2. Field types: **Type** → Single select (its six options come from the example rows), **Email** →
-   Email, **Details** → Long text, **Page** → URL. The rest stay single line text.
+   Email, **Details** → Long text, **Page** → URL. The rest single line text: Airtable's import turns
+   **Source** into a single select, which would refuse new sources, so change it back.
 3. Add a field **Received** → Created time (show the time).
 4. Delete the six example rows.
 
