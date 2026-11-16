@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 720" width="600" height="720">
+  <!-- Placeholder until the team photos arrive: a soft-focus head and shoulders on a warm studio
+       backdrop. It has colour so the hover (black and white → colour) can be seen; the page shows it in grey. -->
+  <defs>
+    <radialGradient id="backdrop" cx="50%" cy="34%" r="78%">
+      <stop offset="0" stop-color="#dcc8ae"/>
+      <stop offset="0.55" stop-color="#a88b70"/>
+      <stop offset="1" stop-color="#5e4a3c"/>
+    </radialGradient>
+    <linearGradient id="skin" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#9a7258"/>
+      <stop offset="1" stop-color="#5f4334"/>
+    </linearGradient>
+    <linearGradient id="jacket" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#344a63"/>
+      <stop offset="1" stop-color="#18222f"/>
+    </linearGradient>
+    <filter id="soft" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="7"/>
+    </filter>
+  </defs>
+  <rect width="600" height="720" fill="url(#backdrop)"/>
+  <g filter="url(#soft)">
+    <ellipse cx="300" cy="250" rx="72" ry="90" fill="url(#skin)"/>
+    <path d="M266 310c0 44-4 80-16 108h100c-12-28-16-64-16-108z" fill="#5f4334"/>
+    <path d="M250 418c-98 18-182 86-198 302h496c-16-216-100-284-198-302l-50 64z" fill="url(#jacket)"/>
+    <path d="M250 418l50 64 50-64c-14-4-30-6-50-6s-36 2-50 6z" fill="#e9e4dc"/>
+  </g>
+</svg>

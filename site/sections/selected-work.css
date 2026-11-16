@@ -1,0 +1,394 @@
+/* ==========================================================================
+   SECTION: selected-work — Home, block 6 of the brief
+   "Selected work": three cases as books on black, each a link to its case
+   on the Track Record page. After the template's "Before vs After" and the
+   user's book video, books.js pins the stage: "Selected" and "work" part
+   left and right and fade away while three spines rise in the middle; a
+   little more scroll turns all three at once to face the front, and only
+   the books are left. Hover lifts a book.
+   This file is the settled layout (the real page); books.js only adds
+   transforms on top, and at rest the covers face the front with no
+   transform at all, so their text stays crisp.
+   Asset paths start with ../assets/ (see CLAUDE.md).
+   ========================================================================== */
+
+.work {
+  /* Book size follows the window: tall enough to read as books, small
+     enough that heading, books and link fit on one screen */
+  --book-gap: 72px;
+  --book-h: min(52vh, 540px, calc((100vw - 2 * var(--gutter) - 2 * var(--book-gap)) / 3 / 0.72));
+  --book-w: calc(var(--book-h) * 0.72);
+  --book-t: calc(var(--book-w) * 0.24);   /* spine: the book's thickness (thick, as in the user's book video) */
+  --book-lift: 10px;                       /* hover: the book rises a little ... */
+  --book-open: -32deg;                     /* ... and its cover swings open on the hinge */
+  --book-persp: 1800px;
+  --book-paper: #f4f3ef;
+  --book-radius: 2px 5px 5px 2px;          /* square at the spine, softer at the fore edge */
+  /* The heading's size is a share of the grid's width, as in the statement */
+  --work-fs: calc((min(100vw, var(--container-max)) - 2 * var(--gutter)) * 0.052);
+  position: relative;
+  background: var(--color-black);
+  color: var(--color-on-dark);
+}
+
+.work__stage {
+  padding-block: var(--space-10);
+}
+
+.work__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-8);
+}
+
+/* The heading. Pinned (books.js), it sits over the middle of the stage and
+   parts away; without motion it is a plain heading above the books */
+.work__title {
+  display: flex;
+  justify-content: center;
+  gap: 0.27em;
+  align-self: stretch;
+  font-size: var(--work-fs);
+  font-weight: var(--weight-book);
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: var(--color-on-dark);
+}
+.work__word {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.work__books {
+  display: flex;
+  justify-content: center;
+  gap: var(--book-gap);
+}
+
+/* ---------- Component: book ---------- */
+.book {
+  flex: none;
+  width: var(--book-w);
+  height: var(--book-h);
+}
+
+.book__link {
+  display: block;
+  width: 100%;
+  height: 100%;
+  color: inherit;
+  text-decoration: none;
+  outline: none;
+}
+
+/* The hover lift lives on its own layer, so it never fights the turn. Each book has its
+   own perspective, centred on it, for the cover opening on hover (and the turn) */
+.book__lift {
+  display: block;
+  height: 100%;
+  perspective: var(--book-persp);
+  transition: transform 620ms var(--ease-out);
+}
+
+.book__body {
+  position: relative;
+  height: 100%;
+  transform-style: preserve-3d;
+}
+
+/* Under the cover: the page block, and three leaves that fan out a little behind the cover
+   when it opens. The boards overhang the pages by a few pixels, as on a real hardcover */
+.book__pages,
+.book__leaf {
+  position: absolute;
+  top: 3px;
+  bottom: 3px;
+  left: 3px;
+  right: 5px;
+  border-radius: 0 2px 2px 0;
+  pointer-events: none;
+}
+.book__pages {
+  background: var(--book-paper);
+  /* the open cover throws a little shade into the gutter */
+  box-shadow: inset 10px 0 16px -8px rgba(0, 0, 0, 0.35);
+  transform: translateZ(-4px);
+}
+.book__leaf {
+  background: linear-gradient(to right, #e6e5e1, var(--book-paper) 35%, #fbfaf8);
+  box-shadow: inset -1px 0 0 rgba(0, 0, 0, 0.16); /* each leaf's fore-edge */
+  transform-origin: left center;
+  transform: translateZ(calc(-3px + var(--k) * 3px));
+  transition: transform 720ms var(--ease-out);
+}
+
+/* The front cover */
+.book__cover {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  padding: calc(var(--book-w) * 0.085) calc(var(--book-w) * 0.08) calc(var(--book-w) * 0.08) calc(var(--book-w) * 0.115);
+  border-radius: var(--book-radius);
+  /* A photographed blank hardcover (generated with Magnific): the material, the light and
+     the hinge groove come from the image; the copy is printed on top as real text */
+  background: var(--book-ink-bg) var(--book-cover) center / cover no-repeat;
+  color: var(--book-ink);
+  filter: brightness(var(--lit, 1));
+  transform-origin: left center; /* the hinge */
+  transition: transform 720ms var(--ease-out);
+}
+
+/* Hover (and keyboard focus): the book rises a little and its cover swings open on the
+   hinge, the top leaves fanning out behind it, so it reads as a book you can open.
+   Only once the books face the front */
+@media (prefers-reduced-motion: no-preference) {
+  .work:not(.work--staged) .book__link:is(:hover, :focus-visible) .book__lift,
+  .work--staged .book__link:is(:hover, :focus-visible) .book__lift { transform: translateY(calc(-1 * var(--book-lift))); }
+  .work:not(.work--staged) .book__link:is(:hover, :focus-visible) .book__cover,
+  .work--staged.is-open .book__link:is(:hover, :focus-visible) .book__cover { transform: rotateY(var(--book-open)); }
+  .work:not(.work--staged) .book__link:is(:hover, :focus-visible) .book__leaf,
+  .work--staged.is-open .book__link:is(:hover, :focus-visible) .book__leaf {
+    transform: translateZ(calc(-3px + var(--k) * 3px)) rotateY(calc(var(--book-open) * var(--k)));
+  }
+}
+@media (hover: none) {
+  .book__link:hover .book__lift,
+  .book__link:hover .book__cover,
+  .book__link:hover .book__leaf { transform: none; }
+}
+/* A hairline where the board's edge catches the light, so the darkest binding
+   still lifts off the black */
+.book__cover::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: inset 0 0 0 1px var(--book-rim);
+  pointer-events: none;
+}
+
+.book__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+/* The A-mark pressed into the board, as in the deck: an SVG filter in the sprite
+   (#deboss-light, #deboss-dark) darkens the floor of the recess, shades its top and
+   left walls and lights its bottom and right walls. The fill only gives the shape */
+.book__mark {
+  width: calc(var(--book-w) * 0.12);
+  height: auto;
+  overflow: visible;
+  fill: #000;
+  filter: var(--book-deboss);
+}
+.book__index {
+  font-size: 13px;
+  font-weight: var(--weight-medium);
+  letter-spacing: 0.04em;
+  font-variant-numeric: tabular-nums;
+  color: var(--book-ink-muted);
+}
+
+.book__figure {
+  margin-top: calc(var(--book-w) * 0.2);
+  font-size: calc(var(--book-w) * 0.2);
+  font-weight: var(--weight-book);
+  line-height: 1;
+  letter-spacing: -0.035em;
+  font-variant-numeric: tabular-nums;
+}
+
+.book__name {
+  margin-top: auto;
+  font-size: calc(var(--book-w) * 0.064);
+  font-weight: var(--weight-medium);
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+.book__line {
+  margin-top: 10px;
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--book-ink-muted);
+}
+/* The spine: only seen while the books stand closed (books.js) */
+.book__spine,
+.book__hit {
+  display: none;
+}
+
+/* ---------- The three bindings: monochrome, from the deck ---------- */
+.book--concrete {
+  --book-cover: url("../assets/books/cover-concrete.jpg");
+  --book-spine: url("../assets/books/spine-concrete.jpg");
+  --book-ink-bg: #c2c2c2;
+  --book-ink: var(--color-ink);
+  --book-ink-muted: var(--color-text-muted);
+  --book-rim: rgba(255, 255, 255, 0.12);
+  --book-deboss: url(#deboss-light);
+}
+.book--charcoal {
+  --book-cover: url("../assets/books/cover-charcoal.jpg");
+  --book-spine: url("../assets/books/spine-charcoal.jpg");
+  --book-ink-bg: #323232;
+  --book-ink: var(--color-on-dark);
+  --book-ink-muted: rgba(244, 244, 243, 0.74);
+  --book-rim: rgba(255, 255, 255, 0.07);
+  --book-deboss: url(#deboss-dark);
+}
+.book--paper {
+  --book-cover: url("../assets/books/cover-paper.jpg");
+  --book-spine: url("../assets/books/spine-paper.jpg");
+  --book-ink-bg: #e2e2e2;
+  --book-ink: var(--color-ink);
+  --book-ink-muted: var(--color-text-muted);
+  --book-rim: rgba(255, 255, 255, 0.2);
+  --book-deboss: url(#deboss-light);
+}
+
+/* ---------- Link to the full track record (outlined pill, as on the map) ---------- */
+.work__more {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  height: 44px;
+  padding: 0 20px;
+  border: 1px solid rgba(244, 244, 243, 0.3);
+  border-radius: var(--radius-pill);
+  font-size: var(--fs-small);
+  font-weight: var(--weight-medium);
+  color: var(--color-on-dark);
+  transition: border-color var(--dur-fast) var(--ease-out);
+}
+.work__arrow {
+  flex: none;
+  width: 14px;
+  height: 14px;
+  transition: transform var(--dur-base) var(--ease-out);
+}
+@media (hover: hover) {
+  .work__more:hover { border-color: var(--color-on-dark); }
+  .work__more:hover .work__arrow { transform: translateX(3px); }
+}
+.work__more:focus-visible { outline: 2px solid var(--color-on-dark); outline-offset: 3px; }
+
+/* ==========================================================================
+   Staged (books.js, desktop, no reduced motion): the stage pins and the
+   books become 3D: a cover at the front and a spine down its left edge,
+   the box reaching back from the cover by the book's thickness.
+   ========================================================================== */
+.work--staged {
+  height: 300vh; /* 200vh of scroll: the words part and the spines rise (0–40%), a little more turns the books (47%), then a long rest */
+}
+.work--staged .work__stage {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100svh;
+  overflow: clip;
+  display: flex;
+  align-items: center;
+  padding-block: calc(var(--mh-compact) + 8px) var(--space-7);
+}
+.work--staged .work__inner {
+  width: 100%;
+}
+
+.work--staged .work__title {
+  position: absolute;
+  inset: 0;
+  align-items: center;
+  pointer-events: none;
+}
+.work--staged .work__word { will-change: transform, opacity; }
+
+/* Only the faces you can see take the pointer: a closed book's box is
+   wider than its spine and would catch hovers meant for its neighbour */
+.work--staged .book,
+.work--staged .book__link,
+.work--staged .book__lift,
+.work--staged .book__body { pointer-events: none; }
+.work--staged .book__cover,
+.work--staged .book__spine,
+.work--staged .book__pages,
+.work--staged .book__leaf { pointer-events: auto; }
+/* A little extra reach below each face, so a lifted book stays under the cursor */
+.work--staged .book__hit {
+  display: block;
+  position: absolute;
+  inset: auto 0 calc(-1 * var(--book-lift) - 6px) 0;
+  height: calc(var(--book-lift) + 6px);
+}
+
+.work--staged .book__lift {
+  perspective: var(--book-persp, 1800px);
+}
+
+.work--staged .book__body {
+  transform-style: preserve-3d;
+}
+
+.work--staged .book__cover { backface-visibility: hidden; }
+
+.work--staged .book__spine {
+  position: absolute;
+  top: 0;
+  left: calc((var(--book-w) - var(--book-t)) / 2);
+  width: var(--book-t);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: calc(var(--book-t) * 0.42) 0 calc(var(--book-t) * 0.34);
+  border-radius: 3px;
+  /* The photographed spine: its rounding and light come from the image */
+  background: var(--book-ink-bg) var(--book-spine) center / 100% 100% no-repeat;
+  color: var(--book-ink);
+  filter: brightness(var(--lit, 1));
+  backface-visibility: hidden;
+  /* On the left edge of the cover, facing left, reaching back by the book's thickness */
+  transform: translateZ(calc(var(--book-t) / -2)) rotateY(-90deg) translateZ(calc(var(--book-w) / 2));
+}
+.work--staged.is-flat .book__spine { visibility: hidden; }
+
+/* The spine's title runs top to bottom, as on a shelf */
+.book__spine-text {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  writing-mode: vertical-rl;
+  font-size: calc(var(--book-t) * 0.25);
+  font-weight: var(--weight-book);
+  line-height: 1;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+.book__spine-figure {
+  margin-bottom: 1.1em;
+  font-weight: var(--weight-semibold);
+}
+.book__spine-mark {
+  flex: none;
+  width: calc(var(--book-t) * 0.4);
+  height: auto;
+  fill: currentColor;
+}
+
+/* Keyboard focus outlines the face you can see */
+.book__link:focus-visible .book__cover { outline: 2px solid var(--color-on-dark); outline-offset: 4px; }
+.work--staged:not(.is-open) .book__link:focus-visible .book__spine { outline: 2px solid var(--color-on-dark); outline-offset: 4px; }
+
+/* ---------- Below desktop: a simple column (desktop only for now) ---------- */
+@media (max-width: 1199px) {
+  .work {
+    --book-gap: 40px;
+    --book-h: min(460px, calc((100vw - 2 * var(--gutter) - 2 * var(--book-gap)) / 3 / 0.72));
+  }
+}
+@media (max-width: 809px) {
+  .work { --book-h: 420px; }
+  .work__books { flex-direction: column; align-items: center; }
+}

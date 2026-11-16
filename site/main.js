@@ -156,6 +156,22 @@
     setTimeout(function () { tickClocks(); setInterval(tickClocks, 60000); }, 60000 - (Date.now() % 60000) + 50);
   }
 
+  /* ---------- Visit source: kept for this visit so the contact form can save it with the lead ----------
+     The first page of the visit and its referrer, plus the UTM tags. A newer campaign link replaces older tags. */
+  try {
+    var visitKey = "arcovia_visit";
+    var visit = JSON.parse(sessionStorage.getItem(visitKey) || "null") || {
+      landing_page: location.href.split("#")[0],
+      referrer: document.referrer || ""
+    };
+    var search = new URLSearchParams(location.search);
+    var tags = ["utm_source", "utm_medium", "utm_campaign", "utm_term", "utm_content"];
+    if (tags.some(function (k) { return search.get(k); })) {
+      tags.forEach(function (k) { visit[k] = search.get(k) || ""; });
+    }
+    sessionStorage.setItem(visitKey, JSON.stringify(visit));
+  } catch (e) { /* storage blocked: the form sends what this page knows */ }
+
   /* ---------- Hero ---------- */
   var hero = document.querySelector("[data-hero]");
   if (!hero) return;

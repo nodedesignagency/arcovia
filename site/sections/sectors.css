@@ -1,0 +1,150 @@
+/* ==========================================================================
+   SECTION: sectors — Home, block 9 (brief section 9)
+   The sectors as one quiet line that runs across the page, after the user's
+   marquee reference, on a flat neutral ground (after the user's Trove
+   reference: no concrete photo, but all the depth kept).
+   Two versions on the same markup (sectors.js sets data-variant):
+   - carved (default): the line carved into a plain neutral surface with the
+     hero's own carving (concrete.js, plain material: same light, rims and
+     inner shadow), between two formwork seams with a tie hole at each end, a
+     tie hole between sectors; the line grows shallow towards both ends.
+     The line is carved once into a strip and slid in the shader. Without
+     WebGL: SVG filter #deboss-soft and the CSS seam.
+   - band (?sectors=band): a charcoal band running edge to edge, white type
+     and the A-mark between sectors; a fine groove along both edges.
+   The track moves with a transform set by sectors.js; with reduced motion
+   (.is-static) the line stands still and wraps.
+   Uses shared tokens, the seam and the A-mark from styles.css / the sprite.
+   ========================================================================== */
+
+.sectors {
+  --sectors-fs: 60px;          /* sector names */
+  --sectors-gap: 0.8em;        /* space either side of a separator */
+  position: relative;
+  isolation: isolate;
+  /* Less below: the CTA box follows straight after, as in the user's design */
+  padding-block: var(--space-10) var(--space-8);
+  background: var(--color-neutral);
+  overflow-x: clip;
+}
+
+/* The live surface (concrete.js, plain material) */
+.sectors__canvas {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 600ms var(--ease-out);
+}
+.sectors.is-live .sectors__canvas { opacity: 1; }
+/* Once the surface carves them, the CSS look steps aside (as in the hero) */
+.sectors.is-live .sectors__list { color: transparent; filter: none; }
+.sectors.is-live .sectors__viewport { -webkit-mask-image: none; mask-image: none; }
+.sectors.is-live .sectors__seam { background: transparent; box-shadow: none; }
+.sectors.is-live .sectors__seam .seam__hole { opacity: 0; }
+
+/* ---------- The line ---------- */
+.sectors__viewport {
+  position: relative;
+  overflow: hidden;
+  padding-block: var(--space-7);
+  /* Soft ends, so the line seems to run on under the surface */
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 72px, #000 calc(100% - 72px), transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 72px, #000 calc(100% - 72px), transparent);
+}
+.sectors__track {
+  display: flex;
+  width: max-content;
+  will-change: transform;
+}
+/* The filter sits on each (still) list and the movement on the track, so the carving is drawn once and slides */
+.sectors__list {
+  display: flex;
+  align-items: center;
+  flex: none;
+  color: #000; /* only the shape counts: the filter turns it into a recess */
+  filter: url("#deboss-soft");
+}
+.sectors__item {
+  flex: none;
+  font-size: var(--sectors-fs);
+  font-weight: var(--weight-medium);
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+.sectors__sep {
+  flex: none;
+  display: grid;
+  place-items: center;
+  margin-inline: var(--sectors-gap);
+  font-size: var(--sectors-fs);
+}
+/* A tie hole between sectors (the brief's "·"), the same circle as the head of the A */
+.sectors__sep::before {
+  content: "";
+  width: 0.2em;
+  height: 0.2em;
+  border-radius: 50%;
+  background: currentColor;
+}
+.sectors__mark { display: none; } /* the A-mark separator belongs to the band */
+
+/* ---------- Band (?sectors=band) ----------
+   Charcoal with the concrete's grain multiplied in, so it reads as an inlay,
+   not a flat stripe. Edge to edge, white type, the A-mark between sectors. */
+.sectors[data-variant="band"] { --sectors-fs: 56px; --sectors-gap: 0.95em; }
+.sectors[data-variant="band"] .sectors__canvas { display: none; }
+.sectors[data-variant="band"] .sectors__band {
+  background-color: var(--color-charcoal);
+  background-image: url("../assets/concrete.jpg");
+  background-size: 1024px;
+  background-blend-mode: multiply;
+  color: var(--color-on-dark);
+  box-shadow:
+    0 -1px 0 rgba(0, 0, 0, 0.16),
+    0 1px 0 rgba(255, 255, 255, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.07),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.22);
+}
+.sectors[data-variant="band"] .sectors__frame { max-width: none; padding-inline: 0; }
+.sectors[data-variant="band"] .sectors__seam { display: none; }
+.sectors[data-variant="band"] .sectors__viewport { padding-block: 30px; -webkit-mask-image: none; mask-image: none; }
+.sectors[data-variant="band"] .sectors__list { color: inherit; filter: none; }
+.sectors[data-variant="band"] .sectors__item { letter-spacing: -0.02em; }
+.sectors[data-variant="band"] .sectors__sep::before { display: none; }
+.sectors[data-variant="band"] .sectors__mark {
+  display: block;
+  width: 0.78em;
+  height: auto;
+  fill: currentColor;
+  color: rgba(244, 244, 243, 0.55);
+}
+
+/* ---------- Standing still (reduced motion) ---------- */
+.sectors.is-static .sectors__track { width: auto; justify-content: center; }
+.sectors.is-static .sectors__viewport { -webkit-mask-image: none; mask-image: none; }
+.sectors.is-static .sectors__list {
+  flex: auto;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.1em 0.9em;
+  padding-inline: var(--gutter);
+  font-size: calc(var(--sectors-fs) * 0.8);
+}
+.sectors.is-static .sectors__item { font-size: inherit; }
+/* Wrapped lines would start with a separator: drop them and let the spacing do the work */
+.sectors.is-static .sectors__sep { display: none; }
+
+/* ---------- Tablet and phone (to refine once desktop is approved) ---------- */
+@media (max-width: 1199px) {
+  .sectors { --sectors-fs: 46px; padding-block: var(--space-9); }
+  .sectors[data-variant="band"] { --sectors-fs: 44px; }
+}
+@media (max-width: 809px) {
+  .sectors { --sectors-fs: 34px; padding-block: var(--space-8); }
+  .sectors[data-variant="band"] { --sectors-fs: 32px; }
+  .sectors[data-variant="band"] .sectors__viewport { padding-block: 20px; }
+}

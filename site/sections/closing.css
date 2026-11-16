@@ -1,0 +1,120 @@
+/* ==========================================================================
+   SECTION: closing — Home, block 10 (brief section 10): the CTA
+   After the user's own earlier design: on the neutral ground straight after
+   the sectors line, a rounded box with the text on the left and the logo on
+   the right (no frame marks: the user's reference had corner marks and ruler
+   ticks, which were only part of the reference, not wanted here).
+   The box is the client's sunrise wall (after the social assets she liked, a
+   little lighter): a concrete photo (assets/cta-wall.jpg, made with Magnific)
+   lit live by concrete.js (closing.js): a beam of sunlight sweeps across and
+   back every 18 s with fine dust turning in it, and the official lockup is
+   carved into the wall, so the beam catches its walls as it passes. The beam
+   dims behind the text, which keeps its contrast.
+   Without WebGL the photo shows with a soft static beam and the lockup is
+   debossed with the SVG filter (#deboss).
+   Uses shared tokens, the light button and the arrow icon from styles.css.
+   ========================================================================== */
+
+.closing {
+  padding-bottom: 0;   /* the footer sets the space below the box */
+  background: var(--color-neutral);
+}
+
+/* ---------- The box ---------- */
+.closing__card {
+  --card-pad: 96px;          /* text and logo inset from the box's edge */
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--grid-gap);
+  align-items: center;
+  aspect-ratio: 11 / 5;
+  min-height: 560px;
+  padding-inline: var(--card-pad);
+  border-radius: var(--radius-l);
+  color: var(--color-on-dark);
+  /* Static fallback: the wall, a soft beam and the shade behind the text */
+  background-color: #5d5d5d;
+  background-image:
+    linear-gradient(90deg, rgba(0, 0, 0, 0.32) 0%, rgba(0, 0, 0, 0.12) 45%, rgba(0, 0, 0, 0) 60%),
+    linear-gradient(158deg, transparent 38%, rgba(255, 255, 255, 0.34) 46%, rgba(255, 255, 255, 0.34) 54%, transparent 62%),
+    url("../assets/cta-wall.jpg");
+  background-size: auto, auto, cover;
+  background-position: center;
+}
+
+.closing__canvas {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 700ms var(--ease-out);
+}
+.closing__card.is-live .closing__canvas { opacity: 1; }
+
+/* ---------- Text ---------- */
+.closing__content {
+  grid-column: 1 / span 6;
+  grid-row: 1;
+  display: grid;
+  justify-items: start;
+  /* keeps it legible wherever the light falls */
+  text-shadow: 0 1px 18px rgba(0, 0, 0, 0.18);
+}
+.closing__title {
+  font-size: 64px;
+  font-weight: var(--weight-medium);
+  line-height: 1.05;
+  letter-spacing: -0.026em;
+  color: var(--color-on-dark);
+}
+.closing__body {
+  max-width: 27em;
+  margin-top: var(--space-5);
+  text-wrap: pretty;
+  font-size: var(--fs-lede);
+  line-height: var(--lh-lede);
+  color: rgba(244, 244, 243, 0.88);
+}
+.closing__btn { margin-top: var(--space-6); text-shadow: none; }
+@media (hover: hover) {
+  .closing__btn:hover .closing__arrow { transform: translateX(3px); }
+}
+
+/* ---------- The lockup, carved into the wall ---------- */
+.closing__figure {
+  grid-column: 8 / span 4;
+  grid-row: 1;
+  display: grid;
+  place-items: center;
+  height: 100%;
+}
+.closing__mark {
+  width: auto;
+  height: 64%;
+  max-width: 100%;
+  aspect-ratio: 1;
+  fill: currentColor;
+  color: #000;           /* only the shape counts: the filter turns it into a recess */
+  filter: url("#deboss");
+}
+/* With live light the lockup is carved into the wall itself (concrete.js); the SVG only marks the place */
+.closing__card.is-live .closing__mark { opacity: 0; filter: none; }
+
+/* ---------- Tablet and phone (to refine once desktop is approved) ---------- */
+@media (max-width: 1199px) {
+  .closing__card { --card-pad: 64px; aspect-ratio: auto; min-height: 520px; }
+  .closing__content { grid-column: 1 / span 7; }
+  .closing__figure { grid-column: 8 / -1; }
+  .closing__title { font-size: 52px; }
+}
+@media (max-width: 809px) {
+  .closing__card { --card-pad: 28px; grid-template-rows: auto auto; row-gap: var(--space-6); padding-block: var(--space-9); }
+  .closing__figure { grid-column: 3 / span 8; grid-row: 1; height: 220px; }
+  .closing__content { grid-column: 1 / -1; grid-row: 2; }
+  .closing__title { font-size: 40px; }
+}
