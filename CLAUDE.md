@@ -79,7 +79,8 @@ Map: 8 points (Los Angeles, San Francisco, New York, San Juan, São Paulo, Londo
 
 ## Phase 2 (Framer) rules, only once the user says "move to Framer"
 
-- Work only in the Framer project the user names. Never touch their other Framer projects.
+- **The Framer file is "Arcovia Handoff (copy)"**: https://framer.com/projects/Arcovia-Handoff-copy--RMqSr2IrFg9SRHQEiok6-4TqCb (project id `RMqSr2IrFg9SRHQEiok6`, workspace "Arcovia V2"). The user said (16 Nov): work only in this file, bring every change from earlier chats into it, and keep it updated in every future chat. So after a section changes in HTML, update the same section in this file too. Never touch the other Arcovia projects ("Arcovia Handoff" in Node Design's Workspace, "Arcovia (copy)") or any other Framer project.
+- `open_project` can take several tries (it timed out repeatedly on 16 Nov); retry with the project id.
 - Order: text and colour styles from the tokens first, then components (nav, footer, buttons, cards), then pages.
 - Team profiles go in a CMS collection with one template page. The map and the concrete hero become code components.
 - Contact form: build it with the dropdown, and leave the GoHighLevel webhook as the last step (the user will give the URL).
